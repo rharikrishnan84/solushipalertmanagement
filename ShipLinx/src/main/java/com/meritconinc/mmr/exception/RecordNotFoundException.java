@@ -1,0 +1,12 @@
+package com.meritconinc.mmr.exception;
+
+public class RecordNotFoundException extends Exception {
+
+  public RecordNotFoundException(String string) {
+    super(string);
+  }
+
+  public RecordNotFoundException() {
+    super();
+  }
+}

@@ -1,0 +1,26 @@
+package com.meritconinc.mmr.dao;
+
+import java.util.List;
+
+import com.meritconinc.mmr.model.aboutus.FeedbackVO;
+import com.meritconinc.mmr.model.common.KeyValueVO;
+
+public interface FeedbackDAO {
+
+  /**
+   * Saves the user feedback
+   * 
+   * @param feedbackVO
+   * @return
+   * @throws Exception
+   */
+  public void insertFeedback(FeedbackVO feedbackVO);
+
+  /**
+   * Return a list of feedback types
+   * 
+   * @param locale
+   * @return
+   */
+  public List<KeyValueVO> getFeedbackTypes(String locale);
+}

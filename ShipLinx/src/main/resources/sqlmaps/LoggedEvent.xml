@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="loggedevent">
+
+	<resultMap id="loggedEventMap" class="com.meritconinc.shiplinx.model.LoggedEvent" >
+		<result property="id" column="id"/>
+		<result property="entityType" column="entity_type"/>
+		<result property="entityId" column="entity_id"/>
+		<result property="eventUsername" column="username"/>
+		<result property="eventDateTime" column="date_time"/>
+		<result property="message" column="message"/>
+		<result property="privateMessage" column="private"/>
+		<result property="deletedMessage" column="delete_flag"/>
+		<result property="systemLog" column="system_log"/>
+	</resultMap>
+	
+	<select id="getLoggedEventList" parameterClass="com.meritconinc.shiplinx.model.LoggedEvent" resultMap="loggedEventMap">
+		SELECT * FROM logged_event where  entity_id=#entityId# order by date_time desc
+	</select>
+	
+	<select id="getLoggedEventListCustomers" parameterClass="com.meritconinc.shiplinx.model.LoggedEvent" resultMap="loggedEventMap">
+		SELECT * FROM logged_event where  entity_id=#entityId# and private=#privateMessage# and delete_flag=#deletedMessage# order by date_time desc
+	</select> 
+	
+	<insert id="createLoggedEvent">
+		insert into logged_event (entity_type, entity_id, username, date_time, message, private, delete_flag, system_log) values (#entityType#, #entityId#, #eventUsername#, #eventDateTime#, #message#, #privateMessage#, #deletedMessage#, #systemLog#);
+	</insert>
+	
+	<update id="deleteLoggedEvent">
+		update logged_event set delete_flag = #deletedMessage# where id=#id#
+	</update>
+
+</sqlMap>

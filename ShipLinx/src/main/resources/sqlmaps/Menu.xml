@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Menus">
+	<resultMap id="result" class="com.meritconinc.mmr.model.common.MenuItemVO">
+		<result property="id" 			column="id" 			columnIndex="1"/>
+		<result property="name" 		column="msg_content" 	columnIndex="2"/>
+		<result property="url" 			column="url" 			columnIndex="3"/>
+		<result property="level" 		column="level" 			columnIndex="5"/>
+		<result property="parentId" 	column="parent_id" 		columnIndex="6"/>
+		<result property="image" 	    column="image" 	/>
+		<result property="imageOver" 	    column="image_over" 	/>
+		<result property="helptag" column="help_tag"/>
+		<result property="supporttag" column="support_tag"/>
+	</resultMap>
+
+	<cacheModel id="menu-cache" type ="LRU" readOnly="false">
+	  <flushInterval hours="24"/>
+	  <property name="cache-size" value="1000" />
+	</cacheModel> 	
+
+	<!--  the sql statements for the DAO -->
+	<select id="getTopMenus" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image,m.image_over, m.help_tag, m.support_tag
+	from menu m, role_menu r, resourcebundle b, business_menu bm
+		<dynamic prepend="WHERE">
+			m.id = r.menu_id and
+			m.id = bm.menu_id and
+			bm.business_id=#businessId# and
+     		level = 'TOP' and m.label_id=b.msg_id and b.locale=#locale# and
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order
+	</select>
+	
+	<select id="getGroupMenusForAction" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image,m.image_over, m.help_tag, m.support_tag
+		from menu m, role_menu r, resourcebundle b
+		<dynamic prepend="WHERE">
+			m.parent_id in
+			(SELECT menu.parent_id FROM menu, action where action.action=#action# and action.menu_id=menu.id) and
+			m.id = r.menu_id and m.label_id=b.msg_id and b.locale=#locale# and 
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order
+	</select>
+	
+	<select id="getGroupMenusForId" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, role_menu r, resourcebundle b
+		<dynamic prepend="WHERE">
+			parent_id in (SELECT parent_id FROM menu where id=#menuId#) and
+			m.id = r.menu_id and m.label_id=b.msg_id and b.locale=#locale# and
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order
+	</select>
+
+	<select id="getFirstChild" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag 
+		from menu m, role_menu r, resourcebundle b, business_menu bm
+		<dynamic prepend="WHERE">
+			m.parent_id = #menuId# and
+			m.id = bm.menu_id and
+			bm.business_id=#businessId# and
+			m.id = r.menu_id and m.label_id=b.msg_id and b.locale=#locale# and
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order limit 1
+	</select>
+	
+	<select id="getMenuById" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag 
+		from menu m, role_menu r, resourcebundle b
+		<dynamic prepend="WHERE">
+			m.id = #menuId# and
+			m.id = r.menu_id and m.label_id=b.msg_id and b.locale=#locale# and
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order limit 1
+	</select>	
+	
+	<select id="getGroupMenusForIdByLevel" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, role_menu r, resourcebundle b, business_menu bm
+		<dynamic prepend="WHERE">
+			parent_id=#menuId# and m.level=#level# and
+			m.id = bm.menu_id and
+			bm.business_id=#businessId# and
+			m.id = r.menu_id and m.label_id=b.msg_id and b.locale=#locale# and
+     		r.role IN <iterate  open="(" close=")" conjunction="," property="roles"> #roles[]# </iterate>
+		</dynamic>
+   		order by display_order
+	</select>
+</sqlMap>

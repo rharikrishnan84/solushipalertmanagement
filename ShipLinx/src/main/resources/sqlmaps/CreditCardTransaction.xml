@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="creditcardtransaction">
+
+	<resultMap id="creditCardTransactionMap" class="com.meritconinc.shiplinx.model.CCTransaction">
+		<result property="id"	column="id"/>	
+		<result property="entityId"	column="entity_id"/>
+		<result property="entityType"	column="entity_type"/>
+		<result property="authNum"	column="authorization_number"/>
+		<result property="amount"	column="amount"/>
+		<result property="status"	column="status"/>
+		<result property="dateCreated"	column="date_created"/>
+		<result property="referenceNumber"	column="ref_num"/>
+		<result property="processorTransactionId"	column="processor_tran_id"/>
+		<result property="procMessage"	column="proc_message"/>
+		<result property="receiptId"	column="receipt_id"/>
+		<result property="cardNumCharged"	column="card_num_charged"/>
+		<result property="chargeType"	column="charge_type"/>
+		<result property="customerId"	column="customer_id"/>
+		<result property="currency"	column="currency"/>		
+		<result property="businessId"	column="business_id"/>
+	</resultMap>
+
+	<resultMap id="creditCardMap" class="com.meritconinc.shiplinx.model.CreditCard">
+		<result property="id"	column="id"/>	
+		<result property="ccNumber"	column="cc_number"/>
+		<result property="ccLast4"	column="cc_last4"/>
+		<result property="ccExpiryMonth"	column="cc_expiry_month"/>
+		<result property="ccExpiryYear"	column="cc_expiry_year"/>
+		<result property="dateCreated"	column="date_created"/>
+		<result property="procProfileID"	column="proc_profile_ID"/>
+		<result property="procProfileID2"	column="proc_profile_ID2"/>
+		<result property="customerId"	column="customer_id"/>
+		<result property="active"	column="active"/>
+		<result property="billingAddressId"	column="billing_address_id"/>
+		<result property="billingAddress" column="billing_address_id" select="selectAddress"/>
+	</resultMap>
+
+	<resultMap id="merchantAccountMap" class="com.meritconinc.shiplinx.model.MerchantAccount">
+		<result property="id"	column="id"/>	
+		<result property="businessId"	column="business_id"/>
+		<result property="processor"	column="processor"/>
+		<result property="property1"	column="property1"/>
+		<result property="property2"	column="property2"/>
+		<result property="property3"	column="property3"/>
+		<result property="property4"	column="property4"/>
+		<result property="property5"	column="property5"/>
+		<result property="testProperty1"	column="test_property1"/>
+		<result property="testProperty2"	column="test_property2"/>
+		<result property="testProperty3"	column="test_property3"/>
+		<result property="testProperty4"	column="test_property4"/>
+		<result property="testProperty5"	column="test_property5"/>
+		<result property="active"	column="active"/>
+		<result property="currency"	column="currency"/>		
+	</resultMap>
+
+	<resultMap id="pinBlockMap" class="com.meritconinc.shiplinx.model.PinNumberBlock">
+		<result property="id"	column="id"/>	
+		<result property="type"	column="type"/>
+		<result property="fromPin"	column="from_pin"/>
+		<result property="toPin"	column="to_pin"/>
+		<result property="nextPin"	column="next_pin"/>
+		<result property="businessId"	column="business_id"/>
+		<result property="prefix"	column="prefix"/>
+	</resultMap>
+
+	<select id="findCCTransactionById" resultMap="creditCardTransactionMap">
+		select * from cctransaction where id = #id#
+	</select>
+
+	<select id="findCCTransactionByOrderId" resultMap="creditCardTransactionMap">
+		select * from cctransaction where entity_id = #id# and entity_type=10
+	</select>
+
+	<select id="searchCCTrans" parameterClass="com.meritconinc.shiplinx.model.CCTransaction" resultMap="creditCardTransactionMap">
+		 	select * from cctransaction where business_id = #businessId#	
+		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 			customer_id = #customerId#
+		 		</isGreaterThan>	
+		 		
+		 		<isNotNull prepend="and" property="authNum">
+		 			authorization_number = #authNum#
+		 		</isNotNull>	
+		 		
+		 		<isNotNull prepend="AND" property="fromTransactionDate">
+		 			<![CDATA[date_created >= #fromInvoiceDate#]]>
+		 		</isNotNull>
+		 		<isNotNull prepend="AND" property="toTransactionDate">
+		 			<![CDATA[date_created <= #toInvoiceDate#]]>
+		 		</isNotNull>
+		 		
+		 		<isGreaterThan prepend="and" property="entityId" compareValue="0">
+		 			entity_id = #entityId#
+		 		</isGreaterThan>	
+		 		<isNotNull prepend="and" property="entityType">
+		 			entity_type = #entityType#
+		 		</isNotNull>	
+
+		 		<isNotNull prepend="and" property="cardNumCharged">
+		 			card_num_charged = #cardNumCharged#
+		 		</isNotNull>	
+				 
+	</select>
+
+	<select id="getMerchantAccountForBusinessAndCurrency"  resultMap="merchantAccountMap">
+		select * from merchant_account m where m.business_id = #businessId# and currency = #currency# and active is true
+	</select>
+
+	<insert id="createCCTransaction" parameterClass="com.meritconinc.shiplinx.model.CCTransaction">
+		  insert into cctransaction(entity_id,entity_type,authorization_number,amount,status,date_created,ref_num,processor_tran_id,proc_message,receipt_id,card_num_charged,charge_type,customer_id,currency, business_id) 
+		  values (#entityId#,#entityType#,#authNum#,#amount#,#status#,IFNULL(#dateCreated#, NOW()),#referenceNumber#,#processorTransactionId#,#procMessage#,#receiptId#,#cardNumCharged#,#chargeType#,#customerId#,#currency#, #businessId#)
+		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+
+	<update id = "updateCCTransaction" parameterClass="com.meritconinc.shiplinx.model.CCTransaction">
+			update cctransaction set status=#status# where id=#id#
+	</update>
+		
+	<select id="getPinBlock"  resultMap="pinBlockMap">
+		select * from pins p where p.business_id = #businessId# and type = #type#
+	</select>
+
+	<update id = "updatePinBlock" parameterClass="com.meritconinc.shiplinx.model.PinNumberBlock">
+			update pins set next_pin=#nextPin# where id = #id#
+	</update>
+	
+	<!-- Credit Card Management -->
+	<update id = "updateCreditCard" parameterClass="com.meritconinc.shiplinx.model.CreditCard">
+			update credit_card set active=#active#
+			<dynamic>
+			</dynamic>
+			where customer_id=#customerId#
+	</update>
+	
+	<insert id="insertCreditCard" parameterClass="com.meritconinc.shiplinx.model.CreditCard">
+		  insert into credit_card(cc_number,cc_last4,cc_expiry_month,cc_expiry_year, date_created,active,customer_id,proc_profile_ID,proc_profile_ID2, billing_address_id) 
+		  values (#ccNumber#,#ccLast4#,#ccExpiryMonth#,#ccExpiryYear#,IFNULL(#dateCreated#, NOW()),#active#,#customerId#,#procProfileID#,#procProfileID2#,#billingAddressId#)
+		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+
+	<select id="getActiveCreditCardForCustomer" parameterClass="long"  resultMap="creditCardMap">
+		select * from credit_card cc where cc.customer_id = #value# and active is true
+	</select>
+
+</sqlMap>
+

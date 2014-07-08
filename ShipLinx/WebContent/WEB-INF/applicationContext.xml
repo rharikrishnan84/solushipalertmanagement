@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<import resource="applicationContext-acegi-security.xml"/>
+	<import resource="applicationContext-mmr.xml"/>
+	<import resource="applicationContext-shiplinx.xml"/>
+	
+	<!--  
+		Define the project's application context file(s) here.
+		
+		By default, the bean definitions can be overridden by
+		registering a different definition with the same name. 
+		-->	
+	<!-- import resource="applicationContext-sample.xml"/  -->
+</beans>

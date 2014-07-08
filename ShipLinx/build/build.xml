@@ -1,0 +1,475 @@
+<?xml version="1.0"?>
+<project name="shiplinx" basedir="." default="help">
+	
+    <property file="build.properties"/>
+    <property file="WebContent/WEB-INF/hibernate.properties"/>
+
+    <property name="src.dir" value="../src/main/java"/>
+    <property name="web.dir" value="../WebContent"/>
+    <property name="test.src" value="../src/test"/>
+    <property name="dist.dir" value="../dist"/>
+    <property name="build.dir" value="../build"/>
+    <property name="test.dir" value="../build/test"/>
+    <property name="webapp.name" value="shiplinx"/>
+
+
+    <property environment="env"/>
+    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
+
+    <path id="classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${tomcat.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}"/>
+    	<pathelement path="${build.dir}/classes"/>
+    	<pathelement path="WebContent"/>    	
+    </path>
+
+    <target name="help">
+        <echo message=""/>
+        <echo message="${webapp.name} build file"/>
+        <echo message="-----------------------------------"/>
+        <echo message=""/>
+        <echo message="Available targets are:"/>
+        <echo message=""/>
+        <echo message="compile   --> Compile all Java files"/>
+        <echo message="test      --> Runs JUnit tests"/>
+        <echo message="war       --> Package as WAR file"/>
+        <echo message="deploy    --> Deploy application as directory"/>
+        <echo message="deploywar --> Deploy application as a WAR file"/>
+        <echo message=""/>
+        <echo message="install   --> Install application in Tomcat"/>
+        <echo message="remove    --> Remove application from Tomcat"/>
+        <echo message="reload    --> Reload application in Tomcat"/>
+        <echo message="start     --> Start Tomcat application"/>
+        <echo message="stop      --> Stop Tomcat application"/>
+        <echo message="list      --> List Tomcat applications"/>
+        <echo message=""/>
+        <echo message="clean     --> Deletes compiled classes and WAR"/>
+    </target>
+
+    <target name="compile" description="Compile main source tree java files">
+        <mkdir dir="${build.dir}/classes"/>
+        <mkdir dir="${build.dir}/classes/jasperreports/" />
+    	<mkdir dir="${build.dir}/classes/images/" />
+        <javac destdir="${build.dir}/classes"  debug="true"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="classpath"/>
+        </javac>
+        <!-- compile tests -->
+        <mkdir dir="${test.dir}/classes"/>
+        <javac destdir="${test.dir}/classes"  debug="true" memoryInitialSize="512m"
+            deprecation="false" optimize="false" failonerror="true">
+            <src path="${test.src}"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${build.dir}/classes"/>
+            </classpath>
+        </javac>
+
+		<taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask"> 
+			<classpath refid="classpath"/>
+		</taskdef>
+		<jrc destdir="${build.dir}/classes/jasperreports">
+			<src>
+				<fileset dir="../">
+					<include name="**/*.jrxml"/>
+				</fileset>
+			</src>
+			<classpath refid="classpath"/>
+		</jrc> 
+
+    	
+        <!-- Copy hibernate mapping files to ${build.dir}/classes -->
+        <copy todir="${build.dir}/classes">
+            <fileset dir="${src.dir}" includes="**/*.xml"/>
+        </copy>
+        <copy todir="${build.dir}/classes">
+            <fileset dir="${src.dir}" includes="*.properties"/>
+            <fileset dir="${src.dir}" includes="log4j.xml"/>
+        	<fileset dir="${src.dir}" includes="*.vm"/>
+        </copy>
+
+		<!-- Copy purolator data files to ${build.dir}/classes -->
+        <copy todir="${build.dir}/classes">
+            <fileset dir="${src.dir}" includes="**/data/*.*"/>
+        </copy>
+
+        <copy todir="${build.dir}/classes/images">
+            <fileset dir="${web.dir}/mmr/images/serverside_images/images" includes="**/*.*"/>
+        </copy>
+
+    
+    </target>
+
+    <target name="test" depends="compile" description="Runs JUnit tests">
+        <!-- Check that junit.jar is in $ANT_HOME/lib -->
+        <available classname="junit.framework.TestCase" property="junit.present"/>
+        <fail unless="junit.present" 
+            message="Please copy WebContent/WEB-INF/lib/junit.jar into ${env.ANT_HOME}/lib"/>
+            
+        <mkdir dir="${test.dir}/data"/>
+        <junit printsummary="no" fork="true"
+            errorProperty="test.failed" failureProperty="test.failed">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${build.dir}/classes"/>
+                <path location="${test.dir}/classes"/>
+                <path location="${web.dir}/WEB-INF/classes"/>
+                <path location="${web.dir}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${test.dir}/data" if="testcase">
+                <fileset dir="${test.dir}/classes">
+                    <include name="**/*${testcase}*"/>
+                    <exclude name="**/*TestCase.class"/>
+                </fileset>
+            </batchtest>
+            <batchtest todir="${test.dir}/data" unless="testcase">
+                <fileset dir="${test.dir}/classes">
+                    <include name="**/*Test.class*"/>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <fail if="test.failed">
+          Unit tests failed. For error messages, check the log files in
+          ${test.dir}/data or run "ant test-reports"
+          to generate reports at ${test.dir}/reports.</fail>
+    </target>
+
+    <target name="test-reports" description="Generate test reports">
+        <mkdir dir="${test.dir}/reports"/>
+        <junitreport todir="${test.dir}">
+            <fileset dir="${test.dir}/data">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${test.dir}/reports"/>
+        </junitreport>
+    </target>
+
+    <target name="war" depends="compile" description="Packages app as WAR">
+        <mkdir dir="${dist.dir}"/>
+        <war destfile="${dist.dir}/${webapp.name}.war"
+            webxml="${web.dir}/WEB-INF/web.xml">
+            <classes dir="${build.dir}/classes"/>
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="**/web.xml"/>
+                <exclude name="**/junit.jar"/>
+                <exclude name="**/*mock.jar"/>
+                <exclude name="**/strutstestcase*.jar"/>
+            </fileset>
+        </war>
+    </target>
+
+    <target name="deploy" depends="compile" description="Deploy application">
+        <copy todir="${tomcat.home}/webapps/${webapp.name}" preservelastmodified="true">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+                <exclude name="**/junit.jar"/>
+                <exclude name="**/*mock.jar"/>
+                <exclude name="**/strutstestcase*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/classes"
+            preservelastmodified="true">
+            <fileset dir="${build.dir}/classes"/>
+        </copy>
+    </target>
+
+    <target name="deploywar" depends="war" description="Deploy application as a WAR file">
+        <copy todir="${tomcat.home}/webapps" preservelastmodified="true">
+            <fileset dir=".">
+                <include name="${dist.dir}/*.war"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean" description="Clean output directories">
+        <delete dir="build"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <!-- Tomcat Ant Tasks -->
+	
+    <taskdef file="tomcatTasks.properties">
+        <classpath>
+            <pathelement path="${tomcat.home}/lib/catalina-ant.jar"/>
+        </classpath>
+    </taskdef>
+
+    <target name="install" description="Install application in Tomcat"
+        depends="war">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"
+            war="file:${dist.dir}/${webapp.name}.war"/>
+    </target>
+
+    <target name="remove" description="Remove application from Tomcat">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="reload" description="Reload application in Tomcat">
+        <reload url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="start" description="Start Tomcat application">
+        <start url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="stop" description="Stop Tomcat application">
+        <stop url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="list" description="List Tomcat applications">
+        <list url="${tomcat.manager.url}"
+            username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}"/>
+    </target>
+
+
+    <!-- browse the database -->
+    <target name="browse"
+        description="Graphical Database Editing Tool (hsqldb-gui)">
+        <echo level="info">Opening HSQL GUI...</echo>
+        <java classname="org.hsqldb.util.DatabaseManager" fork="yes"
+            failonerror="true">
+            <classpath refid="classpath"/>
+            <arg value="-url"/>
+            <arg value="jdbc:hsqldb:db/shiplinx"/>
+        </java>
+    </target>
+
+    <target name="db-init" 
+        description="creates database tables"> 
+	    <taskdef name="schemaexport"
+	        classname="org.hibernate.tool.hbm2ddl.SchemaExportTask">
+	        <classpath>
+	        	<fileset dir="${web.dir}/WEB-INF/lib" includes="**/*.jar"/>
+	        	<pathelement location="build/classes"/>
+	        </classpath>
+	    </taskdef>
+	  
+	    <schemaexport quiet="no" text="no" drop="no"
+	       properties="database.properties"
+	       >
+	       <fileset dir="src">
+	           <include name="**/*.hbm.xml"/>
+	       </fileset>
+	    </schemaexport>
+
+    </target>
+    <!--
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask">
+		<classpath refid="classpath"/>
+    </taskdef>
+	
+    <target name="dbunit-export">    
+	    <dbunit driver="${hibernate.connection.driver_class}"
+			url="${hibernate.connection.url}"
+			userid="${hibernate.connection.username}"
+			password="${hibernate.connection.password}">    
+			
+				<export dest="test/data/shiplinx.xml"/>      
+		    </dbunit>
+    </target>
+-->
+
+<target name="schema-export" depends="compile">
+        <copy todir="${build.dir}" file="${src.dir}/log4j.xml"/>
+	 <taskdef name="schemaexport"
+		  classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+		  classpathref="classpath"/>
+	  <schemaexport
+		  properties="${web.dir}/WEB-INF/hibernate.properties"
+		  quiet="no"
+		  text="no"
+		  drop="no"
+		  delimiter=";"
+		  output="db/shiplinx.ddl">
+		  <fileset dir="JavaSource">
+		  	<include name="**/*.hbm.xml"/>
+		  </fileset>
+	 </schemaexport>
+</target>
+
+<target name="schema-update" depends="compile">
+        <copy todir="${build.dir}" file="${src.dir}/log4j.xml"/>
+	 <taskdef name="schemaupdate"
+		  classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
+		  classpathref="classpath"/>
+	  <schemaupdate
+		  properties="${web.dir}/WEB-INF/hibernate.properties"
+		  quiet="no"
+		  text="no">
+		  <fileset dir="JavaSource">
+		  	<include name="**/*.hbm.xml"/>
+		  </fileset>
+	 </schemaupdate>
+</target>
+
+<target name="schema-export-test" depends="compile">
+        <copy todir="${build.dir}" file="${src.dir}/log4j.xml"/>
+	 <taskdef name="schemaexport"
+		  classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+		  classpathref="classpath"/>
+	  <schemaexport
+		  properties="${web.dir}/WEB-INF/hibernate_test.properties"
+		  quiet="no"
+		  text="no"
+		  drop="no"
+		  delimiter=";"
+		  output="db/shiplinx.ddl">
+		  <fileset dir="JavaSource">
+		  	<include name="**/*.hbm.xml"/>
+		  </fileset>
+	 </schemaexport>
+</target>
+
+<target name="schema-update-test" depends="compile">
+        <copy todir="${build.dir}" file="${src.dir}/log4j.xml"/>
+	 <taskdef name="schemaupdate"
+		  classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
+		  classpathref="classpath"/>
+	  <schemaupdate
+		  properties="${web.dir}/WEB-INF/hibernate_test.properties"
+		  quiet="no"
+		  text="no">
+		  <fileset dir="JavaSource">
+		  	<include name="**/*.hbm.xml"/>
+		  </fileset>
+	 </schemaupdate>
+</target>
+
+
+        <!--XMLBeans Tasks-->
+
+        <target name="xml.compile" description="Creates Java classes based on an XML Schema using Apache XMLBeans">
+        <taskdef name="xmlbean"
+            classname="org.apache.xmlbeans.impl.tool.XMLBean"
+            classpathref="classpath"/>
+
+
+                <xmlbean
+                        classgendir="${build.dir}/xmlbeans"
+                        classpathref="classpath"
+                        failonerror="true"
+                        includejavaruntime="yes"
+                        javasource="1.4"
+                        schema="resources/dhl"
+                        destfile="WebContent/WEB-INF/lib/dhlModel.jar"
+                        memoryMaximumSize="512m"
+                />
+        </target>
+
+        <target name="xml.compile.UPS" description="Creates Java classes based on an XML Schema using Apache XMLBeans">
+        <taskdef name="xmlbean"
+            classname="org.apache.xmlbeans.impl.tool.XMLBean"
+            classpathref="classpath"/>
+
+
+                <xmlbean
+                        classgendir="${build.dir}/xmlbeans"
+                        classpathref="classpath"
+                        failonerror="true"
+                        includejavaruntime="yes"
+                        javasource="1.5"
+                        schema="resources/ups"
+                        destfile="WebContent/WEB-INF/lib/upsModel.jar"
+                        noupa="true"
+                        memoryMaximumSize="512m"
+                />
+        </target>
+        
+        <target name="xml.compile.UPS.Rate" description="Creates Java classes based on an XML Schema using Apache XMLBeans">
+        <taskdef name="xmlbean"
+            classname="org.apache.xmlbeans.impl.tool.XMLBean"
+            classpathref="classpath"/>
+
+
+                <xmlbean
+                        classgendir="${build.dir}/xmlbeans"
+                        classpathref="classpath"
+                        failonerror="true"
+                        includejavaruntime="yes"
+                        javasource="1.5"
+                        schema="resources/upsXSDs/Rate"
+                        destfile="WebContent/WEB-INF/lib/upsRateModel.jar"
+                        noupa="true"
+                        memoryMaximumSize="512m"
+                />
+        </target>  
+        
+        <target name="xml.compile.UPS.Ship" description="Creates Java classes based on an XML Schema using Apache XMLBeans">
+        <taskdef name="xmlbean"
+            classname="org.apache.xmlbeans.impl.tool.XMLBean"
+            classpathref="classpath"/>
+
+
+                <xmlbean
+                        classgendir="${build.dir}/xmlbeans"
+                        classpathref="classpath"
+                        failonerror="true"
+                        includejavaruntime="yes"
+                        javasource="1.5"
+                        schema="resources/upsXSDs/Ship"
+                        destfile="WebContent/WEB-INF/lib/upsShipModel.jar"
+                        noupa="true"
+                        memoryMaximumSize="512m"
+                />
+        </target>   
+        
+        <target name="xml.compile.UPS.Track" description="Creates Java classes based on an XML Schema using Apache XMLBeans">
+        <taskdef name="xmlbean"
+            classname="org.apache.xmlbeans.impl.tool.XMLBean"
+            classpathref="classpath"/>
+
+
+                <xmlbean
+                        classgendir="${build.dir}/xmlbeans"
+                        classpathref="classpath"
+                        failonerror="true"
+                        includejavaruntime="yes"
+                        javasource="1.5"
+                        schema="resources/upsXSDs/Track"
+                        destfile="WebContent/WEB-INF/lib/upsTrackModel.jar"
+                        noupa="true"
+                        memoryMaximumSize="512m"
+                />
+        </target>                     
+
+        
+       	<target name="tasks" depends="compile">
+		<java classname="com.cwsi.shiplinx.utils.Tasks"
+			classpathref="classpath" fork="yes" 
+		/>
+		</target>
+	<target name="build.mmr.jar" depends="compile">
+	   <jar jarfile="../WebContent/WEB-INF/lib/mmr.jar">
+	     <fileset dir="../WebContent/WEB-INF/classes/">
+	        <include name="com/meritconinc/mmr/**"/>
+	     </fileset>
+	    </jar>
+	</target>      
+	
+</project>

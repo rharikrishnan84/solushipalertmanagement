@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="loomis">
+
+	<resultMap id="loomisBeyondMap" class="com.meritconinc.shiplinx.carrier.loomis.model.LoomisBeyond">
+		<result property="fromPostalCode"	column="from_postal_code"/>
+		<result property="toPostalCode"	column="to_postal_code"/>
+		<result property="priceZone"	column="price_zone"/>
+		<result property="zoneDesc"	column="zone_desc"/>
+		<result property="zoneType"	column="zone_type"/>
+		<result property="mainZone"	column="main_zone"/>
+		<result property="field7" column="field7" />
+		<result property="beyondZone"	column="beyond_zone"/>		
+		<result property="srvCode"	column="srv_code"/>		
+		<result property="interProvBase"	column="interprov_base"/>		
+		<result property="interProvOverWeight"	column="interprov_overweight"/>		
+	</resultMap>
+
+
+	<select id="findMaxWeightForService"  resultClass="java.lang.Double">
+		 	select max(weight) from loomis_tariff_rate where service_id=#serviceId#
+	</select> 
+
+	<select id="getZone" resultClass="java.lang.String">
+		 	<![CDATA[select zone from loomis_tariff_zone where from_postal<=#postalCode# and to_postal>=#postalCode#]]>
+	</select>
+
+	<select id="getTransitCode"  parameterClass="com.meritconinc.shiplinx.carrier.loomis.model.LoomisTariff" resultClass="java.lang.String">
+		 	select transit_code from loomis_tariff_zone_rate where from_zone=#fromZone# and to_zone=#toZone#
+	</select>
+
+	<select id="getTariffRate"  parameterClass="com.meritconinc.shiplinx.carrier.loomis.model.LoomisTariff" resultClass="java.lang.Double">
+		 	select rate from loomis_tariff_rate where service_id=#serviceId# and weight=#weight# and transit_code=#transitCode#
+	</select>
+
+	<select id="getBeyondRecord"  parameterClass="com.meritconinc.shiplinx.carrier.loomis.model.LoomisBeyond" resultMap="loomisBeyondMap">
+		 	select * from loomis_beyond_interline where from_postal_code&lt;=#fromPostalCode# and to_postal_code&gt;=#fromPostalCode# limit 1
+	</select>
+	
+	<!-- Putting all midland queries here for now, move into separate file if required later -->
+	<resultMap id="midlandRateMap" class="com.meritconinc.shiplinx.carrier.midland.model.MidlandRate">
+		<result property="serviceId"	column="service_id"/>
+		<result property="fromZone"	column="from_zone"/>
+		<result property="toZone"	column="to_zone"/>
+		<result property="baseRate"	column="base_rate"/>
+		<result property="perPoundTier1"	column="per_pound_tier1"/>
+		<result property="perPoundTier2"	column="per_pound_tier2"/>
+	</resultMap>
+
+	<select id="getMidlandRate"  parameterClass="com.meritconinc.shiplinx.carrier.midland.model.MidlandRate" resultMap="midlandRateMap">
+		 	select * from midland_rates where service_id=#serviceId# and from_zone=#fromZone# and to_zone=#toZone# limit 1
+	</select>
+
+
+</sqlMap>
+

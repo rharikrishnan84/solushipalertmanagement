@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="pickup">
+
+	<resultMap id="pickupMap" class="com.meritconinc.shiplinx.model.Pickup">
+		<result property="pickupId" column="pickup_id"/>
+		<result property="carrierId" column="carrier_id"/>
+		<result property="customerId" column="customer_id"/>
+		<result property="businessId" column="business_id"/>
+		<result property="readyHour" column="ready_hour"/>
+		<result property="readyMin" column="ready_min"/>
+		<result property="closeHour" column="close_hour"/>
+		<result property="closeMin" column="close_min"/>
+		<result property="pickupLocation" column="location"/>
+		<result property="pickupReference" column="reference"/>
+		<result property="confirmationNum" column="confirmation_num"/>
+		<result property="addressId" column="address_id"/>
+		<result property="address" column="address_id" select="selectAddress" />
+		<result property="pickupDate" column="pickup_date"/> 
+		<result property="quantity" column="quantity"/>
+		<result property="serviceId" column="service_id"/>
+		<result property="destinationCountryCode" column="destination_country_code"/>
+		<result property="overweight" column="overweight"/>
+		<result property="instructions" column="instructions"/>
+		<result property="packageTypeId" column="package_type_id"/>
+		<result property="totalWeight" column="total_weight"/>
+		<result property="orderId" column="order_id"/>
+		<result property="carrierReference" column="carrier_reference"/>
+		<result property="status" column="status"/>
+		<result property="customer" column="customer_id" select="selectCustomer"/>
+		<result property="carrier" column="carrier_id" select="getCarrierById"/>
+	</resultMap>
+	
+	<resultMap id="CustomerMap" class="com.meritconinc.shiplinx.model.Customer">
+			<result property="id" column="customer_id"/>
+			<result property="name" column="name"/>
+			<result property="active" column="active"/>
+			<result property="dateCreated" column="date_created"/>
+			<result property="invoicingEmail" column="invoice_email"/>
+			<result property="salesAgent" column="sales_agent"/>
+			<result property="salesAgent2" column="sales_agent2"/>
+			<result property="timeZone" column="timeZone"/>
+			<result property="apiUsername" column="api_username"/>
+			<result property="apiPassword" column="api_password"/>
+			<result property="businessId" column="business_id"/>
+			<result property="payableDays" column="payable_days"/>
+			<result property="paymentType" column="payment_type"/>
+			<result property="paymentTypeLevel" column="payment_type_level"/>
+			<result property="addressId" column="address_id"/>
+			<result property="accountNumber" column="account_number"/>
+			<result property="address" column="address_id" select="selectAddress"/>
+			<result property="additionalHandlingCharge" column="additional_handling_charge"/>
+			<result property="creditLimit" column="credit_limit"/>
+			<result property="monthlySpend" column="monthly_spend"/>
+			<result property="warehouseCustomer" column="warehouse_customer"/>
+			<result property="primaryWarehouseId" column="primary_warehouse"/>
+			<result property="creditCardActive" column="customer_id" select="getActiveCreditCardForCustomer"/>
+	</resultMap>
+	
+	<resultMap id="CarrierResult" class="com.meritconinc.shiplinx.model.Carrier">
+			<result property="id"/>
+			<result property="name" />
+			<result property="trackingURL" />
+			<result property="implementingClass" column="implementing_class"/>
+	</resultMap>
+	
+	<resultMap id="pickuplist" class="com.meritconinc.shiplinx.model.RecordList">
+			<result property="addressId" />
+			<result property="pickupDate" />
+			<result property="carrierId" />
+			<result property="statusId"/>
+			<result property="abbreviation"/>
+			<result property="address1" />
+			<result property="address2"/>
+			<result property="city"/>
+			<result property="pickupLocation"/>				
+	</resultMap>
+	
+	<select id="selectpickuplist"  resultMap="pickuplist">
+		select p.address_id,p.pickup_date,p.carrier_id,p.status,a.abbreviation_name,a.address1,a.address2,a.city,p.location from pickup p left join address a on (p.address_id=a.address_id) where pickup_date >= curDate();
+	</select>
+	
+	<select id="selectCustomer" parameterClass="long" resultMap="CustomerMap">
+ 	 	select * from customer where customer_id = #value#
+	</select>
+	
+	<select id="getCarrierById" parameterClass="long" resultMap="CarrierResult">
+		select * from carrier c where
+				c.carrier_id = #value#
+	</select>
+
+	<insert id="addPickup" parameterClass="com.meritconinc.shiplinx.model.Pickup">
+		  insert into pickup (carrier_id, customer_id, business_id, ready_hour, ready_min, close_hour, close_min, location, reference, confirmation_num, address_id, pickup_date, quantity, service_id, destination_country_code, overweight, instructions, package_type_id, total_weight, order_id, carrier_reference, status)
+		  values (#carrierId#,#customerId#,#businessId#,#readyHour#,#readyMin#,#closeHour#,#closeMin#,#pickupLocation#,#pickupReference#,#confirmationNum#,#addressId#,#pickupDate#,#quantity#,#serviceId#,#destinationCountryCode#, #overweight#, #instructions#, #packageTypeId#, #totalWeight#, #orderId#, #carrierReference#, #status#)
+		  <selectKey keyProperty="pickupId" resultClass="long">
+			SELECT @@IDENTITY AS 'Identity'
+		</selectKey>	
+	</insert>
+	
+	<update id = "updatePickup" parameterClass="com.meritconinc.shiplinx.model.Pickup" >
+		update pickup set pickup_id=#pickupId#
+		<dynamic>
+			<isGreaterThan prepend="," property="orderId" compareValue="0">
+				order_id = #orderId#
+			</isGreaterThan> 
+			<isNotNull prepend="," property="confirmationNum">
+				confirmation_num = #confirmationNum#
+			</isNotNull> 
+			<isNotNull prepend="," property="pickupLocation">
+				location = #pickupLocation#
+			</isNotNull> 
+			<isNotNull prepend="," property="pickupReference">
+				reference = #pickupReference#
+			</isNotNull> 
+			<isNotNull prepend="," property="readyHour">
+				ready_hour = #readyHour#
+			</isNotNull> 
+			<isNotNull prepend="," property="readyMin">
+				ready_min = #readyMin#
+			</isNotNull> 
+			<isNotNull prepend="," property="closeHour">
+				close_hour = #closeHour#
+			</isNotNull> 
+			<isNotNull prepend="," property="closeMin">
+				close_min = #closeMin#
+			</isNotNull> 
+			<isNotNull prepend="," property="pickupDate">
+				pickup_date = #pickupDate#
+			</isNotNull> 
+			<isGreaterThan prepend="," property="status" compareValue="0">
+				status = #status#
+			</isGreaterThan> 
+		</dynamic>
+		where pickup_id=#pickupId#
+	</update>
+
+	<select id="findPickupByOrderId" resultMap="pickupMap">
+		select * from pickup where order_id = #id# and status = 10 order by pickup_id desc limit 1
+	</select>
+
+	<select id="findPickups" parameterClass="com.meritconinc.shiplinx.model.Pickup" resultMap="pickupMap" >
+		select * from pickup p where p.business_id=#businessId#
+			<isNotNull property="customerId">
+					<isGreaterThan property="customerId" compareValue="0">
+					and p.customer_id=#customerId# 
+					</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="carrierId">
+				<isGreaterThan property="carrierId" compareValue="0">
+				 and p.carrier_id=#carrierId#
+				 </isGreaterThan>
+			</isNotNull>
+			<isNotNull property="serviceId">
+				<isGreaterThan property="serviceId" compareValue="0">
+				 and p.service_id=#serviceId#
+				 </isGreaterThan> 
+			</isNotNull>
+			<isNotNull property="status">
+				<isGreaterThan property="status" compareValue="0">
+				 and p.status=#status#
+				 </isGreaterThan>
+			</isNotNull>
+			<isNotNull property="confirmationNum">
+				<isNotEmpty>
+				 and p.confirmation_num=#confirmationNum#
+				 </isNotEmpty>
+			</isNotNull>
+			<isNotNull property="toDate">
+				<isNotEmpty>
+				 and p.pickup_date between #fromDate# and #toDate#
+				 </isNotEmpty>
+			</isNotNull>
+			<isNull property="toDate">
+				and p.pickup_date &gt;= #fromDate#
+			</isNull>
+	</select>
+	
+	<select id="getPickupById" parameterClass="long" resultMap="pickupMap">
+		select * from pickup where pickup_id= #pickupId#
+	</select>
+
+</sqlMap>

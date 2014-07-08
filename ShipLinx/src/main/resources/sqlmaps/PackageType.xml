@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="shippingOrder">
+<resultMap id="packageTypeResult" class="com.meritconinc.shiplinx.model.PackageType">
+		<result property="packageTypeId"		column="package_type_id"/>	
+		<result property="name"					column="name"/>
+		<result property="type"					column="type"/>
+		<result property="description"			column="description"/>
+		
+</resultMap>
+
+	<select id="getPackage" 	
+		resultMap="packageTypeResult">
+		select * from package_type where package_type.name=#name# 
+	</select>
+
+</sqlMap> 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="Actions">
+	<resultMap id="resultAction" class="com.meritconinc.mmr.model.common.AuthorizedActionVO">
+		<result property="actionKey" 	column="action" 		columnIndex="1"/>
+		<result property="menuId" 		column="menu_id" 		columnIndex="2"/>
+		<result property="highlight"	column="highlight" 		columnIndex="3"/>
+		<result property="description" 	column="description" 	columnIndex="4"/>
+		<result property="parentAction" column="parent_action" 	columnIndex="5"/>
+		<result property="reloadSafe" 	column="reload_safe" 	columnIndex="6"/>
+		<result property="namespace" 	column="namespace" 	columnIndex="7"/>
+		<result property="parentNamespace" 	column="parent_namespace" 	columnIndex="8"/>		
+	</resultMap>
+	
+	<!--  the sql statements for the DAO -->
+	<select id="readAction" resultMap="resultAction">
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace'
+		FROM action f1 LEFT OUTER JOIN
+        action f2 ON f1.parent_action_id = f2.id
+		WHERE (f1.action=#action#)	
+	</select>
+
+	<select id="readGroupAction" resultMap="resultAction">
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace'
+		FROM action f1 LEFT OUTER JOIN
+        action f2 ON f1.parent_action_id = f2.id
+		WHERE (f1.action=#action#)	
+	</select>
+
+</sqlMap>

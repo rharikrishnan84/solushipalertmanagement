@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="warehouse">
+
+	<resultMap id="warehouseMap" class="com.meritconinc.shiplinx.model.Warehouse">
+		<result property="warehouseId" column="warehouse_id"/>
+		<result property="warehouseName" column="warehouse_name"/>
+		<result property="warehouseCode" column="warehouse_code"/>
+		<result property="addressId" column="address_id"/>
+		<result property="businessId" column="business_id"/>
+		<result property="address" column="address_id" select="selectAddress"/>
+	</resultMap> 
+	
+	<resultMap id="warehouseLocationMap" class="com.meritconinc.shiplinx.model.WarehouseLocation">
+		<result property="warehouseId" column="warehouse_id"/>
+		<result property="locationId" column="location_id"/>
+		<result property="aisle" column="aisle"/>
+		<result property="level" column="level"/>
+		<result property="row" column="row"/>
+		<result property="section" column="section"/>
+		<result property="locationName" column="location_name"/>
+		<result property="locationTypeId" column="location_type_id"/>
+		<result property="warehouse" column="warehouse_id" select="selectWarehouse"/>
+		<result property="warehouseLocationType" column="location_type_id" select="selectLocationType"/>
+	</resultMap>
+	
+	<resultMap id="warehouseLocationTypeMap" class="com.meritconinc.shiplinx.model.WarehouseLocationType">
+		<result property="warehouseLocationTypeId" column="location_type_id"/>
+		<result property="warehouseLocationTypeName" column="location_type_name"/>
+	</resultMap>
+
+	<resultMap class="com.meritconinc.shiplinx.model.WarehouseInventory" id="warehouseInventoryMap">
+		<result property="inventoryId" column="inventory_id"/>
+		<result property="productId" column="product_id"/>
+		<result property="locationId" column="location_id"/>
+		<result property="quantity" column="quantity"/>
+		<result property="dateCreated" column="date_created"/>
+		<result property="batchNum" column="batch_num"/>
+		<result property="warehouseLocation" column="location_id" select="selectLocation"/>
+		<result property="products" column="product_id" select="selectProducts"/>
+	</resultMap>
+	
+	<select id="selectWarehouse" parameterClass="long" resultMap="warehouseMap">
+	  select * from warehouse
+	  where warehouse_id = #value#
+	</select>
+
+	<select id="selectLocationType" parameterClass="long" resultMap="warehouseLocationTypeMap">
+	  select * from warehouse_location_type
+	  where location_type_id = #value#
+	</select>
+	
+	<select id="selectLocation" parameterClass="long" resultMap="warehouseLocationMap">
+		select * from warehouse_location
+		where location_id=#value#
+	</select>
+
+	<insert id = "createWarehouse">
+		insert into warehouse (business_id, warehouse_code, warehouse_name, address_id) 
+			values (#businessId#, #warehouseCode#, #warehouseName#, #addressId#)
+	</insert>
+
+	<select id="getWarehouseList" resultMap="warehouseMap">
+	select * from warehouse where business_id= #businessId#
+	</select>
+	
+	<select id="getWarehouseById" resultMap="warehouseMap">
+	select * from warehouse where warehouse_id= #warehouseId#
+	</select>
+	
+	<select id="getWarehouseLocationAisleByWarehouseId" resultMap="warehouseLocationMap">
+	select * from warehouse_location where warehouse_id= #warehouseId# group by aisle
+	</select>
+	
+	<select id="getWarehouseLocationRowByWarehouseId" resultMap="warehouseLocationMap">
+	select * from warehouse_location where warehouse_id= #warehouseId# and aisle = #aisle# group by row
+	</select>
+	
+	<select id="getWarehouseLocationInfoByLocationId" resultMap="warehouseLocationMap">
+	select * from warehouse_location where location_id= #locationId#
+	</select>
+	
+	<select id="getWarehouseLocationInfo" resultMap="warehouseLocationMap">
+	select * from warehouse_location where warehouse_id=#warehouseId#
+			<isNotNull property="aisle">
+				<isNotEmpty property="aisle">
+					and aisle = #aisle#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="row">
+				<isNotEmpty property="row">
+					and row = #row#
+				</isNotEmpty>
+			</isNotNull>		
+	</select>
+	
+	<select id="getAllLocationsForWarehouse" resultMap="warehouseLocationMap">
+		select * from warehouse_location where warehouse_id=#warehouseId# group by location_name order by location_name asc
+	</select>
+	
+	<select id="getAllWIPLocationsForWarehouse" resultMap="warehouseLocationMap">
+		select * from warehouse_location where warehouse_id=#warehouseId# and location_type_id=2 group by location_name order by location_name asc
+	</select>
+	
+	<update id="updateWarehouseById">
+		update warehouse set business_id = #businessId#, warehouse_code =#warehouseCode#, warehouse_name= #warehouseName#, address_id= #addressId#
+		where warehouse_id= #warehouseId#
+	</update>
+
+	<delete id = "deleteWarehouse">
+		delete from warehouse where warehouse_id=#warehouseId# 
+	</delete>
+
+	<select id="getWarehouseLocationTypeInfo" resultMap="warehouseLocationTypeMap">
+		select * from warehouse_location_type
+	</select>
+	
+	<insert id="createWarehouseLocation">
+	insert into warehouse_location (warehouse_id, aisle, row, level, section, location_name, location_type_id) values (#warehouseId#,#aisle#,#row#,#level#,#section#,#locationName#,#locationTypeId#)
+	</insert>
+	
+	<update id="updateWarehouseLocation">
+		update warehouse_location set warehouse_id = #warehouseId#, aisle =#aisle#, row= #row#, level= #level#, section = #section#, location_name=#locationName#, location_type_id=#locationTypeId#  
+		where location_id= #locationId#
+	</update>
+	
+	<delete id = "deleteWarehouseLocation">
+		delete from warehouse_location where location_id=#locationId# 
+	</delete>
+	
+	<!-- Warehouse Inventory -->
+	
+	<select id="getWarehouseInventoryByProdId" resultMap="warehouseInventoryMap">
+		select * from warehouse_inventory where product_id=#productId#
+	</select>
+	
+	<select id="getWarehouseInventoryByProdIdAndLocId" resultMap="warehouseInventoryMap">
+		select * from warehouse_inventory where product_id=#productId# and location_id=#locationId# 
+		<isNotNull property="batchNum">
+			<isNotEmpty property="batchNum">
+				and batch_num = #batchNum#
+			</isNotEmpty>
+		</isNotNull>
+		<isNull property="batchNum">
+			and batch_num is null
+		</isNull>
+	</select>
+	
+	<select id="getAllLocations" resultMap="warehouseLocationMap">
+		select distinct w.* from warehouse_location w 
+		<dynamic prepend="where">
+			<isNotNull>
+				<isNotEmpty property="locationName">
+				   w.location_name like '%$locationName$%'
+			    </isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<select id="getAllLocationsProdSelected" resultMap="warehouseLocationMap">
+		select distinct w.* from warehouse_location w
+		<dynamic prepend="where">
+			<isNotNull property="locationId">
+				<isNotEmpty property="locationId">
+					w.location_id=#locationId#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="locationName">
+				<isNotEmpty property="locationName">
+				  and w.location_name like '%$locationName$%'
+			    </isNotEmpty>
+		    </isNotNull>
+	    </dynamic>
+	</select>
+	
+	<select id="getAllBatches"  resultMap="warehouseInventoryMap">
+		select distinct w.* from warehouse_inventory w where w.batch_num is not null
+	</select>
+	
+	<select id="getBatchesByLocId"  resultMap="warehouseInventoryMap">
+		select distinct w.* from warehouse_inventory w where location_id=#locationId# and product_id=#productId# and w.batch_num is not null
+	</select>
+	
+	<insert id="createWarehouseInventory">
+		insert into warehouse_inventory (product_id, location_id, quantity, date_created, batch_num) values (#productId#,#locationId#,#quantity#,#dateCreated#, #batchNum#)
+	</insert>
+	
+	<update id="updateWarehouseInventory">
+		update warehouse_inventory set quantity=#quantity# where location_id=#locationId# and product_id=#productId#
+		<isNotNull>
+			<isNotEmpty property="batchNum">
+				and batch_num = #batchNum#
+			</isNotEmpty>
+		</isNotNull>
+		<isNull property="batchNum">
+				and batch_num is null
+		</isNull>
+	</update>
+	
+	<delete id = "deleteWarehouseInventory">
+		delete from warehouse_inventory where location_id=#locationId# and product_id=#productId#
+		 <isNotNull>
+			<isNotEmpty property="batchNum">
+				and batch_num = #batchNum#
+			</isNotEmpty>
+		</isNotNull>
+		<isNull property="batchNum">
+				and batch_num is null
+		</isNull>
+	</delete>
+	
+	<select id="generateSummary" resultClass="long">
+		SELECT sum(wi.quantity) FROM warehouse_inventory wi, warehouse_location wl where wi.location_id=wl.location_id and wl.warehouse_id=#warehouseId# and wl.location_type_id=#locationTypeId# and wi.product_id=#productId#
+	</select>
+	
+
+</sqlMap>

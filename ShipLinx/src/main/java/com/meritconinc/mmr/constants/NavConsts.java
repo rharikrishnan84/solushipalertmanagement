@@ -1,0 +1,23 @@
+package com.meritconinc.mmr.constants;
+
+public class NavConsts {
+  public static final String GLOBAL_ERROR = "global_error";
+  public static final String AJAX_ERROR = "ajaxError";
+  public static final String POPUP_GLOBAL_ERROR = "popup_global_error";
+  public static final String LOGIN = "login2";
+  public static final String ACCESS_DENIED = "accessdenied";
+  public static final String TERMS_OF_USE = "termsOfUse";
+  public static final String AJAX_TIME_OUT = "ajaxTimeOut";
+  public static final String POPUP_TIME_OUT = "popupTimeOut";
+  public static final String PASSWORD_EXPIRED = "passwordExpired";
+  public static final String VIEW_CHANGE_PASSWORD = "viewChangePswd";
+  public static final String CHANGE_PASSWORD = "changePassword";
+
+  public static final String WELCOME_ACTION = "/welcome.action";
+  public static final String SEARCH_SHIPMENT_ACTION = "/admin/search.shipment.action";
+  public static final String LOGOUT_ACTION = "/j_acegi_logout";
+  public static final String TERMS_OF_USE_ACTION = "viewTermsOfUse.action";
+  public static final String SHIPPING_WAREHOUSE_CUSTOMER = "/admin/goToWarehouseOrder.action";
+  public static final String TOP_LEVEL_SHIPPING = "Shipping";
+  public static final String LEVEL_ONE_SHIP = "Ship";
+}

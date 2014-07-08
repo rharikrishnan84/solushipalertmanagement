@@ -1,0 +1,127 @@
+package com.meritconinc.mmr.model.query;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.apache.log4j.Logger;
+
+import com.meritconinc.shiplinx.service.QuartzInitializerListener;
+
+public class QueryResultVO implements List<List<String>>, Serializable {
+	private static final long serialVersionUID = 4123560966811361338L;
+	
+	private String title;
+	private List<String> headers = new ArrayList<String>();
+	private List<List<String>> data = new ArrayList<List<String>>();
+
+	public List<String> getHeaders() {
+		return headers;
+	}
+	public void setHeaders(List<String> headers) {
+		this.headers = headers;
+	}
+	
+	public boolean add(List<String> o) {
+		return data.add(o);
+	} 
+
+	public void add(int index, List<String> element) {
+		data.add(index, element);
+	}
+
+	public boolean addAll(Collection<? extends List<String>> c) {
+		return data.addAll(c);
+	}
+
+	public boolean addAll(int index, Collection<? extends List<String>> c) {
+		return data.addAll(index, c);
+	}
+
+	public void clear() {
+		headers.clear();
+		data.clear();
+	}
+
+	public boolean contains(Object o) {
+		return data.contains(o);
+	}
+
+	public boolean containsAll(Collection<?> c) {
+		return data.containsAll(c);
+	}
+
+	public List<String> get(int index) {
+		return data.get(index);
+	}
+
+	public int indexOf(Object o) {
+		return data.indexOf(o);
+	}
+
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
+
+	public Iterator<List<String>> iterator() {
+		return data.iterator();
+	}
+
+	public int lastIndexOf(Object o) {
+		return data.lastIndexOf(o);
+	}
+
+	public ListIterator<List<String>> listIterator() {
+		return data.listIterator();
+	}
+
+	public ListIterator<List<String>> listIterator(int index) {
+		return data.listIterator(index);
+	}
+
+	public boolean remove(Object o) {
+		return data.remove(o);
+	}
+
+	public List<String> remove(int index) {
+		return data.remove(index);
+	}
+
+	public boolean removeAll(Collection<?> c) {
+		return data.removeAll(c);
+	}
+
+	public boolean retainAll(Collection<?> c) {
+		return data.retainAll(c);
+	}
+
+	public List<String> set(int index, List<String> element) {
+		return data.set(index, element);
+	}
+
+	public int size() {
+		return data.size();
+	}
+
+	public List<List<String>> subList(int fromIndex, int toIndex) {
+		return data.subList(fromIndex, toIndex);
+	}
+
+	public Object[] toArray() {
+		return data.toArray();
+	}
+
+	public <T> T[] toArray(T[] a) {
+		return data.toArray(a);
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+}

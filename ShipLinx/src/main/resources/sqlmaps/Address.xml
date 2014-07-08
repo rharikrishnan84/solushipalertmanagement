@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="addressbook">
+
+	<resultMap id="AddressMap" class="com.meritconinc.shiplinx.model.Address">
+		<result property="addressId" />
+		<result property="abbreviationName" />
+		<result property="consigneeId" />
+		<result property="address1" />
+		<result property="address2" />
+		<result property="city" />
+		<result property="phoneNo" />
+		<result property="phoneExt" />
+		<result property="faxNo" />
+		<result property="mobilePhoneNo" />
+		<result property="emailAddress" />
+		<result property="contactName" />
+		<result property="postalCode" />
+		<result property="url" />
+		<result property="residential" />
+		<result property="countryCode" />
+		<result property="provinceCode" />		
+		<result property="customerId" />
+		<result property="defaultFromAddress" />
+		<result property="defaultToAddress" />
+		<result property="sendNotification" />
+		<result property="dateCreated" />
+		<result property="distributionName" />
+		<result property="brokerCode"/>
+		<result property="taxId"/>
+	</resultMap>
+	
+	<resultMap id="AddressMaps" class="com.meritconinc.shiplinx.model.Address">
+	<result property="abbreviationName" />
+	<result property="addressId" />
+	</resultMap>
+
+
+	<resultMap id="countryResult" class="com.meritconinc.shiplinx.model.Country">
+		<result property="countryCode" />
+		<result property="msgId" />
+	</resultMap>
+	<resultMap id="brokerResult" class="com.meritconinc.shiplinx.model.AddressType">
+		<result property="brokerCode" />
+		<result property="brokerName" />
+	</resultMap>
+	<resultMap id="provinceResult" class="com.meritconinc.shiplinx.model.Province">
+		<result property="id" />
+		<result property="provinceCode" />
+		<result property="provinceName" />
+		<result property="countryId" />
+		<result property="taxChargeGroup" column="tax_charge_group" />
+	</resultMap>
+
+
+
+	<resultMap id="DistributionResult" class="com.meritconinc.shiplinx.model.Address">
+		<result property="distributionName" column="distribution_name" />
+	</resultMap>
+	<select id="searchDistributionList" resultMap="DistributionResult">
+		select distinct
+		ab.distribution_name from address ab where
+		ab.customer_id=#customerId#
+		and ab.distribution_name!=''
+	</select>
+
+	<select id="selectAddress" parameterClass="long" resultMap="AddressMap">
+		select
+		* from address
+		where address_id = #value#
+	</select>
+
+
+
+	<select id="searchAddress" resultMap="AddressMap">
+		select * from address a
+		where
+		a.customer_id=#customerId#
+	</select>
+
+	<select id="findAddressById" parameterClass="long" resultMap="AddressMap">
+		select a.* from address a where
+		a.address_id=#addressid#
+	</select>
+
+	<select id="getAllCountries" resultMap="countryResult">
+		select * from country c
+		left join resourcebundle r on (c.msg_id=r.msg_id)
+		order by
+		c.display_order
+	</select>
+
+	<select id="getCanadianProvinces" resultMap="provinceResult">
+		select * from
+		province p where p.country_id=1 order by p.full_name
+	</select>
+
+	<select id="getAllBrokers" resultMap="brokerResult">
+		select * from address_type b order by broker_code desc
+	</select>
+	<select id="getProvinces" resultMap="provinceResult">
+		select * from province p
+		where p.country_code=#countryCode# order by
+		p.full_name
+	</select>
+	<select id="getProvince" resultMap="provinceResult">
+		select * from province p
+		where p.name=#provinceCode#
+	</select>
+
+
+	<select id="getUSStates" resultMap="provinceResult">
+		select * from province p
+		where p.country_id=2 order by p.full_name
+	</select>
+
+
+	<insert id="addAddresses" parameterClass="com.meritconinc.shiplinx.model.Address">
+		insert into
+		address(abbreviation_name,consignee_id,address1,address2,city,country_code,province_code,broker_code,postal_code,phone_no,phone_ext,contact_name,email_address,residential,customer_id,default_from,default_to,send_notification,fax_no,tax_id)
+		values
+		(#abbreviationName#,#consigneeId#,#address1#,#address2#,#city#,#countryCode#,#provinceCode#,#brokerCode#,#postalCode#,#phoneNo#,#phoneExt#,#contactName#,#emailAddress#,#residential#,#customerId#,#defaultFromAddress#,#defaultToAddress#,#sendNotification#,#faxNo#,#taxId#)
+		<selectKey keyProperty="addressId" resultClass="long">
+			SELECT
+			@@IDENTITY AS 'Identity'
+		</selectKey>
+	</insert>
+
+
+	<delete id="deleteaddress">
+		delete from address where address_id = #addressId#
+	</delete>
+
+
+	<update id="updateaddress" parameterClass="com.meritconinc.shiplinx.model.Address">
+		update address set
+		abbreviation_name=#abbreviationName#,consignee_id=#consigneeId#,address1=#address1#,address2=#address2#,
+		city=#city#,country_code=#countryCode#,province_code=#provinceCode#,broker_code=#brokerCode#,postal_code=#postalCode#,phone_no=#phoneNo#,phone_ext=#phoneExt#,contact_name=#contactName#,
+		customer_id=#customerId#,email_address=#emailAddress#,residential=#residential#,default_from=#defaultFromAddress#,default_to=#defaultToAddress#,
+		send_notification = #sendNotification#,fax_no=#faxNo#,tax_id=#taxId# where address_id = #addressId#
+	</update>
+
+	<update id="updateFromAddressNotDefault" parameterClass="com.meritconinc.shiplinx.model.Address">
+		update
+		address set default_from=false where address_id != #addressId# and
+		customer_id=#customerId#
+	</update>
+	<update id="updateToAddressNotDefault" parameterClass="com.meritconinc.shiplinx.model.Address">
+		update
+		address set default_to=false where address_id != #addressId# and
+		customer_id=#customerId#
+	</update>
+
+	<insert id="uploadDistribution_Address" parameterClass="com.meritconinc.shiplinx.model.Address">
+		insert
+		into
+		address(abbreviation_name,consignee_id,address1,address2,city,country_code,province_code,postal_code,phone_no,phone_ext,contact_name,email_address,residential,customer_id,default_from,default_to,distribution_name,
+		date_created)
+		values
+		(#abbreviationName#,#consigneeId#,#address1#,#address2#,#city#,#countryCode#,#provinceCode#,#postalCode#,#phoneNo#,#phoneExt#,#contactName#,#emailAddress#,#residential#,#customerId#,#defaultFromAddress#,#defaultToAddress#,#distributionName#,
+		#dateCreated#)
+	</insert>
+	<delete id="deleteDistributionAddress">
+		delete from address where distribution_name =
+		#distributionListId# and customer_id = #customerId#
+	</delete>
+
+
+	<select id="findDefaultFromAddressForCustomer" resultMap="AddressMap">
+		select
+		a.* from address a where
+		a.default_from=1
+		and a.customer_id
+		=#customerId# limit 1
+	</select>
+
+	<select id="findDefaultToAddressForCustomer" resultMap="AddressMap">
+		select
+		a.* from address a where
+		a.default_to=1
+		and a.customer_id =#customerId#
+		limit 1
+	</select>
+
+
+	<select id="getToAddressForOrder" resultMap="AddressMap">
+		select a.* from
+		address a,shipping_order so where
+		so.ship_to_id=a.address_id and
+		so.order_id=#orderId#
+	</select>
+
+	<select id="getFromAddressForOrder" resultMap="AddressMap">
+		select a.* from
+		address a,shipping_order so where
+		so.ship_from_id=a.address_id and
+		so.order_id=#orderId#
+	</select>
+
+	<select id="findAddressesByCustomer" parameterClass="com.meritconinc.shiplinx.model.Address"
+		resultMap="AddressMap">
+		select a.* from address a where
+		a.customer_id=#customerId#
+
+		<isNotNull property="abbreviationName">
+			<isNotEmpty property="abbreviationName">and (a.abbreviation_name like
+				'%$abbreviationName$%' or a.contact_name like '%$abbreviationName$%'
+				or a.postal_code like '%$abbreviationName$%' or a.city like
+				'%$abbreviationName$%' or a.province_code like
+				'%$abbreviationName$%' or a.distribution_name like
+				'%$abbreviationName$%')</isNotEmpty>
+		</isNotNull>
+
+		<!-- <isNotNull property="contactName" prepend="and"> <isNotEmpty property="contactName">and 
+			a.contact_name like '%$abbreviationName$%'</isNotEmpty> </isNotNull> <isNotNull 
+			property="postalCode" prepend="or"> <isNotEmpty property="postalCode">a.postal_code 
+			like '%$abbreviationName$%'</isNotEmpty> </isNotNull> <isNotNull property="city" 
+			prepend="or"> <isNotEmpty property="city">a.city like '%$abbreviationName$%'</isNotEmpty> 
+			</isNotNull> <isNotNull property="abbreviationName" prepend="or"> <isNotEmpty 
+			property="abbreviationName">a.abbreviation_name like '%$abbreviationName$%'</isNotEmpty> 
+			</isNotNull> <isNotNull property="provinceCode" prepend="or"> <isNotEmpty 
+			property="provinceCode">a.province_code like '%$abbreviationName$%'</isNotEmpty> 
+			</isNotNull> <isNotNull property="distributionName" prepend="or"> <isNotEmpty 
+			property="distributionName">a.distribution_name like '%$abbreviationName$%'</isNotEmpty> 
+			</isNotNull> -->
+
+
+	</select>
+
+	<!-- Start Sumanth Kulkarni S Oct 14 2011 -->
+	<select id="findAddressesByCustomerSearch" parameterClass="com.meritconinc.shiplinx.model.Address"
+		resultMap="AddressMap">
+		select a.* from address a where a.customer_id = #customerId#
+		and ((a.contact_name like '%$contactName$%') OR (a.postal_code like
+		'%$postalCode$%')
+		OR (a.city like '%$city$%') OR (a.abbreviation_name
+		like
+		'%$abbreviationName$%') OR (a.province_code like
+		'%$provinceCode$%'))
+	</select>
+	<!-- End -->
+
+	<select id="findDefaultCustomsBrokerAddress" resultMap="AddressMap">
+	select a.* from address a where a.customer_id= #customerId#
+	and a.country_code=#countryCode# and a.broker_code='BR' limit 1
+	</select> 	
+	
+	<select id="searchCustomsBrokerAddress" resultMap="AddressMap">
+	select a.* from address a where a.customer_id= #customerId#
+	and a.country_code=#countryCode# and a.broker_code='BR'
+	</select>
+	
+	<select id="searchShipperAndConsigneeAddress" resultMap="AddressMap">
+		select * from address where customer_id = #customerId# and broker_code = 'CN'
+	</select>
+	
+  	<select id="getCustomerUser" resultMap="AddressMaps">
+		select abbreviation_name,address_id from address a where customer_id = #customerId#
+	</select> 
+		<select id="findDefaultFromAddressForAddress" resultMap="AddressMap">
+		select a.* from address a where a.address_id=#addressId# limit 1
+	</select>
+	<select id="getProvinceName" resultMap="provinceResult">   
+		select * from
+		province where name=#province_code#    
+   </select>
+
+</sqlMap>

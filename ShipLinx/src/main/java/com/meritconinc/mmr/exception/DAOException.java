@@ -1,0 +1,25 @@
+package com.meritconinc.mmr.exception;
+
+import org.springframework.dao.DataAccessException;
+
+public class DAOException extends DataAccessException {
+  private static final long serialVersionUID = 1102007;
+
+  /**
+   * @param message
+   */
+  public DAOException(String message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @param message
+   * @param cause
+   */
+  public DAOException(String message, Throwable cause) {
+    super(message, cause);
+    // TODO Auto-generated constructor stub
+  }
+
+}

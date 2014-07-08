@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="RequestTracking">
+	<resultMap id="trackingResult" class="com.meritconinc.mmr.model.common.RequestDetailsVO">
+		<result property="id" 					column="id" 				columnIndex="1"/>
+		<result property="actionName" 			column="action_name"		columnIndex="2"/>
+		<result property="uri" 					column="uri" 				columnIndex="3"/>
+		<result property="sessionId" 			column="session_id" 		columnIndex="4"/>
+		<result property="userName" 			column="user_name" 			columnIndex="5"/>
+		<result property="remoteAddr" 			column="remote_addr" 		columnIndex="6"/>
+		<result property="remoteHost" 			column="remote_host" 		columnIndex="7"/>
+		<result property="requestDate" 			column="request_date" 		columnIndex="8"/>
+		<result property="userAgent" 			column="user_agent" 		columnIndex="9"/>
+	</resultMap>
+	
+	<resultMap id="trackingParamResult" class="com.meritconinc.mmr.model.common.RequestTrackParamVO">
+		<result property="id" 					column="id" 				columnIndex="1"/>
+		<result property="navigationLogId"		column="navigation_log_id"	columnIndex="2"/>
+		<result property="paramName" 			column="param_name" 		columnIndex="3"/>
+		<result property="paramValue" 			column="param_value" 		columnIndex="4"/>
+	</resultMap>
+	
+	<resultMap id="trackingMetadataResult" class="com.meritconinc.mmr.model.common.RequestTrackMetadataVO">
+		<result property="actionName"			column="action_name"		columnIndex="1"/>
+		<result property="paramName" 			column="param_name" 		columnIndex="2"/>
+	</resultMap> 
+	
+	<cacheModel id="requestParamMetadata-cache" type="MEMORY">
+		<flushInterval hours="24"/>
+  		<property name="reference-type" value="SOFT"/>
+	</cacheModel>
+
+	<!--  the sql statements for the DAO -->
+	<insert id="insertRequestTracking" parameterClass="com.meritconinc.mmr.model.common.RequestDetailsVO">
+		insert into navigation_log 
+			(ACTION_NAME, URI, SESSION_ID, USER_NAME, REMOTE_ADDR, REMOTE_HOST, REQUEST_DATE, USER_AGENT) 
+		values 
+			(#actionName#, #uri#, #sessionId#, #userName#, #remoteAddr#, #remoteHost#, #requestDate#, #userAgent#)
+		
+		<isNotEmpty property="requestParameterList">
+			DECLARE @id int
+			SELECT @id=SCOPE_IDENTITY()
+			
+			<iterate property="requestParameterList">
+				INSERT INTO 
+					navigation_param_log(navigation_log_id, param_name, param_value)
+	           	VALUES
+	           		(@id, #requestParameterList[].paramName#,#requestParameterList[].paramValue#)           		
+			</iterate>
+		</isNotEmpty>			
+	</insert>
+	
+	<select id="getRequestParamMetadata" resultMap="trackingMetadataResult"
+											cacheModel="requestParamMetadata-cache">
+		SELECT 
+			action_name, param_name
+		FROM
+			navigation_param_metadata
+	</select>
+
+</sqlMap>

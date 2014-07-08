@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ups">
+
+	<resultMap id="upsAccMap" class="com.meritconinc.shiplinx.carrier.ups.model.UPSAccCharges">
+		<result property="businessId"	column="business_id"/>
+		<result property="chargeCode"	column="charge_code"/>
+		<result property="chargeCodeLevel2"	column="charge_code_level_2"/>
+		<result property="tariff"	column="tariff"/>
+		<result property="cost"	column="cost"/>
+		<result property="charge"	column="charge"/>
+		<result property="perPackage"	column="per_package"/>
+		<result property="minCharge" column="min_charge" />
+		<result property="maxCharge"	column="max_charge"/>		
+		<result property="countryCode"	column="country_code"/>		
+		<result property="perUnits"	column="per_units"/>		
+	</resultMap>
+
+	<resultMap id="upsDAS" class="com.meritconinc.shiplinx.carrier.ups.model.UPSDASZipsUS">
+		<result property="zipCode"	column="zip_code"/>
+		<result property="das"	column="is_das"/>
+		<result property="dasExtended"	column="is_das_extended"/>
+		<result property="remoteHI"	column="is_remote_hi"/>
+		<result property="remoteAK"	column="is_remote_ak"/>
+	</resultMap> 
+
+	<resultMap id="upsCANEAS" class="com.meritconinc.shiplinx.carrier.ups.model.UPSCANEAS">
+		<result property="countryCode"	column="country_code"/>
+		<result property="fromPostal"	column="from_postal"/>
+		<result property="toPostal"	column="to_postal"/>
+		<result property="city"	column="city"/>
+		<result property="charge" column="eas_charge"/>
+	</resultMap>
+
+	<resultMap id="upsZoneDiscount" class="com.meritconinc.shiplinx.carrier.ups.model.UPSZoneDiscount">
+		<result property="businessId"	column="business_id"/>
+		<result property="serviceId"	column="service_id"/>
+		<result property="packageId"	column="package_type_id"/>
+		<result property="discountPerc"	column="discount_perc"/>
+		<result property="zone"	column="zone"/>
+		<result property="accountCountry"	column="account_country"/>
+	</resultMap>
+
+	<select id="upsFindMaxWeightForZone"  resultClass="java.lang.Double">
+		 	select max(weight) from ups_canada_tariff where zone=#zone#
+	</select>
+
+
+	<select id="getUPSTariffRate"  parameterClass="com.meritconinc.shiplinx.carrier.ups.model.UPSTariff" resultClass="java.lang.Double">
+		 	select rate from ups_canada_tariff where zone=#zone# and weight_lb=#weightLB#
+	</select>
+
+	<select id="findUPSAccCharge"  parameterClass="com.meritconinc.shiplinx.carrier.ups.model.UPSAccCharges" resultMap="upsAccMap">
+		 	SELECT * FROM ups_acc_charges WHERE business_id=#businessId# 
+	 		<isNotNull prepend="and" property="chargeCode">
+	 			charge_code = #chargeCode#
+	 		</isNotNull>	
+	 		<isNotNull prepend="and" property="chargeCodeLevel2">
+	 			charge_code_level_2 = #chargeCodeLevel2#
+	 		</isNotNull>	
+	 		<isNotNull prepend="and" property="countryCode">
+	 			country_code = #countryCode#
+	 		</isNotNull>			 	
+	</select>
+	
+	<select id="findUPSDASZipsUSByZipCode"  resultMap="upsDAS">
+		 	SELECT * FROM ups_das_zips_us WHERE zip_code = #zipcode#
+	</select>
+	
+	<select id="findUPSCANEAS"  resultMap="upsCANEAS">
+		 	SELECT * FROM ups_can_eas WHERE country_code = #countryCode#
+	 		<isNotNull prepend="and" property="postalCode">
+	 			(#postalCode# between from_postal and to_postal)
+	 		</isNotNull>	
+	 		<isNotNull prepend="and" property="city">
+	 			city=#city#
+	 		</isNotNull>	
+		 	LIMIT 1
+	</select>
+
+	<select id="findUPSDiscountByZone"  resultMap="upsZoneDiscount">
+		 	SELECT * FROM ups_zone_bus_discount WHERE  zone=#zone# and account_country=#accountCountry# 
+		 	<isNotNull property="businessId">
+			 	<isGreaterThan prepend="and" property="businessId" compareValue="0">
+			 		business_id = #businessId#
+			 	</isGreaterThan>	
+		 	</isNotNull>
+		 	<isNotNull property="packageId">
+			 	<isGreaterThan prepend="and" property="packageId" compareValue="0">
+			 		package_type_id=#packageId#
+			 	</isGreaterThan>
+		 	</isNotNull>
+		 	LIMIT 1	
+	</select>
+	<select id="findUPSServiceCodeByServiceAndCountry"  resultMap="upsZoneDiscount">
+		 	SELECT * FROM ups_zone_bus_discount WHERE account_country=#accountCountry# 
+		 	<isGreaterThan prepend="and" property="serviceId" compareValue="0">
+		 		service_id=#serviceId#
+		 	</isGreaterThan>	
+		 	<isNotNull prepend="and" property="serviceCode">
+	 			service_code = #serviceCode#
+	 		</isNotNull>		
+	 		LIMIT 1	 	
+	</select>
+	<select id="getUPSServiceCode" resultMap="customer.CarrierServicesResult">
+		 	SELECT s.service_id, s.name, s.description, s.code, s.transit_code, s.service_time_mins, s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id 
+		 	FROM service s WHERE  s.service_id>0
+		 	<isGreaterThan prepend="and" property="id" compareValue="0">
+		 		s.service_id=#id#
+		 	</isGreaterThan>	
+		 	<isNotNull prepend="and" property="code">
+	 			s.code = #code#
+	 		</isNotNull>		
+		 	<isGreaterThan prepend="and" property="carrierId" compareValue="0">
+		 		s.carrier_id=#carrierId#
+		 	</isGreaterThan>	
+	 		LIMIT 1	 	
+	</select>
+	
+</sqlMap>
+

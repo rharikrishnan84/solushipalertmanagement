@@ -1,0 +1,42 @@
+package com.meritconinc.mmr.model.query;
+
+public class QueryParameterVO implements java.io.Serializable{
+	private static final long serialVersionUID = 1959190160762840861L;
+	private String name;
+	private String value;
+	private String defaultValue;
+	private String validationRegExp;
+	private boolean included = false;
+	
+	public boolean isIncluded() {
+		return included;
+	}
+	public void setIncluded(boolean included) {
+		this.included = included;
+	}
+	public String getName() {
+		return name;
+	} 
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getValue() {
+		if ( value == null ) return getDefaultValue();
+		else return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	public String getValidationRegExp() {
+		return validationRegExp;
+	}
+	public void setValidationRegExp(String validationRegExp) {
+		this.validationRegExp = validationRegExp;
+	}
+}

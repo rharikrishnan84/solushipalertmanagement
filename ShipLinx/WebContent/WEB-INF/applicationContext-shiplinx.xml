@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--  Actions -->
+	<bean id="shipOrderAction" scope="prototype" class="com.meritconinc.shiplinx.action.ShipOrderAction">
+		<property name="carrierServiceManager">
+			<ref local="carrierServiceManager"/>
+		</property>	
+	
+	</bean>
+			
+			
+	<!-- Address book management -->
+	<bean id="AddressbookAction" scope="prototype" class="com.meritconinc.shiplinx.action.AddressbookAction">
+		<property name="addressService" ref="addressService"/>
+		<property name="customerService" ref="customerService"/>
+		<property name="distributionListSize">
+            <value>512</value>
+        </property>
+	</bean>
+	
+	<bean id="menuAction" scope="prototype" class="com.meritconinc.shiplinx.action.MenuAction">
+	<property name="menuItemDAO" ref="menuItemDAO"/>
+	</bean>
+	<bean id="menuItemDAO" class="com.meritconinc.mmr.dao.ibatis.MenusDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>	
+
+	
+	<bean id="shipmentAction" scope="prototype" class="com.meritconinc.shiplinx.action.ShipmentAction">
+		<property name="addressService" ref="addressService"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="carrierServiceManager" ref="carrierServiceManager"/>
+		<property name="customerService" ref="customerService"/>
+		<property name="loggedEventService" ref="loggedEventService"/>
+		<property name="productManagerService" ref="productManagerService"/>
+		<property name="pickupService" ref="pickupService"/>
+		<property name="userService" ref="userService"/>		
+		<property name="invoiceManagerService" ref="invoiceManager"/>	
+	</bean>
+	
+	<bean id="invoiceManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.InvoiceManagerAction">
+		<property name="invoiceManager" ref="invoiceManager"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="customerService" ref="customerService"/>
+		<property name="userService" ref="userService"/>
+	</bean>	
+	
+	
+	<bean name="shippingOrder" class="com.meritconinc.shiplinx.model.ShippingOrder" scope="prototype"/>
+	<bean name="addressbook" class="com.meritconinc.shiplinx.model.Address" scope="prototype"/>
+	<bean name="province" class="com.meritconinc.shiplinx.model.Country" scope="prototype"/>
+	<bean name="country" class="com.meritconinc.shiplinx.model.Province" scope="prototype"/>
+	<bean name="customer" class="com.meritconinc.shiplinx.model.Customer" scope="prototype"/>
+	<bean id="timeZonesFactory" class="com.meritconinc.shiplinx.utils.TimeZonesFactory" scope="prototype"/>
+	<bean id="customerCarrier" class="com.meritconinc.shiplinx.model.CustomerCarrier"/>
+	<bean id="fuelSurcharge" class="com.meritconinc.shiplinx.model.FuelSurcharge"/>
+	
+	
+	<bean name="customercarrier" class="com.meritconinc.shiplinx.model.CustomerCarrier" scope="prototype"/>
+	<bean name="package" class="com.meritconinc.shiplinx.model.Package" scope="prototype"/>
+	<bean name="packageType" class="com.meritconinc.shiplinx.model.PackageType" scope="prototype"/>
+	
+	<bean name="markup" class="com.meritconinc.shiplinx.model.Markup" scope="prototype"/>
+	<bean name="warehouse" class="com.meritconinc.shiplinx.model.Warehouse" scope="prototype"/>
+	
+	<bean id="pickupService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.PickupManagerImpl">
+				<property name="pickupDAO">
+					<ref local="pickupDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="pickupDAO" class="com.meritconinc.shiplinx.dao.impl.PickupDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="addressService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.AddressManagerImpl">
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="addressDAO" class="com.meritconinc.shiplinx.dao.AddressDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>	
+	<bean id="shippingService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.ShippingServiceImpl">
+				<property name="shippingDAO">
+					<ref local="shippingDAO"/>
+				</property>		
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>
+				<property name="markupManagerService" ref="markupManagerService"/>
+				<property name="productManagerService" ref="productManagerService"/>
+				<property name="creditCardService">
+					<ref local="ccTransactionManager"/>
+				</property>
+				<property name="pinBlockManager">
+					<ref local="pinBlockManager"/>
+				</property>		
+				<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+				<property name="customerDAO">
+					<ref local="customermanagerDAO"/>
+				</property>
+				<property name="loggedEventDAO"> 
+					<ref local="loggedEventDAO"/>
+				</property>
+	        </bean>
+       </property>
+	</bean>
+	<bean id="shippingDAO" class="com.meritconinc.shiplinx.dao.ShippingDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="invoiceManager" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+			<prop key="*">PROPAGATION_REQUIRED, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.InvoiceManagerImpl">
+				<property name="shippingDAO">
+					<ref local="shippingDAO"/>
+				</property>		
+				<property name="invoiceDAO">
+					<ref local="invoiceDAO"/>
+				</property>		
+				<property name="customerDAO">
+					<ref local="customermanagerDAO"/>
+				</property>
+				<property name="ccTransactionManager">
+					<ref local="ccTransactionManager"/>
+				</property>
+				<property name="businessDAO">
+					<ref local="businessDAO"/>
+				</property>				
+				<property name="pinBlockManager">
+					<ref local="pinBlockManager"/>
+				</property>		
+				<property name="userDAO" ref="userDAO"/>
+				
+	        </bean>
+       </property>
+	</bean>
+	
+	<bean id="invoiceDAO" class="com.meritconinc.shiplinx.dao.impl.InvoiceDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="ccTransactionManager" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+			<prop key="*">PROPAGATION_REQUIRES_NEW, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.CreditCardTransactionManagerImpl">
+				<property name="ccTransactionDAO">
+					<ref local="ccTransactionDAO"/>
+				</property>		
+				<property name="pinBlockManager">
+					<ref local="pinBlockManager"/>
+				</property>		
+				<property name="businessDAO">
+					<ref local="businessDAO"/>
+				</property>
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>
+				
+	        </bean>
+       </property>
+	</bean>
+	
+	<bean id="ccTransactionDAO" class="com.meritconinc.shiplinx.dao.impl.CreditCardTransactionDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="pinBlockManager" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+			<prop key="*">PROPAGATION_REQUIRES_NEW, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.PinBlockManagerImpl">
+				<property name="pinDAO">
+					<ref local="pinDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	
+	<bean id="pinDAO" class="com.meritconinc.shiplinx.dao.impl.PinDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	
+	<bean id="distributionListAction" scope="prototype" class="com.meritconinc.mmr.action.admin.DistributionListAction">
+		<property name="service" ref="addressService"/>
+		<property name="addressbook" ref="addressbook"/>
+	</bean>
+	
+	<bean id="CustomerManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.CustomerManagerAction">
+		<property name="service" ref="customerService"/>
+		<property name="addressService" ref="addressService"/>
+		<property name="userService" ref="userService"/>
+		<property name="businessService" ref="businessService"/>
+		<property name="carrierServiceManager" ref="carrierServiceManager"/>
+		<property name="customermanagerDAO" ref="customermanagerDAO"/>	
+	</bean>
+	
+	<bean id="CustomerInfoManagerAction" scope="prototype"	class="com.meritconinc.shiplinx.action.CustomerInfoManagerAction">
+		<property name="service" ref="customerService"/>
+		<property name="addressService" ref="addressService"/>
+		<property name="timeZonesFactory" ref="timeZonesFactory"/>
+	</bean>
+	
+	<bean id="customerService" scope="prototype" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+			<prop key="add*">PROPAGATION_REQUIRED, -Exception</prop>
+			<prop key="*">PROPAGATION_REQUIRED, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.CustomerManagerImpl">
+				<property name="customerDAO">
+					<ref local="customermanagerDAO"/>
+				</property>
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>
+				<property name="siteUserDAO" ref="userDAO"/>
+				<property name="businessDAO">
+					<ref local="businessDAO"/>
+				</property>
+				<property name="markupManagerService" ref="markupManagerService"/>
+				<property name="pinBlockManager">
+					<ref local="pinBlockManager"/>
+				</property>		
+				<property name="shippingDAO">
+					<ref local="shippingDAO"/>
+				</property>		
+				<property name="invoiceDAO">
+					<ref local="invoiceDAO"/>
+				</property>		
+				<property name="carrierServiceDAO" ref="carrierServiceDAO"/>			 
+				<property name="creditCardService">
+					<ref local="ccTransactionManager"/>
+				</property>
+			</bean>
+       </property>
+	</bean>
+	<bean id="customermanagerDAO" class="com.meritconinc.shiplinx.dao.CustomerDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+
+	<!-- Markup Manager Action Service and DAO -->	
+	<bean id="markupManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.MarkupManagerAction">
+		<property name="markupManagerService" ref="markupManagerService"/>
+		<!-- <property name="carrierServiceManager" ref="carrierServiceManager"/>  -->
+		<property name="customerService" ref="customerService"/>
+		<property name="carrierServiceManager"> 
+			<ref local="carrierServiceManager"/>
+		</property>	
+	</bean>	
+		
+	<bean id="markupManagerService" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.MarkupManagerImpl">
+				<property name="markupDAO"> 
+					<ref local="markupManagerDAO"/>
+				</property>
+				<property name="customerDAO">
+					<ref local="customermanagerDAO"/>
+				</property>				
+				 <property name="carrierServiceDAO" ref="carrierServiceDAO"/>			 
+			 </bean>
+			 
+       </property>
+	</bean>	
+	<bean id="markupManagerDAO" scope="prototype" class="com.meritconinc.shiplinx.dao.MarkupManagerDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>	
+	
+	<!-- Product Manager Action Service and DAO -->	
+	<bean id="productManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.ProductManagerAction">
+		<property name="productManagerService" ref="productManagerService"/>
+		<property name="customerManagerService" ref="customerService"/>
+	</bean>	
+		
+	<bean id="productManagerService" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.ProductManagerImpl">
+				<property name="productManagerDAO"> 
+					<ref local="productManagerDAO"/>
+				</property>	
+				<property name="loggedEventDAO"> 
+					<ref local="loggedEventDAO"/>
+				</property>	
+				<property name="shippingDAO">
+					<ref local="shippingDAO"/>
+				</property>											
+			 </bean>
+       </property>
+	</bean>	
+	<bean id="productManagerDAO" scope="prototype" class="com.meritconinc.shiplinx.dao.ProductManagerDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<!-- Start Cart Manager Action Service and DAO-->
+	<bean id="cartManager" scope="prototype" parent="baseTransactionProxy">
+ 		<property name="transactionAttributes">
+			<props>
+			<prop key="upload*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="release*">PROPAGATION_REQUIRED, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.CartManagerImpl">
+				<property name="cartDAO"> 
+					<ref local="cartDAO"/>
+				</property>
+				<property name="shippingService"> 
+					<ref local="shippingService"/>
+				</property>
+				<property name="cartOrderParser"> 
+					<ref local="cartOrderParser"/>
+				</property>
+				
+			 </bean>
+       </property>
+	</bean>	
+	<bean id="cartDAO" class="com.meritconinc.shiplinx.dao.impl.CartDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<bean id="cartOrderParser" scope="prototype" class="com.meritconinc.shiplinx.service.impl.CartOrderParser">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="customerService" ref="customerService"/>
+	</bean>	 
+	
+	<!-- END Cart Manager Action Service and DAO -->
+	
+	
+	<!-- LoggedEvent Action Service and DAO -->	
+	<bean id="loggedEventAction" scope="prototype" class="com.meritconinc.shiplinx.action.LoggedEventAction">
+		<property name="loggedEventService" ref="loggedEventService"/>
+	</bean>	
+		
+	<bean id="loggedEventService" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.LoggedEventServiceImpl">
+				<property name="loggedEventDAO"> 
+					<ref local="loggedEventDAO"/>
+				</property>	
+			 </bean>
+       </property>
+	</bean>	
+	<bean id="loggedEventDAO" scope="prototype" class="com.meritconinc.shiplinx.dao.LoggedEventDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	<!-- Edi Manager Action Service and DAO -->
+	<bean id="ediManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.EdiManagerAction">
+		<property name="ediManagerService" ref="ediManagerService"/>
+		<property name="carrierServiceManager"> 
+			<ref local="carrierServiceManager"/>
+		</property>	
+	</bean>	
+	<bean id="ediManagerService" scope="prototype" parent="baseTransactionProxy">
+ 		<property name="transactionAttributes">
+			<props>
+			<prop key="upload*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="release*">PROPAGATION_REQUIRED, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.EdiManagerImpl">
+				<property name="ediDAO"> 
+					<ref local="ediDAO"/>
+				</property>
+				<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+				<property name="customerDAO">
+					<ref local="customermanagerDAO"/>
+				</property>	
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>	
+				<property name="markupManagerService" ref="markupManagerService"/>	
+				<property name="shippingService" ref="shippingService"/>
+				<property name="upsCanadaTariffDAO"><ref local="upsCanadaTariffDAO"/></property>
+				<property name="loggedEventService" ref="loggedEventService"/>						
+			 </bean>
+       </property>
+	</bean>	
+	<bean id="ediDAO" class="com.meritconinc.shiplinx.dao.impl.EdiDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+	
+	<!--  Services -->
+	<bean id="carrierServiceManager" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.CarrierServiceManagerImpl">
+	        	<property name="carrierServices">
+					<list>
+						<ref bean="fedexService"/>
+						<ref bean="upsService"/>
+						<ref bean="dhlService"/>
+						<ref bean="loomisService"/>
+						<ref bean="purolatorService"/>		
+						<ref bean="midlandService"/>			
+					</list>
+				</property>   
+				<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+				<property name="markupDAO" ref="markupManagerDAO"/>
+				<property name="shippingService" ref="shippingService"/>
+				<property name="customerService" ref="customerService"/>
+				<property name="addressService" ref="addressService"/>
+				<property name="pickupService" ref="pickupService"/>
+				<property name="businessService" ref="businessService"/>
+ 				<property name="markupManagerService" ref="markupManagerService"/>
+				<property name="creditCardService">
+					<ref local="ccTransactionManager"/>
+				</property>
+ 				<property name="pinBlockManager">
+					<ref local="pinBlockManager"/>
+				</property>		
+  	         </bean>
+       </property>       
+	</bean>
+	
+	<!-- Carriers -->
+
+	<bean id="fedexService" scope="prototype" class="com.meritconinc.shiplinx.carrier.fedex.FedEx">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="customerService" ref="customerService"/>
+	</bean>
+
+	<bean id="purolatorService" scope="prototype" class="com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI">
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="shippingDAO" ref="shippingDAO"/>
+	</bean>
+		
+	<bean id="upsService" scope="prototype" class="com.meritconinc.shiplinx.carrier.ups.service.UPSAPI">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="fuelSurchargeService" ref="fuelSurchargeService"/>
+		<property name="upsCanadaTariffDAO"><ref local="upsCanadaTariffDAO"/></property>
+	</bean>
+
+	<bean id="dhlService" scope="prototype" class="com.meritconinc.shiplinx.carrier.dhl.DHLAPI">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="fuelSurchargeService" ref="fuelSurchargeService"/>
+		<property name="dhlCanadaTariffDAO"><ref local="dhlCanadaTariffDAO"/></property>
+	</bean>
+
+	<bean id="loomisService" scope="prototype" class="com.meritconinc.shiplinx.carrier.loomis.LoomisAPI">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="shippingService" ref="shippingService"/>
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="fuelSurchargeService" ref="fuelSurchargeService"/>
+		<property name="loomisTariffDAO"><ref local="loomisTariffDAO"/></property>
+	</bean>
+
+	<bean id="midlandService" scope="prototype" class="com.meritconinc.shiplinx.carrier.midland.MidlandAPI">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="businessDAO">
+			<ref local="businessDAO"/>
+		</property>
+		<property name="customerDAO">
+			<ref local="customermanagerDAO"/>
+		</property>	
+		<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+		<property name="fuelSurchargeService" ref="fuelSurchargeService"/>
+		<property name="loomisTariffDAO"><ref local="loomisTariffDAO"/></property>
+		<property name="markupDAO"> 
+			<ref local="markupManagerDAO"/>
+		</property>
+	</bean>
+
+
+	<bean id="genericCarrierService" scope="prototype" class="com.meritconinc.shiplinx.carrier.generic.GenericCarrierAPI">
+		<property name="shippingDAO" ref="shippingDAO"/>
+		<property name="businessDAO">
+			<ref local="businessDAO"/>
+		</property>
+		<property name="customerDAO">
+			<ref local="customermanagerDAO"/>
+		</property>	
+		<property name="markupDAO"> 
+			<ref local="markupManagerDAO"/>
+		</property>
+		<property name="fuelSurchargeService" ref="fuelSurchargeService"/>
+	</bean>
+
+	<bean id="dhlCanadaTariffDAO" class="com.meritconinc.shiplinx.carrier.dhl.dao.impl.DHLCanadaTariffDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	<bean id="loomisTariffDAO" class="com.meritconinc.shiplinx.carrier.loomis.dao.impl.LoomisTariffDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	<bean id="upsCanadaTariffDAO" class="com.meritconinc.shiplinx.carrier.ups.dao.impl.UPSCanadaTariffDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+
+	<bean id="userExtensionDAO"  parent="baseTransactionProxy">
+		<property name="target" ref="userExtensionDAOTarget"/>
+	</bean>
+	<bean name="userExtensionDAOTarget" class="com.meritconinc.mmr.dao.ibatis.UserExtensionDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+
+	<bean id="userDAO" class="com.meritconinc.mmr.dao.ibatis.UserDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+		<property name="userExtensionDAO" ref="userExtensionDAO"/>
+	</bean>
+	
+	<bean id="fuelSurchargeDAO" class="com.meritconinc.shiplinx.dao.FuelSurchargeDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+
+	<bean id="fuelSurchargeService" class="com.meritconinc.shiplinx.service.FuelSurchargeServiceImpl">
+		<property name="fuelSurchargeDAO" ref="fuelSurchargeDAO"/>
+	</bean>
+
+	<bean id="carrierServiceDAO" class="com.meritconinc.shiplinx.dao.CarrierServiceDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	
+		<bean id="businessService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.impl.BusinessManagerImpl">
+				<property name="businessDAO">
+					<ref local="businessDAO"/>
+				</property>
+			 </bean>
+       </property>
+	</bean>	
+	<bean id="businessDAO" class="com.meritconinc.shiplinx.dao.impl.BusinessDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+	<bean id="upsDASZipsUSDAO" class="com.meritconinc.shiplinx.carrier.ups.dao.jdbc.UPSDASZipsUSDAOJdbc">
+		<property name="dataSource" ref="dataSource"/>
+	</bean> 
+	
+	<bean id="upsAccChargesDAO" class="com.meritconinc.shiplinx.carrier.ups.dao.jdbc.UPSAccChargesDAOJdbc">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	
+	
+	<!-- getStatus updates from UPS job...run every hour -->
+	<bean id="updateStatusJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	  <property name="targetObject" ref="carrierServiceManager"/>
+	  <property name="targetMethod" value="checkForShipmentStatusUpdates"/>
+	</bean>
+	<bean id="updateStatusJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	  <property name="jobDetail" ref="updateStatusJobDetail"/>
+	  <!--<property name="startDelay" value="3600000"/> 1 hours-->
+	  <property name="startDelay" value="3600000"/> <!--1 hours-->
+	  <property name="repeatInterval" value="14400000"/> <!--4 hours-->
+	</bean>
+	
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+ 		 <property name="triggers">
+ 	  	 <list>
+       	  	 <ref bean="updateStatusJobTrigger"/>
+    	 </list>
+		 </property>
+	</bean>
+
+	<!-- Web Service -->
+	<bean id="carrierService" scope="prototype" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+			<prop key="*">PROPAGATION_REQUIRED, -DAOException</prop>
+			</props>
+		</property>
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.ws.CarrierServiceImpl">
+				<property name="carrierServiceManager" ref="carrierServiceManager"/>
+				<property name="customerDAO"> 
+					<ref local="customermanagerDAO"/>
+				</property>
+			 </bean>
+       </property>
+	</bean>	
+	
+	<!-- WareHouse -->
+	<bean id="warehouseManagerAction" scope="prototype" class="com.meritconinc.shiplinx.action.WarehouseManagerAction">
+		<property name="warehouseManagerService" ref="warehouseManagerService"/>
+		<property name="addressService" ref="addressService"/>
+		<property name="productManagerService" ref="productManagerService"/>
+		<property name="loggedEventService" ref="loggedEventService"/>
+	</bean>	
+		
+	<bean id="warehouseManagerService" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.shiplinx.service.WarehouseManagerImpl">
+				<property name="warehouseManagerDAO"> 
+					<ref local="warehouseManagerDAO"/>
+				</property>
+				<property name="addressDAO">
+					<ref local="addressDAO"/>
+				</property>				
+				 <property name="loggedEventDAO" ref="loggedEventDAO"/>	
+				 <property name="productManagerDAO" ref="productManagerDAO"/>			 
+			 </bean>
+			 
+       </property>
+	</bean>	
+	<bean id="warehouseManagerDAO" scope="prototype" class="com.meritconinc.shiplinx.dao.WarehouseManagerDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>		
+</beans>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Query">
+	<resultMap id="query" class="com.meritconinc.mmr.model.query.QueryVO">
+		<result property="id" 				column="id" 			columnIndex="1"/>
+		<result property="datasource" column="datasource"	columnIndex="2"/>
+		<result property="name" 			column="name" 			columnIndex="3"/>
+		<result property="sql" 				column="query"  		columnIndex="4"/>
+		<result property="creationDate" 	column="creation_date"	columnIndex="5"/>
+		<result property="createdBy" 		column="creator" 		columnIndex="6"/>
+		<result property="lastUpdated" 		column="last_updated"	columnIndex="7"/>
+		<result property="updatedBy" 		column="updater" 		columnIndex="8"/>		
+		<result property="parameters" column="id" select="selectParametersByQuery"/>	
+		<result property="jdbcFetchSize" 	column="jdbc_fetch_size" columnIndex="9"/>			
+		<result property="maxRows" 	column="max_rows" columnIndex="10"/>			
+	</resultMap>
+	
+	<resultMap class="com.meritconinc.mmr.model.query.QueryParameterVO" id="queryParameter">
+		<result property="name" 				column="name" 			columnIndex="1"/>
+		<result property="defaultValue" 		column="default_value" 	columnIndex="2"/>		
+		<result property="validationRegExp" 	column="validation"  	columnIndex="3"/>
+		<result property="included" column="included" columnIndex="4"/>
+	</resultMap>
+
+	<resultMap class="com.meritconinc.mmr.model.security.User" id="user">
+		<result property="username" 				column="username" 			columnIndex="1"/>
+	</resultMap> 
+	
+	<resultMap class="com.meritconinc.mmr.model.common.RoleVO" id="role">
+		<result property="role" 				column="role" 			columnIndex="1"/>
+	</resultMap>	
+	
+	<!--  the sql statements for the DAO -->
+	<insert id="insertQuery">
+		INSERT INTO query
+			(datasource, name, query, creation_date, creator, last_updated, updater, jdbc_fetch_size, max_rows)
+		VALUES
+			(#datasource#, #name#, #query#, #creationDate#, #creator#, #lastUpdated#, #updater#, #jdbcFetchSize#, #maxRows#)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT @@IDENTITY AS 'Identity'
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteQuery">
+		DELETE FROM query
+		WHERE id = #id#
+	</delete>
+		
+	<update id="updateQuery">
+		UPDATE query		
+		SET datasource = #datasource#, 
+			name = #name#,
+			query = #query#,
+			last_updated = #lastUpdated#,
+			updater = #updater#,
+			jdbc_fetch_size = #jdbcFetchSize#,
+			max_rows = #maxRows#
+		WHERE id = #id#		
+	</update>
+
+	<insert id="insertParameter">
+		INSERT INTO query_param
+			(query_id, name, param_order, default_value, validation)
+		VALUES( #queryId#, #name#, #paramOrder#, #defaultValue#, #validation#)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT @@IDENTITY AS 'Identity'
+		</selectKey>		
+	</insert>
+	
+	<delete id="deleteParameters">
+		DELETE FROM query_param
+		WHERE query_id = #queryId#		
+	</delete>
+		
+	<select id="selectParametersByQuery" resultMap="queryParameter" parameterClass="int">
+		SELECT name, default_value, validation, 1 as included
+		FROM query_param
+		WHERE query_id = #queryId#
+		ORDER BY param_order
+	</select>
+	
+	<insert id="insertQueryRole">
+		INSERT INTO query_role
+			(query_id, role)
+		VALUES(#queryId#, #role#)		
+	</insert>
+
+	<delete id="deleteQueryRole">
+		DELETE FROM query_role
+		WHERE query_id = #queryId#
+	</delete>	
+	
+	<select id="selectAuthorizedRolesByQuery" resultMap="role">
+		SELECT role FROM query_role
+		WHERE query_id = #queryId#
+	</select>
+	
+	<select id="selectUnauthorizedRolesByQuery" resultMap="role">
+		SELECT role FROM role
+		WHERE role NOT IN ( SELECT role FROM query_role WHERE query_id = #queryId# )
+	</select>
+			
+	<insert id="insertQueryUser">
+		INSERT INTO query_user
+			(query_id, username)
+		VALUES(#queryId#, #username#)		
+	</insert>
+	
+	<delete id="deleteQueryUser">
+		DELETE FROM query_user
+		WHERE query_id = #queryId#
+	</delete>
+	
+	<select id="selectAuthorizedUsersByQuery" resultMap="user">
+		SELECT username FROM query_user
+		WHERE query_id = #queryId#
+	</select>
+	
+	<select id="selectUnauthorizedUsersByQuery" resultMap="user">
+		SELECT username FROM user
+		WHERE username NOT IN ( SELECT username FROM query_user WHERE query_id = #queryId# ) 
+	</select>
+
+	<select id="selectQuery" resultMap="query">
+		SELECT id, datasource, name, query, creation_date, creator, last_updated, updater, jdbc_fetch_size, max_rows FROM query WHERE id = #queryId#
+	</select>	
+
+	<select id="selectQueries" resultMap="query">
+		SELECT id, datasource, name, query, creation_date, creator, last_updated, updater, jdbc_fetch_size, max_rows
+		FROM query
+		ORDER BY name
+	</select>	
+	
+	<select id="selectQueriesByUser" resultMap="query">
+		SELECT id, datasource, name, query, creation_date, creator, last_updated, updater, jdbc_fetch_size, max_rows
+		FROM (
+				SELECT 	q.id, q.datasource, q.name, q.query, q.creation_date, q.creator, q.last_updated, q.updater, q.jdbc_fetch_size, q.max_rows
+				FROM query q INNER JOIN query_user u ON q.id = u.query_id
+				WHERE u.username = #username#
+					
+				UNION 
+				
+				SELECT q.id, q.datasource, q.name, q.query, q.creation_date, q.creator, q.last_updated, q.updater, q.jdbc_fetch_size, q.max_rows
+				FROM query q INNER JOIN query_role r ON q.id = r.query_id
+				WHERE r.role in ( select code from user_role WHERE username = #username# )				
+			) Z 
+		ORDER BY name
+	</select>
+	
+</sqlMap>

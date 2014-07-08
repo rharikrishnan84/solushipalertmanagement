@@ -1,0 +1,50 @@
+package com.meritconinc.mmr.model.system;
+
+public class DatabaseInfoVO {
+	private String url;
+	private String databaseProductName;
+	private String databaseProductVersion;
+	private String driverName;
+	private String driverVersion;
+	
+	public String getUrl() { 
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getDatabaseProductName() {
+		return databaseProductName;
+	}
+
+	public void setDatabaseProductName(String databaseProductName) {
+		this.databaseProductName = databaseProductName;
+	}
+
+	public String getDatabaseProductVersion() {
+		return databaseProductVersion;
+	}
+
+	public void setDatabaseProductVersion(String databaseProductVersion) {
+		this.databaseProductVersion = databaseProductVersion;
+	}
+
+	public String getDriverName() {
+		return driverName;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+
+	public String getDriverVersion() {
+		return driverVersion;
+	}
+
+	public void setDriverVersion(String driverVersion) {
+		this.driverVersion = driverVersion;
+	}
+
+}

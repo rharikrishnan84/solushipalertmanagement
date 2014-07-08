@@ -1,0 +1,1142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="shippingOrder">
+
+	<resultMap id="ShippingOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
+			<result property="id" column="order_id"/> 
+			<result property="orderNum" column="order_num"/>
+			<result property="businessId" column="business_id"/>
+			<result property="statusId" column="status_id"/>
+			<result property="statusName" column="status_id" select="getStatusName"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="referenceCodeName" column="reference_code_name"/>
+			<result property="referenceCode" column="reference_code"/>
+			<result property="carrierReference" column="carrier_reference"/>
+			<result property="satDelivery" column="sat_delivery"/>
+			<result property="docsOnly" column="docs_only"/>
+			<result property="holdForPickupRequired" column="hold"/>
+			<result property="insideDelivery" column="inside_delivery"/>
+			<result property="specialEquipment" column="special_equipment"/>
+			<result property="CODPayment" column="cod_payment"/>
+			<result property="CODValue" column="cod_value"/>
+			<result property="CODPin" column="cod_pin"/>
+			<result property="reqDeliveryDate" column="req_delivery_date"/>
+			<result property="scheduledShipDate" column="scheduled_ship_date"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="serviceId" column="service_id"/>
+			<result property="slaveServiceId" column="slave_service_id"/>
+			<result property="originalServiceId" column="original_service_id"/>
+			<result property="dangerousGoods" column="dangerous_goods"/>
+			<result property="CODCurrency" column="cod_currency"/>
+			<result property="baseCharge" column="base_charge"/>
+			<result property="fuelCharges" column="fuel_surcharge"/>
+			<result property="fromTailgate" column="fromtailgate"/>
+			<result property="toTailgate" column="totailgate"/>
+			<result property="notifyRecipient" column="notify_recipient"/>
+			<result property="confirmDelivery" column="confirm_delivery"/>
+			<result property="totalCharge" column="total_charge"/>
+			<result property="dateCreated" column="date_created"/>
+			<result property="masterTrackingNum" column="master_tracking_num"/>
+			<result property="live" column="live_mode"/>
+			<result property="charges" column="order_id" select="getShippingCharges"/>
+			<result property="customer" column="customer_id" select="getCustomerInfoByCustomerId"/>
+			<result property="paidAmount" column="paid_amount"/>
+			<result property="appliedAmount" column="applied_amount"/>
+			<result property="refundedAmount" column="refunded_amount"/>
+			<result property="billedWeight" column="billed_weight"/>
+			<result property="ccTransactions" column="order_id" select="findCCTransactionByOrderId"/>
+			<result property="fromInstructions" column="frominstructions"/>
+			<result property="toInstructions" column="toinstructions"/>
+			<result property="fulfilled" column="fulfilled"/>
+			<result property="tradeShowPickup" column="tradeshow_pickup"/>
+			<result property="tradeShowDelivery" column="tradeshow_delivery"/>
+			<result property="insidePickup" column="inside_pickup"/>
+			<result property="appointmentPickup" column="appointment_pickup"/>
+			<result property="appointmentDelivery" column="appointment_delivery"/>
+			<result property="customsInvoice" column="order_id" select="getCustomsInvoiceByOrderId"/>
+			<result property="trackingURL" column="tracking_url" />
+			<result property="ratedAsWeight" column="rated_as_weight" />
+			<result property="billToType" column="billing_type" />
+			<result property="billToAccountNum" column="billing_account" />			
+	</resultMap>
+	
+	<resultMap id="ShippingOrdersAllStatus" class="com.meritconinc.shiplinx.model.OrderStatus">
+			<result property="id"/>
+			<result property="name" />
+	</resultMap>
+	
+	<resultMap id="SearchOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
+			<result property="id" column="order_id" />
+			<result property="orderNum" column="order_num"/>
+			<result property="masterTrackingNum" column="master_tracking_num" />
+			<result property="referenceCodeName" column="reference_code_name"/>
+			<result property="referenceCode" column="reference_code"/>
+			<result property="carrierReference" column="carrier_reference"/>
+			<result property="businessId" column="business_id"/>
+			<result property="statusId" column="status_id"/>
+			<result property="statusName" column="status_id" select="getStatusName"/>
+			<result property="serviceId" column="service_id"/>
+			<result property="slaveServiceId" column="slave_service_id"/>
+			<result property="originalServiceId" column="original_service_id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="carrier" column="{carrierId=carrier_id, businessId=business_id" select="getCarrierByBusiness"/>
+			<result property="service" column="service_id" select="getService"/>
+			<result property="orderStatus" />
+			<result property="fromAddress" column="ship_from_id" select="findAddressById" />
+			<result property="fromCountry" />
+			<result property="toAddress" column="ship_to_id" select="findAddressById" />
+			<result property="trackingURL" column="tracking_url" />
+			<result property="dateCreated" column="date_created"/>
+			<result property="live" column="live_mode"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="charges" column="order_id" select="getShippingCharges"/>
+			<result property="packages" column="order_id" select="getShippingPackages"/>
+			<result property="customer" column="customer_id" select="getCustomerInfoByCustomerId"/>
+			<result property="markPercent" column="mark_percent"/>
+			<result property="markType" column="mark_type"/>	
+			<result property="fuelPercent" column="fuel_percent"/>
+			<result property="billingStatus" column="billing_status"/>	
+			<result property="referenceOneName" column="reference1_name"/>
+			<result property="referenceOne" column="reference1"/>
+			<result property="referenceTwoName" column="reference2_name"/>
+			<result property="referenceTwo" column="reference2"/>
+			<result property="scheduledShipDate" column="scheduled_ship_date"/>
+			<result property="quantity" column="quantity"/>
+			<result property="fromZone" column="from_zone"/>
+			<result property="toZone" column="to_zone"/>
+			<result property="currency" column="currency"/>
+			<result property="packageTypeId" column="package_type_id" select="getPackageTypeById"/>
+			<result property="paidAmount" column="paid_amount"/>
+			<result property="appliedAmount" column="applied_amount"/>
+			<result property="refundedAmount" column="refunded_amount"/>
+			<result property="billedWeight" column="billed_weight"/>
+			<result property="billedWeightUOM" column="billed_weight_uom"/>
+			<result property="quotedWeight" column="quoted_weight"/>
+			<result property="quotedWeightUOM" column="quoted_weight_uom"/>
+			<result property="ccTransactions" column="order_id" select="findCCTransactionByOrderId"/>
+			<result property="fromInstructions" column="frominstructions"/>
+			<result property="toInstructions" column="toinstructions"/>
+			<result property="satDelivery" column="sat_delivery"/>
+			<result property="docsOnly" column="docs_only"/>
+			<result property="pickup" column="order_id" select="findPickupByOrderId"/>
+			<result property="batchId" column="batch_id"/>
+			<result property="message" column="message"/>
+			<result property="customsInvoice" column="order_id" select="getCustomsInvoiceByOrderId"/>
+			<result property="ratedAsWeight" column="rated_as_weight" />
+			<result property="billToType" column="billing_type" />
+			<result property="billToAccountNum" column="billing_account" />
+			<result property="CODValue" column="cod_value"/>
+			<result property="CODPin" column="cod_pin"/>
+      <result property="tradeShowPickup" column="tradeshow_pickup"/>       
+            <result property="tradeShowDelivery" column="tradeshow_delivery"/>
+            <result property="insidePickup" column="inside_pickup"/>
+            <result property="appointmentPickup" column="appointment_pickup"/>
+            <result property="appointmentDelivery" column="appointment_delivery"/>
+             <result property="fromTailgate" column="fromtailgate"/>
+           <result property="toTailgate" column="totailgate"/>
+           <result property="holdForPickupRequired" column="hold"/>
+            <result property="insideDelivery" column="inside_delivery"/>
+       <result property="quoteTotalCharge" column="quote_total"/>
+            <result property="quoteTotalCost" column="quote_cost"/>
+            <result property="actualTotalCharge" column="actual_total"/>
+           <result property="actualTotalCost" column="actual_cost"/>
+	</resultMap>
+	
+	
+	<resultMap id="shippingPackageResultMap" class="com.meritconinc.shiplinx.model.PackageType">
+			<result property="packageTypeId"/>
+			<result property="name" />
+			<result property="type" />
+			<result property="description" />
+	</resultMap>
+	
+	<resultMap id="chargesResultMap" class="com.meritconinc.shiplinx.model.Charge">
+			<result property="chargeId" column="charge_id"/>
+			<result property="orderId" column="order_id"/>
+			<result property="name" column ="name"/>
+			<result property="cost" column ="cost"/>
+			<result property="charge" column ="charge"/>
+			<result property="currency" column ="currency"/>
+			<result property="discountAmount" column ="discount_amount"/>
+			<result property="ediInvoiceNumber" column ="edi_invoice_number"/>
+			<result property="status" column ="status"/>
+			<result property="id" column ="id"/>
+			<result property="chargeCode" column ="charge_code"/>
+			<result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+			<result property="tariffRate" column ="tariff_rate"/>
+			<result property="type" column ="type"/>
+            <result property="carrierId" column ="carrier_id"/>
+			<result property="invoiceId" column="invoice_id"/>
+            <result property="carrierName" column ="carrier_name"/>
+			<result property="invoiceNum" column="invoice_num"/>	
+            <result property="cancelledInvoice" column="cancelled_invoice"/>
+            <result property="costcurrency" column="cost_currency" />
+            <result property="chargecurrency" column="charge_currency" />
+             <result property="exchangerate" column="exchange_rate" /> 		
+		
+	</resultMap>
+	
+  <resultMap id="chargesResult" class="com.meritconinc.shiplinx.model.Charge">
+      <result property="chargeId" column="charge_id"/>
+      <result property="orderId" column="order_id"/>
+      <result property="name" column ="name"/>
+      <result property="cost" column ="cost"/>
+      <result property="charge" column ="charge"/>
+      <result property="currency" column ="currency"/>
+      <result property="discountAmount" column ="discount_amount"/>
+      <result property="ediInvoiceNumber" column ="edi_invoice_number"/>
+      <result property="status" column ="status"/>
+      <result property="id" column ="id"/>
+      <result property="chargeCode" column ="charge_code"/>
+      <result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+      <result property="tariffRate" column ="tariff_rate"/>
+      <result property="type" column ="type"/>
+      <result property="quoteChargeId" column ="quote_charge_id"/>
+      <result property="carrierId" column ="carrier_id"/>
+       <result property="carrierName" column ="carrier_name"/>
+      <result property="costcurrency" column="cost_currency" />
+            <result property="chargecurrency" column="charge_currency" />
+             <result property="exchangerate" column="exchange_rate" />
+
+      </resultMap>
+
+	<resultMap id="carrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+			<result property="id" column="id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="chargeCode" column ="charge_code"/>
+			<result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+			<result property="chargeName" column ="charge_name"/>
+			<result property="chargeDesc" column ="charge_desc"/>
+			<result property="groupId" column="group_id"/>
+			<result property="groupCode" column="group_code"/>
+			<result property="groupName" column="group_name"/>
+			<result property="groupDesc" column="group_desc"/>
+			<result property="tax" column="is_tax"/>
+			<result property="taxRate" column="tax_rate"/>
+			<result property="displayOrder" column="display_order"/>
+	</resultMap>
+	
+      <resultMap id="ajaxCarrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+         <result property="chargeCode" column ="charge_code"/>
+     </resultMap>
+ 
+     <resultMap id="ajaxCarrierChargeNameResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+         <result property="chargeName" column ="charge_name"/>
+         <result property="id" column="id"/>
+      </resultMap>
+  
+	<resultMap id="chargeGroupResultMap" class="com.meritconinc.shiplinx.model.ChargeGroup">
+			<result property="groupId" column="id"/>
+			<result property="groupCode" column="group_code"/>
+			<result property="groupName" column="group_name"/>
+			<result property="groupDesc" column="group_desc"/>
+			<result property="tax" column="is_tax"/>
+			<result property="taxRate" column="tax_rate"/>
+			<result property="displayOrder" column="display_order"/>
+	</resultMap>
+	
+	<resultMap id="labelResultMap" class="com.meritconinc.shiplinx.model.ShippingLabel">
+			<result property="id" column="id"/>
+			<result property="orderId" column="order_id"/>
+			<result property="trackingNumber" column ="tracking_number"/>
+			<result property="label" column ="label"/>
+			<result property="html" column ="html"/>
+			<result property="twoDLabelString" column ="twoD_label_string"/>
+			<result property="originId" column ="origin_id"/>
+			<result property="shipDateString" column ="ship_date_string"/>
+			<result property="actualWeightString" column ="actual_weight_string"/>
+			<result property="systemNumString" column ="system_num_string"/>
+			<result property="dimmedString" column ="dimmedString"/>
+			<result property="delivDayString" column ="deliv_day_string"/>
+			<result property="delivByString" column ="deliv_by_string"/>
+			<result property="ursaCodeString" column ="ursa_code_string"/>
+			<result property="serviceCommitmentString" column ="service_commitment_string"/>
+			<result property="serviceDestinationString" column ="service_destination_string"/>
+			<result property="formId" column ="form_id"/>
+			<result property="labelType" column ="label_type"/>
+			<result property="codLabel" column ="cod_label"/>
+	</resultMap>
+	
+	<resultMap id="shippingPackResultMap" class="com.meritconinc.shiplinx.model.Package">
+			<result property="packageId" column="package_id"/>
+			<result property="orderId" column="order_id"/>
+			<result property="description" column="description"/>
+			<result property="length" column="length"/>
+			<result property="width" column="width"/>
+			<result property="height" column="height"/>
+			<result property="weight" column="weight"/>
+			<result property="position" column="position"/>
+			<result property="trackingNumber" column="tracking_number"/>
+			<result property="codAmount" column="cod_value"/>
+			<result property="insuranceAmount" column="insurance_amount"/>
+			<result property="freightClass" column="freight_class"/>
+	</resultMap>
+	
+	<resultMap id="servicesResultMap" class="com.meritconinc.shiplinx.model.Service">
+			<result property="id" column="service_id"/>
+			<result property="name" column="name"/>
+			<result property="description" column="description"/>
+			<result property="code" column="code"/>
+			<result property="serviceTimeMins" column="service_time_mins"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="mode" column="mode"/>
+			<result property="serviceType" column="service_type"/> 					
+	</resultMap>
+	
+	<resultMap id="getTodaysOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
+			<result property="masterTrackingNum" column="master_tracking_num" />
+			<result property="referenceCode" />
+			<result property="carrierName" />
+			<result property="serviceName" />
+			<result property="orderStatus" />
+			<result property="scheduledShipDate" />
+			<result property="id" />
+			<result property="isOrderEdited" />
+			<result property="live" column="live_mode"/>
+	</resultMap>
+	
+	<resultMap id="getShippingOrder" class="com.meritconinc.shiplinx.model.ShippingOrder">
+		<result property="referenceCode"/>
+		<result property="satDelivery"/>
+		<result property="holdForPickupRequired"/>
+		<result property="insideDelivery"/>
+		<result property="specialEquipment"/>
+		<result property="CODPayment"/>
+		<result property="CODValue"/>
+		<result property="CODCurrency"/>
+		<result property="CODPayableTO"/>
+		<result property="dangerousGoods"/>
+		<result property="reqDeliveryDate"/>
+		<result property="scheduledShipDate"/>
+		<result property="referenceOne"/>
+		<result property="referenceTwo"/>
+		<result property="masterTrackingNum"/>
+		<result property="res"/>
+		<result property="fromTailgate"/>
+		<result property="toTailgate"/>
+		<result property="fromAttention"/>
+		<result property="toAttention"/>
+		<result property="notifyRecipient"/>
+		<result property="confirmDelivery"/>
+		<result property="live" column="live_mode"/>
+		<result property="fromZone" column="from_zone"/>
+		<result property="toZone"  column="to_zone"/>
+		<result property="quantity"  column="quantity"/>
+		<result property="podDateTime"  column="pod_date_time"/>
+		<result property="podReceiver"  column="pod_receiver"/>
+	</resultMap>
+	<resultMap id="getShippingPackages" class="com.meritconinc.shiplinx.model.Package">
+			<result property="packageId" />
+			<result property="description" />
+			<result property="length" />
+			<result property="height" />
+			<result property="weight" />
+			<result property="width" />
+			<result property="insuranceAmount" />
+			<result property="codAmount" />
+			<result property="type" />
+			<result property="position" />
+			<result property="freightClass" />
+			<result property="trackingNumber" column="tracking_number"/>
+			<result property="billedWeight" column="billed_weight"/>
+			<result property="reference1" column="reference1"/>
+			<result property="reference2" column="reference2"/>
+			<result property="reference3" column="reference3"/>
+			<result property="weightUOM" column="weight_uom"/>
+			<result property="dimmedString" column="dimmed_string"/>
+	</resultMap>
+
+	<resultMap id="customsInvoiceMap" class="com.meritconinc.shiplinx.model.CustomsInvoice">
+		<result property="id" column="id"/>
+		<result property="orderId" column="order_id"/>
+		<result property="billTo" column="bill_to"/>
+		<result property="billToAccountNum" column="bill_to_account_num"/>
+		<result property="billToAddressId" column="bill_to_address_id"/>
+		<result property="billToAddress" column="bill_to_address_id" select="findAddressById" />
+		<result property="reference" column="reference_num"/>
+		<result property="currency" column="value_currency"/>
+		<result property="totalValue" column="total_value"/>
+		<result property="totalWeight" column="total_weight"/>
+		<result property="taxId" column="tax_id"/>
+		<result property="brokerAddressId" column="broker_address_id"/>
+		<result property="brokerAddress" column="broker_address_id" select="findAddressById" />
+		<result property="products" column="id" select="getCustomsInvoiceProducts"/>
+		<result property="exportDataName" column="export_data_name"/>
+		<result property="exportData" column="export_data"/>
+		<result property="buyerAddressId" column="buyer_id"/>
+		<result property="incoTerms" column="inco_terms"/>
+	</resultMap>
+	
+	<resultMap id="customsInvoiceProductMap" class="com.meritconinc.shiplinx.model.CustomsInvoiceProduct">
+		<result property="productId" column="product_id"/>
+		<result property="customsInvoiceId" column="customs_invoice_id"/>
+		<result property="productDesc" column="product_desc"/>
+		<result property="productHC" column="product_hc"/>
+		<result property="productOrigin" column="product_country_origin"/>
+		<result property="productQuantity" column="product_quantity"/>
+		<result property="productUnitPrice" column="product_unit_price"/>
+		<result property="productWeight" column="product_weight"/>		
+	</resultMap>
+	
+	<resultMap id="productMap" class="com.meritconinc.shiplinx.model.Products">
+		<result property="productId"/>
+		<result property="productName"/>
+		<result property="productDescription"/>
+		<result property="productHarmonizedCode"/>
+		<result property="unitPrice"/>
+		<result property="originCountry"/>
+	</resultMap>
+	
+	<resultMap id="OrderProductMap" class="com.meritconinc.shiplinx.model.OrderProduct">
+		<result property="orderId" column="order_id"/>
+		<result property="productId" column="product_id"/>
+		<result property="orderedQuantity" column="ordered_quantity"/>
+		<result property="fulfilledQuantity" column="fulfilled_quantity"/>
+	</resultMap>
+	
+	<resultMap id="ShippingBillingAllStatus" class="com.meritconinc.shiplinx.model.BillingStatus">
+		<result property="billingStatusId" column="billing_status_id"/>
+		<result property="billingStatusText" column="billing_status_name"/>
+	</resultMap>
+	
+	<resultMap class="com.meritconinc.shiplinx.model.DangerousGoods" id="DangerousGoodsMap">
+		<result property="dangerousgoodsId" column="dg_id"/>
+		<result property="dangerousGoodsName" column="dg_name"/>
+	</resultMap>
+	<resultMap class="com.meritconinc.shiplinx.model.InvoiceCharge" id="InvoiceChargeResult">
+      <result property="chargeId" column="charge_id"/>
+      <result property="orderId" column="order_id"/>
+   </resultMap>
+   <resultMap class="com.meritconinc.shiplinx.model.Charge" id="ChargeResult">
+   <result property="chargeId" column="charge_id"/>
+    <result property="orderId" column="order_id"/>
+    <result property="name" column ="name"/>
+   <result property="tariffRate" column ="tariff_rate"/>
+   <result property="cost" column ="cost"/>
+   <result property="charge" column ="charge"/>
+   <result property="chargeCode" column ="charge_code"/>
+   <result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+    <result property="currency" column ="currency"/>
+   <result property="discountAmount" column ="discount_amount"/>
+   <result property="ediInvoiceNumber" column ="edi_invoice_number"/>
+   <result property="type" column ="type"/>
+   <result property="carrierId" column ="carrier_id"/>
+   <result property="carrierName" column ="carrier_name"/>
+   <result property="costcurrency" column="cost_currency" />
+            <result property="chargecurrency" column="charge_currency" />
+             <result property="exchangerate" column="exchange_rate" />
+   
+   <result property="quoteChargeId" column ="quote_charge_id"/>
+   </resultMap>
+	
+	
+	<insert id="addShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
+			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id) 
+			 					 values (#orderNum#, #statusId#,#shipToId#,	#shipFromId#,	#packageTypeId.packageTypeId#,	#businessId#, #customerId#,	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,	#docsOnly#, #holdForPickupRequired#,#insideDelivery#,	#specialEquipment#,	#CODPayment#,	#CODValue#,	#CODCurrency#,	#CODPin#, #dangerousGoods#,	#reqDeliveryDate#,	#carrierId#,#serviceId#,#originalServiceId#,#totalCharge#,	#baseCharge#,	#fromInstructions#,	#toInstructions#,#fromTailgate#,#toTailgate#,	#fromAttention#,#toAttention#,	#dateCreated#,	#recidential#,	#scheduledShipDate#,#masterTrackingNum#,	#live#, 	#fromZone#, #toZone#, #quantity#, 	#referenceOneName#, #referenceOne#, #referenceTwoName#, #referenceTwo#, #podDateTime#,#podReceiver#,#markPercent#, #markType#, #fuelPercent#, #billingStatus#,#paidAmount#,#billedWeight#, #billedWeightUOM#, #quotedWeight#, #quotedWeightUOM#, #currency#, #createdBy#, #batchId#, #message#, #tradeShowPickup#, #tradeShowDelivery#, #insidePickup#, #appointmentPickup#, #appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#, #billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#)    
+			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<insert id="addPackage" parameterClass="com.meritconinc.shiplinx.model.Package">
+			  insert into package	(package_id,	order_id,	description,	length,		width,	height,		weight,		position,	tracking_number,	cod_value,	insurance_amount,	freight_class, 	billed_weight, 	reference1, 	reference2, 	reference3, 	weight_uom, dimmed_string,type) 
+			  values 				(#packageId#,	#orderId#,	#description#,	#length#,	#width#,#height#,	#weight#,	#position#,	#trackingNumber#,	#codAmount#,#insuranceAmount#,	#freightClass#, #billedWeight#, #reference1#, 	#reference2#, 	#reference3#, 	#weightUOM#, #dimmedString#,#type#)
+			<selectKey resultClass="long" type="post" keyProperty="packageId" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	<insert id="addCharge" parameterClass="com.meritconinc.shiplinx.model.Charge"> 
+			  insert into charges(charge_id,order_id, name,   cost,   charge,     currency,   discount_amount,    edi_invoice_number, status,     charge_code,    charge_code_level_2,tariff_rate,  type, carrier_id,  carrier_name,quote_charge_id,cost_currency,charge_currency,exchange_rate) 
+              values ((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),  #orderId#,  #name#, #cost#, #charge#,   #currency#, #discountAmount#,   #ediInvoiceNumber#, #status#,   #chargeCode#,   #chargeCodeLevel2#, #tariffRate#, #type#, #carrierId#, #carrierName#,#quoteChargeId#,#costcurrency#,#chargecurrency#,#exchangerate#)
+ 			<selectKey resultClass="long" type="post" keyProperty="chargeId" >select LAST_INSERT_ID() as value
+
+ 	 		</selectKey>			
+			
+	</insert>
+
+	<insert id="saveLabel" parameterClass="com.meritconinc.shiplinx.model.ShippingLabel">
+			 insert into shipping_labels(id, order_id, tracking_number, label, html, twoD_label_string, origin_id, ship_date_string, actual_weight_string, system_num_string, dimmedString, deliv_day_string, deliv_by_string, ursa_code_string, service_commitment_string, service_destination_string, form_id, label_type, cod_label) 
+			 values (#id#,#orderId#,#trackingNumber#,#label#,#html#,#twoDLabelString#,#originId#,#shipDateString#,#actualWeightString#,#systemNumString#,#dimmedString#,#delivDayString#,#delivByString#,#ursaCodeString#,#serviceCommitmentString#,#serviceDestinationString#,#formId#,#labelType#,#codLabel#)
+			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<insert id="addProductsToShipment">
+		insert into order_product (order_id, product_id, ordered_quantity) values (#orderId#,#productId#,#orderedQuantity#)
+	</insert>
+	
+	<update id="updatefulfilledProductOrder">
+		update order_product set fulfilled_quantity = fulfilled_quantity + #fulfilled# where order_id = #orderId# and product_id=#productId#
+	</update>
+	
+	<select id="getOrderProducts" resultMap="OrderProductMap">
+		select * from order_product where order_id = #orderId#
+	</select>
+
+	<select id="getServiceById" resultMap="servicesResultMap">
+		select * from service s where s.service_id = #serviceId#
+	</select>
+
+
+	<select id="getShippingOrderById" resultMap="SearchOrderResult">
+		select * from shipping_order s where  s.order_id=#orderId#
+	</select>
+	
+	<select id="getShippingLabelByOrderId" resultMap="labelResultMap">
+		select * from shipping_labels s where  s.order_id=#orderId#
+	</select>
+	
+
+	<select id="getAllPackages" resultMap="shippingPackageResultMap">
+		select * from package_type 
+	</select>
+	
+	<select id="getServiceByName" resultMap="servicesResultMap">
+		select * from service s where  s.name=#id#
+	</select>
+	
+	<select id="getPackageType" resultMap="shippingPackageResultMap">
+		select * from package_type p where p.type = #type#
+	</select>
+
+	<select id="getPackageTypeById" resultMap="shippingPackageResultMap">
+		select * from package_type p where p.package_type_id = #packageTypeId#
+	</select>	
+	
+	<select id="getServices" resultMap="servicesResultMap">
+		select * from services
+	</select>
+	
+	<select id="getShippingOrdersAllStatus" resultMap="ShippingOrdersAllStatus">
+		select status_id,name from order_status
+	</select>
+
+	<select id="getStatusName" resultClass="java.lang.String">
+		select name from order_status where status_id=#id#
+	</select>
+	
+	<select id="getShippingOrdersStatusOptions" resultMap="ShippingOrdersAllStatus">
+		select o.status_id, o.name from order_status o left join order_status_options p on (o.status_id = p.status_option_id) where p.status_id = #currStatus# 
+		union
+		select * from order_status where status_id = #currStatus#
+	</select>
+
+
+	<select id="getSearchOrderResult" resultMap="SearchOrderResult" >
+		select so.order_id,so.order_num, so.master_tracking_num,so.reference_code_name,so.reference_code,car.name,ser.name,os.name,concat_ws(', ',from_add.address1,from_add.city,from_prov.name,from_country.name),concat_ws(', ',to_add.address1,to_add.city,to_prov.name,to_country.name) ,concat(car.tracking_url,so.master_tracking_num),so.date_created, so.scheduled_ship_date, so.live_mode, so.customer_id, so.reference1_name,so.reference1, so.reference2_name, so.reference2, so.billed_weight from shipping_order so,address from_add,address to_add,carrier car,service ser,order_status os,province from_prov,province to_prov,country_new from_country,country_new to_country
+	 	where so.carrier_id=car.carrier_id and so.service_id=ser.service_id and so.status_id=os.status_id and to_add.address_id=so.ship_to_id and from_add.address_id=so.ship_from_id  and from_prov.province_id=from_add.province_id and to_prov.province_id=to_add.province_id and  from_country.country_id=from_add.country_id and to_country.country_id=to_add.country_id 
+	 <isNotNull  property="carrierId">
+		 and so.carrier_id=#carrierId# 
+	</isNotNull>
+	<isNotNull property="serviceId">
+		 and so.service_id=#serviceId# 
+	</isNotNull>
+	<isNotNull property="statusId">
+		 and so.status_id=#statusId# 
+	</isNotNull>
+	<isNotNull  property="masterTrackingNum">
+		 and so.master_tracking_num='$masterTrackingNum$'
+	</isNotNull>
+	
+		 <isNotNull  property="fromDate">
+		 	and so.date_created between #fromDate# and #toDate#
+		</isNotNull>
+	
+	</select>
+
+	
+	<select id="getTodaysOrderResult" resultMap="getTodaysOrderResult" >
+		select so.master_tracking_num,so.reference_code,car.name,ser.name,os.name,
+		concat_ws(', ',from_add.address1,from_add.city,from_prov.name,from_country.name),
+		concat_ws(', ',to_add.address1,to_add.city,to_prov.name,to_country.name),SUBSTRING(so.scheduled_ship_date,1,10),so.order_id,so.isOrderEdited,so.live_mode  
+		from shipping_order so,address from_add,address to_add,carrier car,service ser,order_status os,province from_prov,province to_prov,country_new from_country,country_new to_country
+		where so.carrier_id=car.carrier_id and so.service_id=ser.service_id and so.status_id=os.status_id and to_add.address_id=so.ship_to_id and from_add.address_id=so.ship_from_id  and from_prov.province_id=from_add.province_id and to_prov.province_id=to_add.province_id and  from_country.country_id=from_add.country_id and to_country.country_id=to_add.country_id 
+		and (so.isOrderCancelled='N') and so.customer_id=#customerId# and DATEDIFF(so.scheduled_ship_date,now()) > 0 and so.date_created like concat(SUBSTRING(now(),1,10),'%')
+	</select>
+ 
+
+	<select id="findOrderPackageType" resultMap="shippingPackageResultMap">
+		select p.* from package_type p,shipping_order so where so.package_type_id=p.package_type_id and so.order_id=#orderId#
+	</select>
+
+
+	<select id="searchOrderByCarrierId" resultMap="SearchOrderResult">
+		select o.order_id, so.order_num, o.master_tracking_num, o.reference_code, o.carrier_id,o.service_id, o.status_id, o.ship_from_id, c.name, o.ship_to_id, o.date_created, o.scheduled_ship_date, o.reference1, o.reference2, o.billed_weight
+		o.live_mode, o.customer_id from shipping_order o, address a 
+		where carrier_id=#carrierId# and o.ship_from_id = a.address_id and (DATEDIFF(o.date_created, now()) > -30)
+	</select>
+
+	<select id="getShippingPackages" resultMap="getShippingPackages" >
+		select package_id, description,length,height,weight,width,insurance_amount,cod_value,type,position,freight_class,type, 
+				tracking_number, billed_weight, reference1, reference2, reference3, weight_uom, dimmed_string
+		from package where order_id=#orderId#
+	</select>
+
+	<update id = "updateShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" >
+		update shipping_order set order_id=#id#
+		<dynamic>
+			<isGreaterThan prepend="," property="paidAmount" compareValue="0">
+				paid_amount = #paidAmount#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="appliedAmount" compareValue="0">
+				applied_amount = #appliedAmount#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="statusId" compareValue="0">
+				status_id = #statusId#
+			</isGreaterThan> 
+			<isNotNull property="billedWeight" >
+				<isGreaterThan prepend="," property="billedWeight" compareValue="0">
+					billed_weight = #billedWeight#
+				</isGreaterThan> 
+			</isNotNull>
+			<isNotNull prepend="," property="billedWeightUOM">
+				billed_weight_uom = #billedWeightUOM#
+			</isNotNull>
+			<isNotNull prepend="," property="message">
+				message = #message#
+			</isNotNull>
+			<isNotNull property="fromZone">
+				<isNotEmpty prepend="," property="fromZone">
+					from_zone = #fromZone#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="fulfilled">
+				<isNotEmpty prepend="," property="fulfilled">
+					fulfilled = #fulfilled# 
+				</isNotEmpty>
+			</isNotNull>									
+			<isNotNull property="trackingURL">
+				<isNotEmpty prepend="," property="trackingURL">
+					tracking_url = #trackingURL# 
+				</isNotEmpty>
+			</isNotNull>									
+			<isNotNull property="masterTrackingNum">
+				<isNotEmpty prepend="," property="masterTrackingNum">
+					master_tracking_num = #masterTrackingNum# 
+				</isNotEmpty>
+			</isNotNull>									
+		</dynamic>
+		where order_id=#id#
+	</update>
+	
+	<update id="updateShippingOrderExtended" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
+		update shipping_order set status_id=#statusId#, package_type_id=#packageTypeId.packageTypeId#, business_id=#businessId#, customer_id=#customerId#,
+						cod_payment=#CODPayment#, cod_value=#CODValue#, cod_currency=#CODCurrency#,	carrier_id=#carrierId#,	service_id=#serviceId#, original_service_id=#originalServiceId#,
+						total_charge=#totalCharge#, base_charge=#baseCharge#, master_tracking_num=#masterTrackingNum#, live_mode=#live#,  
+						from_zone=#fromZone#, 	to_zone=#toZone#, quantity=#quantity#,  reference_code=#referenceCode#, reference1_name=#referenceOneName#, reference1=#referenceOne#, reference2_name=#referenceTwoName#, reference2=#referenceTwo#,
+						pod_datetime=#podDateTime#, pod_receiver=#podReceiver#, mark_percent=#markPercent#,  mark_type=#markType#, fuel_percent=#fuelPercent#,
+						billing_status=#billingStatus#, paid_amount=#paidAmount#, applied_amount=#appliedAmount#, refunded_amount=#refundedAmount#, billed_weight=#billedWeight#, currency=#currency#, message=#message#,
+						quoted_weight=#quotedWeight#, quoted_weight_uom=#quotedWeightUOM#, billed_weight_uom=#billedWeightUOM#, scheduled_ship_date=#scheduledShipDate#, tradeshow_pickup = #tradeShowPickup#, tradeshow_delivery = #tradeShowDelivery#, 
+						inside_pickup = #insidePickup#, appointment_pickup = #appointmentPickup#, appointment_delivery = #appointmentDelivery#, fromtailgate = #fromTailgate#, totailgate = #toTailgate#,
+						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#
+				where order_id=#id#
+	</update>	
+
+	<update id = "deleteShippingOrder">
+		update shipping_order set isOrderCancelled='Y' where order_id=#orderId#
+	</update>	
+  
+    <update id="updateInvoiceCancelStatus">
+       update invoice_charges set cancelled_invoice='Yes' where charge_id=#id#
+    </update>
+
+	<select id="getShippingCharges" resultMap="chargesResultMap" >
+      select c.*, i.invoice_id,inv.invoice_num,i.cancelled_invoice from charges c left join invoice_charges i on (c.id=i.charge_id) left join invoice inv on (i.invoice_id=inv.invoice_id) where c.order_id=#orderId#
+	</select>
+
+	<select id="getShippingChargesByInvoice" resultMap="chargesResult" >
+		select * from charges c left join invoice_charges i on (c.id=i.charge_id) where i.order_id=#orderId# and i.invoice_id=#invoiceId#
+	</select>
+
+	<select id="getChargeByCarrierAndCodes" resultMap="carrierChargeCodeResultMap" >
+		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
+		where ccc.carrier_id=#carrierId#
+		<isNotNull  property="chargeCode">
+		 and ccc.charge_code=#chargeCode# 
+		</isNotNull>
+		<isNotNull  property="chargeCodeLevel2">
+		 and ccc.charge_code_level_2=#chargeCodeLevel2# 
+		</isNotNull>		
+	</select>
+	
+  
+  <select id="getChargeCodeListByCarrierId" resultMap="ajaxCarrierChargeCodeResultMap">
+     select charge_code from carrier_charge_code where carrier_id=#carrierId# group by charge_code 
+ </select>
+ 
+ <select id="getChargeCodeListByCarrierIdAndChargeCode" resultMap="ajaxCarrierChargeNameResultMap">
+     select id,charge_name from carrier_charge_code where carrier_id=#carrierId# and charge_code=#chargeCode#
+ </select>
+
+	<select id="getChargeGroup" resultMap="chargeGroupResultMap" >
+		select * from charge_group where id=#groupId#
+	</select>
+	
+	
+	<select id="getShippingOrdersByInvoiceId" resultMap="SearchOrderResult" >
+		select distinct s.* from shipping_order s left join invoice_charges i on (s.order_id=i.order_id) where i.invoice_id=#value#
+	</select>
+	
+	<select id="searchOrderByTrackingNumber" resultMap="SearchOrderResult">
+		select distinct o.*  from shipping_order o 
+				left join package p on (o.order_id=p.order_id)
+		where o.carrier_id=#carrierId# and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#);
+				
+	</select>	
+	
+	<select id="searchOrderByMasterTrackingNumber" resultMap="SearchOrderResult">
+		select distinct o.*  from shipping_order o 
+				left join package p on (o.order_id=p.order_id)
+		where o.carrier_id=#carrierId# and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#);
+				
+	</select>	
+	
+	<select id="searchLiveUnpaidShipments" resultMap="ShippingOrderResult">
+		select distinct s.* from shipping_order s left join invoice_charges i on (s.order_id=i.order_id) 
+		where i.order_id is null and s.paid_amount=0 and s.status_id!=#statusId#  
+		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 	s.customer_id = #customerId#
+		</isGreaterThan>			
+	</select>	
+
+ 	<resultMap id="ShippingOrderInvoicingResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
+ 	 	<result property="customerName" column="name"/>
+  		<result property="id" column="order_id"/>
+  		<result property="dateCreated" column="date_created"/>
+  		<result property="totalToCharge" column="charge"/>
+  		<result property="totalToCost" column="cost"/>
+ 	    <result property="previouslyBilled" column="billed"/>
+ 	</resultMap>
+ 
+	<select id="searchUnbilledShipments" resultMap="ShippingOrderResult">
+		select distinct s.* from shipping_order s left join charges c on (s.order_id=c.order_id) left join customer cus on (s.customer_id=cus.customer_id) where c.status=#statusId# and cus.business_id=#businessId#
+		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 	s.customer_id = #customerId#
+		</isGreaterThan>		
+     	<isNotNull property="branch">
+     		<isNotEmpty prepend="and"  property="branch">
+     			cus.branch=#branch#
+      		</isNotEmpty>
+      	</isNotNull>
+		order by cus.name, s.order_id	
+	</select>	
+	
+	<select id="searchUnbilledShipments2" resultMap="ShippingOrderInvoicingResult">
+  select cus.name, s.order_id, s.date_created, sum(IF(c.status=#statusId#, c.charge, 0)) AS 'charge', sum(IF(c.status=#statusId#, c.cost, 0)) as 'cost', sum(IF(c.status=30, c.charge, 0)) AS 'billed'
+     from shipping_order s left join charges c on (s.order_id=c.order_id and c.type=1 )
+     left join customer cus on (s.customer_id=cus.customer_id)
+   where s.order_id in (select distinct(c.order_id) from charges c left join shipping_order s on (c.order_id=s.order_id) where status=#statusId# and s.status_id!=40 and type=1 and c.charge>0)
+     and cus.business_id=#businessId#  
+      
+  <isGreaterThan prepend="and" property="customerId" compareValue="0">
+    s.customer_id = #customerId#
+  </isGreaterThan>  
+      <isNotNull property="branch">
+       <isNotEmpty prepend="and"  property="branch">
+        cus.branch=#branch#
+        </isNotEmpty>
+       </isNotNull>
+  group by s.order_id order by cus.name, s.order_id  
+ </select>	
+	
+	<select id="searchShipmentsByOrderIdsAndCustomerAndCurrency" resultMap="ShippingOrderResult">
+		select distinct s.* from shipping_order s where s.order_id in 
+			<iterate open="(" close=")" conjunction="," property="orderIds">
+				#orderIds[]#
+			</iterate> 		
+		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 	s.customer_id = #customerId#
+		</isGreaterThan>			
+		<isNotNull  property="currency">
+		 and s.currency=#currency# 
+		</isNotNull>		
+	</select>	
+	<select id="searchCustomerIdsByOrderIds" resultClass="java.lang.Long">
+		select distinct s.customer_id from shipping_order s where s.order_id in 		
+			<iterate open="(" close=")" conjunction=",">
+				#[]#
+			</iterate> 		
+	</select>	
+	<select id="searchCurrencyByOrderIds" resultClass="java.lang.String">
+		select distinct s.currency from shipping_order s where s.order_id in 		
+			<iterate open="(" close=")" conjunction=",">
+				#[]#
+			</iterate> 		
+	</select>	
+	
+	<insert id="updateCharge">
+			 update charges set name=#name#, charge=#charge#, cost=#cost#, discount_amount=#discountAmount#, status=#status#, tariff_rate=#tariffRate#,
+						carrier_name=#carrierName#,carrier_id=#carrierId#, edi_invoice_number=#ediNumber#,cost_currency=#costcurr#,charge_currency=#chargecurr#,exchange_rate=#exchangerate# where id=#id#              				
+ 	</insert>		
+		
+	<update id = "updatePackage" parameterClass="com.meritconinc.shiplinx.model.Package" >
+		update package set package_id=package_id
+		<dynamic>
+			<isGreaterThan prepend="," property="weight" compareValue="0">
+				weight = #weight#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="width" compareValue="0">
+				width = #width#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="height" compareValue="0">
+				height = #height#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="length" compareValue="0">
+				length = #length#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="billedWeight" compareValue="0">
+				billed_weight=#billedWeight#
+			</isGreaterThan> 
+			<isNotNull prepend="," property="type">
+				type=#type#
+			</isNotNull> 
+			<isNotNull prepend="," property="reference2">
+				reference2=#reference2#
+			</isNotNull> 
+			<isNotNull prepend="," property="reference1">
+				reference1=#reference1#
+			</isNotNull> 
+			<isNotNull prepend="," property="reference3">
+				reference3=#reference3#
+			</isNotNull> 
+			<isNotNull prepend="," property="weightUOM">
+				 weight_uom=#weightUOM#
+			</isNotNull> 
+			<isNotNull prepend="," property="trackingNumber">
+				 <isNotEmpty property="trackingNumber">
+				 	tracking_number=#trackingNumber#
+				 </isNotEmpty>
+			</isNotNull> 	
+			<isNotNull property="codAmount">
+				<isGreaterThan prepend="," property="codAmount" compareValue="0">				
+					 cod_value=#codAmount#
+				</isGreaterThan>
+			</isNotNull> 
+			<isNotNull property="insuranceAmount">
+				<isGreaterThan prepend="," property="insuranceAmount" compareValue="0">				
+					 insurance_amount=#insuranceAmount#
+				</isGreaterThan>
+			</isNotNull> 
+			<isNotNull prepend="," property="freightClass">
+				 freight_class=#freightClass#
+			</isNotNull> 
+			<isNotNull prepend="," property="dimmedString">
+				 dimmed_string=#dimmedString#
+			</isNotNull> 			
+			<isNotNull prepend="," property="description">
+				 description=#description#
+			</isNotNull> 	
+					
+		</dynamic>
+		where package_id=#packageId#
+	</update>
+
+	<select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+		select distinct o.* 
+			from shipping_order o
+			left join package p on (o.order_id=p.order_id) 
+			left join charges c on (o.order_id=c.order_id)
+			left join customer cu on (o.customer_id = cu.customer_id)
+			left join customer_sales cs on (o.customer_id = cs.customer_id)
+		<dynamic prepend="where">
+			o.order_id&gt;0
+			<isNotNull  property="id">
+				 and o.order_id=#id#
+			</isNotNull>	
+			<isNotNull  property="batchId">
+				 <isNotEmpty property="batchId">
+				 	and o.batch_id=#batchId#
+				 </isNotEmpty>
+			</isNotNull>	
+			<isNotNull  property="statusId">
+				 <isNotEmpty property="statusId">
+				 	and o.status_id=#statusId#
+				 </isNotEmpty>
+			</isNotNull>
+			<isNull  property="statusId">
+				<isNotNull property="cancelledShipments">
+					<isEqual property="cancelledShipments" compareValue="N">
+						and (o.status_id != 40 or o.status_id is null)
+					</isEqual>
+				</isNotNull>
+			</isNull>
+			<isNotNull  property="orderNum">
+				 <isNotEmpty property="orderNum">
+				 and o.order_num=#orderNum#
+				 </isNotEmpty>
+			</isNotNull>			
+			<isNotNull property="customerId">
+				and o.customer_id=#customerId#
+			</isNotNull>	
+			<isGreaterThan property="businessId" compareValue="0">
+				and o.business_id=#businessId#
+			</isGreaterThan>	
+			<isNotNull  property="carrierId">
+				 and o.carrier_id=#carrierId#
+			</isNotNull>			
+			<isNotNull  property="serviceId">
+				 and o.service_id=#serviceId#
+			</isNotNull>
+			<isNotNull property="masterTrackingNum">
+				and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#)
+			</isNotNull>
+		 	<isNotNull property="fromDateTime">
+		 		<![CDATA[and scheduled_ship_date >= #fromDateTime#]]>
+		 	</isNotNull>
+		 	<isNotNull property="toDateTime">
+		 		<![CDATA[and scheduled_ship_date <= #toDateTime#]]>
+		 	</isNotNull>
+			<isGreaterEqual property="billingStatus" compareValue="0">
+				and o.billing_status=#billingStatus#
+			</isGreaterEqual>	
+			<isNotNull property="ediInvoiceNumber">
+				<isNotEmpty property="ediInvoiceNumber">
+					and c.edi_invoice_number=#ediInvoiceNumber#
+				</isNotEmpty>
+			</isNotNull>	
+			<isNotNull property="referenceCode">
+				<isNotEmpty property="referenceCode">
+					and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
+				</isNotEmpty>
+			</isNotNull>	
+			 <isNotNull property="salesAgentUsername">
+	   			<isNotEmpty property="salesAgentUsername">
+	     		and (cs.sales_user=#salesAgentUsername#)
+	      		</isNotEmpty>
+     		</isNotNull>
+     		<isNotNull property="createdBy">
+	   			<isNotEmpty property="createdBy">
+	     		and (o.created_by=#createdBy#)
+	      		</isNotEmpty>
+     		</isNotNull>	
+     		<isNotNull property="branch">
+	   			<isNotEmpty property="branch">
+	     		and (cs.branch=#branch#)
+	      		</isNotEmpty>
+     		</isNotNull>
+     										
+		</dynamic>                 
+		order by $orderBy$ $order$                
+	</select>
+	
+	<update id="releaseCharges">
+		update charges c left join shipping_order so on  (c.order_id=so.order_id)
+    		set c.status=#statusReadyToInvoice#
+			where c.edi_invoice_number=#ediInvoiceNumber# and 
+					c.status=#statusPendingRelease# and 
+					so.billing_status!=#billingStatusAwaitingConfirmation#
+	</update>
+	
+	<update id = "updateShippingOrderCustomerBilling">
+		update shipping_order set customer_id=#customerId#, mark_percent=#markPercent#, mark_type=#markType#, billing_status=#billingStatus# 
+			where order_id=#orderId#
+	</update>
+	
+	<update id = "updateShippingOrderBillingStatus">
+		update shipping_order set billing_status=#billingStatus# where order_id=#orderId#
+	</update>
+	
+	<update id = "updateShippingOrderStatus">
+		update shipping_order set status_id=#statusId# where order_id=#orderId#
+	</update>
+	
+	<delete id = "deleteCharge">
+		delete from charges where id = #id# 
+	</delete>	
+	
+	<!-- Customs Invoice Start -->
+	<insert id="addCI" parameterClass="com.meritconinc.shiplinx.model.CustomsInvoice">
+			  insert into customs_invoice(order_id, bill_to,	bill_to_account_num,	bill_to_address_id, reference_num,  value_currency, total_value, total_weight, tax_id, broker_address_id, export_data, export_data_name,buyer_id,inco_terms) 
+			 					 values (#orderId#, #billTo#,#billToAccountNum#,	#billToAddressId#,	#reference#,	#currency#, #totalValue#,	#totalWeight#,#taxId#,	#brokerAddressId#, #exportData#, #exportDataName# ,#buyerAddressId#,#incoTerms#) 
+			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+
+	<insert id="addCIProduct" parameterClass="com.meritconinc.shiplinx.model.CustomsInvoiceProduct">
+			  insert into customs_invoice_product(customs_invoice_id, product_desc, product_hc,	product_country_origin,	product_quantity, product_unit_price,  product_weight) 
+			 					 values ((select id from customs_invoice order by id desc limit 1), #productDesc#,#productHC#,	#productOrigin#,	#productQuantity#,	#productUnitPrice#, #productWeight#) 
+			<selectKey resultClass="long" type="post" keyProperty="customsInvoiceId" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+
+	<delete id = "deleteCustomsInvoice">
+		delete from customs_invoice where id = #id# 
+	</delete>	
+	<delete id = "deleteCustomsInvoiceProduct">
+		delete from customs_invoice_product where customs_invoice_id = #id# 
+	</delete>	
+
+	<select id="getCustomsInvoiceProducts" resultMap="customsInvoiceProductMap" >
+		select product_id, customs_invoice_id,product_desc,product_hc,
+		product_country_origin,product_quantity,product_unit_price,product_weight		
+		from customs_invoice_product where customs_invoice_id=#id#
+	</select>
+	
+	<select id="getCustomsInvoiceByOrderId" resultMap="customsInvoiceMap">
+		select * from customs_invoice where order_id = #id# limit 1
+	</select>
+	<!-- Customs Invoice End -->
+	
+	<select id="findShipmentByBatchId" resultMap="SearchOrderResult">
+		select * from shipping_order s where  s.batch_id=#batchId# limit 1
+	</select>
+
+	<select id="findProductsByProductId" parameterClass="com.meritconinc.shiplinx.model.Products"  resultMap="productMap">
+			   select p.* from products p where where p.customer_id = #customerId# and ((p.product_name like '%$productName$%') OR (p.product_description like '%$productDescription$%') 
+			   OR (p.harmonized_code like '%$productHarmonizedCode$%'))					
+	</select>
+	
+	<select id="getServiceByCarrierAndTransitCode" resultMap="servicesResultMap">
+		select * from service s where s.carrier_id=#carrierId# and s.transit_code=#transitCode# limit 1
+	</select>	
+	
+	<select id="searchShipmentsByStatusIdsAndCarrier" resultMap="ShippingOrderResult">
+		select distinct s.* from shipping_order s where s.status_id in 
+			<iterate open="(" close=")" conjunction="," property="statusIds">
+				#statusIds[]#
+			</iterate> 		
+		<isGreaterThan prepend="and" property="carrierId" compareValue="0">
+		 	s.carrier_id = #carrierId#
+		</isGreaterThan>			
+	</select>	
+	
+	<select id="searchReferenceShipments" resultMap="SearchOrderResult">
+		select * from shipping_order where business_id = #businessId# and ((order_id = #referenceValue#) or (order_num = #referenceValue#) or (reference1 = #referenceValue#) or (reference2 = #referenceValue#) or (reference_code = #referenceValue#))
+			<isGreaterThan prepend="and" property="customerId" compareValue="0">
+				customer_id = #customerId#
+			</isGreaterThan>
+	</select>
+	
+	<select id="getShippingBillingAllStatus" resultMap="ShippingBillingAllStatus">
+		select billing_status_id, billing_status_name from order_billing_status
+	</select>
+	
+	<select id="getDangerousGoodsAll" resultMap="DangerousGoodsMap">
+		select * from dangerous_goods
+	</select>
+	
+	<select id="getShippingOrderByCurrentShipDate" resultMap="SearchOrderResult">
+  		select * from shipping_order so where DATEDIFF(so.scheduled_ship_date,now()) = 0 and so.carrier_id='80' and so.customer_id=4570
+ 	</select>
+
+    <delete id = "deleteLabel">
+     delete from shipping_labels where order_id = #orderId# 
+    </delete>
+    
+    <update id = "updateTotalCharges" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
+   update shipping_order set order_id=#id#
+             <isNotNull prepend="," property="quoteTotalCharge">
+               quote_total=#quoteTotalCharge#
+               </isNotNull>
+               <isNotNull prepend="," property="quoteTotalCost">
+               quote_cost=#quoteTotalCost#
+               </isNotNull>
+               <isNotNull prepend="," property="actualTotalCharge">
+               actual_total=#actualTotalCharge#
+               </isNotNull>
+               <isNotNull prepend="," property="actualTotalCost">
+               actual_cost=#actualTotalCost# 
+               </isNotNull>
+               where order_id=#id#
+ </update>
+<select id="getChargeById" resultMap="chargesResult">
+      select * from charges where id=#id#
+  </select>
+  <delete id="deleteChargesByOrderId">
+       delete from charges where order_id = #orderId# 
+   </delete>
+   <select id="findShipmentsAdmin" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+       select distinct o.* from shipping_order o left join charges c on(c.order_id=o.order_id) left join package p on (o.order_id=p.order_id) left join customer cu on (o.customer_id = cu.customer_id)
+           left join customer_sales cs on (o.customer_id = cs.customer_id)
+      <dynamic prepend="where">
+          c.order_id&gt;0
+          <isNotNull  property="id">
+                and o.order_id=#id#
+           </isNotNull>    
+         <isNotNull  property="batchId">
+               <isNotEmpty property="batchId">
+                   and o.batch_id=#batchId#
+               </isNotEmpty>
+          </isNotNull>    
+          <isNotNull  property="statusId">
+              <isNotEmpty property="statusId">
+                 and o.status_id=#statusId#
+              </isNotEmpty>
+          </isNotNull>
+          <isNull  property="statusId">
+              <isNotNull property="cancelledShipments">
+                  <isEqual property="cancelledShipments" compareValue="N">
+                       and (o.status_id != 40 or o.status_id is null)
+                   </isEqual>
+              </isNotNull>
+           </isNull>
+          <isNotNull  property="orderNum">
+               <isNotEmpty property="orderNum">
+               and o.order_num=#orderNum#
+               </isNotEmpty>
+           </isNotNull>            
+           <isNotNull property="customerId">
+               and o.customer_id=#customerId#
+           </isNotNull>    
+           <isGreaterThan property="businessId" compareValue="0">
+               and o.business_id=#businessId#
+           </isGreaterThan>    
+           <isNotNull  property="carrierId">
+                and c.carrier_id=#carrierId#
+           </isNotNull>            
+          <isNotNull  property="serviceId">
+                and o.service_id=#serviceId#
+           </isNotNull>
+           <isNotNull property="masterTrackingNum">
+              and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#)
+          </isNotNull>
+          <isNotNull property="fromDateTime">
+              <![CDATA[and scheduled_ship_date >= #fromDateTime#]]>
+          </isNotNull>
+          <isNotNull property="toDateTime">
+               <![CDATA[and scheduled_ship_date <= #toDateTime#]]>
+           </isNotNull>
+           <isGreaterEqual property="billingStatus" compareValue="0">
+               and o.billing_status=#billingStatus#
+           </isGreaterEqual>   
+           <isNotNull property="ediInvoiceNumber">
+               <isNotEmpty property="ediInvoiceNumber">
+                   and c.edi_invoice_number=#ediInvoiceNumber#
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="referenceCode">
+               <isNotEmpty property="referenceCode">
+                  and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="salesAgentUsername">
+               <isNotEmpty property="salesAgentUsername">
+               and (cs.sales_user=#salesAgentUsername#)
+              </isNotEmpty>
+
+           </isNotNull>
+          <isNotNull property="createdBy">
+               <isNotEmpty property="createdBy">
+               and (o.created_by=#createdBy#)
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="branch">
+               <isNotEmpty property="branch">
+               and (cs.branch=#branch#)
+               </isNotEmpty>
+           </isNotNull>
+       </dynamic> 
+           order by $orderBy$ $order$ 
+
+   </select>
+<select id="getChargeandOrderByInvoiceId" resultMap="InvoiceChargeResult" >
+       select charge_id,order_id from invoice_charges  where invoice_id=#invoiceId#
+   </select>
+   <select id="getChargesByOrderandInvoiceId" resultMap="ChargeResult" >
+      select * from charges  where order_id=#orderId# and id=#chargeId#
+  </select>
+  	<select id="getChargeByChargeGroupId" resultMap="carrierChargeCodeResultMap" >
+		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
+		where ccc.carrier_id=#carrierId# and ccc.charge_group_id=#chargeGroupId# 				
+	</select>
+</sqlMap>
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Property">
+
+	<resultMap id="result" class="com.meritconinc.mmr.model.common.PropertyVO">
+		<result property="scope" column="scope" columnIndex="1"/>
+		<result property="name" column="name" columnIndex="2"/>
+		<result property="dbValue" column="value" columnIndex="3"/>
+	</resultMap>
+	
+	<!--<cacheModel id="property" type ="LRU" readOnly="true">
+	  <flushInterval hours="24"/>
+	  <property name="cache-size" value="1000" />
+	  <flushOnExecute statement="updateProperty"/>
+	</cacheModel>
+		
+	-->
+	<cacheModel id="textProperty" type ="LRU" readOnly="true">
+	  <flushInterval hours="24"/>
+	  <property name="cache-size" value="1000" />
+	  <flushOnExecute statement="updateTextProperty"/>
+	</cacheModel>	
+	
+	<update id="updateProperty">
+		update property
+		set value = #value#
+		where scope = #scope#
+		and name = #name#
+	</update> 
+
+	<select id="readProperty" resultClass="java.lang.String" >
+		SELECT value
+		FROM property
+		WHERE scope = #scope# AND name = #name#
+	</select>
+						
+	<select id="getProperties" resultMap="result">
+		select scope,name,value
+		from property 
+		order by scope desc, name
+	</select>
+	
+	<update id="updateTextProperty">
+		update property_text
+		set value = #value#
+		where scope = #scope#
+		and name = #name#
+	</update>
+
+	<select id="readTextProperty" resultClass="java.lang.String" cacheModel="textProperty">
+		SELECT value
+		FROM property_text
+		WHERE scope = #scope# AND name = #name#
+	</select>
+						
+	<select id="getTextProperties" resultMap="result">
+		select scope, name, value
+		from property_text 
+		order by scope desc, name
+	</select>
+</sqlMap>

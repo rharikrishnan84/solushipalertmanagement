@@ -1,0 +1,241 @@
+package com.meritconinc.mmr.utilities.mail;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.X509Certificate;
+
+import org.apache.log4j.Logger;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import com.meritconinc.shiplinx.model.Attachment;
+
+/**
+ * @author Rizwan Merchant
+ *
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+public class MailHelper {
+	private static final Logger _logger = Logger.getLogger(MailHelper.class);
+
+
+	/**
+	 * Sends an e-mail
+	 * 
+	 * @param host
+	 * @param fromAddress
+	 * @param toAddress
+	 * @param subject
+	 * @param bodyText
+	 * @param attachmentName
+	 * @param attachment
+	 * @param mimeType
+	 * @return true on success – false on failure 
+	 * @throws MessagingException
+	 */ 
+	public static synchronized boolean sendEmailNow(String host, String fromAddress,
+			String toAddress, String subject, String bodyText,
+			String attachmentName, byte[] attachment, String mimeType) throws MessagingException {
+		String _logger_method="sendEmailNow";
+		if (_logger.isDebugEnabled()) {
+			_logger.debug("> "+_logger_method);
+		}
+
+		boolean sentSuccessfully = true; 
+		
+		try{
+			// Get system properties
+			Properties props = System.getProperties();
+			
+			String auth = "false";
+	
+			//System.out.print(longFilename);
+			if (_logger.isDebugEnabled()) {
+				_logger.debug("*** Got the following properties");
+				_logger.debug("*** mail.smtp.host = "+host);
+				_logger.debug("*** mail.smtp.auth = "+auth);
+				//_logger.debug("*** mail.smtp.username = "+username);
+				//_logger.debug("*** mail.smtp.password = "+password);
+				_logger.debug("*** fromAddress = "+fromAddress);
+				_logger.debug("*** toAddress = "+toAddress);
+				_logger.debug("*** mail.subject = "+subject);
+				_logger.debug("*** mail.body = "+bodyText);
+			}
+	
+			// Setup mail server
+			props.put("mail.smtp.host", host);
+			props.put("mail.smtp.auth", auth);
+	
+			// Get session
+//			Session session = Session.getInstance(props, new SmtpAuthenticator(username,password));
+			Session session = Session.getDefaultInstance(props, null);
+			if (_logger.isDebugEnabled()) {
+				_logger.debug("*** Got the mail session");
+			}
+	
+			// Define message
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(fromAddress));
+			StringTokenizer st = new StringTokenizer(toAddress, ";");
+			while(st.hasMoreElements()){
+				String tokenAddr = st.nextToken();
+				message.addRecipient(Message.RecipientType.TO,new InternetAddress(tokenAddr));
+			}
+			//set the subject
+			message.setSubject(subject, "utf-8");
+		
+			// Create the message part 
+			MimeBodyPart messageBodyPart = new MimeBodyPart();
+		
+			// Fill the message
+			messageBodyPart.setText(bodyText, "utf-8");
+		
+			Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(messageBodyPart);
+		
+			// Part two is attachment
+			if(attachment!=null){
+				messageBodyPart = new MimeBodyPart();
+				javax.activation.DataSource source = new ByteArrayDataSource(attachment, mimeType);
+				messageBodyPart.setDataHandler(new DataHandler(source));
+				messageBodyPart.setFileName(attachmentName);
+				multipart.addBodyPart(messageBodyPart);
+			}
+		
+			// Put parts in message
+			message.setContent(multipart);
+	
+			if (_logger.isDebugEnabled()) {
+				_logger.debug("*** About to Transport.send(message) ");
+			}
+			// Send the message
+			Transport.send(message);
+		}
+		catch(Exception e){
+			_logger.error("Exception while sending e-mail: " + e, e);
+			sentSuccessfully = false;
+		}
+		
+		if (_logger.isDebugEnabled()) {
+			if(sentSuccessfully)
+				_logger.debug("*** E-mail was sent successfully ***");
+			else
+				_logger.debug("*** Failed to send the e-mail ***");
+		}
+
+		if (_logger.isDebugEnabled()) {
+			_logger.debug("< "+_logger_method);
+		}
+		return sentSuccessfully;
+	}	
+	
+
+	public static synchronized boolean sendEmailNow2(String host, String username, String password, String fromName, int port, String fromAddress,
+			String toAddress, List<String> bccAddresses, String subject, String bodyText,
+			List<Attachment> attachments, boolean isHTML) throws MessagingException {
+
+		if(host==null || host.length()==0)
+			return false;
+		
+		JavaMailSenderImpl sender2 = new JavaMailSenderImpl(); 
+		Properties p = new Properties(); 
+
+		sender2.setHost(host);
+		if(username!=null && username.length()>0){
+			sender2.setUsername(username);
+			sender2.setPassword(password);
+			p.setProperty("mail.smtp.auth", "true");		
+		}
+		else
+			p.setProperty("mail.smtp.auth", "false");
+		
+		sender2.setPort(port);
+		
+		p.setProperty("mail.smtp.timeout", "10000");
+		p.setProperty("mail.smtp.connectiontimeout", "10000");
+		p.setProperty("mail.smtp.starttls.enable", "true");
+		sender2.setJavaMailProperties(p);
+		
+		if (_logger.isDebugEnabled()) {
+			_logger.debug("*** Got the mail session");
+		}
+
+		// Define message
+		Session session = Session.getDefaultInstance(p, null);
+		MimeMessage message = new MimeMessage(session);
+
+		StringTokenizer st = new StringTokenizer(toAddress, ";");
+		while(st.hasMoreElements()){
+			String tokenAddr = st.nextToken();
+			message.addRecipient(Message.RecipientType.TO,new InternetAddress(tokenAddr));
+		}
+
+		if(bccAddresses != null) {
+			for(String add: bccAddresses) {				
+				message.addRecipient(Message.RecipientType.BCC,new InternetAddress(add));
+			}
+		}
+
+		try {
+			message.setFrom(new InternetAddress(fromAddress, fromName));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		message.setSubject(subject);
+		//text part
+		BodyPart messageBodyPart = new MimeBodyPart();
+		
+		if(isHTML)
+			messageBodyPart.setContent(bodyText, "text/html");
+		else
+			messageBodyPart.setText(bodyText);
+
+		Multipart multipart = new MimeMultipart();
+		multipart.addBodyPart(messageBodyPart);
+
+		// Part two is attachments
+		if(attachments != null) {
+			for(Attachment attachment: attachments) {
+				if(attachment==null)
+					continue;
+				messageBodyPart = new MimeBodyPart();
+				DataSource source = new FileDataSource(attachment.getFile());
+				messageBodyPart.setDataHandler(new DataHandler(source));
+				messageBodyPart.setFileName(attachment.getFile().getName());
+				if(attachment.getContentType().equalsIgnoreCase("image"))
+					messageBodyPart.setHeader("Content-ID","<memememe>");
+				multipart.addBodyPart(messageBodyPart);
+			}
+		}
+
+		message.setContent(multipart);	
+		
+		sender2.send(message);	
+		
+		return true;
+	}	
+	
+}

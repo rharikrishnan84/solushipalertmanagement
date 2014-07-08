@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="packageTypes">
+
+	<resultMap id="PackageTypesMap" class="com.meritconinc.shiplinx.model.PackageTypes">
+			<result property="packageTypeId" column="package_id"/>
+			<result property="packageName" column="package_name"/>
+			<result property="packageDesc" column="package_description"/>
+			<result property="packageLength" column="length"/>
+			<result property="packageHeight" column="height"/>
+			<result property="packageWeight" column="weight"/>
+			<result property="packageWidth" column="width"/>
+			<result property="customerId" column="customer_id"/>
+	</resultMap>
+	
+	<select id="fetchAPackageById" resultMap="PackageTypesMap">
+		select * from package_types where package_id = #packageTypeId#
+	</select>
+	
+	<select id="getPackageTypesByCustomerId" resultMap="PackageTypesMap">
+		select * from package_types where customer_id=#customerId#
+	</select> 
+	
+	<insert id="addPackageTypes" parameterClass="com.meritconinc.shiplinx.model.PackageTypes">
+			  insert into package_types (package_name,package_description,length, height, weight,width, customer_id) values (#packageName#,#packageDesc#,#packageLength#, #packageHeight#, #packageWeight#, #packageWidth#, #customerId#)
+			<selectKey resultClass="long" type="post" keyProperty="packageTypeId" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<update id = 'editPackageTypes' parameterClass="com.meritconinc.shiplinx.model.PackageTypes">
+		update package_types set package_name=#packageName#, package_description=#packageDesc#, length=#packageLength#, height=#packageHeight#, weight=#packageWeight#,width=#packageWidth# 
+		where package_id=#packageTypeId#
+	</update>
+	
+	<delete id = "deletePackageTypes">
+			delete from package_types where package_id=#packageTypeId#
+	</delete>
+	
+	
+</sqlMap>

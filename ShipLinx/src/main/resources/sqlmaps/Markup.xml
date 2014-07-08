@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="markup">
+	<resultMap id="MarkupResult" class="com.meritconinc.shiplinx.model.Markup">
+		<result property="customerId"/>
+		<result property="carrierId" />
+		<result property="serviceId" />
+		<result property="serviceName" />
+		<result property="carrierName" />
+		<result property="businessId"/>
+		<result property="fromCountryCode" />
+		<result property="toCountryCode" />
+		<result property="markupPercentage" />
+		<result property="markupFlat" />
+		<result property="disabled" />
+		<result property="type" />
+		<result property="fromWeight" />
+		<result property="toWeight" />
+		<result property="serviceType" />
+	</resultMap>
+	
+	<resultMap id="carrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+			<result property="id" column="id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="chargeCode" column ="charge_code"/>
+			<result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+			<result property="chargeName" column ="charge_name"/>
+			<result property="chargeDesc" column ="charge_desc"/>
+			<result property="groupId" column="charge_group_id"/>
+			<result property="carrierCharge" column="charge"/>
+			<result property="carrierCost" column="cost"/>
+			<result property="chargeGroup" column="charge_group_id" select="selectChargeGroup"/>
+	</resultMap>
+	
+	<resultMap id="chargeGroupResultMap" class="com.meritconinc.shiplinx.model.ChargeGroup">
+			<result property="groupId" column="id"/>
+			<result property="groupCode" column="group_code"/>
+			<result property="groupName" column="group_name"/>
+			<result property="groupDesc" column="group_desc"/>
+			<result property="tax" column="is_tax"/>
+			<result property="taxRate" column="tax_rate"/>
+			<result property="displayOrder" column="display_order"/>
+	</resultMap>
+
+	<resultMap id="ltlPoundRateResultMap" class="com.meritconinc.shiplinx.model.LtlPoundRate">
+			<result property="id" column="id"/>
+			<result property="businessId" column="business_id"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="serviceId" column="service_id"/>
+			<result property="fromZone" column="from_zone"/>
+			<result property="toZone" column="to_zone"/>
+			<result property="equipment" column="equipment"/>
+			<result property="currency" column="currency"/>
+			<result property="fscPercent" column="fsc_percent"/>
+			<result property="minimum" column="minimum"/>
+			<result property="rangeFrom" column="range_from"/>
+			<result property="rangeTo" column="range_to"/>
+			<result property="rate" column="rate"/>
+			<result property="ttm1" column="ttm1"/>
+			<result property="ttm2" column="ttm2"/>
+			<result property="effectiveDate" column="effective_date"/>
+			<result property="expiryDate" column="expiry_date"/>
+			<result property="p1" column="p1"/>
+			<result property="p2" column="p2"/>
+			<result property="p3" column="p3"/>
+			<result property="dimFactor" column="dim_factor"/>
+			<result property="freightClass" column="freight_class"/>
+	</resultMap>
+	
+	<resultMap id="ltlSkidRateResultMap" class="com.meritconinc.shiplinx.model.LtlSkidRate">
+			<result property="id" column="id"/>
+			<result property="businessId" column="business_id"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="serviceId" column="service_id"/>
+			<result property="fromZone" column="from_zone"/>
+			<result property="toZone" column="to_zone"/>
+			<result property="equipment" column="equipment"/>
+			<result property="currency" column="currency"/>
+			<result property="fscPercent" column="fsc_percent"/>
+			<result property="rateFlatWeight" column="less_500lb_flat"/>
+			<result property="rateSkid1" column="rate_skid_1"/>
+			<result property="rateSkid2" column="rate_skid_2"/>
+			<result property="rateSkid3" column="rate_skid_3"/>
+			<result property="rateSkid4" column="rate_skid_4"/>
+			<result property="rateSkid5" column="rate_skid_5"/>
+			<result property="rateSkid6" column="rate_skid_6"/>
+			<result property="rateSkid7" column="rate_skid_7"/>
+			<result property="rateSkid8" column="rate_skid_8"/>
+			<result property="rateSkid9" column="rate_skid_9"/>
+			<result property="rateSkid10" column="rate_skid_10"/>
+			<result property="rateSkid11" column="rate_skid_11"/>
+			<result property="rateSkid12" column="rate_skid_12"/>
+			<result property="rateSkid13" column="rate_skid_13"/>
+			<result property="rateSkid14" column="rate_skid_14"/>
+			<result property="rateSkid15" column="rate_skid_15"/>
+			<result property="rateSkid16" column="rate_skid_16"/>
+			<result property="rateSkid17" column="rate_skid_17"/>
+			<result property="rateSkid18" column="rate_skid_18"/>
+			<result property="rateSkid19" column="rate_skid_19"/>
+			<result property="rateSkid20" column="rate_skid_20"/>
+			<result property="rateSkid21" column="rate_skid_21"/>
+			<result property="rateSkid22" column="rate_skid_22"/>
+			<result property="rateSkid23" column="rate_skid_23"/>
+			<result property="rateSkid24" column="rate_skid_24"/>
+			<result property="rateSkid25" column="rate_skid_25"/>
+			<result property="rateSkid26" column="rate_skid_26"/>
+			<result property="ttm1" column="ttm1"/>
+			<result property="ttm2" column="ttm2"/>
+			<result property="effectiveDate" column="effective_date"/>
+			<result property="expiryDate" column="expiry_date"/>
+			<result property="p1" column="p1"/>
+			<result property="p2" column="p2"/>
+			<result property="p3" column="p3"/>
+	</resultMap>	
+
+	<resultMap id="zoneResultMap" class="com.meritconinc.shiplinx.model.Zone">
+			<result property="zoneId" column="zone_id"/>
+			<result property="zoneStructureId" column="zone_structure_id"/>
+			<result property="zoneName" column="zone_name"/>
+			<result property="cityName" column="city_name"/>
+			<result property="provinceCode" column="province_code"/>
+			<result property="countryCode" column="country_code"/>
+			<result property="fromPostalCode" column="from_postal_code"/>
+			<result property="toPostalCode" column="to_postal_code"/>
+	</resultMap>	
+  
+  <resultMap id="MarkupFilterResult" class="com.meritconinc.shiplinx.model.Markup">
+       <result property="customerId" column="customer_id"/>
+       <result property="serviceId" column="service_id"/>
+       <result property="businessId" column="business_id"/>
+       <result property="fromCountryCode" column="from_country"/>
+       <result property="toCountryCode" column="to_country"/>
+       <result property="markupPercentage" column="mu_perc"/>
+       <result property="markupFlat" column="flat_mu"/>
+       <result property="disabled" column="disabled"/>
+       <result property="type" column="type"/>
+       <result property="fromWeight" column="from_weight"/>
+       <result property="toWeight" column="to_weight"/>
+   </resultMap>
+   
+   <resultMap id="MarkupResultCarrier" class="com.meritconinc.shiplinx.model.Markup">
+       <result property="customerId" column="customer_id"/>
+       <result property="carrierId" column="carrier_id"/>
+       <result property="serviceId" column="service_id"/>
+       <result property="serviceName" />
+       <result property="carrierName" />
+       <result property="businessId" column="business_id"/>
+       <result property="fromCountryCode" column="from_country"/>
+       <result property="toCountryCode" column="to_country"/>
+       <result property="markupPercentage" column="mu_perc"/>
+       <result property="markupFlat" column="flat_mu"/>
+       <result property="disabled" column="disabled"/>
+       <result property="type" column="type"/>
+       <result property="fromWeight" column="from_weight"/>
+       <result property="toWeight" column="to_weight"/>
+       <result property="serviceType" column="service_type"/>
+   </resultMap>	
+	
+	<select id="selectChargeGroup" parameterClass="long" resultMap="chargeGroupResultMap">
+  		select * from charge_group where id = #value#
+	</select>
+	
+	<resultMap id="FlatMarkupResult" class="com.meritconinc.shiplinx.model.Markup">
+		<result property="markupFlat" />
+	</resultMap>	
+	
+	<resultMap id="PercentageMarkupResult" class="com.meritconinc.shiplinx.model.Markup">
+		<result property="markupPercentage" />
+	</resultMap>	
+	 
+	<select id="getMarkupListForCustomer" resultMap="MarkupResult">
+		select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
+				m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+		 from customer_markup m, service s, carrier c
+		 where m.service_id=s.service_id  and s.carrier_id=c.carrier_id 
+		 and m.customer_id = #customerId#  
+		 and m.business_id = #businessId# order by c.carrier_id
+	</select>
+ 
+	<select id="findMarkupListForCustomer" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+		 from customer_markup m, service s, carrier c
+		<dynamic prepend="where">
+			m.service_id=s.service_id and s.carrier_id=c.carrier_id and m.customer_id = #customerId#  and m.business_id = #businessId#
+			<isNotNull  property="serviceId">
+				 and m.service_id=#serviceId#
+			</isNotNull>
+			<isNotNull  property="carrierId">
+				<isGreaterThan property="carrierId" compareValue="0">
+				 	and c.carrier_id=#carrierId#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="fromCountryCode">
+				and m.from_country=#fromCountryCode#
+			</isNotNull>
+			<isNotNull property="toCountryCode">
+				and m.to_country=#toCountryCode#
+			</isNotNull>
+			<isNotNull  property="type">
+				 and m.type=#type#
+			</isNotNull>
+			<isNotNull  property="fromWeight">
+				 <isGreaterThan property="fromWeight" compareValue="0">
+				 and m.from_weight=#fromWeight#
+				 </isGreaterThan>
+			</isNotNull>
+			<isNotNull  property="toWeight">
+				 <isLessThan property="toWeight" compareValue="0">
+				 and m.to_weight=#toWeight#
+				 </isLessThan>
+			</isNotNull>									
+		</dynamic> 
+		order by c.carrier_id asc, m.from_country desc, m.to_country desc ,m.from_weight desc, m.to_weight desc                                 
+	</select>	
+
+	<select id="findMarkupListForUniqueMarkup" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+		 from customer_markup m, service s , carrier c
+		<dynamic prepend="where">
+			m.service_id=s.service_id and s.carrier_id=c.carrier_id and 
+			(m.customer_id=#customerId# or m.customer_id=0)   and 
+			m.business_id = #businessId#
+			<isNotNull  property="serviceId">
+				 and m.service_id=#serviceId#
+			</isNotNull>
+			<isNotNull property="fromCountryCode">
+				and (m.from_country=#fromCountryCode# or m.from_country='ANY')
+			</isNotNull>
+			<isNotNull property="toCountryCode">
+				and (m.to_country=#toCountryCode# or m.to_country='ANY')
+			</isNotNull>
+			<isNotNull  property="type">
+				 and m.type=#type#
+			</isNotNull>
+		</dynamic>    
+		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc                                 
+	</select>	
+	
+	
+	<insert id="addMarkup" parameterClass="com.meritconinc.shiplinx.model.Markup">
+		insert into customer_markup (customer_id, service_id, business_id, from_country, to_country, mu_perc, disabled, flat_mu, type, from_weight, to_weight) 
+							values (#customerId#, #serviceId#, #businessId#, #fromCountryCode# ,#toCountryCode#, #markupPercentage#, #disabled#, IFNULL(#markupFlat#,0.0), #type#, #fromWeight#, #toWeight# )
+	</insert>
+	
+	<update id="updateMarkup">
+		update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled# 
+				where 	customer_id=#customerId# and business_id=#businessId# and service_id=#serviceId# and 
+						from_country=#fromCountryCode# and to_country=#toCountryCode# and from_weight=#fromWeight# and to_weight=#toWeight#
+	</update>	
+		
+	<delete id = "deleteMarkup">
+		delete from customer_markup where customer_id = #customerId# and service_id = #serviceId# and
+			from_country=#fromCountryCode# and to_country=#toCountryCode# and business_id=#businessId# 
+	</delete>	
+	
+	<select id="getFlatMarkups" resultMap="FlatMarkupResult">
+		select  distinct m.flat_mu from customer_markup m 
+	</select>	
+	
+	<select id="getPercentageMarkups" resultMap="PercentageMarkupResult">
+		select  distinct m.mu_perc from customer_markup m 
+	</select>	
+	
+	<delete id = "deleteCustomerMarkup">
+		delete from customer_markup where customer_id = #customerId# and business_id=#businessId#
+	</delete>	
+	
+	<update id="disableServicesForCustomer">
+		update customer_markup set disabled=#disable# 
+				where customer_id=#customerId# 
+ 		<iterate prepend="AND" property="serviceIds" open="(" close=")" conjunction="OR">
+			service_id=#serviceIds[]#
+		</iterate>
+	</update>	
+	
+	<select id="getChargesByCarrierId" resultMap="carrierChargeCodeResultMap">
+		select * from  carrier_charge_code 
+		<dynamic prepend="where">
+			carrier_id=#carrierId#
+			<isNotNull property="chargeCode">
+				<isNotEmpty property="chargeCode">
+					and	charge_code like '%$chargeCode$%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="chargeCodeLevel2">
+				<isNotEmpty property="chargeCodeLevel2">
+					and charge_code_level_2 like '%$chargeCodeLevel2$%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="chargeName">
+				<isNotEmpty property="chargeName">
+					and charge_name like '%$chargeName$%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="chargeDesc">
+				<isNotEmpty property="chargeDesc">
+					and charge_desc like '%$chargeDesc$%'
+				</isNotEmpty>
+			</isNotNull>
+			<isGreaterThan property="groupId" compareValue="0">
+				and charge_group_id = #groupId#
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<delete id="deleteChargeById">
+		delete from  carrier_charge_code where id=#chargeId#
+	</delete>
+	
+	<select id="getChargesByChargeId" resultMap="carrierChargeCodeResultMap">
+		select * from  carrier_charge_code where id=#id#
+	</select>
+	
+	<select id="getChargesByCode" resultMap="carrierChargeCodeResultMap">
+		select * from  carrier_charge_code where charge_code=#chargeCode# and customer_id=#customerId#
+	</select>
+	
+	<select id="getChargeGroups" resultMap="chargeGroupResultMap">
+		select * from  charge_group
+	</select>
+	
+	<insert id="CreateCharge" parameterClass="com.meritconinc.shiplinx.model.CarrierChargeCode">
+	insert into carrier_charge_code (carrier_id,  charge_code, charge_code_level_2, charge_name, charge_desc, charge_group_id, charge, cost) values
+	(#carrierId#,#chargeCode#,#chargeCodeLevel2#,#chargeName#,#chargeDesc#,#groupId#,#carrierCharge#,#carrierCost#)
+	</insert>
+	
+	<update id="EditCharge">
+		update carrier_charge_code set carrier_id=#carrierId#, charge_code=#chargeCode#, charge_code_level_2=#chargeCodeLevel2#, charge_name=#chargeName#, charge_desc=#chargeDesc#, charge_group_id=#groupId#, charge=#carrierCharge#, cost=#carrierCost# 
+		where id=#id#
+	</update>
+	
+	<insert id="addLtlPoundRate" parameterClass="com.meritconinc.shiplinx.model.LtlPoundRate">
+		insert into ltl_pound_rate (business_id, customer_id,  service_id, from_zone, to_zone, equipment,  currency,  fsc_percent, minimum,  range_from, range_to, rate,  ttm1,  ttm2,  effective_date, expiry_date, p1,  p2,  p3,freight_class) values
+							   	   (#businessId#,#customerId#, #serviceId#,#fromZone#,#toZone#,#equipment#,#currency#,#fscPercent#,#minimum#,#rangeFrom#,#rangeTo#,#rate#,#ttm1#,#ttm2#,#effectiveDate#,#expiryDate#,#p1#,#p2#,#p3#,#freightClass#)
+	</insert>
+
+	<insert id="addLtlSkidRate" parameterClass="com.meritconinc.shiplinx.model.LtlSkidRate">
+		insert into ltl_skid_rate (business_id, customer_id,  service_id, from_zone, to_zone, equipment,  currency,  fsc_percent, less_500lb_flat, rate_skid_1, rate_skid_2, rate_skid_3, rate_skid_4,rate_skid_5, rate_skid_6, rate_skid_7, rate_skid_8, rate_skid_9, rate_skid_10, rate_skid_11, rate_skid_12, rate_skid_13, rate_skid_14, rate_skid_15, rate_skid_16, rate_skid_17, rate_skid_18, rate_skid_19, rate_skid_20, rate_skid_21, rate_skid_22, rate_skid_23, rate_skid_24, rate_skid_25, rate_skid_26, ttm1,  ttm2,  effective_date, expiry_date, p1,  p2,  p3) values
+							   	  (#businessId#,#customerId#, #serviceId#,#fromZone#,#toZone#,#equipment#,#currency#,#fscPercent#,#rateFlatWeight#, #rateSkid1#, #rateSkid2#, #rateSkid3#, #rateSkid4#, #rateSkid5#, #rateSkid6#, #rateSkid7#, #rateSkid8#, #rateSkid9#, #rateSkid10#, #rateSkid11#, #rateSkid12#, #rateSkid13#, #rateSkid14#, #rateSkid15#, #rateSkid16#, #rateSkid17#, #rateSkid18#, #rateSkid19#, #rateSkid20#, #rateSkid21#, #rateSkid22#, #rateSkid23#, #rateSkid24#, #rateSkid25#, #rateSkid26#,#ttm1#,#ttm2#,#effectiveDate#,#expiryDate#,#p1#,#p2#,#p3#)
+	</insert>
+	
+	<delete id="deleteLtlPoundRate" parameterClass="com.meritconinc.shiplinx.model.LtlPoundRate">
+		delete from ltl_pound_rate where business_id	= #businessId# 		and
+										 customer_id	= #customerId# 		and
+										 service_id		= #serviceId#   	and
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			and
+										 range_from		= #rangeFrom#		and
+										 range_to		= #rangeTo#
+	</delete>		
+	
+	<delete id="deleteLtlSkidRate" parameterClass="com.meritconinc.shiplinx.model.LtlSkidRate">
+		delete from ltl_skid_rate where business_id		= #businessId# 		and
+										 customer_id	= #customerId# 		and
+										 service_id		= #serviceId#   	and
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			
+	</delete>	
+	
+	<select id="getLtlPoundRate" resultMap="ltlPoundRateResultMap" parameterClass="com.meritconinc.shiplinx.model.LtlPoundRate">
+		select * from  ltl_pound_rate where business_id	= #businessId# 		and
+										 customer_id	= #customerId# 		and
+                                         <isNotEqual property="serviceId" compareValue="0">
+                                         service_id    = #serviceId#     and
+                                        </isNotEqual>
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			and
+										 range_from		= #rangeFrom#		and
+										 range_to		= #rangeTo#        
+										
+	</select>	
+	
+	<select id="getLtlPoundRateByRange" resultMap="ltlPoundRateResultMap" parameterClass="com.meritconinc.shiplinx.model.LtlPoundRate">
+		select * from  ltl_pound_rate where business_id	= #businessId# 		and
+										 customer_id	= #customerId# 		and
+										 <isNotEqual property="serviceId" compareValue="0">
+										 	service_id		= #serviceId#   	and
+										 </isNotEqual>
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			and										 
+										 #rangeFrom# between range_from and range_to
+										
+	</select>	
+
+	<select id="getLtlSkidRate" resultMap="ltlSkidRateResultMap" parameterClass="com.meritconinc.shiplinx.model.LtlSkidRate">
+		select * from  ltl_skid_rate where business_id	= #businessId# 		and
+										 customer_id	= #customerId# 		and										 
+										 service_id		= #serviceId#   	and
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			
+	</select>	
+		
+	<select id="findZoneByPostalCode" resultMap="zoneResultMap">
+		select * from zones where 	zone_structure_id	= #zoneStructureId# and 
+									country_code		= #countryCode# and
+									#postalCode# between from_postal_code and to_postal_code
+	</select>
+	
+	<select id="findZoneByCity" resultMap="zoneResultMap">
+		select * from zones where 	zone_structure_id	= #zoneStructureId# and 
+									province_code		= #provinceCode# and
+									country_code		= #countryCode# and
+									city_name			= #cityName#
+	</select>
+	
+	<insert id="addZone" parameterClass="com.meritconinc.shiplinx.model.Zone">
+		  insert into zones(zone_structure_id, zone_name, city_name, province_code, country_code) 
+		  			 values(#zoneStructureId#, #zoneName#,#cityName#,#provinceCode#,#countryCode#)
+		<selectKey resultClass="long" type="post" keyProperty="zoneId" >
+			select LAST_INSERT_ID() as value
+ 		</selectKey>
+	</insert>
+	
+	<select id="groupingLTLSkidRate" resultMap="ltlSkidRateResultMap">
+			select lsr.*,s.* from service s left join ltl_skid_rate lsr on (s.service_id=lsr.service_id) 
+			where  s.master_service_id=#serviceId# and 
+			lsr.from_zone=#fromZone# and 
+			lsr.to_zone=#toZone# and
+            (s.max_length>=#maxLength# or s.max_length =0) and 
+            (s.max_width>=#maxWidth# or s.max_width=0) and 
+			(s.max_height>=#maxHeight# or s.max_height=0) and 
+            (s.max_weight>=#maxWeight# or s.max_weight=0)  
+			order by rate_skid_1
+	</select>
+  
+    <select id="groupingLTLPoundRate" resultMap="ltlPoundRateResultMap">
+              select lpr.*,s.* from service s left join ltl_pound_rate lpr on (s.service_id=lpr.service_id) 
+              where  s.master_service_id=#serviceId# and 
+              lpr.from_zone       = #fromZone#       and 
+              lpr.to_zone         = #toZone#         and 
+              lpr.range_from      = #rangeFrom#      and
+              <isNotNull property="rangeTo">
+                  <isNotEmpty property="rangeTo">
+                      lpr.range_to        = #rangeTo#        and
+                  </isNotEmpty>
+              </isNotNull>
+              <isEqual property="freightClass" compareValue="0">
+                 (lpr.freight_class is null or  lpr.freight_class='' or lpr.freight_class=0) and
+              </isEqual>
+              <isNull property="freightClass">
+              (lpr.freight_class is null or  lpr.freight_class='' or lpr.freight_class=0) and 
+              </isNull>
+              <isEmpty property="freightClass">
+                  (lpr.freight_class is null or  lpr.freight_class=''or lpr.freight_class=0) and 
+              </isEmpty>
+              
+              <isNotNull property="freightClass">
+                  <isNotEmpty property="freightClass">
+                  (lpr.freight_class  = #freightClass#    or   lpr.freight_class is null  or  lpr.freight_class='' or lpr.freight_class=0) and
+                  </isNotEmpty>
+              </isNotNull>    
+                  lpr.customer_id =#customerId# order by rate 
+       </select>
+		
+    <select id="getMarkupListForCustomerAndCarrier" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
+       select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
+               m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+        from customer_markup m, service s, carrier c
+        where  s.carrier_id=c.carrier_id  
+        and m.service_id=s.service_id
+        and m.customer_id = #customerId#  
+        and c.carrier_id = #carrierId#
+        and disabled = #disabled#
+   </select>
+   
+   <select id="getMarkupListForCustomerForFilter" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupFilterResult">
+       select * from customer_markup where (customer_id = #customerId# or customer_id=0) and service_id=#serviceId# and disabled=0
+   </select>
+</sqlMap>

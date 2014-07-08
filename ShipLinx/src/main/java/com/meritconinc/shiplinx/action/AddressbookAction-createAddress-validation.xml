@@ -1,0 +1,63 @@
+<!DOCTYPE validators PUBLIC 
+"-//OpenSymphony Group//XWork Validator 1.0.2//EN" 
+"http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+ 
+<validators>
+	<field name="address.abbreviationName">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+		
+	</field>
+			
+	<field name="address.address1">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="address.city">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="address.countryCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="address.postalCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="address.phoneNo">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<message key="error.invalid.phone" />
+		</field-validator>
+	</field>
+	<field name="address.contactName">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+
+	<field name="address.emailAddress">
+		<field-validator type="regex">
+			<param name="fieldName">address.emailAddress</param>
+			<param name="expression">
+				^[A-Za-z0-9\._%-]+@[A-Za-z0-9\.-]+\.[A-Za-z]{2,4}(?:[;][A-Za-z0-9\._%-]+@[A-Za-z0-9\.-]+\.[A-Za-z]{2,4}?)*
+
+			</param>
+			<message key="error.invalid.email" />
+
+		</field-validator>
+	</field>
+	
+</validators>

@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="User">
+	<resultMap id="user" class="com.meritconinc.mmr.model.security.User">
+		<result property="username" column="username" columnIndex="1"/>
+	</resultMap>
+		
+	<resultMap id="addressMap" class="com.meritconinc.mmr.model.security.Address">
+	 	<result property="addressLine"	column="address_line"/>	
+	 	<result property="city"	column="city"/>	
+	 	<result property="stateProvince"	column="state_province"/>	
+	 	<result property="countryCode"	column="country_code"/>	
+	 	<result property="postalZip"	column="postal_zip"/>	
+	</resultMap> 
+	
+	<resultMap id="userResult" class="com.meritconinc.mmr.model.security.User">
+		<result property="username"	column="username"/>	 
+		<result property="firstName"	column="first_name"/>
+		<result property="lastName"	column="last_name"/>
+		<result property="email"	column="email"/>
+		<result property="lastLogin"	column="last_login"/>
+		<result property="status"	column="account_status"/>
+		<result property="lastModifiedBy"	column="last_modified_by"/>		 
+		<result property="lastModifiedAt"	column="last_modified"/>
+		<result property="createdBy"	column="created_by"/>
+		<result property="createdAt"	column="created"/>
+		<result property="passwordChangeBy"	column="password_last_changed_by"/>
+		<result property="passwordChangedAt"	column="password_changed"/>
+		<result property="accessTimes"	column="access_times"/>
+		<result property="userComments"	column="user_comments"/> 
+		<result property="password"	column="password"/>
+		<result property="loginFailedCount"	column="login_failed_count"/>
+		<result property="company"	column="company"/>
+		<result property="occupation"	column="occupation"/>
+		<result property="phoneNumber"	column="phone_number"/> 
+		<result property="phoneNumberExt"	column="phone_number_ext"/>
+		<result property="userComments"	column="user_comments"/>
+		<result property="sessionTimeout"	column="session_timeout"/>
+		<result property="locale"	column="locale"/>
+		<result property="expDate"	column="expiration_date"/>
+		<result property="fax"	column="fax"/>
+		<result property="enabled"	column="enabled"/>
+		<result property="customerId"	column="customer_id"/>
+		<result property="subType"	column="sub_type"/>	
+		<result property="fax"	column="fax"/>
+		<result property="enabled"	column="enabled"/>
+		<result property="customerId"	column="customer_id"/>
+		<result property="businessId"	column="business_id"/>
+		<result property="business" column="business_id" select="getBusinessesById"/>
+		<result property="defaultMenuId"	column="default_menu_id"/>
+		<result property="commissionPercentage"	column="commission_percentage"/>
+		<result property="commissionPercentagePP" column="commission_perc_PP"/>
+		<result property="commissionPercentagePS" column="commission_perc_PS"/>
+		<result property="userRole" column="username" select="getUserRole"/>
+		<result property="printNoOfLabels"	column="print_num_of_labels"/>
+		<result property="printNoOfCI"	column="print_num_of_ci"/>
+		<result property="preferredLabelSize"	column="print_preferred_label_size"/>
+		<result property="autoPrint"	column="print_auto"/>
+		<result property="branch"	column="branch"/>
+		<result property="defaultFromAddressId" column="default_from_address_id"/>
+		<result property="defaultToAddressId" column="default_to_address_id"/>
+		<result property="userGLOrRefNumber" column="gl_refno"/>
+		<result property="userCode" column="user_code"/>
+		<result property="logoURL" column="logo_url"/>
+    <result property="timeZone" column="time_zone"/>
+	</resultMap>
+	
+		<resultMap id="userResultUnit" class="com.meritconinc.mmr.model.security.User">
+	    <result property="username"	column="username"/>	 
+	    <result property="unitmeasure"	column="unit_measure"/>	 
+	 </resultMap>
+	
+	<resultMap id="readAuthorizedActionsResult" class="com.meritconinc.mmr.model.common.AuthorizedActionVO">
+		<result property="actionKey" 	column="action" />
+		<result property="menuId" 		column="menu_id"/>
+		<result property="description" 	column="description"/>
+	</resultMap>
+	
+	<resultMap id="userCountResult" class="java.lang.Long">
+		<result property="count"/>
+	</resultMap>
+	
+	<resultMap id="isPasswordRepeated" class="java.lang.Integer">
+		<result property="count"/>
+	</resultMap>
+	
+	<resultMap id="isPasswordValid" class="java.lang.Integer">
+		<result property="count"/>
+	</resultMap>
+	
+		<resultMap id="uomResult" class="com.meritconinc.shiplinx.model.UnitOfMeasure">
+		<result property="unitOfMeasureId" column="uom_id"/>
+		<result property="unitOfMeasure" column="unit_of_measure"/>
+	</resultMap>
+
+<resultMap id="userLocale" class="com.meritconinc.mmr.model.common.LocaleVO">
+       <result property="locale" column="locale"/>
+       <result property="description" column="description"/>
+       <result property="localeText" column="locale_text"/>
+   </resultMap>
+   <resultMap id="userLanguage" class="com.meritconinc.mmr.model.common.LocaleVO">
+       <result property="localeText" column="locale_text"/>
+   </resultMap>
+
+	<select id="address" resultMap="addressMap">
+		select address_line, city, state_province, country_code, postal_zip 
+			from user where username=#username#
+	</select>
+	
+	<select id="findUsersPaginated" parameterClass="com.meritconinc.mmr.model.admin.UserSearchCriteria" resultMap="userResult">
+		   select distinct u.*    
+		   from user u, user_role r 
+		   <dynamic prepend="where">
+			u.username = r.username 
+	 		<isGreaterThan property="businessId" compareValue="0">
+	 			and business_id = #businessId#
+	 		</isGreaterThan>	
+	 		<isGreaterThan property="customerId" compareValue="0">
+	 			and customer_id = #customerId#
+	 		</isGreaterThan>	
+			<isNotNull  property="username">
+				 and u.username like '%$username$%'
+			</isNotNull>
+			<isNotNull property="firstName">
+				and u.first_name like '%$firstName$%'
+			</isNotNull>
+			<isNotNull property="lastName">
+				and u.last_name like '%$lastName$%'
+			</isNotNull>
+			<isNotNull property="email">
+				and u.email like '%$email$%'
+			</isNotNull>
+			<isNotNull property="status">
+				and u.account_status = '$status$'
+			</isNotNull>
+			<isNotNull property = "branch">
+				<isNotEmpty property = "branch">
+					and u.branch = #branch#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property = "roleCode">
+				and r.code = #roleCode#
+			</isNotNull>
+			<isNotNull property = "userCode">
+				and u.user_code = #userCode#
+			</isNotNull>
+			<isNotNull property = "orderedBy">
+				<isNotEmpty property = "orderedBy">
+					order by #orderedBy#
+				</isNotEmpty>
+			</isNotNull>
+			
+		</dynamic>                                   
+	</select>
+
+	<select id="findDataRowsCount" resultMap="userCountResult">
+		select count(distinct u.username) from  user u, user_role r
+		<dynamic prepend="where">
+			u.username = r.username
+			<isNotNull  property="username">
+				 and u.username like '%$username$%' and business_id = #businessId#
+			</isNotNull>
+							
+		</dynamic>
+	</select>
+	
+	<select id="login" resultMap="userResult">
+		select *
+		from user 
+		where username = #username# and password = #password#
+	</select>
+	
+	<select id="findUserByUserName" resultMap="userResult">
+		select * from user where username like #username#
+	</select>
+	
+	<select id="findUserByCustomerId" resultMap="userResult">
+		select * from user where customer_id = #customerId# and business_id = #businessId#
+			<isNotNull property = "branch">
+				<isNotEmpty property = "branch">
+					and branch = #branch#
+				</isNotEmpty>
+			</isNotNull>		
+	</select>
+	
+	<select id="findUserByEmail" resultMap="userResult">
+		select * from user where email like #email# and business_id = #businessId#
+	</select>
+	
+	<update id="updateLastLoginInfo">
+		update user set last_login = #last_login#, 
+			access_times = access_times + 1, 
+			login_failed_count = 0 
+		where username = #username# and business_id = #businessId#
+	</update>
+	
+	<update id="updateLoginFailedCountZero">
+		update user set
+			login_failed_count = 0 
+		where username = #username#
+	</update>
+	
+	<update id="updateRole">
+		update user_role set code = #role# where username = #username#
+	</update>
+
+	<select id="isUsernameRegistered" resultClass="int">
+		select count(1) as count from user where username = #username#
+	</select>
+		
+	<select id="isEmailRegistered2" resultClass="int">
+		select count(1) as count from user where email = #email#
+	</select>
+	<select id="isEmailRegistered" resultMap="userCountResult">
+		select count(1) from user where username &lt;&gt; #username# and email = #email#
+	</select>
+	
+	<select id="userCount" resultMap="userCountResult">
+		select count(distinct u.username) from user u, user_role r where u.username = r.username
+	</select>
+	
+	<select id="readUserRoles" resultClass="java.lang.String">
+		select distinct(code) from user_role where username = #username#
+	</select>
+	
+	<select id="readAuthorizedActions" 	
+		resultMap="readAuthorizedActionsResult">
+		select action.action, action.menu_id, action.description
+			from action, user_role, role_action 
+			where user_role.username=#username#
+			and user_role.code = role_action.role 
+			and role_action.action_id=action.id
+	</select>
+	
+	<update id="updateUser">
+		update user set first_name = #first_name#, 
+			last_name = #last_name#, 
+			email = #email#, 
+			account_status = #account_status#, 
+			user_comments = #user_comments#,
+			last_modified_by = #last_modified_by#, 
+			last_modified = #last_modified#, 
+			company = #company#, phone_number = #phone_number#, 
+			occupation = #occupation#,address_line = #address_line#, 
+			city = #city#, state_province = #state_province#, country_code = #country_code#, 
+			postal_zip = #postal_zip#, session_timeout = #session_timeout#, 
+			phone_number_ext = #phone_number_ext#, 
+			locale = #locale#,
+			expiration_date = #expDate#, commission_percentage=#commissionPercentage#, commission_perc_PP=#commissionPercentagePerPalletService#, commission_perc_PS=#commissionPercentagePerSkidService#,
+			print_num_of_labels = #printNoOfLabels#, print_num_of_ci = #printNoOfCI#, print_preferred_label_size = #preferredLabelSize#, print_auto = #autoPrint#,
+			default_from_address_id = #fromAddressId#, default_to_address_id = #toAddressId#, gl_refno = #userGLOrRefNumber#,user_code=#userCode#,logo_url=#logoURL#,unit_measure=#unitmeasure#,time_zone=#timeZone#
+			where username = #username#
+	</update>
+	<!-- 
+	<update id="userupdate">
+		update user set email = #email#,phone_number = #phoneNumber#, password = #password#, fax = #fax#, enabled = #enabled#, account_status=#account_status#, login_failed_count=0,session_timeout=30,access_times=0
+		,sub_type = #subtype# where username = #username#
+	</update>
+	 -->
+	
+
+	<update id="updateProfile">
+		update user set first_name = #first_name#, 
+			last_name = #last_name#, 
+			email = #email#, 
+			user_comments = #user_comments#,
+			last_modified_by = #last_modified_by#, 
+			last_modified = #last_modified#, 
+			company = #company#, phone_number = #phone_number#, 
+			occupation = #occupation#,address_line = #address_line#, 
+			city = #city#, state_province = #state_province#, 
+			country_code = #country_code#, postal_zip = #postal_zip#,  
+			phone_number_ext = #phone_number_ext# 
+			where username = #username#
+	</update>
+	
+	<update id="deleteUser">
+		delete from user where username=#username# and business_id=#businessId#
+	</update>
+	
+	<delete id = "deleteRole">
+		delete from user_role where username = #username#
+	</delete>
+	
+	<insert id = "insertRole">
+		insert into user_role (username, code) values ( #username#, #role#)
+	</insert>
+	
+	<insert id = "insertUserHistory">
+		insert into user_history  select *, NOW() from user where username = #username#
+	</insert>
+		
+	<insert id = "insertUserRolesHistory">
+		insert into user_role_history
+			select username, code, 'user_history_id' = #user_history_id#
+			FROM user_role WHERE username = #username#
+	</insert>
+	
+	<update id="updatePassword">
+		update user set password = #password#, 
+			password_last_changed_by = #changed_by#, 
+			password_changed = #password_changed# 
+			where username = #username#
+	</update>
+	
+	<insert id = "passwordChangeHistory">
+		insert into user_history (username, password, created) VALUES (#username#, #password#, #created#)
+	</insert>
+	
+	<select id="isPasswordValid" resultMap="isPasswordValid">
+		select count(*) from user where username = #username# and password = #password#
+	</select>
+	
+	<select id="isPasswordRepeated" resultMap="isPasswordRepeated">
+		select count(*) from (
+			select top $password_count$  password 
+			from user_history 
+			where username = #username#
+			order by created desc) list 
+	  	where password = #password#
+	</select>
+	
+	<select id = 'accountStatus' resultMap = 'userResult'>
+		select * from user where username = #username#
+	</select>
+
+	<select id = 'isPasswordExpired' resultMap = 'userResult'>
+		select * from user where username = #username#
+	</select>
+
+	<update id = 'updateLoginFailedCount'>
+		update user set login_failed_count = login_failed_count + 1 
+		where username = #username#
+	</update>
+
+	<select id = 'loginFailedCount' resultMap = 'userResult'>
+		select * from user where username = #username#
+	</select>
+
+	<update id = 'updateAccountStatus'>
+		update user set account_status = #account_status# 
+			where username = #username#
+	</update>
+	
+	<insert id = 'createUser'>
+		insert into user (username, password, password_changed, first_name, last_name, 
+			email, user_comments, account_status, created_by, created,
+			company, phone_number, phone_number_ext, occupation,
+			address_line, city, state_province, country_code, postal_zip, session_timeout,
+			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id,commission_percentage,commission_perc_PP,commission_perc_PS, default_menu_id, print_num_of_labels, print_num_of_ci, print_preferred_label_size, print_auto, branch, default_from_address_id, default_to_address_id, gl_refno,unit_measure,time_zone) 
+			values (#username#, #password#, #today#, #first_name#, 
+			#last_name#, #email#, #user_comments#, #account_status#, #created_by#, 
+			#created#, #company#, #phone_number#, #phone_number_ext#, #occupation#, 
+			#address_line#, #city#, #state_province#, #country_code#, #postal_zip#, #session_timeout#,
+			#locale#, #expiration_date#,IFNULL(#customerId#,0),#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#,IFNULL(#commissionPercentage#,0),IFNULL(#commissionPercentagePerPalletService#,0),IFNULL(#commissionPercentagePerSkidService#,0),#default_menuId#, IFNULL(#printNoOfLabels#,1), IFNULL(#printNoOfCI#,3), #preferredLabelSize#, #autoPrint#, #branch#, IFNULL(#fromAddressId#,0), IFNULL(#toAddressId#,0), #userGLOrRefNumber#,#unitmeasure#,#timeZone#)
+	</insert>
+	
+	<!-- 
+	<insert id = 'createCustomerUser'>
+		insert into user (username, password, password_changed, first_name, last_name, 
+			email, user_comments, account_status, created_by, created,
+			company, phone_number, phone_number_ext, occupation,
+			address_line, city, state_province, country_code, postal_zip, session_timeout,
+			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id) 
+			values (#username#, #password#, #today#, #first_name#, 
+			#last_name#, #email#, #user_comments#, #account_status#, #created_by#, 
+			#created#, #company#, #phone_number#, #phone_number_ext#, #occupation#, 
+			#address_line#, #city#, #state_province#, #country_code#, #postal_zip#, #session_timeout#,
+			#locale#, #expiration_date#,#customerId#,#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#)
+	</insert>
+	 -->
+	
+	<!-- 
+	<insert id = 'addUser'>
+		insert into user (username, password_changed,password,access_times,login_failed_count,session_timeout,email, fax, phone_number, enabled, sub_type, customer_id,created,locale,account_status, business_id) 
+			values (#username#, #today#,#password#, #accesstimes# ,#loginfailedcount#, #sessiontimeout#, #email#, #fax# , #phone_number#, #enabled#, #subtype#, #customerId#,#created#,#locale#,#account_status#, #businessId# )
+	</insert>
+ 	-->
+	
+	<update id = 'editCustomerUser'>
+	update user set company=#business_name#,password=#password#,password_changed=#password_changed#
+	,city=#city#,postal_zip=#postal_zip#,country_code=#country_code#,phone_number=#phone_number#
+	,state_province=#state_province#,email=#email#,password_last_changed_by=#password_last_changed_by#,last_modified=#last_modified#
+	,last_modified_by=#last_modified_by# where username=#username# and business_id=#businessId#
+	</update>
+
+	<select id="getUserRole" resultClass="java.lang.String">
+		select code from user_role where username=#username#
+	</select>
+
+	<select id="findUserByUserCode" resultMap="userResult">
+  		select * from user where user_code = #userCode#  
+    </select>
+    
+	    <select id="unitOfMeasure" resultMap="uomResult">
+        select * from unit_of_measure
+    </select>
+    
+    <select id="unitmeasure" resultMap="userResultUnit">
+        select username,unit_measure from user where username=#username#
+    </select>
+    <select id="locale" resultMap="userLocale">
+        select * from locale
+    </select>
+        <select id="customerlanguage" resultMap="userLanguage">
+       select locale_text from locale l left join user u on(l.locale=u.locale) where u.username=#username#
+    </select> 
+</sqlMap>

@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="login.layout" template="/mmr/jsp/templates/layout_login.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/login/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/login/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/login/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/login/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/login/right_navigation.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/login/footer.jsp"/>
+    </definition>
+
+<!-- Not being used, MARKED FOR REMOVAL
+	<definition name="admin.layout" template="/mmr/jsp/templates/layout_admin.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/right_navigation.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+ -->
+
+	<definition name="admin.layout.window" template="/mmr/jsp/templates/layout_admin_window.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/right_navigation_window.jsp"/>
+        <put-attribute name="rightMenuShip" value="/mmr/jsp/common/shipping/right_navigation_window.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!-- MAIN LAYOUT -->
+    <definition name="main.layout" template="/mmr/jsp/templates/layout_main.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="header2" value="/mmr/jsp/common/header2.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/right_navigation.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+	    
+    <definition name="split.layout" template="/mmr/jsp/templates/layout_split.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/navigation.jsp" />
+        <put-attribute name="leftBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="rightBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/right_navigation.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!-- RIGHT NAV LAYOUT -->
+    <definition name="rightnav.layout" template="/mmr/jsp/templates/layout_rightNav.jsp">
+        <put-attribute name="title" value="Shiplinx" />
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/top_menu.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/welcome.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/right_menu.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!--  LEFT NAV LAYOUT -->
+    <definition name="leftnav.layout" template="/mmr/jsp/templates/layout_leftNav.jsp">
+        <put-attribute name="title" value="MMR"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/top_menu.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/left_menu.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!--  SIMPLE LAYOUT -->
+    <definition name="simple.layout" template="/mmr/jsp/templates/layout_simple.jsp">
+        <put-attribute name="title" value="MMR"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/top_menu.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!--  BASIC LAYOUT -->
+    <definition name="basic.layout" template="/mmr/jsp/templates/layout_basic">
+        <put-attribute name="title" value="MMR"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+	<!--  BASIC LAYOUT SIMPLE FOOTER-->
+    <definition name="basic.simplefooter.layout" template="/mmr/jsp/templates/layout_basic">
+        <put-attribute name="title" value="MMR"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/blank.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer_simple.jsp"/>
+    </definition>
+    
+    <definition name="simple.actionmessage" extends="main.layout">
+    	<put-attribute name="mainBody" value="/mmr/jsp/common/action_messages.jsp"/>    
+    </definition>    
+
+	<!--  AJAX LAYOUT -->
+    <definition name="ajax.layout" template="/mmr/jsp/templates/ajaxTimeOut.jsp">    	
+    </definition>
+
+
+
+
+
+
+<!-- Not being used, MARKED FOR REMOVAL
+	<definition name="shipping.layout" template="/mmr/jsp/templates/layout_shipment.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/shipping/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/shipping/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/shipping/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/shipping/right_navigation.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+-->
+
+	<definition name="shipping.layout.window" template="/mmr/jsp/templates/layout_shipment_window.jsp">
+        <put-attribute name="title" value="Shiplinx"/>
+        <put-attribute name="header" value="/mmr/jsp/common/header.jsp"/>
+        <put-attribute name="header2" value="/mmr/jsp/common/header2.jsp"/>
+        <put-attribute name="topnav" value="/mmr/jsp/common/shipping/navigation.jsp" />
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/shipping/blank.jsp"/>
+        <put-attribute name="leftMenu" value="/mmr/jsp/common/shipping/left_navigation.jsp"/>
+        <put-attribute name="rightMenu" value="/mmr/jsp/common/shipping/right_navigation_window.jsp"/>
+        <put-attribute name="footer" value="/mmr/jsp/common/footer.jsp"/>
+    </definition>
+
+
+
+	
+	
+		
+	<!-- AJAX -->
+    <definition name="ajax.TimeOut" extends="ajax.layout">    
+    	<put-attribute name="message" value="TimeOut"/>	
+    </definition>
+	
+	
+	<!-- WELCOME TAB -->
+	<definition name="welcome.index" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/welcome.jsp"/>	
+    </definition>
+    
+    <definition name="page.links" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/links.jsp"/>
+    </definition>
+
+    <!-- ABOUT US TAB -->
+    <definition name="aboutus.index" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/aboutUs.jsp"/>
+    </definition>
+
+    <definition name="aboutus.contact" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/contactUs.jsp"/>
+    </definition>
+    
+    <definition name="aboutus.services" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/services.jsp"/>
+    </definition>
+    <definition name="aboutus.services.consulting" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/consulting.jsp"/>
+    </definition>
+    <definition name="aboutus.services.recruitment" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/recruitment.jsp"/>
+    </definition>
+    <definition name="aboutus.services.partTime" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/welcome/partTime.jsp"/>
+    </definition>
+
+    <definition name="aboutus.disclaimer" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/about_us/disclaimer.jsp"/>
+    </definition>
+    
+	<!-- SECURITY / LOGIN-->
+    <definition name="login" extends="login.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/security/login.jsp"/>
+ 		<put-list-attribute name="moreCss">
+			<add-attribute value="/mmr/styles/login.css"/>
+		</put-list-attribute>						
+    </definition>
+
+    <definition name="terms.of.use" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/security/terms_of_use.jsp"/>
+    </definition>
+
+    <definition name="popup.TimeOut" extends="basic.simplefooter.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/security/popup_timeout.jsp"/>
+    </definition>
+
+	<!-- ADMIN TAB -->
+    <definition name="user.list.tile" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/userlist.jsp"/>
+    </definition>
+
+    <definition name="user" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/adduser.jsp"/>
+    </definition>
+    
+	 <definition name="address" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addaddress.jsp"/>
+    </definition>
+    
+    <definition name="upload.address" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/uploadAddress.jsp"/>
+    </definition>
+    
+     <definition name="account" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addaccount.jsp"/>
+    </definition>
+    
+    
+    
+    
+     <definition name="customer.info" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/editCustomerInfo.jsp"/>
+    </definition>
+
+ 	<definition name="customer.account.info" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/customerAccountInfo.jsp"/>
+    </definition>
+
+     <definition name="newCustomer" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addCustomer.jsp"/>
+    </definition>
+    
+   	<definition name="change.password" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/changepassword.jsp"/>
+    </definition>
+
+    <definition name="search.user" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchuser.jsp"/>
+    </definition>
+    
+    
+    <definition name="search.addressbook" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchaddressbook.jsp"/>
+    </definition>
+    
+     <definition name="search.distributionList" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/distributionList.jsp"/>
+    </definition>
+    
+    <definition name="upload.distributionList" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/uploadDistributionList.jsp"/>
+    </definition>
+    
+    
+     <definition name="distribution.list" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/distributionList.jsp"/>
+    </definition>
+    
+    
+    <definition name="exception.list" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/exceptionlist.jsp"/>
+    </definition>
+    
+    <definition name="property.list" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/propertylist.jsp"/>
+    </definition>
+    
+                      
+        
+	<!-- ERROR -->
+    <definition name="unavailable" extends="main.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/unavailable.jsp"/>
+    </definition>
+
+  <!--    <definition name="global_error" extends="main.layout">-->
+    <definition name="access.denied" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/error_page.jsp"/>
+    </definition>
+
+    <definition name="popup_global_error" extends="basic.simplefooter.layout">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/error_page.jsp"/>
+    </definition>
+
+     <!--    <definition name="error" extends="main.layout">-->
+    <definition name="error" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/error_page.jsp"/>
+    </definition>
+
+    <!-- <definition name="access.denied" extends="main.layout"> -->
+    <definition name="access.denied" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/accessdenied.jsp"/>
+    </definition>
+
+     <!--    <definition name="dao.error" extends="main.layout">-->
+    <definition name="dao.error" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/error/daoerror.jsp"/>
+    </definition>
+
+    
+
+	<!--WINDOW CHANGE-->
+     <definition name="customer" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addCustomer.jsp"/>
+    </definition>
+    
+     <definition name="manage.sales" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/sales_users.jsp"/>
+    </definition>
+
+
+     <definition name="trackShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/track_shipment.jsp"/>
+    </definition>
+
+    <definition name="searchShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/search_shipment.jsp"/>
+    </definition>
+    
+    <definition name="listShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/list_shipment.jsp"/>
+    </definition>  
+      
+    <definition name="autolinkedShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/autolinked_shipment.jsp"/>
+    </definition> 
+    
+    <definition name="unlinkedShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/unlinked_shipment.jsp"/>
+    </definition> 
+            
+     <definition name="cancelShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/listCancelShipment.jsp"/>
+    </definition>
+   
+    <definition name="quoteShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/quoteShipment.jsp"/>
+    </definition>
+    
+    <definition name="viewShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/view_shipment.jsp"/>
+    </definition>    
+
+    <definition name="batchShipment" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/batch_shipment.jsp"/>
+    </definition> 
+
+     <definition name="searchCustomer" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchCustomer.jsp"/>
+    </definition>
+    
+    <definition name="searchpickups" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchPickups.jsp"/>
+    </definition>
+    
+    <definition name="createpickup" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/createPickup.jsp"/>
+    </definition>
+
+	<!-- Product Management -->
+	<definition name="searchProduct" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchProduct.jsp"/>
+    </definition>
+    
+    <definition name="addNewProduct" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addProduct.jsp"/>
+    </definition>
+    
+    <definition name="ProductLinePage" extends="admin.layout.window">
+    	<put-attribute name="mainBody" value="/mmr/jsp/admin/addProductLine.jsp"/>
+    </definition>
+	<!-- End: Product Management -->
+	
+	<!--  Start: Package Management -->
+	<definition name="searchPackage" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchPackages.jsp"/>
+    </definition>
+    
+    <definition name="addNewPackage" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addPackage.jsp"/>
+    </definition>
+	<!-- End: Packa -->
+
+    <!-- Get Rates -->    
+    <definition name="shipping.getRates" extends="split.layout">
+        <put-attribute name="leftBody" value="/mmr/jsp/shipping/shipment_entry.jsp"/>
+    </definition>
+
+	<!-- Warehouse Management -->
+	<definition name="searchWarehouses" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchWarehouse.jsp"/>
+    </definition>
+	
+	<definition name="addNewWarehouse" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/addWarehouse.jsp"/>
+	</definition>
+	
+	<definition name="editWarehouse" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/addWarehouse.jsp"/>
+	</definition>
+	
+	<definition name="manageProducts" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/searchProduct.jsp"/>
+	</definition>
+	
+	<definition name="manageLocations" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/searchLocation.jsp"/>
+	</definition>
+	
+	<definition name="ProductInventory" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/product_inventory.jsp"/>
+	</definition>
+	
+	<definition name="addEditWarehouseLocation" extends="admin.layout.window">
+    	<put-attribute name="mainBody" value="/mmr/jsp/admin/addEditWarehouseLocation.jsp"/>
+    </definition> 
+	
+	<!-- End: Warehouse Management -->
+	
+	<!-- Start: Cart Management -->
+
+	<definition name="addNewCart" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/addCart.jsp"/>
+	</definition>
+	
+	<definition name="searchCart" extends="shipping.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/searchCart.jsp"/>
+	</definition>
+	
+	<definition name="searchCartOrder" extends="admin.layout.window">
+		<put-attribute name="mainBody" value="/mmr/jsp/admin/searchCartOrder.jsp"/>
+	</definition>
+	
+
+	<!-- End: Cart Management -->
+
+ 	<definition name="new.shipment" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/newShipment.jsp"/>
+    </definition>
+    
+    <definition name="warehouse.order" extends="shipping.layout.window">
+    	<put-attribute name="mainBody" value="/mmr/jsp/shipping/warehouse_order.jsp"/>
+    </definition>
+    
+    <definition name="address.list" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/addressList.jsp"/>
+    </definition>
+
+	<definition name="order.dimenssion" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/packageDimention.jsp"/>
+    </definition>
+    
+    <definition name="order.dimenssion.quote" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/quotePackageDimention.jsp"/>
+    </definition>
+    
+    
+    <definition name="order.rates" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/rateList.jsp"/>
+    </definition>
+     
+      <definition name="order.rates.quote" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/quoteRateList.jsp"/>
+    </definition>
+    
+     
+	<definition name="order.package" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/packageDetail.jsp"/>
+    </definition>
+
+	<definition name="orderDetail" extends="shipping.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/shipping/orderDetail.jsp"/>
+    </definition>
+    
+    <definition name="markup" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/markup.jsp"/>
+    </definition>  
+    
+     <definition name="searchCharges" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchCharges.jsp"/>
+    </definition>  
+    
+    <definition name="addNewCharges" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addNewCharge.jsp"/>
+    </definition>
+    
+    <definition name="viewUploadRateTemplate" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/uploadRateTemplate.jsp"/>
+    </definition>
+        
+
+    <definition name="testMarkup" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/testMarkup.jsp"/>
+    </definition>   
+    
+    <definition name="searchEdi" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchEdi.jsp"/>
+    </definition>
+    <definition name="uploadEdi" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/uploadEdi.jsp"/>
+    </definition>    
+    <definition name="searchInvoice" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchInvoice.jsp"/>
+    </definition>  
+    <definition name="editInvoice" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/view_edit_invoice.jsp"/>
+    </definition>  
+    <definition name="genInvoice" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/genInvoice.jsp"/>
+    </definition>    
+    <definition name="payInvoices" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/payInvoices.jsp"/>
+    </definition>    
+    <definition name="updateAR" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/updateAR.jsp"/>
+    </definition>    
+    <definition name="searchAR" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/searchAR.jsp"/>
+    </definition>    
+	
+    <definition name="commReport" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/commReport.jsp"/>
+    </definition>    
+    <definition name="salesReport" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/salesReport.jsp"/>
+    </definition>    
+	
+	
+</tiles-definitions>
+

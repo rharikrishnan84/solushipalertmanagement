@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Feedback">
+	<resultMap id="result" class="com.meritconinc.mmr.model.aboutus.FeedbackVO">
+		<result property="id" 				column="id" 			columnIndex="1"/>
+		<result property="name" 			column="name" 			columnIndex="2"/>
+		<result property="email" 			column="email" 			columnIndex="3"/>
+		<result property="type" 			column="type" 			columnIndex="4"/>
+		<result property="comment" 			column="comment" 		columnIndex="5"/>
+		<result property="username" 		column="username" 		columnIndex="6"/>
+		<result property="ip" 				column="ip" 			columnIndex="7"/>
+		<result property="host" 			column="host" 			columnIndex="8"/>
+		<result property="createDate"		column="create_date" 	columnIndex="9"/>
+	</resultMap>  
+	<!--  -->
+	<resultMap class="com.meritconinc.mmr.model.common.KeyValueVO" id="feedbackType">
+		<result property="key" 		javaType="java.lang.String"		column="type" 			columnIndex="1"/>
+		<result property="value" 	javaType="java.lang.String"		column="msg_content" 			columnIndex="2"/>	
+	</resultMap>
+	
+	<cacheModel id="feedbackTypes" type="LRU" readOnly="true">
+		<flushInterval hours="24" />
+		<property name="cache-size" value="4" />
+	</cacheModel>
+	
+	
+	<!--  the sql statements for the DAO -->
+	<insert id="insertFeedback" parameterClass="com.meritconinc.mmr.model.aboutus.FeedbackVO">
+		insert into feedback 
+			(name, email, type, comment, username, ip, host, create_date) 
+		values 
+			(#name#, #email#, #type#, #comment#,
+			 #username#, #ip#, #host#, #createDate#) 
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT @@IDENTITY AS 'Identity'
+		</selectKey>
+	</insert>
+	
+	<select id="getFeedbackTypes" resultMap="feedbackType" cacheModel="feedbackTypes">
+		select f.type, r.msg_content  
+		from feedback_type f inner join resourcebundle r 
+		on f.msg_id = r.msg_id and r.is_fmk = (select min(cast(is_fmk as signed)) from resourcebundle where msg_id = f.msg_id and locale = #locale#)
+		where  f.msg_id = r.msg_id and r.locale = #locale#		
+	</select>
+
+</sqlMap>

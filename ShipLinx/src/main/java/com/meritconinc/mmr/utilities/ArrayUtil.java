@@ -1,0 +1,83 @@
+package com.meritconinc.mmr.utilities;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
+public class ArrayUtil {
+
+	
+	/**
+	 * Returns true if two Collections contain exactly the same elements exactly the same number of times.
+	 * The elements can appear in different order.
+	 * E.g. areSameElements( ["A", null] , [null, "A"] ) returns true
+	 *      areSameElements( ["A", null] , ["A", null, null] ) returns false
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public static boolean areSame(Collection c1, Collection c2) { 
+		
+		if (c1 == null)
+			return c2 == null;
+
+		if (c1.size() != c2.size())
+			return false;
+
+		HashSet elements = new HashSet(c1);
+		for (Iterator it = c2.iterator(); it.hasNext();)
+			if (!elements.remove(it.next())) // if elements Set does not contain it.next()
+				return false;
+
+		return elements.isEmpty();
+	}
+
+	/**
+	 * Returns true if two Collections contain exactly the same elements.
+	 * The elements can appear in different order and different number of times.
+	 * E.g. areSameElements( ["A", null] , [null, "A"] ) returns true
+	 *      areSameElements( ["A", null] , ["A", null, null] ) returns true
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public static boolean areSameElements(Collection c1, Collection c2) {
+		
+		if (c1 == null)
+			return c2 == null;
+
+		return (new HashSet(c1)).containsAll(c2) && (new HashSet(c2)).containsAll(c1);
+	}
+	
+	/**
+	 * Returns true if collection c1 is subset of collection c2
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public static boolean isSubset (Collection c1, Collection c2) {
+		if (c1 == null)
+			return c2 == null;
+		return (new HashSet(c2)).containsAll(c1);
+	}
+	
+	/**
+	 * Returns true if any of c1 has match in c2 
+	 * @param c1
+	 * @param c2
+	 * @return
+	 */
+	public static boolean isMatchAny (Collection<String> c1, Collection<String> c2){
+		if (c1 == null)
+			return c2 == null;
+		for(String c1Entry: c1){
+			for(String c2Entry: c2){
+				if(c1Entry.equals(c2Entry)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+}

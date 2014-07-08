@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!--  Define application properties as placeholders in application context
+	The properties will be take from FMK_PROPERTY db table
+	See usage example in applicationContext-acegi-security.xml for 'remember password'
+	cookie expiration time set up
+	 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		 <property name="properties"><ref bean="dbProperties"/></property>
+	</bean>
+	<bean id="dbProperties" class="com.meritconinc.mmr.common.DbPropertiesFactoryBean">
+  		<property name="propertyService"><ref bean="propertyService"/></property>
+	</bean>
+
+	<!-- JDBC DataSource via JNDI lookup -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:/comp/env/jdbc/shiplinx"/>
+	</bean>
+
+	<!--  iBatis Configuration -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation" value="WEB-INF/sqlmap-config.xml"/>
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<!--  AOP Logging Interceptor-->
+	<bean id="loggingInterceptor"  class="com.meritconinc.mmr.interceptor.LoggingInterceptor"/>
+
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!--  Actions -->
+	<bean id="logonAction" scope="prototype"
+		class="com.meritconinc.mmr.action.security.LogonAction">
+		<constructor-arg ref="userService" />
+		<property name="businessService" ref="businessService"/>
+		<property name="customerService" ref="customerService"/>
+		
+	</bean>
+
+	<bean id="userListAction" scope="prototype" class="com.meritconinc.mmr.action.admin.UserListAction">
+		<property name="criteria" ref="userSearchCriteria"/>
+		<property name="service" ref="userService"/>
+		<property name="customerService" ref="customerService"/>
+		<property name="addressService" ref="addressService"/>
+	</bean>
+	
+	<bean id="distributionListAction" scope="prototype" class="com.meritconinc.mmr.action.admin.DistributionAction">
+	</bean>
+
+	<bean id="requestAccessAction" scope="prototype" class="com.meritconinc.mmr.action.common.RequestAccessAction">
+		<property name="user" ref="user"/>
+		<property name="service" ref="userService"/>
+	</bean>
+
+	<bean id="user" class="com.meritconinc.mmr.model.security.User" scope="prototype">
+		<property name="extendedAttributes" ref="userExtendedAttributes"/>
+	</bean>
+	
+	<bean name="userSearchCriteria" class="com.meritconinc.mmr.model.admin.UserSearchCriteria" scope="prototype"/>
+	
+
+	<bean name="userExtendedAttributes" class="com.meritconinc.mmr.model.security.DefaultUserExtendedAttributesVO" scope="prototype"/>
+
+	<bean id="userAdminAction" scope="prototype" class="com.meritconinc.mmr.action.admin.UserAdminAction">
+		<property name="user" ref="user"/>
+		<property name="service" ref="userService"/>
+	</bean>
+	
+	<bean id="logoutAction" scope="prototype" class="com.meritconinc.mmr.action.LogoutAction">
+	</bean>
+
+	<!-- 
+	<bean id="contactUsAction" scope="prototype"
+		class="com.meritconinc.mmr.action.aboutus.ContactUsAction">
+		<property name="feedbackService" ref="feedbackService" />
+	</bean>
+	-->
+	
+	<bean id="feedbackAction" scope="prototype"
+		class="com.meritconinc.mmr.action.aboutus.FeedbackAction">
+		<constructor-arg ref="feedbackService" />
+	</bean>
+
+	<bean id="systemService" scope="prototype" class="com.meritconinc.mmr.service.impl.SystemServiceImpl">
+		<property name="utilDAO">
+			<ref local="utilDAO" />
+		</property>
+	</bean>
+
+
+	<bean id="exceptionListAction" scope="prototype"
+		class="com.meritconinc.mmr.action.admin.ExceptionListAction">
+		<constructor-arg ref="exceptionInfoService" />
+	</bean>
+
+	<bean id="propertyListAction" scope="prototype"
+		class="com.meritconinc.mmr.action.admin.PropertyListAction">
+		<property name="propertyService" ref="propertyService"/>
+		<property name="systemService" ref="systemService"/>
+	</bean>
+
+	<bean id="queryAction" scope="prototype"
+		class="com.meritconinc.mmr.action.query.QueryAction">
+		<property name="queryService" ref="queryService"/>
+	</bean>
+
+	<bean id="adminQueryAction" scope="prototype"
+		class="com.meritconinc.mmr.action.query.AdminQueryAction">
+		<property name="queryService" ref="queryService"/>
+	</bean>
+
+	<bean id="systemResourceAction" scope="prototype"
+		class="com.meritconinc.mmr.action.admin.SystemResourceAction">
+		<property name="systemService" ref="systemService"/>
+	</bean>
+
+	<!-- Construct the DAO  -->
+
+	<!-- Construct the DAO and pass the datasource found through JNDI to the constructor -->
+	<bean id="actionsDAOTarget" class="com.meritconinc.mmr.dao.ibatis.ActionsDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="menusDAOTarget" class="com.meritconinc.mmr.dao.ibatis.MenusDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="messageDAOTarget" class="com.meritconinc.mmr.dao.ibatis.MessageDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="rolesDAOTarget" class="com.meritconinc.mmr.dao.ibatis.RolesDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="rolesTagDAOTarget" class="com.meritconinc.mmr.dao.ibatis.RolesTagDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="loginTrackingDAOTarget" class="com.meritconinc.mmr.dao.ibatis.LoginTrackingDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="utilDAO" class="com.meritconinc.mmr.dao.ibatis.UtilDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="userExtensionDAO"  parent="baseTransactionProxy">
+		<property name="target" ref="userExtensionDAOTarget"/>
+	</bean>
+	
+
+	<bean name="userExtensionDAOTarget" class="com.meritconinc.mmr.dao.ibatis.UserExtensionDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+
+	<bean id="menusDAO"  parent="baseTransactionProxy">
+		<property name="target" ref="menusDAOTarget"/>
+	</bean>
+
+	<bean id="messageDAO"  parent="baseTransactionProxy">
+		<property name="target" ref="messageDAOTarget"/>
+	</bean>
+
+	<bean id="rolesDAO" parent="baseTransactionProxy">
+		<property name="target" ref="rolesDAOTarget"/>
+	</bean>
+
+	<bean id="rolesTagDAO" parent="baseTransactionProxy">
+		<property name="target" ref="rolesTagDAOTarget"/>
+	</bean>
+
+
+	<bean id="actionsDAO"  parent="baseTransactionProxy">
+		<property name="target" ref="actionsDAOTarget"/>
+	</bean>
+
+	<bean id="loginTrackingDAO" parent="baseTransactionProxy">
+		<property name="target" ref="loginTrackingDAOTarget"/>
+	</bean>
+
+	<bean id="userDAO" class="com.meritconinc.mmr.dao.ibatis.UserDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+		<property name="userExtensionDAO" ref="userExtensionDAO"/>
+	</bean>
+	
+	<bean id="feedbackDAO" class="com.meritconinc.mmr.dao.ibatis.FeedbackDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="exceptionInfoDAO" class="com.meritconinc.mmr.dao.ibatis.ExceptionInfoDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="propertyDAO" class="com.meritconinc.mmr.dao.ibatis.PropertyDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="requestTrackingDAO" class="com.meritconinc.mmr.dao.ibatis.RequestTrackingDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="queryDAO" class="com.meritconinc.mmr.dao.ibatis.QueryDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+	<bean id="baseTransactionProxy"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+		abstract="true">
+		<property name="transactionManager" ref="txManager" />
+		<property name="transactionAttributes">
+			<props>
+			<prop key="insert*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="create*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="update*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="save*"  >PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="change*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="add*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="delete*">PROPAGATION_REQUIRED, -DAOException</prop>
+			<prop key="get*"   >PROPAGATION_REQUIRED</prop>
+			<prop key="find*"  >PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="userService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.UserServiceImpl">
+				<property name="siteUserDAO">
+					<ref local="userDAO"/>
+				</property>		
+				<property name="loginTrackingDao">
+					<ref local="loginTrackingDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="feedbackService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.FeedbackServiceImpl">
+				<property name="feedbackDAO">
+					<ref local="feedbackDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="exceptionInfoService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.ExceptionInfoServiceImpl">
+				<property name="exceptionInfoDAO">
+					<ref local="exceptionInfoDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="propertyService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.PropertyServiceImpl">
+				<property name="propertyDAO">
+					<ref local="propertyDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="requestTrackingService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.RequestTrackingServiceImpl">
+				<property name="requestTrackingDAO">
+					<ref local="requestTrackingDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	<bean id="queryService" parent="baseTransactionProxy">
+        <property name="target">
+	         <bean class="com.meritconinc.mmr.service.impl.QueryServiceImpl">
+				<property name="queryDAO">
+					<ref local="queryDAO"/>
+				</property>		
+	        </bean>
+       </property>
+	</bean>
+	
+</beans>

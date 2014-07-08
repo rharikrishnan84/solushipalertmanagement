@@ -1,0 +1,42 @@
+package com.meritconinc.mmr.web;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+public class RolesAccessorXMLImpl implements RolesAccessor{
+	public List<String> getRoles(String section) throws Exception{
+		List<String> ret = null;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true); 
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		File xmlFile = new File(getClass().getClassLoader().getResource("pagesection_roles_map.xml").getFile()); 
+		if (xmlFile == null) {
+			return null;
+		}
+		Document doc = builder.parse(xmlFile);
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		XPath xpath = xpathFactory.newXPath();
+		String evalXpath = "/section/" + section + "/@allow";
+		XPathExpression expr = xpath.compile(evalXpath);
+		Object result = expr.evaluate(doc, XPathConstants.NODESET);
+	    NodeList nodes = (NodeList) result;
+	    String roles = nodes.item(0).getNodeValue();
+	    String[] ar = roles.split(",");
+	    ret = new ArrayList <String>();
+	    for (int i = 0; i < ar.length; i++) {
+	    	ret.add(ar[i]);
+	    }
+	    return ret;
+	}
+} 

@@ -1,0 +1,11 @@
+package com.meritconinc.mmr.exception;
+
+public class updateProductInventoryException extends Exception {
+  public updateProductInventoryException(String string) {
+    super(string);
+  }
+
+  public updateProductInventoryException() {
+    super();
+  }
+}

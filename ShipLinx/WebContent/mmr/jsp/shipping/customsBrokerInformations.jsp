@@ -1,0 +1,11 @@
+<%@ taglib prefix="s" uri="/struts-tags" %>
+<input type="text" id="br_abbreviationName" value="${br_abbreviationName}" />
+<input type="text" id="br_address1" value="${br_address1}" />
+<input type="text" id="br_address2" value="${br_address2}" />
+<input type="text" id="br_postalCode" value="${br_postalCode}" />
+<input type="text" id="br_city" value="${br_city}" />
+<input type="text" id="br_countryCode" value="${br_countryCode}" />
+<input type="text" id="br_phoneNo" value="${br_phoneNo}" />
+<input type="text" id="br_faxNo" value="${br_faxNo}" />
+<input type="text" id="br_emailAddress" value="${br_emailAddress}" />
+<input type="text" id="br_contactName" value="${br_contactName}" />

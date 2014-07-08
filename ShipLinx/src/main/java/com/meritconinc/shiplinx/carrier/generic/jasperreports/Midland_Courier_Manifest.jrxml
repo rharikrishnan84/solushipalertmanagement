@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Midland_Courier_Manifest" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="dataset1"/>
+	<subDataset name="dataset2"/>
+	<parameter name="Order" class="com.meritconinc.shiplinx.model.ShippingOrder" isForPrompting="false"/>
+	<parameter name="fromDate" class="java.lang.String"/>
+	<parameter name="toDate" class="java.lang.String"/>
+	<parameter name="customerId" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+shippingorder.order_id,shippingorder.customer_id,shippingorder.carrier_id,
+shippingorder.master_tracking_num,IFNULL(shippingorder.reference_code,"") as reference_code,
+shippingorder.scheduled_ship_date,shippingorder.quantity,shippingorder.quoted_weight,shippingorder.quoted_weight_uom,
+shippingorder.dangerous_goods,IFNULL(shippingorder.frominstructions,"") as frominstructions,
+IFNULL(shippingorder.toinstructions,"") as toinstructions ,shippingorder.cod_pin,shippingorder.appointment_delivery,shippingorder.pickup_time,
+shippingorder.billing_type,IFNULL(shippingorder.reference1,"") as reference1,IFNULL(shippingorder.reference2,"") as reference2,
+toaddress.abbreviation_name,toaddress.address1,toaddress.address2,toaddress.city,toaddress.province_code,
+toaddress.country_code,toaddress.postal_code,cc.account_number1,cc.account_number2,cc.property_4,s.code,c.name,
+p.cod_value,p.insurance_amount,customeraddress.address_id,customeraddress.postal_code as cust_postal_code,
+customeraddress.abbreviation_name as cust_abbreviation_name,customeraddress.address1 as cust_address1,
+customeraddress.address2 as cust_address2,customeraddress.city as cust_city,customeraddress.province_code as cust_province_code,
+customeraddress.country_code as cust_country_code
+from shipping_order shippingorder
+left join customer_carrier cc on cc.customer_id =shippingorder.customer_id
+left join address toaddress on toaddress.address_id=shippingorder.ship_to_id
+left join service s on s.service_id=shippingorder.service_id
+left join carrier c on c.carrier_id=shippingorder.carrier_id
+left join package p on p.order_id=shippingorder.order_id
+left join address customeraddress on customeraddress.customer_id=shippingorder.customer_id
+where  shippingorder.scheduled_ship_date>=$P{fromDate} and shippingorder.customer_id=$P{customerId}
+and shippingorder.scheduled_ship_date<=$P{toDate} and shippingorder.carrier_id='80' and cc.carrier_id='80'
+group by shippingorder.order_id]]>
+	</queryString>
+	<field name="account_number1" class="java.lang.String"/>
+	<field name="abbreviation_name" class="java.lang.String"/>
+	<field name="address1" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="province_code" class="java.lang.String"/>
+	<field name="country_code" class="java.lang.String"/>
+	<field name="postal_code" class="java.lang.String"/>
+	<field name="reference_code" class="java.lang.String"/>
+	<field name="code" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.String"/>
+	<field name="quoted_weight" class="java.lang.String"/>
+	<field name="dangerous_goods" class="java.lang.String"/>
+	<field name="cod_value" class="java.lang.String"/>
+	<field name="frominstructions" class="java.lang.String"/>
+	<field name="toinstructions" class="java.lang.String"/>
+	<field name="address2" class="java.lang.String"/>
+	<field name="reference2" class="java.lang.String"/>
+	<field name="carrier_id" class="java.lang.String"/>
+	<field name="billing_type" class="java.lang.String"/>
+	<field name="property_4" class="java.lang.String"/>
+	<field name="master_tracking_num" class="java.lang.String"/>
+	<field name="reference1" class="java.lang.String"/>
+	<field name="insurance_amount" class="java.lang.String"/>
+	<field name="pickup_time" class="java.lang.String"/>
+	<field name="cust_postal_code" class="java.lang.String"/>
+	<field name="cust_abbreviation_name" class="java.lang.String"/>
+	<field name="cust_address1" class="java.lang.String"/>
+	<field name="cust_city" class="java.lang.String"/>
+	<field name="cust_province_code" class="java.lang.String"/>
+	<field name="cust_country_code" class="java.lang.String"/>
+	<field name="cust_address2" class="java.lang.String"/>
+	<field name="quoted_weight_uom" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="11" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="118" splitType="Stretch">
+			<staticText>
+				<reportElement x="11" y="5" width="374" height="26"/>
+				<textElement>
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MIDLAND COURIER SHIPMENT MANIFEST]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="203" y="31" width="40" height="14"/>
+				<textElement/>
+				<text><![CDATA[Page #:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="244" y="45" width="69" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{property_4}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="190" y="45" width="54" height="14"/>
+				<textElement/>
+				<text><![CDATA[Account#:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="59" width="54" height="14"/>
+				<textElement/>
+				<text><![CDATA[Manifest#:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="244" y="59" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_number1}+new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="354" y="32" width="160" height="64"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barWidth="0" barHeight="64">
+					<jr:codeExpression><![CDATA[(String)$F{account_number1}+new java.text.SimpleDateFormat("ddMMyyyy").format(new java.util.Date())]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField isBlankWhenNull="true">
+				<reportElement x="246" y="91" width="99" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[new java.text.SimpleDateFormat("dd MMM yyyy").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="183" y="91" width="63" height="14"/>
+				<textElement/>
+				<text><![CDATA[Ship Date:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="31" width="140" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cust_abbreviation_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="244" y="31" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="385" y="96" width="167" height="18"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{account_number1}+new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="96" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cust_postal_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="11" y="45" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{cust_address2}!=null)?$F{cust_address1}+"\n"+$F{cust_address2}:$F{cust_address1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="11" y="59" width="179" height="14"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cust_city}+","+$F{cust_province_code}+","+$F{cust_country_code}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="37" splitType="Stretch">
+			<line direction="BottomUp">
+				<reportElement mode="Opaque" x="4" y="3" width="548" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Opaque" x="4" y="7" width="548" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="4" y="11" width="100" height="16"/>
+				<textElement/>
+				<text><![CDATA[PRO#/REF#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="163" y="11" width="100" height="16"/>
+				<textElement/>
+				<text><![CDATA[NAME/ADDRESS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="11" width="100" height="16"/>
+				<textElement/>
+				<text><![CDATA[PCS/WEIGHT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="11" width="109" height="16"/>
+				<textElement/>
+				<text><![CDATA[ACCESSORIALS]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement mode="Opaque" x="3" y="30" width="548" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement mode="Opaque" x="3" y="34" width="548" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="68" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="3" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{master_tracking_num}+$F{reference1}+$F{reference2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="16" width="58" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{billing_type}.equalsIgnoreCase("Collect")?"COL ":"PPD"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="62" y="16" width="42" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="38" y="29" width="66" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{reference_code}+""+$F{reference2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="29" width="35" height="14"/>
+				<textElement/>
+				<text><![CDATA[REF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="43" width="35" height="13"/>
+				<textElement/>
+				<text><![CDATA[INST:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="38" y="43" width="145" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{frominstructions}+"-"+$F{toinstructions}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="164" y="3" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{abbreviation_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="164" y="16" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[($F{address2}!=null)?$F{address1}+"\n"+$F{address2}:$F{address1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="164" y="29" width="181" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{city}+","+$F{province_code}+","+$F{postal_code}+","+$F{country_code}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="333" y="2" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{quantity}+" "+"Pcs"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="333" y="16" width="100" height="13" isRemoveLineWhenBlank="true"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{quoted_weight}+" "+$F{quoted_weight_uom}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="446" y="3" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pickup_time}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="446" y="16" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[(($F{dangerous_goods}.toString()).equals("0"))?"":"DGC"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="446" y="29" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["COD-"+"$"+$F{cod_value}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="3" y="58" width="549" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<break>
+				<reportElement x="0" y="63" width="549" height="1">
+					<printWhenExpression><![CDATA[$V{REPORT_COUNT}==10*$V{PAGE_NUMBER}]]></printWhenExpression>
+				</reportElement>
+			</break>
+			<textField isBlankWhenNull="true">
+				<reportElement x="446" y="43" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["INS-"+"$"+$F{insurance_amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="6" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="5" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="66" splitType="Stretch">
+			<staticText>
+				<reportElement x="15" y="11" width="93" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Shipper Signature:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="22" y="39" width="87" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Driver Signature:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="313" y="11" width="29" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="313" y="39" width="29" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Date:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="112" y="26" width="148" height="1"/>
+			</line>
+			<line>
+				<reportElement x="111" y="53" width="148" height="1"/>
+			</line>
+			<line>
+				<reportElement x="348" y="26" width="148" height="1"/>
+			</line>
+			<line>
+				<reportElement x="349" y="53" width="148" height="1"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

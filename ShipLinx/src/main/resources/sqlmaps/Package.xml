@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="shippingOrder">
+<resultMap id="packageResult" class="com.meritconinc.shiplinx.model.Package">
+		<result property="packageId"		column="package_id"/>	
+		<result property="shippingOrder"	column="order_id"/>
+		<result property="description"		column="description"/>
+		<result property="length"			column="length"/>
+		<result property="height"			column="height"/>
+		<result property="weight"			column="weight"/>
+		<result property="width"			column="width"/>
+		<result property="trackingNumber"	column="tracking_number"/>
+	   <result property="type" column="type"/>
+
+		
+</resultMap>
+
+
+<insert id="addpackageInfo" parameterClass="com.meritconinc.shiplinx.model.Package">
+		 insert into package(package_id,order_id,description,length,height,weight,width,tracking_number,type) values 
+		  (#packageId#,#shippingOrder#,#description#,#length#,#height#,#weight#,#width#,#trackingNumber#,#type#)
+
+ 		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+
+  		</selectKey>			
+			
+</insert>
+ 
+</sqlMap>

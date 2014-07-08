@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="invoice">
+
+	<resultMap id="invoiceMap" class="com.meritconinc.shiplinx.model.Invoice">
+		<result property="invoiceId"	column="invoice_id"/>	
+		<result property="invoiceNum"	column="invoice_num"/>	
+		<result property="customerId"	column="customer_id"/>
+		<result property="businessId"	column="business_id"/>
+		<result property="dateCreated"	column="date_created"/>
+		<result property="invoiceDate"	column="invoice_date"/>
+		<result property="invoiceDueDate"	column="due_date"/>
+		<result property="invoiceAmount"	column="invoice_amount"/>
+		<result property="invoiceCost"	column="invoice_cost"/>
+		<result property="invoiceTax"	column="invoice_tax"/>
+		<result property="invoiceTaxCost"	column="invoice_tax_cost"/>
+		<result property="paymentStatus"	column="payment_status"/>
+		<result property="paidAmount"	column="paid_amount"/>
+		<result property="payableDays"	column="payable_days"/>
+		<result property="currency"	column="currency"/>
+		<result property="customer" column="customer_id" select="getCustomerInfoByCustomerId"/>
+		<result property="paymentStatusString" column="payment_status" select="getInvoiceStatusById"/>
+		<result property="salesRep" column="sales_username" />		
+	</resultMap> 
+
+	<resultMap id="salesRecordMap" class="com.meritconinc.shiplinx.model.SalesRecord">
+		<result property="totalCost"	column="total_cost"/>	
+		<result property="totalAmount"	column="total_amount"/>	
+		<result property="month"	column="month"/>
+		<result property="monthName"	column="month_name"/>
+		<result property="year"	column="year"/>
+		<result property="currency"	column="currency"/>		
+	</resultMap>
+
+	<resultMap id="arTransactionMap" class="com.meritconinc.shiplinx.model.ARTransaction">
+		<result property="arId"	column="ar_id"/>	
+		<result property="invoiceId"	column="invoice_id"/>
+		<result property="businessId"	column="business_id"/>
+		<result property="amount"	column="amount"/>
+		<result property="modeOfPayment"	column="mode_of_payment"/>
+		<result property="paymentRefNum"	column="payment_ref_num"/>
+		<result property="customerId"	column="customer_id"/>
+		<result property="paymentDate"	column="payment_date"/>
+		<result property="invoiceNum"/>
+	
+	</resultMap>
+	
+
+	<resultMap id="invoiceStatusList" class="com.meritconinc.shiplinx.model.InvoiceStatus">
+		<result property="id"	column="id"/>	
+		<result property="statusName"	column="status_name"/>
+	</resultMap>
+
+	<resultMap id="invoiceMapWithShipments" class="com.meritconinc.shiplinx.model.Invoice" extends="invoiceMap">
+		<result property="orders" column="invoice_id" select="getShippingOrdersByInvoiceId"/>
+	</resultMap>
+
+	<insert id="createInvoice" parameterClass="com.meritconinc.shiplinx.model.Invoice">
+		  insert into invoice(invoice_num, customer_id,date_created,invoice_date, due_date, invoice_amount,invoice_cost,invoice_tax,invoice_tax_cost,payment_status,paid_amount,payable_days,currency,business_id) 
+		  values (#invoiceNum#, #customerId#,#dateCreated#,#invoiceDate#,#invoiceDueDate#, #invoiceAmount#,#invoiceCost#,#invoiceTax#,#invoiceTaxCost#,#paymentStatus#,#paidAmount#,#payableDays#,#currency#,#businessId#)
+		<selectKey resultClass="long" type="post" keyProperty="invoiceId" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+
+	<insert id = "addChargeToInvoice">
+		insert into invoice_charges (invoice_id, charge_id, order_id) VALUES (#invoiceId#, #chargeId#, #orderId#)
+	</insert>
+	
+	<select id="findInvoiceById" resultMap="invoiceMapWithShipments">
+		select * from invoice where invoice_id = #invoiceId#
+	</select>
+
+	<select id="findInvoiceByNum" resultMap="arTransactionMap">
+		select * from invoice where invoice_num = #invoiceNum#
+	</select>
+
+	<select id="findPreviousInvoiceId">
+		select invoice_id from invoice_shipments where invoice_id != #invoiceId# and order_id=#orderId#
+	</select>
+	
+
+	<select id="searchInvoices" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
+		 	select distinct i.* from invoice i left join customer c on (i.customer_id=c.customer_id) left join customer_sales cs on (c.customer_id=cs.customer_id) where i.business_id = #businessId#	
+		 		<isGreaterThan prepend="and" property="invoiceId" compareValue="0">
+		 			i.invoice_id = #invoiceId#
+		 		</isGreaterThan>	
+		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 			i.customer_id = #customerId#
+		 		</isGreaterThan>	
+		 		
+		 		<isNotNull property="invoiceNum">
+			 		<isNotEmpty prepend="and" property="invoiceNum">
+			 			i.invoice_num = #invoiceNum#
+			 		</isNotEmpty>
+		 		</isNotNull>	
+		 		<isNotNull prepend="and" property="currency">
+		 			i.currency = #currency#
+		 		</isNotNull>	
+		 		<isNotNull prepend="AND" property="fromInvoiceDate">
+		 			<![CDATA[i.invoice_date >= #fromInvoiceDate#]]>
+		 		</isNotNull>
+		 		<isNotNull prepend="AND" property="toInvoiceDate">
+		 			<![CDATA[i.invoice_date <= #toInvoiceDate#]]>
+		 		</isNotNull>
+		 		<iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+  					i.payment_status=#paymentStatusList[]#
+				</iterate>
+				<isNotNull prepend="and" property="invoiceNumberString">
+		 			i.invoice_id like '%$invoiceNumberString$%'
+		 		</isNotNull>	
+				<isNotNull property = "branch">
+					<isNotEmpty prepend="and" property = "branch">
+						c.branch = #branch#
+					</isNotEmpty>
+				</isNotNull>						
+				<isNotNull prepend="and" property="salesUsername">
+		 			cs.sales_user=#salesUsername#
+		 		</isNotNull>
+		 		<isNotNull property="cancelled">
+					<isEqual property="cancelled" compareValue="false">
+						and (i.payment_status != 40 or i.payment_status is null)	
+					</isEqual>
+				</isNotNull>	
+							 
+	</select>
+
+	<select id="searchPaidToRepInvoices" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
+		select * from invoice where sales_username=#salesRep# and payment_status=50
+	</select>
+	
+	<select id="getSalesReport" parameterClass="com.meritconinc.shiplinx.model.SalesRecord" resultMap="salesRecordMap">
+		 	SELECT sum(invoice_amount) AS 'total_amount', sum(invoice_cost) AS 'total_cost', month(invoice_date) AS 'month', monthname(invoice_date) AS 'month_name', year(invoice_date) AS 'year', currency AS 'currency' 
+		 	from invoice i left join customer c on (i.customer_id=c.customer_id) where i.business_id = #businessId#	
+		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 			i.customer_id = #customerId#
+		 		</isGreaterThan>	
+		 		<isNotNull property="currency">
+			 		<isNotEmpty prepend="and" property="currency">
+			 			i.currency = #currency#
+			 		</isNotEmpty>	
+		 		</isNotNull>
+		 		<isNotNull prepend="AND" property="year">
+		 			<![CDATA[year(i.invoice_date) = #year#]]>
+		 		</isNotNull>
+		 		<isGreaterThan prepend="and" property="month" compareValue="0">
+		 			<![CDATA[month(i.invoice_date) = #month#]]>
+		 		</isGreaterThan>
+				<isNotNull property = "branch">
+					<isNotEmpty prepend="and" property = "branch">
+						c.branch = #branch#
+					</isNotEmpty>
+				</isNotNull>						
+		 		<iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+  					i.payment_status=#paymentStatusList[]#
+				</iterate>
+				group by month(i.invoice_date), i.currency
+				 
+	</select>
+
+	
+	<select id="getInvoiceStatuses" resultMap="invoiceStatusList">
+		select * from invoice_status where id!=40
+	</select>
+
+	<select id="getInvoiceStatusById" resultClass="java.lang.String">
+		select status_name from invoice_status where id=#id#
+	</select>
+
+	<update id = "updateInvoice" parameterClass="com.meritconinc.shiplinx.model.Invoice">
+			update invoice set payment_status=#paymentStatus#, paid_amount=#paidAmount#, invoice_cost=#invoiceCost#,
+			invoice_amount=#invoiceAmount#, invoice_tax=#invoiceTax#, invoice_tax_cost=#invoiceTaxCost# 
+			where invoice_id = #invoiceId#
+	</update>
+
+	<update id = "updateInvoiceStatus" parameterClass="com.meritconinc.shiplinx.model.Invoice">
+			update invoice set payment_status=#paymentStatus#, sales_username=#salesRep# where invoice_id = #invoiceId#
+	</update>
+	
+	<insert id="addARTransaction" parameterClass="com.meritconinc.shiplinx.model.ARTransaction">
+		  insert into ar_transaction(invoice_id,amount,mode_of_payment,payment_ref_num,payment_date,business_id, customer_id) 
+		  values (#invoiceId#,#amount#,#modeOfPayment#,#paymentRefNum#,#paymentDate#,#businessId#, #customerId#)
+		<selectKey resultClass="long" type="post" keyProperty="arId" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+
+	<select id="searchARTransactions" parameterClass="com.meritconinc.shiplinx.model.ARTransaction" resultMap="arTransactionMap">
+	 select ar.*,inv.invoice_num from ar_transaction ar,invoice inv where (ar.business_id = #businessId#	and  ar.invoice_id=inv.invoice_id)
+		 	<!-- select in.invoice_num from ar_transaction ar,invoice in where ar.business_id = #businessId#	and ar.invoice_id=in.invoice_id -->
+		 		<isGreaterThan prepend="and" property="invoiceId" compareValue="0">
+		 			ar.invoice_id = #invoiceId#
+		 		</isGreaterThan>
+		 		<isGreaterThan prepend="and" property="invoiceNum" compareValue="0">
+		 			inv.invoice_num = #invoiceNum#
+		 		</isGreaterThan>	
+		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 			ar.customer_id = #customerId#
+		 		</isGreaterThan>	
+		 		
+		 		<isNotNull prepend="AND" property="fromTransactionDate">
+		 			<![CDATA[ar.payment_date >= #fromTransactionDate#]]>
+		 		</isNotNull>
+		 		<isNotNull prepend="AND" property="toTransactionDate">
+		 			<![CDATA[ar.payment_date <= #toTransactionDate#]]>
+		 		</isNotNull>
+				 
+	</select>
+	<delete id = "deleteChargeFromInvoice">
+		delete from invoice_charges where invoice_id=#invoiceId# and charge_id=#chargeId# and order_id=#orderId# 
+	</delete>
+	<select id="getinvoicebyinvoiceid"  resultMap="arTransactionMap">
+     select * from ar_transaction where ar_id=#arId#     
+ </select>
+
+</sqlMap>
+

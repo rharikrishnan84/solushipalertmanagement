@@ -1,0 +1,173 @@
+package com.meritconinc.mmr.utilities;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.meritconinc.mmr.action.aboutus.FeedbackAction;
+import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.utilities.context.ServletContextHolderListener;
+
+public class WebUtil {
+
+    public static String escapeUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+        
+        final int length = url.length();
+        final StringBuffer result = new StringBuffer(length);
+        
+        for (int i = 0; i < length; i++) {
+            char c = url.charAt(i);
+            switch (c) {
+            case ' ': result.append("%20");  break;
+            case '\n': result.append("%0A");  break;
+            case '\r': result.append("%0D");  break;
+            case '<': result.append("%3C");  break;
+            case '>': result.append("%3E");  break;
+            case '#': result.append("%23");  break;
+            case '%': result.append("%25");  break; 
+            case '{': result.append("%7B");  break;
+            case '}': result.append("%7D");  break;
+            case '|': result.append("%7C");  break;
+            case '\\': result.append("%5C");  break;
+            case '^': result.append("%5E");  break;
+            case '~': result.append("%7E");  break;
+            case '[': result.append("%5B");  break;
+            case ']': result.append("%5D");  break;
+            case '`': result.append("%60");  break;
+            case ';': result.append("%3B");  break;
+            case '/': result.append("%2F");  break;
+            case '?': result.append("%3F");  break;
+            case ':': result.append("%3A");  break;
+            case '@': result.append("%40");  break;
+            case '=': result.append("%3D");  break;
+            case '&': result.append("%26");  break;
+            case '$': result.append("%24");  break;
+            case ',': result.append("%2C");  break;
+            case '.': result.append("%2E");  break;
+            default: result.append(c);  break;
+            }
+        }
+        
+        return result.toString();
+    }
+    
+	public static String getAbsoluteUrl(HttpServletRequest request, String relativeUrl, boolean includeHost) {
+		if (relativeUrl.length() == 0) {
+			relativeUrl = "/";
+		} else if (relativeUrl.charAt(0) != '/') {
+			relativeUrl = "/" + relativeUrl;
+		}
+		      
+		String url = "";
+		if (includeHost) {
+			url += getRequestServer(request);
+		}
+		url += request.getContextPath() + relativeUrl;
+		url = escapeUrl(url);
+		  
+		return url;
+	}
+	
+	private static StringBuffer getRequestServer(HttpServletRequest request) {
+		StringBuffer url = new StringBuffer();
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+		
+		url.append(scheme); // http, https
+		url.append("://");
+		url.append(request.getServerName());
+		if ((scheme.equals("http") && port != 80) || (scheme.equals("https") && port != 443)) {
+		url.append(':');
+			url.append(request.getServerPort());
+		}
+		
+		return url;
+	}
+
+    public static String formatDateToStr(java.util.Date date, String pattern) {
+        String dateString;
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        dateString = formatter.format(date);
+        
+        return dateString;
+    }
+
+    public static java.util.Date formatStrToDate(String dateString, String pattern) {
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        java.util.Date date = null;
+        
+        try {
+            date = formatter.parse(dateString);
+        }
+        catch(Exception e) {
+        	e.printStackTrace();
+        }
+        
+        return date;
+    }
+
+	public static String getInSqlClause(String columnName, int[] values) {
+		String sql = "";
+		
+		if(columnName == null || columnName.length() <= 0 || 
+				values == null || values.length == 0) {
+			return sql;
+		}
+		
+		if(values.length == 1) {
+			sql = " AND " + columnName + " IN (" + values[0] + ")";
+			return sql;
+		}
+		
+		for(int i=0; i < values.length; i++) {
+			if(i == 0) {
+				sql = " AND " + columnName + " IN (" + values[i] + ",";
+			}
+			else if(i == values.length - 1) {
+				sql += values[i] + ")";
+			}
+			else {
+				sql += values[i] + ",";
+			}
+		}
+
+		return sql;
+	}
+	
+	/**
+	 * Read a property from the database
+	 * 
+	 * @param scope
+	 * @param key
+	 * @return
+	 */
+	public static String getProperty(String scope, String key) {
+		PropertyDAO propertyDAO = (PropertyDAO)MmrBeanLocator.getInstance().findBean("propertyDAO");
+		if (propertyDAO == null) return null;
+		return propertyDAO.readProperty(scope, key);
+	}
+	
+	/**
+	 * 
+	 * @param aTextName
+	 * @return
+	 */
+	/* Removed commonMsgs 
+	public static String getResource(String aTextName) {
+		ResourceBundle bundle = ResourceBundle.getBundle("commonMsgs");
+		return bundle.getString(aTextName);
+	}
+	*/
+	    
+}

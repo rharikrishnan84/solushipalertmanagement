@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="business">
+	<resultMap id="BusinessResult" class="com.meritconinc.shiplinx.model.Business">
+			<result property="id"/>
+			<result property="name"/>
+			<result property="shortCode" />
+			<result property="systemName" />
+			<result property="logoFileName" />
+			<result property="logoHiResFileName" column="logohires_file_name"/>
+			<result property="logoURL" column="logo_url"/>
+			<result property="addressId" />
+			<result property="dateCreated" />
+			<result property="active" />
+			<result property="headerKey" column="header_key"/>
+			<result property="subdomain" column="subdomain"/>
+			<result property="logoutURL" column="logout_url"/>
+			<result property="supportURL" column="support_url"/>
+			<result property="termsURL" column="terms_url"/>
+			<result property="smtpHost" column="smtp_host"/>
+			<result property="smtpUsername" column="smtp_username"/>
+			<result property="smtpPassword" column="smtp_password"/>
+			<result property="smtpPort" column="smtp_port"/>
+			<result property="timeZone" column="time_zone"/>
+			<result property="defaultNetTerms" column="default_net_terms"/>
+			<result property="defaultCreditLimit" column="default_credit_limit"/>
+			<result property="defaultPaymentTypeLevel" column="default_payment_type_level"/>
+			<result property="emailHeaderImage" column="email_header_image"/>
+			<result property="taxInfo" column="tax_info"/>
+			<result property="address" column="address_id" select="selectAddress"/>
+			<result property="financeEmail" column="finance_email"/>
+			<result property="warehouseEmail" column="warehouse_email"/>
+			<result property="invoiceNotificationBody" column="invoice_notification_body"/>
+			<result property="customerNotificationBody" column="customer_notification_body"/>
+			<result property="customerNotificationSubject" column="customer_notification_subject"/>			
+			<result property="ratesNotificationBody" column="rates_notification_body"/>
+			<result property="orderNotificationBody" column="warehouse_order_customer_notification_body"/>
+			<result property="invoicingTemplate" column="invoicing_template"/>
+			<result property="businessCarrierId" column="business_carrier_id"/>
+			<result property="storeCC" column="store_cc"/>
+			<result property="shipOrderNotificationBody" column="ship_order_notification_body"/>
+			<result property="shipOrderNotificationSubject" column="ship_order_notification_subject"/>
+			<result property="signupJSP" column="signup_jsp"/>
+			<result property="businessCSS" column="business_css"/>
+			<result property="addCustomerNotificationSubject" column="add_customer_notification_subject"/>
+			<result property="addCustomerNotificationBody" column="add_customer_notification_body"/>
+			<result property="ltlEmail" column="ltl_email"/>
+	</resultMap>
+	
+	
+	<select id="isBusinessRegistered" resultClass="int">
+			select count(1) as count from business where name = #name#
+	</select>
+	
+	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
+			  insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, date_created, active, default_net_terms, default_credit_limit) values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#)
+			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<select id="getBusinesses" resultMap="BusinessResult">
+			select * from business 
+			<dynamic prepend="where">
+				 <isNotNull property="name">
+					 name like '%$name$%'
+				</isNotNull>
+			</dynamic>	
+	</select>
+	
+	<select id="getBusinessesById" resultMap="BusinessResult">
+			select * from business where business_id=#id#
+	</select>
+	
+	<select id="getBusinessesByName" resultMap="BusinessResult">
+			select * from business where name=#name#
+	</select>
+
+</sqlMap>

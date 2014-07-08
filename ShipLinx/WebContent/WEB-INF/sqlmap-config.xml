@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings
+        cacheModelsEnabled="true"
+        statementCachingEnabled="true"/>
+	<sqlMap resource="sqlmaps/ExceptionInfo.xml"/>
+	<sqlMap resource="sqlmaps/Menu.xml"/>
+	<sqlMap resource="sqlmaps/Action.xml"/>
+	<sqlMap resource="sqlmaps/RequestTracking.xml"/>
+	<sqlMap resource="sqlmaps/Role.xml"/>
+	<sqlMap resource="sqlmaps/Feedback.xml"/>
+	<sqlMap resource="sqlmaps/LoginTracking.xml"/>
+	<sqlMap resource="sqlmaps/Property.xml"/>
+	<sqlMap resource="sqlmaps/RoleTag.xml"/>
+	<sqlMap resource="sqlmaps/Message.xml"/>	
+	<sqlMap resource="sqlmaps/Query.xml"/>
+	<sqlMap resource="sqlmaps/User.xml"/>
+	<sqlMap resource="sqlmaps/UserExtension.xml"/>
+	<sqlMap resource="sqlmaps/Address.xml"/>
+	<sqlMap resource="sqlmaps/Customer.xml"/>
+	<sqlMap resource="sqlmaps/ShippingOrder.xml"/>
+	<sqlMap resource="sqlmaps/Package.xml"/>
+	<sqlMap resource="sqlmaps/PackageType.xml"/>
+	<sqlMap resource="sqlmaps/customerCarrier.xml"/>
+	<sqlMap resource="sqlmaps/FuelSurcharge.xml"/>
+	<sqlMap resource="sqlmaps/Markup.xml"/>
+	<sqlMap resource="sqlmaps/Business.xml"/>
+	<sqlMap resource="sqlmaps/Edi.xml"/>
+	<sqlMap resource="sqlmaps/Invoice.xml"/> 
+	<sqlMap resource="sqlmaps/CreditCardTransaction.xml"/>
+	<sqlMap resource="sqlmaps/dhl.xml"/>
+	<sqlMap resource="sqlmaps/loomis.xml"/>
+	<sqlMap resource="sqlmaps/ups.xml"/>
+	<sqlMap resource="sqlmaps/Pickup.xml"/>
+	<sqlMap resource="sqlmaps/Products.xml"/>
+	<sqlMap resource="sqlmaps/LoggedEvent.xml"/>
+	<sqlMap resource="sqlmaps/PackageTypes.xml"/>
+	<sqlMap resource="sqlmaps/Warehouse.xml"/>
+
+	<!-- sqlMap resource="sqlmaps/SampleUserExtension.xml"/ -->
+	<!--Developers should add their definitions in the following section.-->
+	
+</sqlMapConfig>

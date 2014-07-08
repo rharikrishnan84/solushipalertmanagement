@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="filterChainProxy"
+		class="org.acegisecurity.util.FilterChainProxy">
+		<property name="filterInvocationDefinitionSource">
+			<value>
+				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+				/j_acegi_security_check*=httpSessionContextIntegrationFilter,authenticationProcessingFilter,rememberMeProcessingFilter,anonymousProcessingFilter
+				/.*=httpSessionContextIntegrationFilter,rememberMeProcessingFilter,logoutFilter,anonymousProcessingFilter,exceptionTranslationFilter
+			</value>
+		</property>
+	</bean>
+
+	<bean id="httpSessionContextIntegrationFilter"
+		class="org.acegisecurity.context.HttpSessionContextIntegrationFilter" />
+
+	<bean id="logoutFilter"
+		class="org.acegisecurity.ui.logout.LogoutFilter">
+		<constructor-arg value="/welcome.action" />
+		<constructor-arg>
+			<list>
+				<ref bean="rememberMeServices" />
+					<bean
+					class=" com.meritconinc.mmr.service.acegi.CustomLogoutHandler" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+
+
+	<bean id="authenticationProcessingFilter"
+		class="com.meritconinc.mmr.service.acegi.SessionAwareAuthenticationProcessingFilter">
+		<property name="alwaysUseDefaultTargetUrl" value="true" />
+
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+		<property name="authenticationFailureUrl"
+			value="/logonFailed.action" />
+		<property name="defaultTargetUrl" value="/logon.action" />
+		<property name="filterProcessesUrl"
+			value="/j_acegi_security_check" />
+		<property name="rememberMeServices" ref="rememberMeServices" />
+	</bean>
+	<bean id="securityContextHolderAwareRequestFilter"
+		class="org.acegisecurity.wrapper.SecurityContextHolderAwareRequestFilter" />
+
+	<bean id="rememberMeProcessingFilter"
+		class="org.acegisecurity.ui.rememberme.RememberMeProcessingFilter">
+		<property name="rememberMeServices" ref="rememberMeServices" />
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+	</bean>
+
+	<bean id="anonymousProcessingFilter"
+		class="org.acegisecurity.providers.anonymous.AnonymousProcessingFilter">
+		<property name="key" value="changeThis" />
+		<property name="userAttribute" value="anonymousUser,fmk_public" />
+	</bean>
+
+	<bean id="exceptionTranslationFilter"
+		class="org.acegisecurity.ui.ExceptionTranslationFilter">
+		<property name="authenticationEntryPoint">
+			<bean
+				class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+				<property name="loginFormUrl" value="/login.action" />
+				<property name="forceHttps" value="false" />
+			</bean>
+		</property>
+		<property name="accessDeniedHandler">
+			<bean
+				class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+				<property name="errorPage"
+					value="/mmr/jsp/error/accessdenied.jsp" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="rememberMeServices"
+		class="com.meritconinc.mmr.service.acegi.MmrTokenBasedRememberMeServices">
+		<property name="userDetailsService" ref="userDetailsService" />
+		<!-- set this value other then 0 in order to enable 
+		<property name="tokenValiditySeconds">
+		 	<value>${SYSTEM.REMEMBER_PASSWORD_VALID_TIME_SEC}</value>
+		 </property>
+		 -->
+		 <!-- another option 
+		 <property name="tokenValiditySeconds" value="100"/>
+		  -->
+		  <!--  and another one
+		 <property name="tokenValiditySeconds">
+		 	<value>500</value>
+		 </property>
+		 -->
+		<property name="key" value="changeThis" />
+	</bean>
+	
+	<bean id="rememberMeAuthenticationProvider"
+	      class="org.acegisecurity.providers.rememberme.RememberMeAuthenticationProvider">
+	  <property name="key" value="changeThis"/>
+	</bean>
+	
+	<bean id="passwordEncoder"
+		class="org.acegisecurity.providers.encoding.Md5PasswordEncoder" />
+
+	<bean id="cacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation">
+			<value>classpath:ehcache.xml</value>
+		</property>
+	</bean>
+
+	<bean id="userCacheBackend"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName">
+			<value>userCache</value>
+		</property>
+	</bean>
+
+	<bean id="userCache"
+		class="org.acegisecurity.providers.dao.cache.EhCacheBasedUserCache">
+		<property name="cache">
+			<ref local="userCacheBackend" />
+		</property>
+	</bean>
+
+	<bean id="saltSource"
+		class="org.acegisecurity.providers.dao.salt.SystemWideSaltSource">
+		<property name="systemWideSalt">
+			<value>_WBTS Sault_</value>
+		</property>
+	</bean>
+
+	<bean id="authenticationManager"
+		class="org.acegisecurity.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="daoAuthenticationProvider" />
+				<bean
+					class="org.acegisecurity.providers.anonymous.AnonymousAuthenticationProvider">
+					<property name="key" value="changeThis" />
+				</bean>
+				<bean
+					class="org.acegisecurity.providers.rememberme.RememberMeAuthenticationProvider">
+					<property name="key" value="changeThis" />
+				</bean>
+
+			</list>
+		</property>
+	</bean>
+
+<!-- 
+	<bean id="daoAuthenticationProvider"
+		class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService" />
+		<property name="userCache" ref="userCache" />
+		<property name="passwordEncoder">
+			<ref local="passwordEncoder" />
+		</property>
+	</bean>
+-->
+	<bean id="daoAuthenticationProvider"
+		class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService" />
+		
+		<!--  g.d.: if enable, the user state will not be refreshed from database on each login
+			  This may cause undesirable effect of not reflecting user state changes, like
+			  activate/disactivate for instance
+			  This effect could be soften by enabling short cache expiration time
+		 -->
+		<!-- 
+		<property name="userCache" ref="userCache" />
+		-->
+		<property name="passwordEncoder">
+			<ref local="passwordEncoder" />
+		</property>
+	</bean>
+
+	<!-- UserDetailsService is the most commonly frequently Acegi Security interface implemented by end users -->
+	<bean id="userDetailsService"
+		class="com.meritconinc.mmr.service.acegi.UserServiceAdapter">
+	</bean>
+
+	<!-- This bean is optional; it isn't used by any other bean as it only listens and logs -->
+	<bean id="loggerListener"
+		class="org.acegisecurity.event.authentication.LoggerListener" />
+
+
+	<!--  configuring method security -->
+	<!-- 
+		<bean id="accessDecisionManager"
+		class="org.acegisecurity.vote.AffirmativeBased">
+		<property name="decisionVoters">
+		<list>
+		<bean class="org.acegisecurity.vote.RoleVoter" />
+		<bean class="org.acegisecurity.vote.AuthenticatedVoter" />
+		</list>
+		</property>
+		</bean>
+		
+		<bean id="privateCatalogSecurityInterceptor"
+		class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+		<property name="authenticationManager">
+		<ref bean="authenticationManager" />
+		</property>
+		<property name="accessDecisionManager">
+		<ref bean="accessDecisionManager" />
+		</property>
+		<property name="objectDefinitionSource">
+		<value>
+		com.meritconinc.mmr.action.admin.UserAdminAction.prepare=ROLE_ADMIN
+		</value>
+		</property>
+		</bean>
+	-->
+
+
+	<bean id="accessDecisionManager"
+		class="org.acegisecurity.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<bean class="org.acegisecurity.vote.RoleVoter" />
+				<bean class="org.acegisecurity.vote.AuthenticatedVoter" />
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="attributes"
+		class="org.acegisecurity.annotation.SecurityAnnotationAttributes" />
+
+	<bean id="objectDefinitionSource"
+		class="org.acegisecurity.intercept.method.MethodDefinitionAttributes">
+		<property name="attributes">
+			<ref local="attributes" />
+		</property>
+	</bean>
+
+	<bean id="bankManagerSecurity"
+		class="org.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+		<property name="validateConfigAttributes">
+			<value>true</value>
+		</property>
+		<property name="authenticationManager">
+			<ref bean="authenticationManager" />
+		</property>
+		<property name="accessDecisionManager">
+			<ref bean="accessDecisionManager" />
+		</property>
+		<property name="objectDefinitionSource">
+			<ref bean="objectDefinitionSource" />
+		</property>
+	</bean>
+
+	<!-- 
+	<bean id="filterInvocationInterceptor"
+		class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+		<property name="authenticationManager"
+			ref="authenticationManager" />
+		<property name="accessDecisionManager">
+			<bean class="org.acegisecurity.vote.AffirmativeBased">
+				<property name="allowIfAllAbstainDecisions"
+					value="false" />
+				<property name="decisionVoters">
+					<list>
+						<bean class="org.acegisecurity.vote.RoleVoter" />
+						<bean
+							class="org.acegisecurity.vote.AuthenticatedVoter" />
+					</list>
+				</property>
+			</bean>
+		</property>
+		<property name="objectDefinitionSource">
+			<value>
+				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+				PATTERN_TYPE_APACHE_ANT
+				/**=IS_AUTHENTICATED_ANONYMOUSLY
+				/**=IS_AUTHENTICATED_REMEMBERED
+
+			</value>
+		</property>
+	</bean>
+	
+	-->
+
+
+
+</beans>

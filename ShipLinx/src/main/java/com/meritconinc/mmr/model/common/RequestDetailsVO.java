@@ -1,0 +1,142 @@
+/**
+ * 
+ */
+package com.meritconinc.mmr.model.common;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.meritconinc.mmr.model.common.RequestTrackParamVO;
+
+/**
+ * @author brinzf2
+ *
+ */
+public class RequestDetailsVO implements Serializable{
+	private static final long serialVersionUID = 3022007;
+
+	private int id;
+	private String actionName;
+	private String uri;
+	private String sessionId;
+	private String userName;
+	private String remoteAddr;
+	private String remoteHost;
+	private Date requestDate;
+	private String userAgent;
+
+    private List<RequestTrackParamVO> requestParameterList = new ArrayList<RequestTrackParamVO>(1);
+
+	public List<RequestTrackParamVO> getRequestParameterList() {
+		return requestParameterList;
+	} 
+	
+	/**
+	 * @return the actionName
+	 */
+	public String getActionName() {
+		return actionName;
+	}
+	/**
+	 * @param actionName the actionName to set
+	 */
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	/**
+	 * @return the remoteAddr
+	 */
+	public String getRemoteAddr() {
+		return remoteAddr;
+	}
+	/**
+	 * @param remoteAddr the remoteAddr to set
+	 */
+	public void setRemoteAddr(String remoteAddr) {
+		this.remoteAddr = remoteAddr;
+	}
+	/**
+	 * @return the remoteHost
+	 */
+	public String getRemoteHost() {
+		return remoteHost;
+	}
+	/**
+	 * @param remoteHost the remoteHost to set
+	 */
+	public void setRemoteHost(String remoteHost) {
+		this.remoteHost = remoteHost;
+	}
+	/**
+	 * @return the sessionId
+	 */
+	public String getSessionId() {
+		return sessionId;
+	}
+	/**
+	 * @param sessionId the sessionId to set
+	 */
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
+	/**
+	 * @return the uri
+	 */
+	public String getUri() {
+		return uri;
+	}
+	/**
+	 * @param uri the uri to set
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	/**
+	 * @return the userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
+	/**
+	 * @param userName the userName to set
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	/**
+	 * @return the requestDate
+	 */
+	public Date getRequestDate() {
+		return requestDate;
+	}
+	/**
+	 * @param requestDate the requestDate to set
+	 */
+	public void setRequestDate(Date requestDate) {
+		this.requestDate = requestDate;
+	}
+	
+	public String getUserAgent() {
+		return userAgent;
+	}
+	
+	public void setUserAgent(String useragent) {
+		this.userAgent = useragent;
+	}
+	
+	
+}

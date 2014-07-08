@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Context docBase="ROOT">
+
+    <Logger className="org.apache.catalina.logger.SystemOutLogger" verbosity="4" timestamp="true"/>
+    <Resource name="jdbc/shiplinx" auth="Container" type="javax.sql.DataSource" driverClassName="com.mysql.jdbc.Driver" 
+    url="jdbc:mysql://localhost:3306/solushiphtmllive" username="root" password="root" maxActive="20" maxIdle="10" initialSize="1"
+    removeAbandoned="true" removeAbandonedTimeout="0" /> 
+
+    <Environment name="scheduler.primary" type="java.lang.String" value="true"/>
+
+</Context>
+
+

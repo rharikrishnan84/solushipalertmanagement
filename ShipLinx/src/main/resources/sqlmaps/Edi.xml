@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="edi">
+	<resultMap id="EdiInfoResult" class="com.meritconinc.shiplinx.model.EdiInfo">
+		<result property="businessId"/>
+		<result property="carrierId"/>
+		<result property="ediFolder" />
+		<result property="fileType" />
+		<result property="ediFormat"/>
+		<result property="version" />
+	</resultMap>
+
+	<resultMap id="EdiItemResult" class="com.meritconinc.shiplinx.model.EdiItem">
+		<result property="id"/>
+		<result property="carrierId"/>
+		<result property="businessId"/>
+		<result property="accountNumber"/>
+		<result property="invoiceNumber" />
+		<result property="invoiceDate" />
+		<result property="processedDate"/>
+		<result property="totInvoiceAmount" />
+		<result property="detailSeqNumber" />
+		<result property="ediFileName" />
+		<result property="status"/>
+		<result property="message" />	
+		<result property="elapsedTime" />	
+	</resultMap>	
+
+	<select id="getEdiInfoList" resultMap="EdiInfoResult">
+		select  business_id, carrier_id, edi_folder, file_type, edi_format, version
+		 from edi_info 
+		 where business_id=#businessId#
+	</select>
+	
+	<select id="getEdiInfo" resultMap="EdiInfoResult">
+		select  business_id, carrier_id, edi_folder, file_type, edi_format, version
+		 from edi_info 
+		 where business_id=#businessId# and carrier_id=#carrierId#
+	</select>
+	<!--  	
+	<select id="getEdiItemList" resultMap="EdiItemResult">
+		select  id, carrier_id, business_id, account_number, invoice_number, invoice_date, 
+				processed_date, tot_invoice_amount, detail_seq_number, edi_file_name, status, 
+				message, elapsedTime
+		 from edi_item 
+		 where business_id=#businessId#
+	</select>	
+	-->
+	<select id="getEdiItemList" resultMap="EdiItemResult">
+		select  id, carrier_id, business_id, account_number, invoice_number, invoice_date, 
+				processed_date, tot_invoice_amount, detail_seq_number, edi_file_name, status, 
+				message, elapsedTime
+		 from edi_item 
+		<dynamic prepend="where">
+			business_id=#businessId#
+			<isNotNull  property="carrierId">
+				 and carrier_id=#carrierId#
+			</isNotNull>
+			<isNotNull property="ediFileName">
+				and edi_file_name=#ediFileName#
+			</isNotNull>			
+			<isNotNull property="invoiceDate">
+				and invoice_date=#invoiceDate#
+			</isNotNull>
+			<isNotNull property="invoiceNumber">
+				and invoice_number=#invoiceNumber#
+			</isNotNull>
+		</dynamic>
+		order by invoice_date desc
+	</select>
+		
+	<insert id = 'addEdiItem' parameterClass="com.meritconinc.shiplinx.model.EdiItem">
+		insert into edi_item (business_id, carrier_id, edi_file_name, message, status, account_number, tot_invoice_amount, invoice_number, processed_date, invoice_date, type) 
+					values (#businessId#, #carrierId#, #ediFileName#, #message# ,#status#, #accountNumber#, #totInvoiceAmount#, #invoiceNumber#, #processedDate#, #invoiceDate#, #type# )
+		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>					
+	</insert>
+	
+	<update id="updateEdiItem">
+		update edi_item set message=#message#, status=#status#, invoice_date=#invoiceDate#,
+				invoice_number=#invoiceNumber#, processed_date=#processedDate#, 
+				account_number=#accountNumber#, tot_invoice_amount=#totInvoiceAmount#, 
+				elapsedTime=#elapsedTime#, type=#type# 
+		where id=#id#
+	</update>		
+	<update id="updateEdiItemStatus">
+		update edi_item set status=#status#
+		where id=#id#
+	</update>
+	<select id="getMatchingEdiItemList" parameterClass="com.meritconinc.shiplinx.model.EdiItem" resultMap="EdiItemResult">
+		select  id, carrier_id, business_id, account_number, invoice_number, invoice_date, 
+				processed_date, tot_invoice_amount, detail_seq_number, edi_file_name, status, 
+				message, elapsedTime
+		 from edi_item 
+		 where business_id = #businessId#
+		<isEqual property="exactMatch" compareValue="N">
+			<isNotNull property="invoiceNumber">
+		  		and invoice_number like '%$invoiceNumber$%'
+	    	</isNotNull>
+    	</isEqual>
+		<isEqual property="exactMatch" compareValue="Y">
+			<isNotNull property="invoiceNumber">
+		  		and invoice_number = '$invoiceNumber$'
+	    	</isNotNull>
+    	</isEqual>
+    	
+		<isEqual property="exactMatch" compareValue="N">
+			<isNotNull property="ediFileName">
+		  		and edi_file_name like '%$ediFileName$%'
+	    	</isNotNull>    
+	    </isEqual>	
+		<isEqual property="exactMatch" compareValue="Y">
+			<isNotNull property="ediFileName">
+		  		and edi_file_name = '$ediFileName$'
+	    	</isNotNull>    
+	    </isEqual>	
+	</select> 
+	<select id="findEdiItems" parameterClass="com.meritconinc.shiplinx.model.EdiItem" resultMap="EdiItemResult">
+		select  id, carrier_id, business_id, account_number, invoice_number, invoice_date, 
+				processed_date, tot_invoice_amount, detail_seq_number, edi_file_name, status, 
+				message, elapsedTime
+		 from edi_item 
+		 where business_id = #businessId#
+		<isNotNull property="invoiceNumber">
+	  		and invoice_number like '%$invoiceNumber$%'
+    	</isNotNull>
+		<isNotNull property="ediFileName">
+	  		and edi_file_name like '%$ediFileName$%'
+    	</isNotNull>    
+		<isNotNull property="status">
+	  		and status=#status#
+    	</isNotNull> 
+		<isNotNull property="carrierId">
+	  		and carrier_id=#carrierId#
+    	</isNotNull>    
+		<isNotNull  property="fromDate">
+		 	and invoice_date between #fromDate# and #toDate#
+		</isNotNull>    	
+		order by invoice_date desc	    		
+	</select> 		
+		
+</sqlMap>

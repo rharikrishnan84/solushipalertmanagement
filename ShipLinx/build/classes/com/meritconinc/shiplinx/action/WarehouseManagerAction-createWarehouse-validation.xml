@@ -1,0 +1,52 @@
+<!DOCTYPE validators PUBLIC 
+"-//OpenSymphony Group//XWork Validator 1.0.2//EN" 
+"http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+	<field name="warehouse.warehouseCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+		
+	</field>
+	<field name="warehouse.warehouseName">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="warehouse.address.address1">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	 
+	<field name="warehouse.address.city">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="warehouse.address.postalCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	<field name="warehouse.address.phoneNo">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="int">
+			<message key="error.invalid.phone" />
+		</field-validator>
+	</field>
+	<field name="warehouse.address.emailAddress">
+	<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="email">
+			<message key="error.invalid.email" />
+		</field-validator>
+	</field>
+		
+</validators>

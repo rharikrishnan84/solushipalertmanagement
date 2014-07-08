@@ -1,0 +1,42 @@
+package com.meritconinc.mmr.dao;
+
+import java.util.List;
+
+import com.meritconinc.mmr.exception.DAOException;
+import com.meritconinc.mmr.model.common.RoleVO;
+import com.meritconinc.mmr.model.query.QueryResultVO;
+import com.meritconinc.mmr.model.query.QueryVO;
+import com.meritconinc.mmr.model.security.User;
+
+public interface QueryDAO {
+  /**
+   * Get all queries that a user has access to. i.e. Both queries that are assigned to the user and
+   * to the role(s) that the user has.
+   * 
+   * @param userId
+   * @return
+   */
+  List<QueryVO> getQueriesByUser(String userId);
+
+  List<QueryVO> getAllQueries();
+
+  QueryResultVO executeQuery(QueryVO query) throws DAOException;
+
+  QueryVO getQuery(int queryId);
+
+  void saveQuery(QueryVO query);
+
+  void deleteQuery(int queryId);
+
+  List<User> getUnauthorizedUsersForQuery(int queryId);
+
+  List<User> getAuthorizedUsersForQuery(int queryId);
+
+  List<RoleVO> getUnauthorizedRolesForQuery(int queryId);
+
+  List<RoleVO> getAuthorizedRolesForQuery(int queryId);
+
+  void saveQueryPermission(int queryId, String[] roles, String[] users);
+
+  boolean isUserAllowedToRunQuery(String username, int queryId);
+}

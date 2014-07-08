@@ -1,0 +1,611 @@
+package com.meritconinc.mmr.action.admin;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.meritconinc.mmr.action.BaseAction;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.constants.NavConsts;
+import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.dao.RolesDAO;
+import com.meritconinc.mmr.exception.EmailAlreadyRegisteredException;
+import com.meritconinc.mmr.exception.InvalidPasswordException;
+import com.meritconinc.mmr.exception.RepeatedPasswordException;
+import com.meritconinc.mmr.exception.SameOldPasswordException;
+import com.meritconinc.mmr.exception.UsernameAlreadyTakenException;
+import com.meritconinc.mmr.model.common.LocaleVO;
+import com.meritconinc.mmr.model.common.RoleVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.UserService;
+import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.mmr.utilities.StringUtil;
+import com.meritconinc.mmr.utilities.WebUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
+
+/**
+ * <code>Set welcome message.</code>
+ */
+public class UserAdminAction extends BaseAction implements Preparable, ServletRequestAware {
+
+  private static final long serialVersionUID = 18052007;
+  private static final Logger log = Logger.getLogger(UserAdminAction.class);
+
+  private HttpServletRequest request;
+
+  private UserService service;
+
+  private String status = null;
+
+  private User user;
+
+  private String selectedUsername;
+
+  private String existingPassword;
+
+  private HashMap availableStatus;
+
+  private Collection<RoleVO> availableRoles = new ArrayList<RoleVO>();
+  private String selectedRoles[] = new String[0];
+
+  private String nextAction;
+  private boolean displayMessage = false;
+  // indicates when forward to 'Welcome' or 'Report' is needed from 'Change Password' page
+  private boolean forwardFlag;
+  private int delayTime = 3; // seconds
+
+  private List<LocaleVO> availableLocales;
+
+  private String expDate;
+
+  public void setAvailableLocales() {
+    availableLocales = MessageUtil.getLanguagesByLocale();
+  }
+
+  public List<LocaleVO> getAvailableLocales() {
+    return availableLocales;
+  }
+
+  public void setAvailableLocales(List<LocaleVO> availableLocales) {
+    this.availableLocales = availableLocales;
+  }
+
+  public void setSelectedUsername(String selectedUsername) {
+    this.selectedUsername = selectedUsername;
+
+  }
+
+  public UserAdminAction() {
+  }
+
+  /*
+   * public String execute() throws Exception { return SUCCESS; }
+   */
+
+  public UserService getService() {
+    return service;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public void setServletRequest(HttpServletRequest httpServletRequest) {
+    this.request = httpServletRequest;
+  }
+
+  /**
+   * 
+   * @throws Exception
+   */
+  public void prepare() throws Exception {
+    if (log.isDebugEnabled()) {
+      log.debug("Prepare: " + this.selectedUsername);
+    }
+    if (!StringUtil.isEmpty(this.selectedUsername)) {
+      user = service.findUserByUsername(this.selectedUsername);
+      selectedRoles = (String[]) user.getRoles().toArray(new String[0]);
+    }
+
+    if (user != null) {
+      log.debug("username: " + user.getUsername());
+      log.debug("Created By: " + user.getCreatedBy());
+    }
+    setAvailableRoles();
+    setAvailableLocales();
+    setAvailableStatus();
+    request.setAttribute("countries", MessageUtil.getCountriesList());
+
+  }
+
+  /**
+   * view an existing user
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String view() throws Exception {
+    setSelectedLocale();
+    setExpDate();
+    if (log.isDebugEnabled()) {
+      log.debug("View User: " + user.getUsername());
+    }
+    return SUCCESS;
+  }
+
+  /**
+   * view an existing user profile
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String viewUpdateProfile() throws Exception {
+    if (log.isDebugEnabled()) {
+      log.debug("viewUpdateProfile User: " + user.getUsername());
+    }
+    user = service.findUserByUsername(UserUtil.getMmrUser().getUsername());
+    return SUCCESS;
+  }
+
+  /**
+   * updates the user profile information
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String updateProfile() throws Exception {
+    if (log.isDebugEnabled()) {
+      log.debug("updateProfile User: " + user.getUsername());
+    }
+
+    user.setPhoneNumber(StringUtil.stripChars(user.getPhoneNumber()));
+    user.setPhoneNumberExt(StringUtil.stripChars(user.getPhoneNumberExt()));
+
+    try {
+      User loginUser = UserUtil.getMmrUser();
+      service.saveProfile(user, loginUser.getUsername());
+      addActionMessage(getText("user.info.save.successfully"));
+
+      user = service.findUserByUsername(user.getUsername());
+    } catch (EmailAlreadyRegisteredException ex) {
+      addFieldError("email", getText("error.email.taken"));
+      return INPUT;
+    }
+
+    return SUCCESS;
+  }
+
+  /**
+   * creates a new user
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String create() throws Exception {
+    // if (!StringUtil.isEmpty(user.getPassword())) {
+    // if (!isValidPasswords()) {
+    // addFieldError("password", getText("error.invalid.passwords"));
+    // setAvailableStatus();
+    // return INPUT;
+    // }
+    // }
+
+    user.setPhoneNumber(StringUtil.stripChars(user.getPhoneNumber()));
+    user.setPhoneNumberExt(StringUtil.stripChars(user.getPhoneNumberExt()));
+
+    // if (!StringUtil.isValidPhoneNumber(user.getPhoneNumber())) {
+    // addFieldError("phoneNumber", getText("error.phone.number.format"));
+    // return INPUT;
+    // } else {
+    // user.setPhoneNumber(StringUtil.stripChars(user.getPhoneNumber()));
+    // if (StringUtil.isValidPhoneNumber(user.getPhoneNumberExt())) {
+    // user.setPhoneNumberExt(StringUtil.stripChars(user.getPhoneNumberExt()));
+    // } else {
+    // addFieldError("phoneNumber", getText("error.phone.number.format"));
+    // return INPUT;
+    // }
+    // }
+
+    // if(selectedRoles==null || selectedRoles.length==0){
+    // addFieldError("isAdminUsr", getText("error.missing.role"));
+    // return INPUT;
+    // }
+    // else
+    {
+      Collection<String> rolesList = new ArrayList<String>();
+      for (int i = 0; i < selectedRoles.length; i++)
+        rolesList.add(selectedRoles[i]);
+      rolesList.add(Constants.BASE_USER_ROLE); // everybody gets the base role
+      user.setRoles(rolesList);
+    }
+    String dateFormat = getText("date.format");
+    Date date = null;
+    if (dateFormat != null) {
+      if (!StringUtil.isEmpty(expDate)) {
+        date = new SimpleDateFormat(dateFormat).parse(expDate);
+      }
+    }
+    user.setExpDate(date);
+    user.setStatus("A");
+    user.setLocale("en_CA");
+
+    try {
+      User loginUser = UserUtil.getMmrUser();
+      service.create(user, loginUser.getUsername());
+    } catch (EmailAlreadyRegisteredException ex) {
+      addActionError(getText("error.email.taken"));
+      return INPUT;
+    } catch (UsernameAlreadyTakenException ex) {
+      addActionError(getText("error.username.taken"));
+      return INPUT;
+    }
+    addActionMessage(getText("user.info.save.successfully"));
+    user = service.findUserByUsername(user.getUsername());
+    setAvailableStatus();
+    return SUCCESS;
+  }
+
+  /**
+   * updates the user information
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String save() throws Exception {
+    if (log.isDebugEnabled()) {
+      log.debug("Save User: " + user.getUsername());
+    }
+    if (!StringUtil.isEmpty(user.getPassword()) || !StringUtil.isEmpty(user.getRetypePassword())) {
+      if (!isValidPasswords()) {
+        addFieldError("password", getText("error.invalid.passwords"));
+        return INPUT;
+      } else {
+        if (user.getPassword().length() < 6 || user.getPassword().length() > 25) {
+          addFieldError("password", getText("error.password.length"));
+          return INPUT;
+        }
+      }
+    }
+
+    user.setPhoneNumber(StringUtil.stripChars(user.getPhoneNumber()));
+    user.setPhoneNumberExt(StringUtil.stripChars(user.getPhoneNumberExt()));
+
+    // if (!StringUtil.isValidPhoneNumber(user.getPhoneNumber())) {
+    // addFieldError("phoneNumber", getText("error.phone.number.format"));
+    // return INPUT;
+    // } else {
+    // user.setPhoneNumber(StringUtil.stripChars(user.getPhoneNumber()));
+    // if (StringUtil.isValidPhoneNumber(user.getPhoneNumberExt())) {
+    // user.setPhoneNumberExt(StringUtil.stripChars(user.getPhoneNumberExt()));
+    // } else {
+    // addFieldError("phoneNumber", getText("error.phone.number.format"));
+    // return INPUT;
+    // }
+    // }
+
+    // if(selectedRoles==null || selectedRoles.length==0){
+    // addFieldError("isAdminUsr", getText("error.missing.role"));
+    // return INPUT;
+    // }
+    // else
+    {
+      Collection<String> rolesList = new ArrayList<String>();
+      for (int i = 0; i < selectedRoles.length; i++)
+        rolesList.add(selectedRoles[i]);
+      rolesList.add(Constants.BASE_USER_ROLE); // everybody gets the base role
+      user.setRoles(rolesList);
+    }
+    String dateFormat = getText("date.format");
+    Date date = null;
+
+    if (dateFormat != null) {
+      if (!StringUtil.isEmpty(expDate)) {
+        date = new SimpleDateFormat(dateFormat).parse(expDate);
+      }
+    }
+    user.setExpDate(date);
+
+    try {
+      User loginUser = UserUtil.getMmrUser();
+      service.save(user, loginUser.getUsername());
+      addActionMessage(getText("user.info.save.successfully"));
+      user = service.findUserByUsername(user.getUsername());
+      log.debug(user.getCreatedBy());
+    } catch (EmailAlreadyRegisteredException ex) {
+      addFieldError("email", getText("error.email.taken"));
+      return INPUT;
+    }
+    return SUCCESS;
+  }
+
+  /**
+   * Checks password validity
+   * 
+   * @return
+   */
+  private boolean isValidPasswords() {
+    if (user.getPassword().equals(user.getRetypePassword())) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Prepares the data for the New User page
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String newUser() throws Exception {
+    user = new User();
+    selectedRoles = new String[1];
+    selectedRoles[0] = Constants.PUBLIC_ROLE_CODE;
+    user.setSessionTimeout(Integer.parseInt(WebUtil.getProperty(Constants.SYSTEM_SCOPE,
+        Constants.TIMEOUT)));
+    return SUCCESS;
+  }
+
+  /**
+   * View the Change Password screen
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String viewChangePswd() throws Exception {
+    if (displayMessage)
+      addActionMessage(getText("error.password.expired"));
+    return INPUT;
+  }
+
+  /**
+   * Changes user password
+   * 
+   * @return
+   * @throws Exception
+   */
+  public String changePassword() throws Exception {
+
+    forwardFlag = false;
+    User loginUser = UserUtil.getMmrUser();
+
+    String loginUsername = loginUser.getUsername();
+    ;
+
+    if (loginUser.isPasswordExpired()) {
+      forwardFlag = true;
+
+      PropertyDAO propertyDAO = (PropertyDAO) MmrBeanLocator.getInstance().findBean("propertyDAO");
+      boolean checkTermsOfUse = Boolean.valueOf(
+          propertyDAO.readProperty(Constants.SYSTEM_SCOPE, "CHECK_TERMS_OF_USE")).booleanValue();
+      if (checkTermsOfUse) {
+        nextAction = NavConsts.TERMS_OF_USE_ACTION;
+      } else {
+        nextAction = (String) ActionContext.getContext().getSession().get(Constants.CURRENT_PAGE);
+      }
+
+      if (StringUtil.isEmpty(nextAction)) {
+        nextAction = NavConsts.WELCOME_ACTION;
+      }
+    } else {
+      forwardFlag = false;
+    }
+
+    try {
+      // password change by User
+      service.changePassword(loginUsername, existingPassword, user.getPassword(), loginUsername,
+          false);
+
+      addActionMessage(getText("info.password.changed.successfully"));
+
+      // if User was accessing from outsite, login User
+      if (forwardFlag) {
+        // login User
+        user = service.login(loginUsername, user.getPassword());
+
+        // set session timeout for the user
+        service.setSessionTimeout(user, request.getSession());
+
+        // store current User in the session
+        // ActionContext.getContext().getSession().put(Constants.CURRENT_USER, user);
+        UserUtil.setMmrUser(user);
+
+        addActionMessage(getText("info.password.changed.forward"));
+      }
+
+    } catch (InvalidPasswordException ex) {
+      addFieldError("existingPassword", getText("error.invalid.existing.password"));
+      forwardFlag = false;
+      return INPUT;
+    } catch (SameOldPasswordException ex) {
+      addFieldError("samePasswords", getText("error.same.old.password"));
+      forwardFlag = false;
+      return INPUT;
+    } catch (RepeatedPasswordException ex) {
+      // List<String> args = new ArrayList<String>();
+      // args.add(WebUtil.getProperty(Constants.SYSTEM_SCOPE, Constants.PASSWORD_HISTORY_COUNT));
+      String[] args = { WebUtil.getProperty(Constants.SYSTEM_SCOPE,
+          Constants.PASSWORD_HISTORY_COUNT) };
+      addFieldError("repeatedPassword", getText("error.repeated.password", args));
+      forwardFlag = false;
+      return INPUT;
+    }
+
+    return SUCCESS;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Map getAvailableStatus() {
+    return availableStatus;
+  }
+
+  public void setAvailableStatus() {
+    availableStatus = new HashMap();
+    availableStatus.put("A", getText("status.A"));
+    availableStatus.put("I", getText("status.I"));
+    if (user == null || user.isNewUser()) {
+      availableStatus.put("U", getText("status.U"));
+    } else {
+      if (this.getUser().getStatus().equals(Constants.STATUS_UNAPPROVED)) {
+        availableStatus.put("U", getText("status.U"));
+      }
+      if (this.getUser().getStatus().equals(Constants.STATUS_LOCKED)) {
+        availableStatus.put("L", getText("status.L"));
+      }
+      availableStatus.put("R", getText("status.R"));
+    }
+  }
+
+  public String getExistingPassword() {
+    return existingPassword;
+  }
+
+  public void setExistingPassword(String existingPassword) {
+    this.existingPassword = existingPassword;
+  }
+
+  /**
+   * @return the availableRoles
+   */
+  public Collection<RoleVO> getAvailableRoles() {
+    return availableRoles;
+  }
+
+  /**
+   * @param availableRoles
+   *          the availableRoles to set
+   */
+  public void setAvailableRoles(Collection<RoleVO> availableRoles) {
+    this.availableRoles = availableRoles;
+  }
+
+  /**
+   * Sets the available roles
+   * 
+   */
+  public void setAvailableRoles() {
+    WebApplicationContext context = WebApplicationContextUtils
+        .getWebApplicationContext((ServletContext) ActionContext.getContext().get(
+            ServletActionContext.SERVLET_CONTEXT));
+    RolesDAO rolesDAO = (RolesDAO) context.getBean("rolesDAO");
+    String locale = MessageUtil.getLocale();
+    availableRoles = rolesDAO.getRolesByUser(locale, getLoginUser().getUsername());
+  }
+
+  /**
+   * @return the selectedRoles
+   */
+  public String[] getSelectedRoles() {
+    return selectedRoles;
+  }
+
+  /**
+   * @param selectedRoles
+   *          the selectedRoles to set
+   */
+  public void setSelectedRoles(String[] selectedRoles) {
+    this.selectedRoles = selectedRoles;
+  }
+
+  public String getNextAction() {
+    return nextAction;
+  }
+
+  public void setNextAction(String nextAction) {
+    this.nextAction = nextAction;
+  }
+
+  public boolean isForwardFlag() {
+    return forwardFlag;
+  }
+
+  public void setForwardFlag(boolean forwardFlag) {
+    this.forwardFlag = forwardFlag;
+  }
+
+  public int getDelayTime() {
+    return delayTime;
+  }
+
+  public void setDelayTime(int delayTime) {
+    this.delayTime = delayTime;
+  }
+
+  public String getExpDate() {
+    return expDate;
+  }
+
+  public void setExpDate(String expDate) {
+    this.expDate = expDate;
+  }
+
+  public void setExpDate() {
+    Date userExpDate = user.getExpDate();
+    if (userExpDate != null) {
+      String dateFormat = getText("date.format");
+      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(dateFormat);
+      sdf.setTimeZone(TimeZone.getDefault());
+      expDate = sdf.format(userExpDate);
+    }
+  }
+
+  public void setSelectedLocale() {
+    availableLocales = new ArrayList<LocaleVO>();
+    String userLocale = user.getLocale();
+    List<LocaleVO> locales = MessageUtil.getLanguagesByLocale();
+    LocaleVO displayFirstLocaleVO = null;
+    for (int i = 0; i < locales.size(); i++) {
+      LocaleVO localeVO = (LocaleVO) locales.get(i);
+      if (localeVO.getLocale().equals(userLocale)) {
+        displayFirstLocaleVO = localeVO;
+      } else {
+        availableLocales.add(localeVO);
+      }
+    }
+    availableLocales.add(0, displayFirstLocaleVO);
+  }
+
+  public void setService(UserService service) {
+    this.service = service;
+  }
+
+  public List<LocaleVO> getLocales() {
+    return MessageUtil.getLocales();
+  }
+
+  public boolean isDisplayMessage() {
+    return displayMessage;
+  }
+
+  public void setDisplayMessage(boolean displayMessage) {
+    this.displayMessage = displayMessage;
+  }
+}

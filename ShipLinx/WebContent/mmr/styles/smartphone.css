@@ -1,0 +1,143 @@
+body{ height:100%; width:100%; margin:0px; padding:0px; font-family:arial; float:left;}
+
+
+#wrapper                                { height:auto; float:left; width:100%;  }
+#payment_info_pnl              { display: none;}
+.top_line                              { height:5px; background-color:#990000; float:left; width:100%; }
+.header-top,.wrapper_btm{ height:auto; width:100%; float:left;}
+.top_header_inner              { height:auto; width:90%; margin:0px auto; }
+.logo                                      { height:67px; width:100%; float:left; margin-top:5px; text-align:center;}
+.top_navi                              { height:auto; width:auto; float:left; margin:13px 0px 0px 0px; }
+
+.top_navi_right			{ float:right;}
+.top_navi ul                          { list-style-type:none; font-size:10px; padding:0px; letter-spacing:0px; }
+.top_navi ul li                        { display:inline;}
+.top_navi ul li:nth-child(1),.top_navi ul li:nth-child(2),.top_navi ul li:nth-child(3){ border-right:1px solid #999;}
+.top_navi ul li a                     { text-decoration:none; color:#555555; padding:0px 2px;}
+.live_chat                            { height:auto; width:116px; float:left; margin-top:0px; }
+
+.header_logo_body		{ width:100%; height:auto; float:left;}
+.navi_icon                            { height:30px; width:30px; position:fixed; float:left; top:0px; right:0px; margin:5px 5px 0px 0px; }
+.navigation				{ height:auto; width:100%; float:left; background-color:#000000; overflow:hidden; }
+.navigation ul			{ list-style-type:none; margin:0px; padding:0px; width:90%; float:left;position:fixed; top:30px;  display:none; background-color:#000;}
+.navigation ul li			{ color:#fff; float:left; border-right:1px solid #666; width:100%; text-align:center; }
+.navigation ul li a			{ padding:10px 35% 8px 35%; color:#fff; float:left; font-size:12px; width:30%; text-decoration:none;}
+.navigation ul li a:hover	{ background-color:#990000;}
+
+.search_body			{ height:auto; width:100%; float:right; margin-right:-2px;}
+.search_body input[type='text']{ background-color:#000; border:0px; color:#FFF; width:83%; padding:5px 0px; margin:6px 0px; float:left; }
+.search_body input[type='submit']{background:url('../images/search.png') no-repeat; width:43px; height:38px; padding:0px; border:0px; margin:0px; float:right;}
+.navi_shadow			{ width:100%; float:left; height:28px; background:url('../images/shadow.png') no-repeat center center;
+-moz-background-size: cover;
+-webkit-background-size: cover;
+-o-background-size: cover;
+-ms-background-size: cover;
+background-size: cover;
+ }
+ 
+ 
+.wrapper_btm_inner		{ height: auto; width:98%; margin:0px auto;  }
+.wrapper_body			{ height: auto; width:100%; float:left; background-color:#f5f5f5; }
+.wrapper_navi			{ height: auto; float:left; width:100%; background-color:#555555; }
+.wrapper_navi p			{ color:#c1c1c1; padding:0px; margin:5px 11px 5px 5px; font-size:12px; float:right; }
+.wrapper_navi ul			{ list-style-type:none; font-size:10px; margin:0px; padding:0px; width:100%; float:left;}
+.wrapper_navi ul li		{ float: left;}
+.wrapper_navi ul li a		{ text-decoration:none; color:#c1c1c1; padding:6px; float:left;}
+.wrapper_navi ul li a:hover { color:#FFF;}
+.nextlevelmenu			{ height:auto; width:94%; background-color:#FFF; margin:0px 10px 5px 10px; float:left;}
+.nextlevelmenu ul		{ list-style-type:none; font-size:10px; margin:0px; padding:0px;}
+.nextlevelmenu ul li		{ display:inline;}
+.nextlevelmenu ul li a		{ text-decoration:none; color:#000; padding:5px 10px; float:left;}
+
+
+.content				{ height:auto; width:100%; min-height:420px; float:left; background-color:#F5F5F5;}
+.content_body			{ height:auto; width:90%; margin:0px auto; }
+.content_table			{ height:auto; width:100%; float:left;}
+
+.content_header			{ height:auto; width:100%; float:left; background-color:#000; overflow:hidden;}
+.cont_hdr_title			{ height:15px; font-weight:bold; width:100%; float:left; background-color:#990000; color:#FFF; padding:5px; font-size:12px; }
+.cont_hdrtitle_w		{ height:15px; font-weight:bold; width:250px; float:left;  color:#FFF; padding:5px; font-size:12px;}
+.cont_data_body			{ height:auto; width:98%; float:left;  padding:5px; }
+
+
+.form_buttons			{ height:auto; width:100%; float:right; margin-top:2px; }
+.form_buttons a{ text-decoration:none; font-size:12px;}
+.form_buttons input	{ float:right; background-color:#990000; color:#FFF; border:0px; margin:0px 0px 0px 1px; padding:4px 10px 5px 10px;}
+.form_buttons a	{ float:right; background-color:#990000; color:#FFF; border:0px; margin:0px 0px 0px 1px; padding:6px 10px 5px 10px;}
+
+.rows					{ width:100%; height:auto; float:left; padding:3px 0px; font-size:12px;}
+
+.fields_topdown { width:167px; margin-left:30px; float:left; margin-left:5px; padding:3px 0px;}
+.fields_topdown label			{ width:150px; float:left; padding:4px 0px;}
+.fields_topdown .controls		{ width:150px; float:left;}
+.fields_topdown .controls input	{ width:150px; }
+
+.rows					{ width:100%; height:auto; float:left; padding:3px 0px; font-size:12px;}
+
+.fields					{ width:275px; margin-left:0px; float:left; padding:3px 0px; height:25px;}
+.fields label				{ width:110px; float:left; padding-top:1px;}
+.controls				{ width:150px; float:left;}
+.controls input[type="text"]{height:18px; width:130px; padding-left:5px; float:right;}
+.controls input[type="password"]{height:18px; width:130px; padding-left:5px; float:right;}
+
+.controls input[type="checkbox"]{ width:130px; padding-left:5px; float:right; }
+.controls select			{ height:22px;   width:130px; float:right;}
+
+
+
+.fieldss				{ width:152px; float:left; margin-left:0px; padding:3px 0px;}
+.fieldss label			{ width:65px; float:left; padding-top:1px;}
+.fieldss .controls		{ width:70px; float:left;}
+.fieldss .controls input	{ width:50px; }
+
+.fieldsvl				{ width:100%; float:left; margin-left:0px; padding:3px 0px;}
+.fieldsvl label			{ width:128px; float:left; padding-top:0px;}
+.fieldsvl .controls           { width:100%; float:left;}
+.controls textarea		{ height:12px; width:90%; float:right;}
+
+.fields_topdown { width:167px; margin-left:30px; float:left; margin-left:0px; padding:3px 0px;}
+.fields_topdown label			{ width:150px; float:left; padding:4px 0px;}
+.fields_topdown .controls		{ width:150px; float:left; margin-left:7px;}
+.fields_topdown .controls input	{ width:150px; }
+
+.fields_check					{ width:250px; margin-left:5px; float:left; padding:3px 0px;}
+.fields_check label				{ width:150px; float:left; margin-top:3px;}
+.controlscheck		{ width:30px; float:left; margin-left:0px;}
+.check input[type="checkbox"]{ margin-left:17px;}
+
+.fieldsvl ul{ width:200px; float:left; border:1px solid #999; margin:0px; padding:5px; list-style-type:none;}
+
+
+.fieldsl				{ width:100%; float:left; margin-left:0px; padding:3px 0px;}
+.fieldsl label			{ width:125px; float:left; padding-top:1px;}
+.fieldsl .controls		{ width:150px; float:left;}
+
+.fieldsm				{ width:300px; float:left; margin-left:5px;  padding:3px 0px;}
+.fieldsm label			{ width:150px; float:left; padding-top:1px;}
+.fieldsm .controls		{ width:150px; float:left;}
+
+
+
+
+
+
+
+
+.footer               			{ height:auto; width:100%; float:left; background-color:#000; padding-bottom:10px;} 
+
+.footer_body    			{ height:auto; width:98%; margin:0px auto; }
+.footer_inner  		        { height:auto; width:100%; margin:0px auto; padding:13px 0px; color:#FFF; font-size:10px;}
+.footer_inner p			{ padding:0px; margin:0px; float:left;  width:100%; height:auto; text-align:center; }
+
+
+
+
+
+
+
+
+
+
+
+
+

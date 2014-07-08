@@ -1,0 +1,12 @@
+package com.meritconinc.mmr.exception;
+
+public class UsernameAlreadyTakenException extends Exception {
+
+  public UsernameAlreadyTakenException(String string) {
+    super(string);
+  }
+
+  public UsernameAlreadyTakenException() {
+    super();
+  }
+}

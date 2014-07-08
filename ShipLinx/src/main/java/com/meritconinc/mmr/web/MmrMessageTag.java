@@ -1,0 +1,170 @@
+package com.meritconinc.mmr.web;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.ServletContext;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.meritconinc.mmr.dao.MessageDAO;
+import com.meritconinc.mmr.utilities.MessageUtil;
+
+// parent tag for MmrMessageParamTag
+public class MmrMessageTag extends BodyTagSupport {
+	private static final long serialVersionUID	= 10092011;
+	public MmrMessageTag() {
+		
+	}
+	private String locale;
+	private String messageId;
+	private List<String> params = new ArrayList<String>();
+	boolean bodyExists = false;
+	
+	
+	public void addParam(String param) {
+		params.add(param);
+	}
+
+	public int doStartTag() throws JspException{
+		bodyExists = false;
+		return BodyTag.EVAL_BODY_BUFFERED;
+	} 
+	
+	public int doEndTag() throws JspException {
+		if (!bodyExists) {
+			try {
+				WebApplicationContext context = WebApplicationContextUtils
+						.getWebApplicationContext((ServletContext) ActionContext
+								.getContext().get(
+										ServletActionContext.SERVLET_CONTEXT));
+				MessageDAO messageDAO = (MessageDAO) context
+						.getBean("messageDAO");
+				if (locale == null) {
+					locale = MessageUtil.getLocale();
+				}
+				String messageTemplate = messageDAO.getMessage(messageId,
+						locale);
+				if (messageTemplate != null) {
+					pageContext.getOut().print(messageTemplate);
+				}
+			} catch (IOException ex) {
+				throw new JspTagException(ex.toString());
+			}
+			finally {
+				locale = null;
+			}
+		}
+		return BodyTag.EVAL_BODY_INCLUDE;
+	}
+	
+
+	public int doAfterBody() throws JspException {
+		bodyExists = true;
+		WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext((ServletContext)ActionContext.getContext().get(ServletActionContext.SERVLET_CONTEXT));
+		MessageDAO messageDAO = (MessageDAO)context.getBean("messageDAO");
+		if (locale == null) {
+			locale = (String)ActionContext.getContext().getSession().get("locale");
+		}
+		String messageTemplate = messageDAO.getMessage(messageId, locale);
+		MessageFormat messageFormatter = null;
+		
+		if (messageTemplate != null) {
+			String ar[] = locale.split("_");
+			Locale locale = new Locale(ar[0], ar[1]);	
+			messageFormatter = new MessageFormat(messageTemplate, locale);
+		}
+		BodyContent bodyContent = getBodyContent();
+		try {
+			if (params.size() != 0 && messageFormatter != null) { // use template from attribute
+				Object[] paramObj = new Object[params.size()];
+				int count = 0;
+				for (String paramValue : params) {
+					Object obj = getSpecialValueObject(paramValue);
+					if (obj == null) {
+						obj = convert(paramValue);
+					}
+					paramObj[count] = obj;
+					count++;
+				}
+				params.clear();
+				String message = messageFormatter.format(paramObj);
+				bodyContent.getEnclosingWriter().write(message);
+				
+			}
+			else { //use body content
+				if (messageTemplate != null) {
+					bodyContent.getEnclosingWriter().write(messageTemplate);
+				}
+				else {
+					bodyContent.writeOut(bodyContent.getEnclosingWriter());
+				}
+			}	
+			return BodyTag.SKIP_BODY;
+		} catch (IOException ex) {
+			throw new JspTagException(ex.toString());
+		}
+		finally {
+			bodyContent.clearBody();
+			locale = null;
+		}
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+	
+	Object convert(String str) {
+		Object ret = null;
+		try {ret = Long.parseLong(str);}
+		catch (Exception e1) {
+			try {ret = Short.parseShort(str);}
+			catch (Exception e2) {
+				try {ret = Float.parseFloat(str);}
+				catch (Exception e3) {
+					try {ret = Double.parseDouble(str);}
+					catch (Exception e4) {
+						try {ret = Integer.parseInt(str);}
+						catch (Exception e5) {
+							ret = str;
+						}
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
+	Object getSpecialValueObject(String specialValue) {
+		Object ret = null;
+		if (specialValue.equalsIgnoreCase("_now_")) {
+			ret = new Date();
+			return ret;
+		}
+		return ret;
+	}
+}

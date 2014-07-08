@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SampleUserExtension">
+
+	<insert id="copyExtendedAttributesToHistory">
+		select 1
+	</insert>
+	
+	<select id="getExtendedAttributesByUsername">
+		select 1
+	</select>
+	
+	<insert id="insertExtendedAttributes">
+		select 1
+	</insert> 
+	
+	<update id="updateExtendedAttributes">
+		select 1			
+	</update>
+	
+</sqlMap>

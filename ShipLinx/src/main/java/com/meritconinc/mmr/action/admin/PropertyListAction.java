@@ -1,0 +1,136 @@
+package com.meritconinc.mmr.action.admin;
+
+import java.util.Iterator;
+import java.util.List;
+
+import com.meritconinc.mmr.action.BaseAction;
+import com.meritconinc.mmr.model.common.PropertyVO;
+import com.meritconinc.mmr.service.PropertyService;
+import com.meritconinc.mmr.service.SystemService;
+
+public class PropertyListAction extends BaseAction {
+  private static final long serialVersionUID = -1032610026888122174L;
+
+  private PropertyService propertyService;
+  private SystemService systemService;
+
+  private PropertyVO property;
+  private List<PropertyVO> propertyList;
+
+  public String list() {
+    propertyList = propertyService.readProperties();
+    boolean refreshCache = false;
+    for (Iterator iterator = propertyList.iterator(); iterator.hasNext();) {
+      PropertyVO property = (PropertyVO) iterator.next();
+      if (!property.isDbValueEqualCache()) {
+        addActionMessage(property.getScope() + "." + property.getName() + " is stale (dbvalue="
+            + property.getDbValue() + ", cache=" + property.getValue() + ")");
+        refreshCache = true;
+        property.setValue(property.getDbValue());
+      }
+    }
+    if (refreshCache) {
+      systemService.clearCache();
+      addActionMessage("Cache has been refreshed on server " + systemService.getServerName());
+    }
+    int rowCount = propertyList.size();
+    if (rowCount == 0) {
+      addActionError(getText("error.no.property.found"));
+    }
+    return SUCCESS;
+  }
+
+  public String saveProperty() {
+    if (property != null) {
+      propertyService.updateProperty(property.getScope(), property.getName(), property.getValue());
+      addActionMessage("Property [" + property.getScope() + "." + property.getName()
+          + "] has been updated. ");
+      addActionMessage("Cache has been refreshed on server " + systemService.getServerName());
+    }
+    return SUCCESS;
+  }
+
+  /**
+   * Displays the list of Text Properties (from table fmk_property_text).
+   */
+  public String listTextProperties() {
+    propertyList = propertyService.readTextProperties();
+    boolean refreshCache = false;
+    for (PropertyVO property : propertyList) {
+      if (!property.isDbValueEqualCache()) {
+        addActionMessage(property.getScope() + "." + property.getName() + " is stale.");
+        refreshCache = true;
+        property.setValue(property.getDbValue());
+      }
+    }
+    if (refreshCache) {
+      systemService.clearCache();
+      addActionMessage("Cache has been refreshed on server " + systemService.getServerName());
+    }
+    int rowCount = propertyList.size();
+    if (rowCount == 0)
+      addActionError(getText("error.no.property.found"));
+
+    return SUCCESS;
+  }
+
+  /**
+   * Displays one Text Property for editing
+   * 
+   * @return
+   */
+  public String viewEditTextProperty() {
+    if (property != null)
+      property.setValue(propertyService.readTextProperty(property.getScope(), property.getName()));
+
+    return SUCCESS;
+  }
+
+  /**
+   * Saves changes to Text Property being edited.
+   * 
+   * @return
+   */
+  public String saveTextProperty() {
+    if (property != null) {
+      propertyService.updateTextProperty(property.getScope(), property.getName(),
+          property.getValue());
+      addActionMessage("Property [" + property.getScope() + "." + property.getName()
+          + "] has been updated. ");
+      addActionMessage("Cache has been refreshed on server " + systemService.getServerName());
+    }
+    return SUCCESS;
+  }
+
+  // =====================================
+  // Getters/Setters
+  // =====================================
+  public PropertyVO getProperty() {
+    return property;
+  }
+
+  public void setProperty(PropertyVO property) {
+    this.property = property;
+  }
+
+  public void setPropertyService(PropertyService propertyService) {
+    this.propertyService = propertyService;
+  }
+
+  public List<PropertyVO> getPropertyList() {
+    return propertyList;
+  }
+
+  public int getPropertyCount() {
+    return (propertyList == null) ? 0 : propertyList.size();
+  }
+
+  public void setSystemService(SystemService systemService) {
+    this.systemService = systemService;
+  }
+
+  public String getServerName() {
+    return this.systemService.getServerName();
+  }
+
+}

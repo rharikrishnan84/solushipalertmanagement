@@ -1,0 +1,31 @@
+
+button{
+    border:solid 1px;
+    margin-top:10px;
+}
+h1{
+    color:white;
+    font-size:20px;
+    margin:0;
+    padding:0;
+}
+label {
+    display:inline-block;
+    width:75px;
+}
+div.heading{
+    height:30px;
+    background-color:#6495ed;
+    padding:5px 30px;
+}
+div.centreDiv{
+    width:720px;
+    margin:auto;
+}
+div.form{
+    margin:20px;
+    padding:10px;
+    border: solid 1px #BED6F8;
+}
+
+

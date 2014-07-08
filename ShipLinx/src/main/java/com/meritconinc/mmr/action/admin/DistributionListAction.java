@@ -1,0 +1,13 @@
+package com.meritconinc.mmr.action.admin;
+
+import com.meritconinc.mmr.action.BaseAction;
+
+/**
+ * <code>Set welcome message.</code>
+ */
+public class DistributionListAction extends BaseAction {
+  public String execute() throws Exception {
+    System.out.println(" DistributionListAction ========= ");
+    return SUCCESS;
+  }
+}

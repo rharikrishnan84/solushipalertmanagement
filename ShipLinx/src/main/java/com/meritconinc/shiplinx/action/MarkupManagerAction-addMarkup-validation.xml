@@ -1,0 +1,66 @@
+<!DOCTYPE validators PUBLIC 
+"-//OpenSymphony Group//XWork Validator 1.0.2//EN" 
+"http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+	<field name="markup.serviceId">
+		<field-validator type="required">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="long">
+			<param name="min">1</param>
+			<message>
+				Service must be selected
+			</message>
+		</field-validator>		
+	</field>	
+	
+	<!-- 
+	<field name="markup.fromCountryCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	
+	<field name="markup.toCountryCode">
+		<field-validator type="requiredstring">
+			<message key="requiredstring" />
+		</field-validator>
+	</field>
+	  -->
+	   
+	<field name="markup.markupPercentage">
+		<field-validator type="required">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression">([0-9]*)</param>
+			<message key="error.data.number.format" />
+		</field-validator>
+		<field-validator type="int">
+			<param name="min">0</param>
+			<param name="max">100</param>
+			<message>
+				Markup Percentage must be between 0 and 100
+			</message>
+		</field-validator>		
+	</field>
+	<!-- 
+	<field name="markup.markupFlat">
+		<field-validator type="required">
+			<message key="requiredstring" />
+		</field-validator>
+		<field-validator type="regex">
+			<param name="expression">([0-9]*)</param>
+			<message key="error.data.number.format" />
+		</field-validator>
+		<field-validator type="double">
+			<param name="min">1</param>
+			<param name="max">100</param>
+			<message>
+				Markup Flat must be within 1 to 100
+			</message>
+		</field-validator>		
+	</field>	
+	-->
+</validators>

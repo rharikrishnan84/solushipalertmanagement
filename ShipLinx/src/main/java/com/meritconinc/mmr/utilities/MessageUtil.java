@@ -1,0 +1,118 @@
+package com.meritconinc.mmr.utilities;
+
+import java.util.List;
+import java.util.Locale;
+
+import javax.servlet.ServletContext;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.MessageDAO;
+import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.model.common.CountryVO;
+import com.meritconinc.mmr.model.common.LocaleVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.opensymphony.xwork2.ActionContext;
+
+public class MessageUtil {
+	private static final Logger log = Logger.getLogger(MessageUtil.class);
+	
+	public static List<LocaleVO> getLocales() {
+		MessageDAO messageDAO = getMessageDAO();
+		return messageDAO.getLocales();
+	}
+
+	public static String getPreferredLocale() {
+		String locale = null;
+		User user = UserUtil.getMmrUser();
+		if (user != null) {
+			locale = user.getLocale();
+			ActionContext.getContext().getSession().put("locale", locale);
+			Locale newLocale = new Locale(locale.substring(0,2), locale.substring(3));
+			ActionContext.getContext().setLocale(newLocale);
+		}
+		return locale;
+	} 
+	
+	public static String getLocale() {
+		String locale = null;
+		if (ActionContext.getContext() == null || ActionContext.getContext().getSession() == null) {
+			return getDefaultLocale();		
+		}
+		
+		locale =	(String) ActionContext.getContext().getSession().get("locale");
+		if (null != locale) {
+			Common.setCookie("locale",locale,ShiplinxConstants.COOKIE_EXPIRED_TIME);
+			Locale newLocale = new Locale(locale.substring(0,2), locale.substring(3));
+			ActionContext.getContext().setLocale(newLocale);				
+			return locale;
+		}
+		else {
+			locale = Common.getCookie("locale");
+			if (null == locale) {
+				locale = getDefaultLocale();
+			}
+			if (null != locale){
+				Common.setCookie("locale",locale,ShiplinxConstants.COOKIE_EXPIRED_TIME);
+				Locale newLocale = new Locale(locale.substring(0,2), locale.substring(3));
+				ActionContext.getContext().setLocale(newLocale);				
+				ActionContext.getContext().getSession().put("locale", locale);
+			}
+		}		
+		return locale;
+	}
+	
+	private static String getDefaultLocale() {
+		// TODO Auto-generated method stub
+		PropertyDAO propertyDAO = (PropertyDAO) MmrBeanLocator.getInstance().findBean("propertyDAO");
+		return propertyDAO.readProperty(Constants.SYSTEM_SCOPE, Constants.DEFAULT_LOCALE);
+	}
+
+	public static List<LocaleVO> getLanguagesByLocale(){
+		MessageDAO messageDAO = getMessageDAO();
+		return messageDAO.getLanguagesByLocale(getLocale());		
+	}
+	
+	public static String getMessage(String messageId, String locale) {
+		MessageDAO messageDAO = getMessageDAO();
+		String msg = messageDAO.getMessage(messageId, locale);
+		return msg;
+	}
+
+	public static String getMessage(String messageId) {
+		MessageDAO messageDAO = getMessageDAO();
+		return messageDAO.getMessage(messageId, getLocale());
+	}
+
+	public static String getCountryName(String countryCode){
+		MessageDAO messageDAO = getMessageDAO();
+		return messageDAO.getCountryName(countryCode, getLocale());
+
+	}
+
+	public static List getCountriesList(){
+		MessageDAO messageDAO = getMessageDAO();
+		List<CountryVO> countries = messageDAO.getCountries(MessageUtil.getLocale());
+		return countries;
+	}
+	
+	private static MessageDAO getMessageDAO() {
+		// TODO Auto-generated method stub
+//		WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext((ServletContext)ActionContext.getContext().get(ServletActionContext.SERVLET_CONTEXT));
+//		MessageDAO messageDAO = (MessageDAO)context.getBean("messageDAO");
+		MessageDAO messageDAO = (MessageDAO) MmrBeanLocator.getInstance().findBean("messageDAO");
+		return messageDAO;
+	}
+	
+	public static String getPath(String url){
+		MessageDAO messageDAO = getMessageDAO();
+		return messageDAO.getPath(url);
+
+	}
+}

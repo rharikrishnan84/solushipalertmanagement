@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SampleUserExtension">
+
+	<resultMap id="findSampleUsersResultMap" class="com.meritconinc.mmr.model.security.User">
+		<result property="username"	column="username"/>	
+		<result property="firstName"	column="first_name"/>
+		<result property="lastName"	column="last_name"/>
+		<result property="email"	column="email"/>
+		<result property="lastLogin"	column="last_login"/>
+		<result property="status"	column="account_status"/>
+		<result property="createdAt"	column="created"/>
+		<result property="accessTimes"	column="access_times"/>
+		<result property="userComments"	column="user_comments"/>	
+		<result property="extendedAttributes"  resultMap="SampleUserExtension.userExtension"/>		
+	</resultMap>
+
+	<resultMap id="userExtension" class="com.meritconinc.sample.model.security.SampleUserExtendedAttributesVO">
+		<result property="property1" column="property1"/>
+		<result property="property2" column="property2"/>
+	</resultMap> 
+	
+	<select id="findSampleUsersPaginated" resultMap="findSampleUsersResultMap">
+		   select distinct u.username, u.first_name, u.last_name,   
+				u.email, u.last_login, u.created, u.account_status,   
+				u.access_times, u.user_comments, e.property1, e.property2
+		   from user u 
+		   inner join user_role r on u.username = r.username
+		   left join user_extension e on u.username = e.username 
+	   <dynamic prepend="where">
+			<isNotNull prepend="and"  property="username">
+				 u.username like '%$username$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="firstName">
+				u.first_name like '%$firstName$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="lastName">
+				u.last_name like '%$lastName$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="email">
+				u.email like '%$email$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="status">
+				u.account_status = '$status$'
+			</isNotNull>
+			<isNotNull prepend="and" property = "roleCode">
+				r.code = '$roleCode$'
+			</isNotNull>
+			<isNotNull prepend="and" property = "last_login_date">
+				u.last_login between #last_login_date# and #today#
+			</isNotNull>
+			<isNotNull prepend="and" property = "property1">
+				e.property1 like '%$property1$%'
+			</isNotNull>
+			</dynamic>
+				order by
+			<isNotNull property = "order_by">
+				$order_by$ $order$, u.username asc
+			</isNotNull>
+			<isNull property = "order_by">
+				u.username $order$
+			</isNull>
+	</select>
+
+	<select id="findSampleUserDataRowsCount" resultClass="java.lang.Long">
+		select count(distinct u.username) as count 
+	   from user u 
+	   inner join user_role r on u.username = r.username
+	   left join user_extension e on u.username = e.username 		
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="username">
+				 u.username like '%$username$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="firstName">
+				u.first_name like '%$firstName$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="lastName">
+				u.last_name like '%$lastName$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="email">
+				u.email like '%$email$%'
+			</isNotNull>
+			<isNotNull prepend="and" property="status">
+				u.account_status = '$status$'
+			</isNotNull>
+			<isNotNull prepend="and" property = "roleCode">
+				r.code = '$roleCode$'
+			</isNotNull>
+			<isNotNull prepend="and" property = "property1">
+				e.property1 like '%$property1$%'
+			</isNotNull>						
+			<isNotNull prepend="and" property = "lastLogin">
+				u.last_login between #lastLogin# and #today#
+			</isNotNull>				
+		</dynamic>
+	</select>	
+	
+
+	<insert id="copyExtendedAttributesToHistory" parameterClass="java.util.HashMap">
+		insert into user_extension_history (history_id, username, property1, property2)			
+			select history_id = #historyId#, username, property1, property2
+			FROM user_extension WHERE username = #username#
+	</insert>
+	
+	<select id="getExtendedAttributesByUsername" parameterClass="java.util.HashMap" resultMap="userExtension">
+		select property1,property2 from user_extension
+		where username = #username#
+	</select>
+	
+	<insert id="insertExtendedAttributes">
+		insert into user_extension (username, property1, property2)
+		values(#username#, #attributes.property1#, #attributes.property2#)
+	</insert>
+	
+	<update id="updateExtendedAttributes">
+		update user_extension
+		set property1 = #attributes.property1#, property2 = #attributes.property2#
+		where username = #username#		
+	</update>
+	
+</sqlMap>

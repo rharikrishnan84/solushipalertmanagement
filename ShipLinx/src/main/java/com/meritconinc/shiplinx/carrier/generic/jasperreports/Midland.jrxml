@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Generic_BOL" pageWidth="288" pageHeight="432" columnWidth="248" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="520"/>
+	<parameter name="logo" class="java.lang.Object" isForPrompting="false"/>
+	<parameter name="barcodenumber" class="java.util.List" isForPrompting="false"/>
+	<parameter name="Order" class="com.meritconinc.shiplinx.model.ShippingOrder" isForPrompting="false"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="1" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="390" splitType="Stretch">
+			<staticText>
+				<reportElement x="13" y="55" width="42" height="13"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[From:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="10" y="138" width="225" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="13" y="142" width="46" height="13"/>
+				<textElement/>
+				<text><![CDATA[To:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="9" y="222" width="225" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="11" y="226" width="67" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SPECIAL INSTR.:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="240" width="14" height="13"/>
+				<textElement textAlignment="Center">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="116" y="240" width="37" height="13"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ORDER #:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="253" width="22" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DATE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="78" y="253" width="31" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PIECES:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="139" y="253" width="71" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL WEGIHT:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="8" y="269" width="225" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="24" y="374" width="55" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PKG ID# -]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="68" width="170" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getAbbreviationName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="155" width="170" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getAbbreviationName()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="33" y="253" width="45" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getScheduledShipDate()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="109" y="253" width="30" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{REPORT_COUNT}+" of "+((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getQuantity()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="210" y="253" width="25" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getQuotedWeight()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="153" y="240" width="55" height="13"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getReferenceCode()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="78" y="372" width="171" height="18"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[(String)$P{barcodenumber}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="82" width="170" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getAddress1()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="95" width="170" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getAddress2()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="109" width="226" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getCity()+" "+((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getProvinceCode()+" "+((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getPostalCode()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="168" width="170" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getAddress1()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="181" width="170" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getAddress2()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="194" width="230" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getCity()+" "+((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getProvinceCode()+" "+((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getPostalCode()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="79" y="226" width="104" height="14"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromInstructions()+"-"+((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToInstructions()]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame">
+				<reportElement x="63" y="1" width="100" height="35"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="57" y="36" width="178" height="19"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Carrier)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrier()).getName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="25" y="240" width="91" height="13"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getReferenceOne()+" "+((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getReferenceTwo()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="139" y="142" width="100" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Service)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getService()).getName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="13" y="271" width="100" height="26"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Service)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getService()).getCode()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="53" y="122" width="96" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getFromAddress()).getPhoneNo()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="53" y="207" width="95" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getPhoneNo()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="122" width="40" height="14"/>
+				<textElement/>
+				<text><![CDATA[Phone:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="207" width="40" height="13"/>
+				<textElement/>
+				<text><![CDATA[Phone:]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="15" y="297" width="190" height="76"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barWidth="0" barHeight="74">
+					<jr:codeExpression><![CDATA[(String)$P{barcodenumber}.get($V{REPORT_COUNT}-1)]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

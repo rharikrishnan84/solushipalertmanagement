@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InvoiceBillingException" language="groovy" pageWidth="300" pageHeight="55" columnWidth="300" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select height,width,length,dimmed_string,weight,billed_weight from package where order_id=$F{id}]]>
+	</queryString>
+	<field name="height" class="java.lang.Float"/>
+	<field name="width" class="java.lang.Float"/>
+	<field name="length" class="java.lang.Float"/>
+	<field name="dimmed_string" class="java.lang.String"/>
+	<field name="weight" class="java.lang.Float"/>
+	<field name="billed_weight" class="java.lang.Float"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="4" y="2" width="152" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Billing Exception"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="17" width="226" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<textField>
+				<reportElement x="3" y="2" width="165" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Quoted Dimensions: "+$F{height}+"X"+$F{width}+"X"+$F{length}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="2" width="107" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Quoted weight: "+$F{weight}+"lbs"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="16" width="165" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Actual Dimensions: "+$F{dimmed_string}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="16" width="107" height="14"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Actual Weight : "+$F{billed_weight}+"lbs"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

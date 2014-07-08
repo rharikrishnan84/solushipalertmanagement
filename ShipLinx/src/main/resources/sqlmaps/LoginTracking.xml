@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="LoginTracking">
+	<resultMap id="trackingResult" class="com.meritconinc.mmr.model.common.LoginStatusVO">
+		<result property="id" 					column="id" 				columnIndex="1"/>
+		<result property="loginStatus" 			column="login_status"		columnIndex="2"/>
+		<result property="userName" 			column="username"			columnIndex="3"/>
+		<result property="password" 			column="password"	 		columnIndex="4"/>
+		<result property="ipAddress" 			column="ip_address"			columnIndex="5"/>
+		<result property="hostName" 			column="host_name"	 		columnIndex="6"/>
+		<result property="createDate" 			column="create_date" 		columnIndex="7"/>
+	</resultMap>
+	
+	<!--  the sql statements for the DAO -->
+	<insert id="insertLoginTracking" parameterClass="com.meritconinc.mmr.model.common.LoginStatusVO">
+		insert into login_log 
+			(login_status, username, ip_address, host_name, create_date) 
+		values 
+			(#loginStatus#, #userName#, #ipAddress#, #hostName#, CURDATE()) 
+	</insert>
+
+</sqlMap> 

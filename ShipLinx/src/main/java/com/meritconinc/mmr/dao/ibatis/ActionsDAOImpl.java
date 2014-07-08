@@ -1,0 +1,20 @@
+package com.meritconinc.mmr.dao.ibatis;
+
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+
+import com.meritconinc.mmr.dao.ActionsDAO;
+import com.meritconinc.mmr.model.common.AuthorizedActionVO;
+
+public class ActionsDAOImpl extends SqlMapClientDaoSupport implements ActionsDAO {
+
+  /**
+   * Reads an action by action name.
+   * 
+   * @param action
+   * @return
+   */
+  public AuthorizedActionVO readAction(String action) {
+    return (AuthorizedActionVO) getSqlMapClientTemplate().queryForObject("readAction", action);
+  }
+
+}

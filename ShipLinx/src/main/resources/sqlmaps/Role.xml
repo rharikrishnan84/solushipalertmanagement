@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Roles">
+	<resultMap id="resultRole" class="com.meritconinc.mmr.model.common.RoleVO">
+		<result property="role" 			column="role" 			columnIndex="1"/>
+		<result property="description" 		column="msg_content" 	columnIndex="4"/>
+	</resultMap>
+	
+	<!--  the sql statements for the DAO -->
+	<select id="getRolesByUser" resultMap="resultRole">
+		SELECT role, description, display_order, b.msg_content
+		FROM role a, resourcebundle b
+		WHERE a.label_id = b.msg_id and b.locale = #locale#
+		AND a.role NOT IN ('base', 'public')		
+		AND (a.role != 'sysadmin' OR 
+			( select count(code) from user_role where username = #user# and code = 'sysadmin' ) = 1 )
+		AND b.is_fmk = (select min(cast(is_fmk as signed)) from resourcebundle 
+			 where msg_id = b.msg_id and locale=#locale#)
+		ORDER BY display_order			
+	</select>
+	
+	<select id="getRolesByType" resultMap="resultRole">
+		SELECT role, description, display_order, b.msg_content
+		FROM role a, resourcebundle b
+		WHERE a.label_id = b.msg_id and b.locale = #locale#
+		and a.role_type=#type#			
+		ORDER BY display_order			
+	</select> 
+	
+</sqlMap>

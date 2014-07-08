@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ExceptionInfo">
+	<resultMap id="result" class="com.meritconinc.mmr.model.common.ExceptionInfoVO">
+		<result property="id" column="id" columnIndex="1"/>
+		<result property="exceptionId" column="exception_id" columnIndex="2"/>
+		<result property="details" column="details" columnIndex="3"/>
+		<result property="updateDate" column="update_date" columnIndex="4"/>
+		<result property="username" column="username" columnIndex="5"/>
+	</resultMap>
+	 
+	<!--  the sql statements for the DAO -->
+	<insert id="insertExeceptionDetails">
+		insert into exception_info 
+			(EXCEPTION_ID, DETAILS, UPDATE_DATE, USERNAME) 
+		values 
+			(#exceptionId#, #details#, CURDATE(), #username#) 
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT @@IDENTITY AS 'Identity'
+		</selectKey>
+	</insert>
+
+	<sql id="findExceptions_fragment">
+		from exception_info
+		<dynamic prepend="WHERE">
+			<isNotEqual prepend="AND" property="id" compareValue="0">
+					( id = #id# )
+			</isNotEqual>			
+			<isNotNull prepend="AND" property="exceptionId">
+				( exception_id = #exceptionId# )
+			</isNotNull>
+			<isNotNull property="details">
+				<isNotEmpty property="details" prepend="AND">
+					( details like '%$details$%' )
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="AND" property="updateDate">
+				( update_date = #updateDate# )
+			</isNotNull>
+			<isNotNull prepend="AND" property="username">
+				( username = #username# )
+			</isNotNull>			
+		</dynamic>	
+	</sql>	
+	
+	<select id="findExceptionsCount" resultClass="int">
+		select count(id) as total 
+		<include refid="findExceptions_fragment"/>
+	</select>	
+	
+	<select id="findExceptions" resultMap="result">
+		select  id, exception_id, details, update_date, username
+		<include refid="findExceptions_fragment"/>
+		order by $orderBy$ $sortOrder$ limit $top$
+	</select>
+
+</sqlMap>

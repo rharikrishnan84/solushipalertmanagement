@@ -1,0 +1,21 @@
+package com.meritconinc.mmr.service.acegi;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
+
+/**
+ * 
+ * @author dernig2
+ *	Capture unsuccessfull login attempt
+ *  ACEGI configuration should specify SessionAwareAuthenticationProcessingFilter
+ *  in place of AuthenticationProcessingFilter
+ */
+public class SessionAwareAuthenticationProcessingFilter extends
+AuthenticationProcessingFilter {
+	public void onUnsuccessfulAuthentication(HttpServletRequest request, 
+			HttpServletResponse response, AuthenticationException  auth){
+		request.getSession().setAttribute("failed_user", (String)auth.getAuthentication().getPrincipal());
+	}
+} 

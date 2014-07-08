@@ -1,0 +1,1685 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<constant name="struts.action.excludePattern" value="/jcaptcha*,/services*"/>        
+	<package name="mmr-default" extends="tiles-default,json-default">
+		<interceptors>
+			<interceptor name="mmrBase" class="com.meritconinc.mmr.interceptor.MmrInterceptor" />
+			<interceptor name="mmrAjax" class="com.meritconinc.mmr.interceptor.MmrAjaxInterceptor" />
+			<interceptor name="mmrPopup" class="com.meritconinc.mmr.interceptor.MmrPopupInterceptor" />
+			<interceptor name="mmrTrack" class="com.meritconinc.mmr.interceptor.MmrTrackingInterceptor"/>
+			<interceptor name="redirectMessage" class="com.meritconinc.mmr.interceptor.RedirectMessageInterceptor" />
+			
+			<!-- Basic stack with custom exception handling-->
+			<interceptor-stack name="basicStack-mmr">
+				<interceptor-ref name="redirectMessage" />
+    			<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<!-- Basic stack with custom exception handling -->
+			<interceptor-stack name="basicAjaxStack-mmr">
+				<interceptor-ref name="redirectMessage" />
+				<interceptor-ref name="mmrAjax" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>			
+
+			<!-- Basic stack with custom exception handling -->
+			<interceptor-stack name="basicPopup-mmr">
+			    <interceptor-ref name="redirectMessage" />
+				<interceptor-ref name="mmrPopup" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>			
+
+			<!-- Mmr stack NO Tracking -->			
+			<interceptor-stack name="mmrStackTrackToken">
+				<interceptor-ref name="tokenSession" />
+				<interceptor-ref name="redirectMessage" />
+				<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<!-- Mmr stack with Tracking -->			
+			<interceptor-stack name="mmrStackTrack">
+			    <interceptor-ref name="redirectMessage" />
+				<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+		</interceptors>
+
+
+		<global-results>
+			<result type="redirectAction" name="login2">
+				<param name="actionName">logon.viewLogonSessionExp</param>
+				<param name="namespace">/</param>
+			</result>
+			<result type="redirectAction" name="accessdenied">
+				<param name="actionName">access.denied</param> 
+				<param name="namespace">/</param> 
+			</result>
+			<result type="redirectAction" name="termsOfUse">
+				<param name="actionName">viewTermsOfUse</param> 
+				<param name="namespace">/</param> 
+			</result>
+			<result name="passwordExpired" type="redirectAction">
+				<param name="actionName">viewChangePswd</param>
+				<param name="namespace">/secure</param>
+				<param name="displayMessage">true</param>
+			</result>
+			<result name="ajaxError">/mmr/jsp/error/ajaxError.jsp</result>
+			<result type="tiles" name="global_error">global_error</result>
+			<result type="tiles" name="popup_global_error">popup_global_error</result>
+			<result type="tiles" name="ajaxTimeOut">ajax.TimeOut</result>
+			<result type="tiles" name="popupTimeOut">popup.TimeOut</result>
+			<result type="tiles" name="error">error</result>
+			<result type="tiles" name="unhandle.error">error</result>
+			<result type="tiles" name="daoException">dao.error</result>
+		</global-results>
+	</package>
+	
+
+
+	<package name="publicArea" namespace="/" extends="mmr-default">
+		<default-interceptor-ref name="basicStack-mmr" />
+
+		<action name="logon.*" method="{1}" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+			<result name="login" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+			
+			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+		</action>
+		
+		<action name="viewLogon" method="viewLogon" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+
+		<action name="forgotPassword" method="viewForgotPassword" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/forgotPassword.jsp</result>
+		</action>
+		<action name="doForgotPassword" method="doForgotPassword" class="logonAction">
+ 			<result name="input">/mmr/jsp/welcome/forgotPassword.jsp</result>
+			<result name="success">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+		
+		<action name="logonFailed" method="viewLogonFailed" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+		</action>
+		
+		<action name="ship" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">ship</result>
+		</action>
+		
+		<action name="signup" method="signup" class="CustomerManagerAction">
+			<result name="input">${signupJSP}</result>
+		</action>
+ 		<action name="doSignup" method="doSignup" class="CustomerManagerAction">
+ 			<result name="input">${signupJSP}</result>
+			<result name="success">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+ 		<action name="doSignupNoCC" method="doSignupNoCC" class="CustomerManagerAction">
+ 			<result name="input">${signupJSP}</result>
+			<result name="success">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+ 		
+		<action name="moreNews" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">moreNews</result>
+		</action>
+		
+		<action name="track" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">track</result>
+		</action>
+		
+		<action name="manage" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">manage</result>
+		</action>
+		
+		<action name="businessSolution" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">businessSolution</result>
+		</action>
+		
+		<action name="freight" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">freight</result>
+		</action>
+		
+		<action name="loginPage" method="otherDetail" class="logonAction">
+			<result name="success">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+		
+		<action name="expedited" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">expedited</result>
+		</action>
+		
+		<action name="officeService" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">officeService</result>
+		</action>
+		
+		<action name="findLocation" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">findLocation</result>
+		</action>
+		
+		<action name="customerSupport" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">customerSupport</result>
+		</action>
+		
+		<action name="shiplinxLocation" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">shiplinxLocation</result>
+		</action>
+		
+		<action name="trackLocation" method="otherDetail" class="logonAction">
+			<result type="tiles" name="success">trackLocation</result>
+		</action>
+
+        <!-- COMMON ACTIONS -->
+        <action name="setLanguage" class="com.meritconinc.mmr.action.common.SetLanguage">
+			<result type="redirectAction" name="success">
+				<param name="actionName">welcome</param>
+				<param name="namespace">/</param>
+			</result>
+		</action>
+        
+        <action name="highLightMenu" class="menuAction">
+			<result name="success" type="redirect">${url}</result>
+		</action>
+                  <action name="helpMenu" method="help" class="menuAction">
+			            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+		</action>
+        
+		<action name="access.denied" class="com.meritconinc.mmr.action.common.GenericAction">
+			<result name="success" type="tiles">access.denied</result>
+		</action>
+
+		<action name="ajaxError" class="com.meritconinc.mmr.action.common.AjaxErrorAction">
+			<result type="tiles">global_error</result>
+		</action>
+		
+		<action name="submitAccessRequest" class="requestAccessAction">
+			<result type="tiles" name="success">request.access.confirmation</result>
+			<result type="tiles" name="input">request.access</result>
+		</action>
+
+		<action name="request.access" method="input" class="requestAccessAction">
+			<result type="tiles" name="input">request.access</result>
+		</action>
+		
+        
+        
+      
+        
+         <action name="distribution.list" method="distributionList" class="AddressbookAction">
+			<result type="tiles">search.distributionList</result>
+         </action>
+         <action name="upload.distribution.init" method="uploadInit" class="AddressbookAction">
+			<result type="tiles">upload.distributionList</result>
+         </action>
+         <action name="upload.distribution.list" method="upload" class="AddressbookAction">
+			<result type="tiles" name="input">upload.distributionList</result>		
+            <result type="redirectAction" name="success">distribution.list</result>
+			
+         </action>
+        <action name="delete.distributionList" method="deleteDistributionList" class="AddressbookAction">
+        	<result type="tiles" name="input">upload.distributionList</result>	
+            <result type="redirectAction" name="success">distribution.list</result>
+        </action>
+        
+        <action name="set.shippingAddress" method="setShippingAddress" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+        </action>
+        
+        
+        
+         <action name="search.fromAddress" method="searchFromAddress" class="shipmentAction">
+            <result type="tiles" name="success">address.list</result>
+        </action>
+         <action name="search.toAddress" method="searchToAddress" class="shipmentAction">
+            <result type="tiles" name="success">address.list</result>
+        </action>
+        
+        
+        
+         <action name="shipment.additionalservices" method="additionalServices" class="shipmentAction">
+         	<result type="tiles" name="input">new.shipment</result>
+            <result name="success">/mmr/jsp/shipping/additionalServices_ENV.jsp</result>
+            <result name="SUCCESS_PAK">/mmr/jsp/shipping/additionalServices_PAK.jsp</result>
+            <result name="SUCCESS_PACKAGE">/mmr/jsp/shipping/additionalServices_PACKAGE.jsp</result>
+            <result name="SUCCESS_PALLATE">/mmr/jsp/shipping/additionalServices_PALLATE.jsp</result>
+        </action>
+        
+         <action name="stageOne" method="stageOne" class="shipmentAction">
+        	<result type="tiles" name="success">new.shipment</result>
+         </action>
+         
+          <action name="backToPackageInformation" method="backToPackageInformation" class="shipmentAction">
+        	<result type="tiles" name="success">order.package</result>
+         </action>
+         
+         <!-- 
+         <action name="packageInformation" method="packageInformation" class="shipmentAction">
+         	<result type="tiles" name="input">new.shipment</result>
+        	<result type="tiles" name="success">order.package</result>
+        	<result type="tiles" name="DIMENSSION_PAGE">order.dimenssion</result>
+         </action>
+         
+        <action name="stageTwo" method="stageTwo" class="shipmentAction">
+        	<result type="tiles" name="input">order.package</result>
+            <result type="redirectAction" name="success">shipment.stageThree</result>
+        	<result type="tiles" name="DIMENSSION_PAGE">order.dimenssion</result>
+        	<result type="tiles" name="STAGE_ONE">new.shipment</result>
+        </action>
+         -->
+         
+         <action name="createAddress" method="save" class="AddressbookAction">
+			<result type="tiles" name="input">address</result>		
+            <result type="redirectAction" name="success">addressbook.list.req</result>
+        </action>
+        <action name="new.address" class="AddressbookAction">
+            <result type="tiles" name="success">address</result>
+        </action>
+        
+        <action name="delete.address" method="delete" class="AddressbookAction">
+            <result type="redirectAction" name="success">addressbook.list.req</result>
+        </action>
+         
+        <action name="edit.address" method="edit" class="AddressbookAction">
+            <result type="tiles" name="success">address</result>
+        </action>
+        
+        <!-- 
+        <action name="new.customer" method="init" class="CustomerManagerAction">
+            <result type="tiles" name="success">customer</result>
+       	</action>
+      
+       	<action name="createCustomer" method="save" class="CustomerManagerAction">
+       		<result type="tiles" name="input">customer</result>
+       		<result type="redirectAction" name="success">new.customer</result>
+        </action>
+        
+	  	<action name="list.customer" class="CustomerManagerAction">
+       		<result type="tiles" name="success">searchCustomer</result>
+        </action>
+        
+        <action name="searchCustomer" method="list" class="CustomerManagerAction">
+       		<result type="tiles" name="success">searchCustomer</result>
+        </action>
+         -->
+        
+        <action name="delete.address.action" method="delete" class="AddressbookAction">
+            <result type="redirectAction" name="success">addressbook.list.req</result>
+        </action>
+    
+         <action name="customer.listProvince" method="listProvince" class="CustomerManagerAction">
+            <result name="success">/mmr/jsp/admin/customerProvinceList.jsp</result>
+        </action>
+        <action name="pickup.listProvince" method="listPickupProvience" class="shipmentAction">
+        	 <result name="success">/mmr/jsp/admin/pickupProvinceList.jsp</result>
+        </action>
+        <action name="address.listProvience" method="listProvience" class="AddressbookAction">
+            <result name="success">/mmr/jsp/admin/provienceList.jsp</result>
+        </action>
+        <action name="shipFrom.listFromProvience" method="listFromProvience" class="shipmentAction">
+            <result name="success">/mmr/jsp/admin/shippingFromProvienceList.jsp</result>
+        </action>
+        <action name="shipTo.listToProvience" method="listToProvience" class="shipmentAction">
+            <result name="success">/mmr/jsp/admin/shippingToProvienceList.jsp</result>
+            <result name="success2">/mmr/jsp/shipping/customsInvoiceBrokerProvince.jsp</result>
+            <result name="success3">/mmr/jsp/shipping/customsInvoiceBillToProvince.jsp</result>
+           	<result name="success4">/mmr/jsp/shipping/customsInvoiceBuyerProvince.jsp</result>
+        </action>
+        <action name="getAddressSuggest" method="getAddressSuggest" class="shipmentAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+        </action>
+        
+         <action name="getAddressSuggestCustomer" method="getAddressSuggest" class="CustomerManagerAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+        </action>
+        
+         <action name="getAddressSuggestNewAddress" method="getAddressSuggest" class="AddressbookAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+        </action>
+        
+        <action name="logout" method="logout" class="logonAction">
+            <result name="success">/mmr/jsp/welcome/login.jsp</result>
+            <result type="redirectAction" name="return">admin/searchcustomer</result>  
+             <result type="redirectAction" name="return2">
+				<param name="actionName">searchuser</param>
+				<param name="namespace">/admin</param>
+			
+			</result>         
+ 			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+        </action>
+        
+        <action name="search.address" method="searchAddress" class="AddressbookAction">
+           <!--  <result name="success">/mmr/jsp/admin/addressList.jsp</result>--> 
+           	<result type="tiles" name="success">search.addressbook</result>
+        </action>
+         <action name="addressbook.list.req" method="list" class="AddressbookAction">
+			<result type="tiles">search.addressbook</result>
+         </action>
+        <action name="search.address2" method="search" class="AddressbookAction">
+			 <result type="tiles" name="success">search.addressbook</result>
+         </action>
+         <action name="upload.addressbook" method="upload" class="AddressbookAction">
+            <result type="tiles" name="success">upload.address</result>
+        </action>        
+        <action name="uploadaddressbook" method="upload" class="AddressbookAction">
+            <result type="tiles" name="success">upload.address</result>
+            <result type="tiles" name="input">upload.address</result>
+        </action>
+        
+		<!-- 
+		<action name="viewChangePswd" method="viewChangePswd" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+        </action>
+
+		<action name="changePassword" method="changePassword" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+            <result type="tiles" name="success">change.password.complete</result>
+        </action>
+         -->
+                 
+		<!-- 
+		<action name="viewTermsOfUse" method="viewTermsOfUse" class="com.meritconinc.mmr.action.security.TermsOfUseAction">
+            <result type="tiles" name="input">terms.of.use</result>		
+        </action>        
+
+		<action name="termsOfUse" class="com.meritconinc.mmr.action.security.TermsOfUseAction">
+			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+            <result type="tiles" name="input">terms.of.use</result>		
+        </action>        
+		-->
+		
+        <!-- WELCOME TAB -->
+		<action name="welcome" class="com.meritconinc.mmr.action.welcome.WelcomeAction">
+			<result type="tiles">welcome.index</result>
+		</action>
+
+		<action name="links" class="com.meritconinc.mmr.action.welcome.LinksAction">
+			<result type="tiles">page.links</result>
+		</action>
+		
+		<!-- ABOUT US TAB -->
+		<action name="aboutUs" class="com.meritconinc.mmr.action.aboutus.AboutUsAction">
+			<result type="tiles">aboutus.index</result>
+		</action>
+
+		<action name="aboutUs.Contact" method="contactUs" class="feedbackAction">
+			<result name="contactUs" type="tiles">aboutus.contact</result>
+		</action>
+
+		<action name="viewSiteMap" class="com.meritconinc.mmr.action.aboutus.SiteMapAction">
+			<result type="tiles">aboutus.siteMap</result>
+		</action>
+
+		<action name="viewDisclaimer" class="com.meritconinc.mmr.action.aboutus.DisclaimerAction">
+			<result type="tiles">aboutus.disclaimer</result>
+		</action>
+
+		<action name="saveFeedBack" class="feedbackAction">
+			<result name="success" type="tiles">aboutus.contact</result>
+		</action>
+		
+        <!-- GET RATES  -->
+        <action name="getRates" class="com.meritconinc.mmr.action.shipping.RatingAction">            
+            <result type="tiles" name="success">shipping.getRates</result>
+        </action>
+
+<!-- CUSTOMER INFO -->		
+
+       <action name="customer.info" method="init" class="CustomerInfoManagerAction">
+            <result type="tiles" name="success">customer.info</result>
+       </action>
+
+       <action name="customer.info.edit" method="edit" class="CustomerInfoManagerAction">
+       		<result type="tiles" name="input">customer.info</result>
+            <result type="redirectAction" name="success">customer.info</result>
+       </action>
+		<!-- 
+       <action name="getcustomerinfo" method="info" class="CustomerManagerAction">
+       		<result type="tiles" name="success">customer</result>
+        </action>
+
+		<action name="getCustomerAccountInfo" method="getAccountInfo" class="CustomerManagerAction">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>
+         
+        
+        <action name="carrierAccount">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>
+        
+        <action name="saveCarrierAccount" method="saveCarrierAccount" class="CustomerManagerAction">
+        	<result type="tiles" name="input">customer.account.info</result>
+       		<result type="redirectAction" name="success">getCustomerAccountInfo</result>
+       		<result  type="tiles" name="SUCCESS_EDIT">customer.account.info</result>
+        </action>
+        
+        <action name="editCarrierAccount" method="editCarrierAccount" class="CustomerManagerAction">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>
+        
+        <action name="deleteCarrierAccount" method="deleteCarrierAccount" class="CustomerManagerAction">
+       		<result type="redirectAction" name="success">getCustomerAccountInfo</result>
+        </action>
+        -->
+
+        <action name="close.window.status" class="com.meritconinc.shiplinx.action.CloseWindowAction">
+       		<result name="success">/mmr/jsp/common/result.jsp</result>
+        </action>
+
+         <action name="select.customer.to.address" method="setShippingAddress" class="shipmentAction">
+			<result type="tiles" name="success">new.shipment</result>
+        </action>
+		
+		
+		<action name="track.shipment" method="trackShipment" class="shipmentAction">
+       		<result type="redirect" name="success">${nextAction}</result>
+        </action>
+
+		<action name="track.shipment.detail" method="trackShipmentDetail" class="shipmentAction">
+       		<result name="success">/mmr/jsp/shipping/shipmentDetail.jsp</result>
+        </action>
+
+         <action name="carrier.services.list" method="listCarrierServices" class="shipmentAction">
+            <result name="success">/mmr/jsp/shipping/carrier_service_list.jsp</result>
+            <result name="success2">/mmr/jsp/shipping/carrier_service_list_quickship.jsp</result>
+        </action>
+
+         <action name="search.track.shipment" method="listSearchedShipment" class="shipmentAction">
+            <result name="input">trackShipment</result>
+            <result type="tiles" name="success">trackShipment</result>
+        </action>
+        <action name="edit.shipment" method="editShipment" class="shipmentAction">
+            <result type="redirectAction" name="success">new.shipment?method=update</result>
+        </action>	      
+         <action name="delete.shipment" method="cancelShipment" class="shipmentAction">
+         	<result type="tiles" name="input">cancelShipment</result>
+            <result type="redirectAction" name="success">cancel.shipment</result>
+        </action>
+		
+		<!-- 
+		 <action name="shipment.stageThree.quote" method="stageThree" class="shipmentAction">
+         	<result type="tiles" name="input">order.dimenssion.quote</result>
+            <result type="tiles" name="success">order.rates.quote</result>
+            <result type="tiles" name="STAGE_ONE">quoteShipment</result>
+            <result type="tiles" name="PACKAGE_INFO">order.package</result>
+        </action>
+		
+		 <action name="new.quote.info" method="packageInformationQuote" class="shipmentAction">
+		   <result name="input">quoteShipment</result>
+           <result type="redirectAction" name="success">shipment.stageThree.quote</result>
+           <result type="tiles" name="DIMENSSION_PAGE">order.dimenssion.quote</result>
+        </action>
+		
+		
+		 <action name="stageTwoQuote" method="stageTwo" class="shipmentAction">
+        	<result type="tiles" name="input">quoteShipment</result>
+            <result type="redirectAction" name="success">shipment.stageThree.quote</result>
+        	<result type="tiles" name="DIMENSSION_PAGE">order.dimenssion.quote</result>
+        	<result type="tiles" name="STAGE_ONE">quoteShipment</result>
+        </action>
+ -->		
+		<!-- GENERAL ACTIONS RELATED TO SERVICES, INVOICES, CUSTOMERS, ETC  -->
+       		
+        <action name="markup.listService" method="listService" class="markupManagerAction">
+            <result name="success">/mmr/jsp/shipping/listService.jsp</result>
+             <result name="success2">/mmr/jsp/shipping/listPickupService.jsp</result>
+       	</action>  
+
+		<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+        
+    
+
+	</package>
+
+
+	<package name="secureArea" namespace="/secure" extends="mmr-default">
+		<default-interceptor-ref name="mmrStackTrack" />		
+		
+		<action name="changePassword" method="changePassword" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+            <result type="tiles" name="success">change.password.complete</result>
+        </action>
+
+		<action name="viewChangePswd" method="viewChangePswd" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+        </action>
+        
+		<action name="viewUpdateProfile" method="viewUpdateProfile" class="userAdminAction">
+            <result type="tiles" name="success">update.profile</result>		
+        </action>
+
+		<action name="updateProfile" method="updateProfile" class="userAdminAction">
+            <result type="tiles" name="input">update.profile</result>		
+            <result type="tiles" name="success">update.profile.complete</result>
+        </action>
+
+		<action name="querytool" method="init" class="queryAction">
+			<result type="tiles" name="success">query.tool</result>
+		</action>
+
+		<action name="querytool!*" method="{1}" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+			<result name="queryParameters">/mmr/jsp/query/querytool-parameters.jsp</result>
+			<result name="queryResult">/mmr/jsp/query/querytool-result.jsp</result>
+		</action>
+
+		<action name="adminQueryTool" method="init" class="adminQueryAction">
+			<result type="tiles" name="success">query.tool.admin</result>
+			<result type="tiles" name="error2">query.tool.admin</result>
+		</action>
+
+		<action name="adminQueryTool!runQuery" method="runQuery" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+			<result type="tiles" name="queryParameters">query.tool.admin.runquery</result>
+			<result name="queryResult">/mmr/jsp/query/querytool-result.jsp</result>
+		</action>
+
+		<action name="adminQueryTool!showQueryParameters" method="showQueryParameters" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />						
+			<result type="tiles" name="input">query.tool.admin.runquery</result>						
+			<result type="tiles" name="queryParameters">query.tool.admin.runquery</result>			
+		</action>
+		
+		<action name="adminQueryTool!*" method="{1}" class="adminQueryAction">
+			<result type="tiles" name="queryDetail">query.tool.edit</result>
+			<result type="tiles" name="input">query.tool.edit</result>
+			<result type="tiles" name="success">query.tool.admin</result>
+		</action>
+
+						   		
+
+		<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+        
+	</package>
+	
+	
+	
+	
+    
+
+	<package name="adminArea" namespace="/admin" extends="mmr-default">
+		<default-interceptor-ref name="mmrStackTrack" />		
+		<action name="distribution.list" class="distributionListAction">
+            <result type="tiles" name="success">distribution.list</result>
+        </action>
+		
+		
+		
+		<action name="property.list" method="list" class="propertyListAction">
+			<result type="tiles" name="success">property.list</result>
+		</action>
+
+        <action name="new.shipment" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+            <result type="tiles" name="success2">warehouse.order</result>
+        </action>
+         <action name="dimensionInformation" method="dimensionInformation" class="shipmentAction">
+         	<interceptor-ref name="basicAjaxStack-mmr" />
+        	<result name="success">/mmr/jsp/shipping/packageDimention.jsp</result>
+         </action>
+        <action name="shipment.stageThree" method="stageThree" class="shipmentAction">
+			<result type="tiles" name="input">new.shipment</result>
+            <result type="tiles" name="success">order.rates</result>
+             <result type="tiles" name="success2">viewShipment</result>
+             <result type="redirectAction" name="ship">shipment.save.2</result>
+        </action>
+        <action name="shipment.stageThree.quote" method="stageThree" class="shipmentAction">
+         	<result type="tiles" name="input">quoteShipment</result>
+            <result type="tiles" name="success">order.rates</result>
+             <result type="tiles" name="success2">viewShipment</result>
+        </action>
+        <action name="shipment.stageThree.rates.mail" method="sendEmailNotificationOfRates" class="shipmentAction">
+         	<result type="tiles" name="input">quoteShipment</result>
+            <result type="tiles" name="success">order.rates</result>
+        </action>
+        
+        
+        <action name="shipment.verifyPickup" class="shipmentAction" method="relevantPickupHistory">
+         <result name="success">/mmr/jsp/shipping/pickupCheckSuccess.jsp</result>
+         <result name="error">/mmr/jsp/shipping/pickupCheckError.jsp</result>
+        </action>
+
+
+		<action name="shipment.save" method="save" class="shipmentAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+         	<result type="tiles" name="input">order.rates</result>
+            <result type="redirectAction" name="success">
+              <param name="actionName">view.shipment.action</param>
+              <param name="namespace">/admin</param>
+              <param name="viewShipmentId">${selectedOrder.id}</param>
+           </result>
+           <result type="stream" name="success1">
+        		<param name="inputName">inputStream</param>
+				<param name="bufferSize">1024</param> 
+				<param name="contentType">application/pdf</param>
+        	</result>
+            <result type="tiles" name="error">new.shipment</result>
+        </action>
+
+		<!-- Without token interceptor as it does not seem to be working with redirect coming from new.shipment page -->
+		<action name="shipment.save.2" method="save" class="shipmentAction">
+         	<result type="tiles" name="input">order.rates</result>
+            <result type="tiles" name="success">viewShipment</result>
+            <result type="tiles" name="error">new.shipment</result>
+        </action>
+        
+        <action name="shipment.to.warehouse" method="submitToWarehouse" class="shipmentAction">
+        	<result type="tiles" name="success">viewShipment</result>
+        	<result type="tiles" name="failure">warehouse.order</result>
+        </action>
+        <action name="addProductInformation" method="addProductDetails" class="shipmentAction">
+        	<result name="success">/mmr/jsp/shipping/ProductDetails.jsp</result>
+         </action>
+         <action name="add.product.order" method="addProductToShipment" class="shipmentAction">
+         	<result name="success">/mmr/jsp/shipping/added_products_shipment.jsp</result>
+         	<result name="success2">/mmr/jsp/shipping/added_products_shipment_blank.jsp</result>
+         </action>
+         <action name="delete.product.order" method="deleteProductFromShipment" class="shipmentAction">
+         	<result name="success">/mmr/jsp/shipping/added_products_shipment.jsp</result>
+         </action>
+         <action name="show.product.details" method="showProductSummary" class="shipmentAction">
+         	<result name="success">/mmr/jsp/shipping/product_summary.jsp</result>
+         </action>
+          <action name="delete.customsinvoice.product" method="deleteProductDetails" class="shipmentAction">
+        	<result name="success">/mmr/jsp/shipping/ProductDetails.jsp</result>
+         </action>
+         <action name="setBillToAddress" method="setBillToAdd" class="shipmentAction">
+         	<result name="success">/mmr/jsp/shipping/CustomsInvoice_BillToAddress.jsp</result>
+         </action>         
+         <action name="getShippingLabel" method="getShippingLabel" class="shipmentAction">
+        	<result type="stream" name="success">
+        		<param name="inputName">inputStream</param>
+				<param name="bufferSize">1024</param> 
+				<param name="contentType">application/pdf</param>
+        	</result>
+         </action>
+         <action name="getproductxml" class="productManagerAction">
+        	<result type="stream" name="success">
+        		<param name="inputName">inputStream</param>
+				<param name="bufferSize">1024</param> 
+				<param name="contentType">application/xml</param>
+        	</result>
+         </action>
+          <action name="cancelShipment" method="cancelShipment" class="shipmentAction">
+            <result name="success" type="tiles">viewShipment</result>
+            <result type="redirectAction" name="input">new.shipment</result>
+        </action>
+        
+        <action name="backToShipment" method="backToShipment" class="shipmentAction">
+        	<result type="tiles" name="success">new.shipment</result>
+        	<result type="tiles" name="successQuote">quoteShipment</result>
+         </action>
+         <action name="selectShippingAddress" method="setShippingAddress" class="shipmentAction">
+            <!-- <result name="success">/mmr/jsp/shipping/order_SelectedFromAddress.jsp</result> -->
+			<!--  <result type="tiles" name="success">new.shipment</result>-->
+			<result name="success1">/mmr/jsp/shipping/fromAddress_inner.jsp</result>
+			<result name="success2">/mmr/jsp/shipping/toAddress_inner.jsp</result>
+			<result name="success3">/mmr/jsp/admin/pickupAddress_inner.jsp</result>
+			<result name="success4">/mmr/jsp/shipping/customsBrokerInformations.jsp</result>
+			<result name="success5">/mmr/jsp/shipping/customsBuyerInformations.jsp</result>
+			<result name="success6">/mmr/jsp/admin/pickup.jsp</result>
+        </action>
+		<action name="new.quote" method="newQuote" class="shipmentAction">
+		 	<result type="tiles" name="success">quoteShipment</result>           
+        </action>
+		<action name="processPayment" method="processPayment" class="shipmentAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+		 	<result type="tiles" name="success">viewShipment</result>           
+		 	<result type="tiles" name="input">viewShipment</result>      
+		 	<result type="tiles" name="error">new.shipment</result>     
+        </action>
+		
+        <action name="search.shipment" method="searchShipment" class="shipmentAction">
+            <result name="input">searchShipment</result>
+            <result type="tiles" name="success">searchShipment</result>
+        </action>	
+        <action name="list.shipment" method="listShipment" class="shipmentAction">
+           <!--  <result name="success">/mmr/jsp/shipping/list_shipment.jsp</result>--> 
+           <result type="tiles" name="success">searchShipment</result>
+        </action>       
+        
+		<action name="shipment.download" method="printShipment" class="shipmentAction">
+		    <result type="redirectAction" name="success">list.shipment</result>
+		</action>
+		
+        <action name="product.download" method="printproducts" class="productManagerAction">
+		    
+		    <result type="tiles" name="success">searchProduct</result>
+		</action>
+		 <action name="comm.download" method="commissionprint" class="invoiceManagerAction">
+		    <result type="redirectAction" name="success">commReport</result>
+		</action>
+         <action name="sales.download" method="salesprint" class="invoiceManagerAction">
+		    <result type="redirectAction" name="success">salesReport</result>
+		</action>
+		<action name="customer.download" method="printcustomer" class="CustomerManagerAction">
+		    <result type="redirectAction" name="success">searchCustomer</result>
+		</action>
+		 
+        <action name="list.reference.order" method="listReferenceShipments" class="shipmentAction">
+        	<result type="tiles" name="success">new.shipment</result>
+        </action>  
+        <action name="repeat.order" method="repeatOrder" class="shipmentAction">
+        	<result type="tiles" name="success">new.shipment</result>
+        </action>
+        <action name="save.shipment" method="saveShipment" class="shipmentAction">
+            <result type="tiles" name="success">searchShipment</result>
+        </action>             
+        <action name="autolinked.shipment" method="autolinkedShipment" class="shipmentAction">
+            <result type="tiles" name="success">autolinkedShipment</result>
+        </action>
+        <action name="unlinked.shipment" method="unlinkedShipment" class="shipmentAction">
+            <result type="tiles" name="success">unlinkedShipment</result>
+        </action>
+        <action name="batch.shipment" method="batchShipment" class="shipmentAction">
+            <result type="tiles" name="success">batchShipment</result>
+        </action>        
+        <action name="batch.shipment.upload.file" method="batchShipmentFileUpload" class="shipmentAction">
+            <result type="tiles" name="success">batchShipment</result>
+       	</action>       	
+        <action name="batch.create.shipments" method="createBatchShipments" class="shipmentAction">
+            <result type="tiles" name="success">batchShipment</result>
+       	</action>
+         <action name="batch.process.shipments" method="processBatchShipments" class="shipmentAction">
+            <result type="tiles" name="success">batchShipment</result>
+       	</action>
+       	      	        
+        <action name="assigncustomer.shipment" method="assignCustomerToUnlinkedShipments" class="shipmentAction">
+            <result type="tiles" name="success">unlinkedShipment</result>
+        </action>
+        <action name="reassigncustomer.shipment" method="reassignCustomerToAutolinkedShipments" class="shipmentAction">
+            <result type="tiles" name="success">autolinkedShipment</result>
+        </action>  
+        <action name="accept.shipment" method="acceptShipments" class="shipmentAction">
+            <result type="tiles" name="success">autolinkedShipment</result>
+        </action>              
+        <action name="shipment.setcustomer" method="setCustomer" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+        </action> 
+        
+       <action name="shipment.searchfrom" method="searchfrom" class="shipmentAction">
+           <result name="success">/mmr/jsp/shipping/fromaddress.jsp</result>
+        </action> 
+        
+        <action name="shipment.searchto" method="searchto" class="shipmentAction">
+            <result name="success">/mmr/jsp/shipping/toaddress.jsp</result>
+        </action> 
+                     
+        <action name="view.shipment" method="viewShipment" class="shipmentAction">
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>
+        <action name="download.viewshipment" method="viewShipment" class="shipmentAction">
+    <result type="tiles" name="success">viewShipment</result>
+  </action>
+        
+        <action name="add.actual.charge.shipment" method="addActualCharge" class="shipmentAction">
+ 			<interceptor-ref name="mmrStackTrackToken" />
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>    
+        <action name="add.quoted.charge.shipment" method="addQuotedCharge" class="shipmentAction">
+ 			<interceptor-ref name="mmrStackTrackToken" />
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>         
+        <action name="update.actual.charge.shipment" method="updateActualCharge" class="shipmentAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>   
+        <action name="update.quoted.charge.shipment" method="updateQuotedCharge" class="shipmentAction">
+ 			<interceptor-ref name="mmrStackTrackToken" />
+               <result type="redirectAction" name="success">
+              <param name="actionName">view.shipment.action</param>
+              <param name="namespace">/admin</param>
+              <param name="viewShipmentId">${selectedOrder.id}</param>
+            </result>
+
+        </action>   
+        <action name="delete.quoted.charge.shipment" method="deleteCharge" class="shipmentAction">
+         <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+
+        </action>
+        
+        <action name="delete.actual.charge.shipment" method="deleteCharge" class="shipmentAction">
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>  
+        <action name="copy.actual.charge" method="copyToActualCharges" class="shipmentAction">
+            <result type="redirectAction" name="success">
+              <param name="actionName">view.shipment.action</param>
+              <param name="namespace">/admin</param>
+              <param name="viewShipmentId">${selectedOrder.id}</param>
+            </result>
+        </action>
+        <action name="clear.exception.status" method="clearExceptionStatus" class="shipmentAction">
+            <result type="tiles" name="success">viewShipment</result>
+            <result name="input">viewShipment</result>
+        </action>        
+        <action name="process.shipment" method="processShipment" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+        </action>  
+        <action name="shipment.update" method="updateShipment" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+            <result type="tiles" name="input">new.shipment</result>
+        </action>     
+            
+         <action name="save.current.shipment" method="saveCurrentShipment" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+            <result type="tiles" name="input">new.shipment</result>
+        </action> 
+               
+        <action name="goToWarehouseOrder" class="shipmentAction">
+        	<result type="tiles" name="success">warehouse.order</result>
+        	<result type="tiles" name="success2">warehouse.order</result>
+        </action>     
+        
+        <action name="updateShipmentStatus" method="updateOrderStatus" class="shipmentAction">
+       <!--  <result type="tiles" name="success">searchShipment</result>-->
+        	<result name="success">/mmr/jsp/shipping/ajax_status.jsp</result>        	
+        </action>  
+        
+         <action name="add.comment.info" method="updateOrderStatus" class="shipmentAction">
+        	<result name="success">/mmr/jsp/shipping/add_info_shipping_inner.jsp</result> 
+        </action>     
+        
+        <action name="search.pickups" method="searchPickups" class="shipmentAction">
+        	<result name="success" type="tiles">searchpickups</result>
+        </action>  
+        
+        <action name="createPickup" method="createPickup" class="shipmentAction">
+        	<result name="success" type="tiles">searchpickups</result>
+        	<result name="input" type="tiles">createpickup</result>
+        </action>
+        
+         <action name="cancelPickup" method="cancelPickup" class="shipmentAction">
+        	<result name="success" type="tiles">searchpickups</result>
+        </action>    
+        
+        <action name="list.pickups" method="listPickups" class="shipmentAction">
+        	<result name="success" type="tiles">searchpickups</result>
+        </action> 
+        
+        <action name="gotoCreate.pickup" method="goToCreatePickup" class="shipmentAction">
+        	<result name="success" type="tiles">createpickup</result>
+        </action>           
+                        		
+		<!-- ADMIN TAB -->
+		<action name="user.list.req" method="list" class="userListAction">
+		    <result type="tiles" name="success">search.user</result>
+        </action>
+               
+		<action name="user.list.active" method="list" class="userListAction">
+           	<param name="criteria.status">A</param>
+           	<param name="resetCurrPage">true</param>
+            <result type="tiles" name="success">user.list</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list.admin" method="list" class="userListAction">
+           	<param name="criteria.status">A</param>
+           	<param name="criteria.roleCode">fmk_admin</param>
+           	<param name="resetCurrPage">true</param>
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list" method="list" class="userListAction">
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+        
+         <action name="checkRegiteredUser" method="checkRegiteredUser" class="userListAction">
+            <result name="success">/mmr/jsp/admin/userExist.jsp</result>
+        </action>
+       
+
+		<action name="user.list!*" method="{1}" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />						
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="sort.user.list" method="list" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />				
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="sort.user.list!*" method="{1}" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />				
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="back.to.list" method="back" class="userListAction">
+			<result name="success" type="redirectAction">searchuser</result>
+        </action>
+        
+		<action name="view.user" method="view" class="userAdminAction">
+            <result type="tiles" name="success">user</result>
+        </action>
+        
+		<action name="saveUser" method="save" class="userAdminAction">
+            <result type="tiles" name="input">user</result>
+            <result type="tiles" name="success">user</result>
+        </action>
+
+		<action name="new.user" method="newUser" class="userListAction">
+            <result type="tiles" name="success">user</result>
+        </action>
+
+		<action name="createUser" method="save" class="userListAction">
+			<result type="tiles" name="input">user</result>		
+            <result type="redirectAction" name="success">searchuser</result>
+        </action>
+
+		<action name="delete.user" method="delete" class="userListAction">
+            <result type="redirectAction" name="success">back.to.list</result>
+        </action>
+        
+        <action name="edit.user" method="edit" class="userListAction">
+            <result type="tiles" name="success">user</result>
+        </action>
+
+		<action name="viewSearch.user" method="goToSearch" class="userListAction">
+           	<param name="resetCurrPage">true</param>		
+            <result type="tiles" name="input">search.user</result>
+        </action>
+
+		<action name="search.user" method="list" class="userListAction">
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="exception.list" method="list" class="exceptionListAction">
+			<result type="tiles" name="success">exception.list</result>
+			<result name="sortlist">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="exception.list!*" method="{1}" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="sort.exception.list" method="list" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="sort.exception.list!*" method="{1}" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result type="tiles" name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="property.list" method="list" class="propertyListAction">
+			<result type="tiles" name="success">property.list</result>
+		</action>
+
+		<action name="save.property" method="saveProperty" class="propertyListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />										
+			<result name="success">/mmr/jsp/common/action_messages.jsp</result>
+		</action>
+
+		<action name="text.property.list" method="listTextProperties" class="propertyListAction">
+			<result type="tiles" name="success">text.property.list</result>
+		</action>
+
+		<action name="edit.text.property" method="viewEditTextProperty" class="propertyListAction">
+			<result type="tiles" name="success">text.property.edit</result>
+		</action>
+
+		<action name="save.text.property" method="saveTextProperty" class="propertyListAction">
+			<result type="tiles" name="input">text.property.edit</result>
+			<result type="chain" name="success">text.property.list</result>
+		</action>
+
+		<action name="system.libraries" method="view" class="systemResourceAction">
+			<result name="success" type="tiles">system.libraries</result>
+		</action>		
+
+		<action name="system.resource" method="view" class="systemResourceAction">
+			<result name="success" type="tiles">system.resource</result>
+		</action>		
+
+		<action name="clear.cache" method="clearCache" class="systemResourceAction">
+			<result name="success" type="tiles">simple.actionmessage</result>
+		</action>
+		
+        <!--  User Management  -->
+		<action name="searchuser" method="list" class="userListAction">
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+		<action name="adduser" method="newUser" class="userListAction">
+            <result type="tiles" name="success">user</result>
+        </action>        
+
+                
+        <!--  Customer Management -->
+        <action name="editcustomerinfo" method="edit" class="CustomerManagerAction">
+       		<result type="tiles" name="input">customer</result>
+        	<result type="redirectAction" name="success">searchcustomer</result>
+        	<result type="redirectAction" name="success2">myaccountinfo</result>
+        	
+    	</action>
+        <action name="addcustomer" method="init" class="CustomerManagerAction">
+            <result type="tiles" name="success">customer</result>
+       	</action>
+       	<action name="createCustomer" method="save" class="CustomerManagerAction">
+       		<result type="tiles" name="input">customer</result>
+       		<result type="redirectAction" name="success">addcustomer</result>
+        </action>
+	  	<action name="list.customer" class="CustomerManagerAction">
+       		<result type="tiles" name="success">searchCustomer</result>
+        </action>
+        <action name="searchcustomer" method="list" class="CustomerManagerAction">
+       		<result type="tiles" name="success">searchCustomer</result>
+        </action>
+       	<action name="getcustomerinfo" method="info" class="CustomerManagerAction">
+       		<result type="tiles" name="success">customer</result>
+        </action>
+        <action name="myaccountinfo" method="info" class="CustomerManagerAction">
+       		<result type="tiles" name="success">customer</result>
+        </action>
+		<action name="getCustomerAccountInfo" method="getAccountInfo" class="CustomerManagerAction">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>   
+        <action name="logInAs" method="loginAsUser" class="logonAction">
+            <result type="redirectAction" name="success">new.shipment</result>
+            <result type="redirectAction" name="SUCCESS1">search.shipment</result>
+        </action>
+        <action name="send.customer.notification" method="sendCustomerEmailNotification" class="CustomerManagerAction">
+       		<result type="tiles" name="success">searchCustomer</result>
+       		<result type="tiles" name="input">searchcustomer</result>
+        </action>
+        <action name="manage.sales.users" method="manageSalesUsers" class="CustomerManagerAction">
+       		<result type="tiles" name="success">manage.sales</result>
+        </action>
+        
+        <action name="add.new.customersales" method="addnewCustomerSales" class="CustomerManagerAction">
+       		<result type="redirectAction" name="success">
+              <param name="actionName">manage.sales.users</param>
+              <param name="namespace">/admin</param>
+              <param name="id">${custSalesUser.customerId}</param>
+            </result>
+        </action>
+        
+        <action name="delete.customer.sales.agent" method="deleteCustomerSales" class="CustomerManagerAction">
+       		<result type="redirectAction" name="success">
+              <param name="actionName">manage.sales.users</param>
+              <param name="namespace">/admin</param>
+              <param name="id">${custSalesUser.customerId}</param>
+            </result>
+        </action>
+        
+        <action name="update.customer.sales.agent" method="updateCustomerSales" class="CustomerManagerAction">
+       		
+       		<result type="redirectAction" name="success">
+              <param name="actionName">manage.sales.users</param>
+              <param name="namespace">/admin</param>
+              <param name="id">${custSalesUser.customerId}</param>
+            </result>
+        </action>
+                
+        
+        <action name="carrierAccount">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>
+        
+        <action name="saveCarrierAccount" method="saveCarrierAccount" class="CustomerManagerAction">
+        	<result type="tiles" name="input">customer.account.info</result>
+       		<result type="redirectAction" name="success">getCustomerAccountInfo</result>
+       		<result  type="tiles" name="SUCCESS_EDIT">customer.account.info</result>
+        </action>
+        
+        <action name="editCarrierAccount" method="editCarrierAccount" class="CustomerManagerAction">
+       		<result  type="tiles" name="success">customer.account.info</result>
+        </action>
+        
+        <action name="deleteCarrierAccount" method="deleteCarrierAccount" class="CustomerManagerAction">
+       		<result type="redirectAction" name="success">getCustomerAccountInfo</result>
+        </action>
+             
+        <action name="listCustomers" method="listCustomers" class="CustomerManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">customerSearchResult</param>
+       	 		</result>
+       </action>
+       
+        <action name="listCustomersWithOrphan" method="listCustomersWithOrphan" class="CustomerManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">customerSearchResult</param>
+       	 		</result>
+       </action>       
+       
+       <action name="listProductLines" method="listProductLines" class="productManagerAction">
+        		<result type="json" >
+      	 		<param name="root">productLineSearchResult</param>
+      	 		</result>
+        </action>
+        
+        <action name="listProductsByProductLine" method="listProductsByProductLine" class="productManagerAction">
+        		<result type="json" >
+      	 		<param name="root">productByProductLineSearchResult</param>
+      	 		</result>
+        </action>
+         <action name="listChargeCode" method="listChargeCode" class="shipmentAction">
+           <result name="success">
+            /mmr/jsp/shipping/ajax_chargeCode.jsp
+             </result>
+      </action>          
+      <action name="listChargeName" method="listChargeName" class="shipmentAction">
+           <result name="success">
+             /mmr/jsp/shipping/ajax_chargeName.jsp
+            </result>
+      </action>
+        
+        <action name="listCarrierCharges" method="listCarrierCharges" class="shipmentAction">
+        	 	<result type="json" >
+       	 		<param name="root">carrierChargesSearchResult</param>
+       	 		</result>
+       </action>       
+ 
+        <action name="getCitySuggest" method="getCitySuggest" class="shipmentAction">
+       		<result type="tiles" name="input">new.shipment</result>
+        	 	<result type="json" >
+       	 		<param name="root">citySuggestList</param>
+       	 		</result>
+       </action>
+
+        <action name="getZipSuggest" method="getZipSuggest" class="shipmentAction">
+       		<result type="tiles" name="input">new.shipment</result>
+        	 	<result type="json" >
+       	 		<param name="root">zipSuggestList</param>
+       	 		</result>
+       </action>
+       
+       <!-- Start : Sumanth Kulkarni S : 14 Oct 2011 -->
+       <action name="listAddresses" method="listAddresses" class="AddressbookAction">
+       		<result type="tiles" name="input">new.shipment</result>
+        	 	<result type="json" >
+       	 		<param name="root">addressSearchResult</param>
+       	 		</result>
+       </action>
+       <!-- End -->
+       
+        <!-- Product Management -->
+        <action name="search.products" method="listProducts" class="productManagerAction">
+       		<result type="tiles" name="success">searchProduct</result>
+       		
+        </action>
+        
+        <action name="addnewproduct" method="newProduct" class="productManagerAction">
+        	<result type="tiles">addNewProduct</result>
+        </action>
+        
+         <action name="get.products" method="getProductsList" class="productManagerAction">
+       		<result type="tiles" name="success">searchProduct</result>
+        </action>
+        
+        <action name="editproduct" method="editProduct" class="productManagerAction">
+        	<result type="tiles">addNewProduct</result>
+        </action>
+        
+        <action name="deleteProduct" method="deleteProduct" class="productManagerAction">
+        	<result type="tiles">searchProduct</result>
+        </action>
+        
+        <action name="updateProduct" method="addOrUpdateProducts" class="productManagerAction">
+        	<result type="tiles">addNewProduct</result>
+        </action>
+        
+        <!-- End : Product Management -->
+        
+        <!-- Start: Package Management -->
+        <action name="search.packages" method="listPackages" class="productManagerAction">
+       		<result type="tiles" name="success">searchPackage</result>
+       	</action>
+       	
+       	<action name="addnewpackage" method="addOrUpdatePackageTypes" class="productManagerAction">
+       		<result type="tiles" name="success">searchPackage</result>
+       	</action>
+       	
+       	<action name="editpackage" method="editPackageType" class="productManagerAction">
+       		<result type="tiles" name="success">addNewPackage</result>
+       	</action>
+       	
+       	<action name="goToAddNewPackage" method="goToAddNewPackage" class="productManagerAction">
+       		<result type="tiles" name="success">addNewPackage</result>
+       	</action>
+       	
+       	<action name="delete.package" method="deletePackageType" class="productManagerAction">
+       		<result type="tiles" name="success">searchPackage</result>
+       	</action>
+       	
+       	<action name="populatePackageTypes" method="populatePackageTypes" class="productManagerAction">
+       		<interceptor-ref name="basicAjaxStack-mmr" />
+       		<result name="success">/mmr/jsp/shipping/hidden_packageTypes.jsp</result>
+       	</action>
+        <!-- End: Package Management -->
+        
+        <!-- Start: Warehouse Management -->
+        
+        <action name="listWarehouses" method="listWarehouses" class="warehouseManagerAction">
+        	<result type="tiles" name="success">searchWarehouses</result>
+        </action>
+        
+        <action name="addWarehouse" method="addNewWarehouse" class="warehouseManagerAction">
+        	<result type="tiles" name="success">addNewWarehouse</result>
+        </action>
+        
+        <action name="warehouse.listProvience" method="listWarehouseProvince" class="warehouseManagerAction">
+            <result name="success">/mmr/jsp/admin/warehouseprovinceList.jsp</result>
+        </action>
+        
+        <action name="createWarehouse" method="NewOrEditWarehouse" class="warehouseManagerAction">
+        	<result type="tiles" name="success">addNewWarehouse</result>
+        	<result type="tiles" name="input">addNewWarehouse</result>
+        </action>
+        
+        <action name="editWarehouse" method="edit" class="warehouseManagerAction">
+        	<result type="tiles" name="success">editWarehouse</result>
+        </action>
+        
+        <action name="deleteWarehouse" method="delete" class="warehouseManagerAction">
+        	<result type="tiles" name="success">searchWarehouses</result>
+        </action>
+        
+        <action name="goToManageProducts" method="manageProducts" class="warehouseManagerAction">
+        	<result type="tiles" name="success">manageProducts</result>
+        </action>
+        
+        <action name="goToManageLocations" method="manageLocations" class="warehouseManagerAction">
+        	<result type="tiles" name="success">manageLocations</result>
+        </action>
+        
+        <action name="listCustomerProducts" method="manageProducts" class="warehouseManagerAction">
+        	<result name="success">/mmr/jsp/admin/manageProductsList.jsp</result>
+        </action>
+        
+        <action name="showAisleOrRow" method="populateAisleOrRow" class="warehouseManagerAction">
+        	<result name="success">/mmr/jsp/admin/aisleOrRow.jsp</result>
+        </action>
+        
+         <action name="goToaddOrEditWarehouseLocations" method="goToAddEditWarehouseLocation" class="warehouseManagerAction">
+        	<result type="tiles" name="success">addEditWarehouseLocation</result>
+        </action>
+        
+        <action name="addOrEditWarehouseLocations" method="createEditWHL" class="warehouseManagerAction">
+        	<result type="tiles" name="success">addEditWarehouseLocation</result>
+        </action>
+        
+        <action name="searchWarehouseLocations" method="searchwarehouselocations" class="warehouseManagerAction">
+        	<result type="tiles" name="success">manageLocations</result>
+        </action>
+        
+		<action name="deletewarehouseLocation" method="deleteWHLocations" class="warehouseManagerAction">
+        	<result type="tiles" name="success">manageLocations</result>
+        </action>        
+       
+        
+        <!-- End: Warehouse Management -->
+        
+        
+        <!-- Start: Cart Management -->
+        
+        <action name="addCart" method="addNewCart" class="cartManagerAction">
+        	<result type="tiles" name="success">addNewCart</result>
+        </action>
+        
+        <action name="createCart" method="save" class="cartManagerAction">
+			<result type="tiles" name="input">addNewCart</result>		
+            <result type="tiles" name="success">addNewCart</result>
+        </action>
+        
+        <action name="getCartList" method="searchCart" class="cartManagerAction">
+			<result type="tiles" name="input">searchCart</result>		
+            <result type="tiles" name="success">searchCart</result>
+        </action>
+        
+        <action name="getAllUnshippedOrder" method="getAllUnshippedOrder" class="cartManagerAction">
+            <result type="tiles" name="input">searchCart</result>
+            <result type="tiles" name="success">searchCartOrder</result>
+        </action>
+        
+        <action name="createShipments" method="createShipments" class="cartManagerAction">
+            <result type="tiles" name="input">searchCartOrder</result>
+            <result type="tiles" name="success">searchCartOrder</result>
+        </action>
+        
+        <action name="processShipmentNow" method="processShipmentNow" class="cartManagerAction">
+            <result type="tiles" name="input">searchCartOrder</result>
+            <result type="tiles" name="success">searchCartOrder</result>
+        </action>
+        
+        
+        
+        <!-- End: Cart Management -->
+        
+	    <action name="listProducts" method="listProducts" class="productManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">productSearchResult</param>
+       	 		</result>
+       </action> 
+       
+       <action name="populateProducts" method="populateProductsList" class="productManagerAction">
+          	<result name="success">/mmr/jsp/shipping/hidden.jsp</result>       
+         </action>  
+        
+         <action name="goToAddProductLine" method="showProductLine" class="productManagerAction">
+        	<result type="tiles" name="success">ProductLinePage</result>
+        </action>
+        
+        <action name="editproductLine" method="showEditProductLines" class="productManagerAction">
+        	<result type="tiles" name="success">ProductLinePage</result>
+        </action>
+        
+        <action name="saveEditedProductLine" method="editProductLines" class="productManagerAction">
+        	<result type="tiles" name="success">ProductLinePage</result>
+        </action>
+        
+         <action name="deleteProductLine" method="deleteProductLines" class="productManagerAction">
+        	<result type="tiles" name="success">ProductLinePage</result>
+        </action>
+        
+        <!-- Logging Events  -->
+        <action name="deleteComment" method="deleteCommentInfo" class="loggedEventAction">
+        	<result name="success">/mmr/jsp/shipping/add_info_shipping_inner.jsp</result> 
+        </action>
+        
+        <!-- Product Inventory -->
+        <action name="goToProductInventory" method="gotoProductInventory" class="warehouseManagerAction">
+        	<result type="tiles" name="success">ProductInventory</result>
+        	<result name="success2">/mmr/jsp/shipping/view_shipment_products_summary_inner.jsp</result>
+        </action>
+        
+        <action name="listLocations" method="getAllLocations" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">locationsSearchResult</param>
+       	 		</result>
+       </action>
+       
+       <action name="listLocationsByProduct" method="getAllLocationsByProduct" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">locationsWarehousesSearchResult</param>
+       	 		</result>
+       </action>
+       
+       <action name="listLocationsByWarehouse" method="getAllLocationsForWarehouse" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">SortedlocationWHSearchResult</param>
+       	 		</result>
+       </action>
+       
+        <action name="listWIPLocationsByWarehouse" method="getAllWIPLocationsForWarehouse" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">SortedlocationWHSearchResult</param>
+       	 		</result>
+       </action>
+       
+       <action name="listAllWarehouses" method="getAllWarehouses" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">WHSearchResult</param>
+       	 		</result>
+       </action>
+       
+        <action name="listBatches" method="getAllBatches" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">batchesSearchResult</param>
+       	 		</result>
+       </action>
+       
+        <action name="listBatches2" method="getDistinctBatchesforLocation" class="warehouseManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">batchesSearchResult</param>
+       	 		</result>
+       </action>
+       
+       <action name="listBatchesByLocId" method="getDistinctBatchesforLocation" class="warehouseManagerAction">
+        	<result name="success">/mmr/jsp/admin/batches_by_location.jsp</result> 
+        </action>
+        
+         <action name="goTolistLocationsByWarehouse" method="goTolistLocationsByWarehouse" class="warehouseManagerAction">
+        	  <result name="success">/mmr/jsp/admin/locations_by_warehouse.jsp</result>
+        	<!--<result type="tiles" name="success">ProductInventory</result> -->
+        </action>
+       
+        <action name="addProductToInventory" method="addProductToInventory" class="warehouseManagerAction">
+        	<result type="tiles" name="success">ProductInventory</result>
+        </action>
+        
+        <action name="moveProductInInventory" method="moveProductInInventory" class="warehouseManagerAction">
+        	<result type="tiles" name="success">ProductInventory</result>
+        </action>
+        
+         <action name="moveProductInInventoryAjax" method="moveProductInInventoryAjax" class="warehouseManagerAction">
+        	<result name="success">/mmr/jsp/shipping/view_shipment_products_summary_inner.jsp</result>
+        </action>
+        
+        
+        <!--  Markup Management  -->
+        <action name="defaultmarkup" method="defaultMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">markup</result>
+            <result type="tiles" name="input">markup</result>
+       	</action> 
+        <action name="searchMarkup" method="init" class="markupManagerAction">
+            <result type="tiles" name="success">markup</result>
+            <result type="tiles" name="input">markup</result>
+       	</action>
+       	<action name="addMarkup" method="addMarkup" class="markupManagerAction">
+       		<result type="tiles" name="input">markup</result>
+            <result type="tiles" name="success">markup</result>
+       	</action>
+       	<action name="deleteMarkup" method="deleteMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">markup</result>
+       	</action>
+       	<action name="applyToAllCustomersMarkup" method="applyToAllCustomersMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">markup</result>
+       	</action>  
+       	<action name="saveMarkupList" method="saveMarkupList" class="markupManagerAction">
+       		<result type="tiles" name="input">markup</result>
+            <result type="tiles" name="success">markup</result>
+       	</action>  
+       	<action name="copyCustomerMarkup" method="copyCustomerMarkup" class="markupManagerAction">
+       		<result type="tiles" name="input">markup</result>
+            <result type="tiles" name="success">markup</result>
+       	</action>        	  
+       	
+       	<action name="searchCharges" method="searchCharges" class="markupManagerAction">
+       		<result type="tiles" name="success">searchCharges</result>
+       	</action>  
+       	
+       	<action name="deleteCharge" method="deleteCharge" class="markupManagerAction">
+       		<result type="tiles" name="success">searchCharges</result>
+       	</action> 
+       	
+       	<action name="goToAddNewCharge" method="goToAddNewCharge" class="markupManagerAction">
+       		<result type="tiles" name="success">addNewCharges</result>
+       	</action>	    
+       	
+       	<action name="editCharges" method="editCharge" class="markupManagerAction">
+       		<result type="tiles" name="success">addNewCharges</result>
+       	</action> 	    
+       	
+       	<action name="createOrEditCharge" method="AddOrEditCharges" class="markupManagerAction">
+       		<result type="tiles" name="success">addNewCharges</result>
+       	</action>
+       	
+       	<action name="viewUploadRateTemplate" method="viewUploadRateTemplate" class="markupManagerAction">
+       		<result type="tiles" name="success">viewUploadRateTemplate</result>
+       	</action>
+       	       	
+       	<action name="uploadAndProcessRateTemplate" method="uploadRateTemplate" class="markupManagerAction">
+       		<result type="tiles" name="success">viewUploadRateTemplate</result>
+       	</action>       	
+
+        <!--  Edi Management  -->
+        <action name="searchedi" method="searchEdi" class="ediManagerAction">
+            <result type="tiles" name="success">searchEdi</result>
+       	</action> 
+        <action name="uploadedi" method="uploadEdi" class="ediManagerAction">
+            <result type="tiles" name="success">uploadEdi</result>
+       	</action>       	
+        <action name="uploadAndProcess" method="uploadAndProcess" class="ediManagerAction">
+ 			<interceptor-ref name="mmrStackTrackToken" />
+        	<result type="tiles" name="input">uploadEdi</result>
+            <result type="tiles" name="success">uploadEdi</result>
+       	</action> 
+        <action name="uploadAndProcessLater" method="uploadAndProcessLater" class="ediManagerAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+        	<result type="tiles" name="input">uploadEdi</result>
+            <result type="tiles" name="success">uploadEdi</result>
+       	</action>
+        <action name="release.edi.file" method="releaseEdiFile" class="ediManagerAction">
+            <result type="tiles" name="success">searchEdi</result>
+            <result type="tiles" name="input">searchEdi</result>
+       	</action>        	
+        <action name="release.edi.invoice" method="releaseEdiInvoice" class="ediManagerAction">
+            <result type="tiles" name="success">searchEdi</result>
+            <result type="tiles" name="input">searchEdi</result>
+       	</action>  
+        <action name="listEdiInvoice" method="listEdiInvoice" class="ediManagerAction">
+       	 	<result type="json" >
+      	 		<param name="root">ediInvoiceSearchResult</param>
+      	 	</result>
+		</action>       	     	        	       	     	
+        <action name="listEdiFileName" method="listEdiFileName" class="ediManagerAction">
+       	 	<result type="json" >
+      	 		<param name="root">ediFileNameSearchResult</param>
+      	 	</result>
+		</action> 
+
+        <!--  Invoice Management  -->
+        <action name="invoice" class="invoiceManagerAction" method="execute">
+            <result type="tiles" name="success">searchInvoice</result>
+       	</action> 
+        <action name="invoice.list" method="searchInvoice" class="invoiceManagerAction">
+          <!--     <result name="success">/mmr/jsp/admin/invoiceList.jsp</result>-->
+             <result type="tiles" name="success">searchInvoice</result>
+             <result type="tiles" name="paylist">payInvoices</result>
+       	</action> 
+        <action name="genInvoice" class="invoiceManagerAction" method="generateInvoice">
+            <result type="tiles" name="success">genInvoice</result>
+       	</action>
+       	<action name="sendNotification.email" class="invoiceManagerAction" method="sendEmailNotificationForInvoice">
+       		<result type="tiles" name="success">searchInvoice</result> 
+       		<result type="tiles" name="input">invoice.list</result>      			  		               
+       	</action> 
+       	<action name="invoiceable.list" method="searchInvoiceableShipments" class="invoiceManagerAction">
+           <result type="tiles" name="success">genInvoice</result>
+           <result type="tiles" name="refresh">genInvoice</result>
+       	</action> 
+        <action name="invoice.create" method="createInvoice" class="invoiceManagerAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+            <result type="tiles" name="success">searchInvoice</result>
+           <result name="input">genInvoice</result>
+       	</action> 
+        <action name="invoice.cancel" method="cancelInvoice" class="invoiceManagerAction">
+            <result type="tiles" name="success">searchInvoice</result>
+       	</action> 
+        <action name="invoice.autogen" method="autoGenInvoices" class="invoiceManagerAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+             <result type="tiles" name="success">searchInvoice</result>
+           <result name="input">genInvoice</result>
+       	</action> 
+        <action name="invoice.pay" method="payInvoices" class="invoiceManagerAction">
+			<interceptor-ref name="mmrStackTrackToken" />
+          <result name="success">/mmr/jsp/admin/invoicePayList.jsp</result>
+        </action>
+        <action name="updateAR" method="updateAR" class="invoiceManagerAction">
+         <result type="tiles" name="success">updateAR</result>          
+         <result name="refresh">/mmr/jsp/admin/updateARInvoiceList.jsp</result>
+        </action>
+        <action name="processAR" method="processAR" class="invoiceManagerAction">
+   		  <interceptor-ref name="mmrStackTrackToken" />
+          <result name="input" type="tiles">updateAR</result>
+          <result name="success" type="tiles">updateAR</result>
+ 		</action>
+        <action name="searchAR" method="searchAR" class="invoiceManagerAction">
+          <result type="tiles" name="success">searchAR</result>
+         <result name="refresh">/mmr/jsp/admin/aRList.jsp</result>         
+        </action>
+         <action name="listInvoices" method="listInvoices" class="invoiceManagerAction">
+        	 	<result type="json" >
+       	 		<param name="root">invoiceSearchResult</param>
+       	 		</result>
+       </action>
+       <action name="print.invoice" method="getInvoicePdf" class="invoiceManagerAction">
+           <result name="success">/mmr/jsp/admin/invoiceList.jsp</result>
+           <result name="input">genInvoice</result>
+       	</action> 	
+       	<action name="download.csv.invoice" method="downloadInvoiceCSV" class="invoiceManagerAction">
+       	   	<result name="success">/mmr/jsp/admin/invoiceList.jsp</result>
+       	</action>
+        <action name="edit.invoice" method="editInvoice" class="invoiceManagerAction">
+          <!--   <result name="success">/mmr/jsp/admin/view_edit_invoice.jsp</result>-->
+           <result type="tiles" name="success">editInvoice</result>
+       	</action> 
+        <action name="update.invoice" method="updateInvoice" class="invoiceManagerAction">
+           <!--  <result name="success">invoice.list</result> -->
+             <result type="tiles" name="success">searchInvoice</result>
+             <result type="tiles" name="paylist">payInvoices</result>
+       	</action>       	      	        
+       	
+       	<!--  Reports Management  -->
+        <action name="commReport" class="invoiceManagerAction" method="commReport">
+            <result type="tiles" name="success">commReport</result>
+       	</action> 
+       <action name="salesReport" class="invoiceManagerAction" method="salesReport">
+            <result type="tiles" name="success">salesReport</result>
+            <result type="tiles" name="input">salesReport</result>
+       	</action> 
+       	        
+       	<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+       	        
+	</package>
+
+</struts>

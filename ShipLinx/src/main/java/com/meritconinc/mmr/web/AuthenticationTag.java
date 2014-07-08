@@ -1,0 +1,171 @@
+package com.meritconinc.mmr.web;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.tagext.Tag;
+import javax.servlet.jsp.tagext.TagSupport;
+
+
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.userdetails.UserDetails;
+
+
+import com.sun.org.apache.xerces.internal.util.MessageFormatter;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+
+public class AuthenticationTag extends TagSupport {
+    //~ Static fields/initializers =============================================
+	private final static Set methodPrefixValidOptions = new HashSet();
+	static {
+		methodPrefixValidOptions.add("get");
+		methodPrefixValidOptions.add("is");
+	}
+	
+    //~ Instance fields ========================================================
+
+    private String operation = "";
+    private String methodPrefix = "get";
+    private String format;
+
+    //~ Methods ================================================================
+    public void setOperation(String operation) {
+        this.operation = operation;
+    } 
+
+    public String getOperation() {
+        return operation;
+    }
+
+	public String getMethodPrefix() {
+		return methodPrefix;
+	}
+
+	public void setMethodPrefix(String methodPrefix) {
+		this.methodPrefix = methodPrefix;
+	}
+	
+	public String getFormat() {
+		return format;
+	}
+	
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public int doStartTag() throws JspException {
+        if ((null == operation) || "".equals(operation)) {
+            return Tag.SKIP_BODY;
+        }
+
+        validateArguments();
+        Object securityContextObject = SecurityContextHolder.getContext();
+        
+        if ((securityContextObject == null)
+            || !(securityContextObject instanceof SecurityContext)
+            || ((SecurityContext)securityContextObject).getAuthentication() == null) {
+            return Tag.SKIP_BODY;
+        }
+
+        Authentication auth = ((SecurityContext)securityContextObject)
+            .getAuthentication();
+
+        if (auth.getPrincipal() == null) {
+            return Tag.SKIP_BODY;
+        } else if (auth.getPrincipal() instanceof UserDetails) {
+        	User user = UserUtil.getMmrUser();
+        	if (user == null) {
+        		return Tag.SKIP_BODY;
+        	}
+        	Object obj = invokeOperation(user);
+        	String message = null;
+        	if (obj instanceof Date) {
+        		try {
+        			if (getFormat() == null){
+        				return Tag.SKIP_BODY;
+        			}
+        			String localeStr = MessageUtil.getLocale();
+        			String ar[] = localeStr.split("_");
+        			Locale locale = new Locale(ar[0], ar[1]);
+        			MessageFormat messageFormat = new MessageFormat("{0,date," + getFormat() + "}", locale);
+        			message = messageFormat.format(new Object[]{obj});
+        		}
+        		catch (Exception e) {
+        			throw new JspException(e);
+        		}
+        	}
+        	else if (obj instanceof String) {
+        		message = (String)obj;
+        	}
+        	writeMessage(message);
+
+            return Tag.SKIP_BODY;
+        } else {
+            writeMessage(auth.getPrincipal().toString());
+            return Tag.SKIP_BODY;
+        }
+	}
+
+    protected void writeMessage(String msg) throws JspException {
+        try {
+            pageContext.getOut().write(String.valueOf(msg));
+        } catch (IOException ioe) {
+            throw new JspException(ioe);
+        }
+    }
+
+    private void validateArguments() throws JspException {
+		if (getMethodPrefix() != null && !getMethodPrefix().equals("")) {
+			if (!methodPrefixValidOptions.contains(getMethodPrefix())) {
+				throw new JspException("Authorization tag : no valid method prefix available");
+			}
+		} else {
+			throw new JspException("Authorization tag : no method prefix available");
+		}
+    }
+    
+    private Object invokeOperation(Object obj) throws JspException {    	
+    	Class clazz = obj.getClass();
+    	String methodToInvoke = getOperation();
+    	StringBuffer methodName = new StringBuffer();
+    	methodName.append(getMethodPrefix());
+    	methodName.append(methodToInvoke.substring(0,1).toUpperCase());
+    	methodName.append(methodToInvoke.substring(1));
+    	
+    	Method method = null;
+    	try {
+			method = clazz.getDeclaredMethod(methodName.toString(),(Class[])null);
+		} catch (SecurityException se) {
+			throw new JspException(se);
+		} catch (NoSuchMethodException nsme) {
+			throw new JspException(nsme);
+		}
+    	Object retVal =null;
+    	
+    	try {
+			retVal = method.invoke(obj,(Object[])null);
+		} catch (IllegalArgumentException iae) {
+			throw new JspException(iae);
+		} catch (IllegalAccessException iae) {
+			throw new JspException(iae);
+		} catch (InvocationTargetException ite) {
+			throw new JspException(ite);
+		}
+		if (retVal == null) {
+			retVal = "";
+		}
+    	return retVal;
+    }
+}

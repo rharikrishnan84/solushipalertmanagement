@@ -1,0 +1,29 @@
+package com.meritconinc.mmr.service.impl;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.meritconinc.mmr.dao.RequestTrackingDAO;
+import com.meritconinc.mmr.model.common.RequestDetailsVO;
+import com.meritconinc.mmr.service.RequestTrackingService;
+
+public class RequestTrackingServiceImpl implements RequestTrackingService {
+
+	private static final Logger log = Logger.getLogger(RequestTrackingServiceImpl.class);
+
+	private RequestTrackingDAO requestTrackingDAO;
+
+	public void setRequestTrackingDAO(RequestTrackingDAO requestTrackingDAO) {
+		this.requestTrackingDAO = requestTrackingDAO;
+	}
+	
+	public void insertRequestTracking(RequestDetailsVO requestdetailsVo) {
+		requestTrackingDAO.insertRequestTracking(requestdetailsVo);
+	}
+
+	public List getRequestParamMetadata() {
+		return requestTrackingDAO.getRequestParamMetadata();
+	}
+
+} 

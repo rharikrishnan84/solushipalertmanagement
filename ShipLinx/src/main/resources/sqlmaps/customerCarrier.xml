@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="customer">
+	<resultMap id="CustomerCarrierResult" class="com.meritconinc.shiplinx.model.CustomerCarrier">
+			<result property="carrierAccountId"/>
+			<result property="customerId" />
+			<result property="country" />
+			<result property="toCountry" />
+			<result property="defaultAccount"/>
+			<result property="carrierId" />
+			<result property="live"/>		
+			<result property="accountNumber1" />
+			<result property="accountNumber2" />
+			<result property="property1" />
+			<result property="property2" />
+			<result property="property3" />
+			<result property="property4" />
+			<result property="property5" />
+	</resultMap>
+	<resultMap id="CarrierServicesResultNew" class="com.meritconinc.shiplinx.model.Service">
+           <result property="id"/>
+           <result property="name" />
+           <result property="description"/>
+           <result property="code" />
+           <result property="transitCode" />
+           <result property="serviceTimeMins" />
+           <result property="carrierId" />
+           <result property="masterCarrierId" />
+           <result property="mode" />
+           <result property="serviceType" column="service_type" />
+           <result property="zoneStructureId" column="zone_structure_id" />
+           <result property="masterServiceId" column="master_service_id" />
+           <result property="carrier" column="carrier_id" select="getCarrier"/>
+           <result property="masterCarrier" column="master_carrier_id" select="getCarrier"/>   
+   </resultMap>
+	
+	
+	<resultMap id="CustomerCarrierResult2" class="com.meritconinc.shiplinx.model.CustomerCarrier">
+			<result property="carrierAccountId"/>
+			<result property="customerId" />
+			<result property="country" />
+			<result property="toCountry" />
+			<result property="defaultAccount"/>
+			<result property="carrierId" />
+			<result property="carrierName" />
+			<result property="live"/>
+			<result property="accountNumber1" column="account_number1"/>
+			<result property="accountNumber2" column="account_number2"/>
+			<result property="property1" />
+			<result property="property2" />
+			<result property="property3" />
+			<result property="property4" />
+			<result property="property5" />		
+	</resultMap>
+	
+	<resultMap id="CustomerCarrierResult3" class="com.meritconinc.shiplinx.model.CustomerCarrier">
+			<result property="carrierAccountId" column="carrieraccount_id"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="country" column="country"/>
+			<result property="toCountry" column="to_country"/>
+			<result property="defaultAccount" column="isdefaultaccount"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="carrierName" />
+			<result property="live" column="isLive"/>
+			<result property="accountNumber1" column="account_number1"/>
+			<result property="accountNumber2" column="account_number2"/>
+			<result property="property1" column="property_1"/>
+			<result property="property2" column="property_2"/>
+			<result property="property3" column="property_3"/>
+			<result property="property4" column="property_4"/>
+			<result property="property5" column="property_5"/>		
+	</resultMap>
+	
+	<resultMap id="CarrierServicesResult" class="com.meritconinc.shiplinx.model.Service">
+			<result property="id"/>
+			<result property="name" />
+			<result property="description"/>
+			<result property="code" />
+			<result property="transitCode" />
+			<result property="serviceTimeMins" />
+			<result property="carrierId" />
+			<result property="masterCarrierId" />
+			<result property="mode" />
+			<result property="serviceType" column="service_type" />
+			<result property="zoneStructureId" column="zone_structure_id" />
+			<result property="carrier" column="carrier_id" select="getCarrier"/>
+			<result property="masterCarrier" column="master_carrier_id" select="getCarrier"/>	
+	</resultMap>
+	
+		<resultMap id="CarrierServicesResult1" class="com.meritconinc.shiplinx.model.Service">
+			<result property="id" column="service_id"/>
+			<result property="name" column="name"/>
+			<result property="description" column="description"/>
+			<result property="code" column="code"/>
+			<result property="transitCode" column="transit_code"/>
+			<result property="serviceTimeMins" column="service_time_mins"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="masterCarrierId" column="master_carrier_id"/>
+			<result property="mode" column="mode"/>
+			<result property="serviceType" column="service_type" />
+			<result property="zoneStructureId" column="zone_structure_id" />
+			<result property="carrier" column="carrier_id" select="getCarrier"/>
+			<result property="masterCarrier" column="master_carrier_id" select="getCarrier"/>
+			<result property="masterServiceId" column="master_service_id"/>
+			<result property="maxLength" column="max_length"/>
+			<result property="maxWidth" column="max_width"/>
+			<result property="maxHeight" column="max_height"/>
+			<result property="maxWeight" column="max_weight"/>
+            <result property="emailType" column="email_type"/>
+	</resultMap>
+	
+	<resultMap id="CarrierResult" class="com.meritconinc.shiplinx.model.Carrier">
+			<result property="id"/>
+			<result property="name" />
+			<result property="trackingURL" />
+			<result property="implementingClass" column="implementing_class"/>
+	</resultMap>
+	<resultMap id="CarrierResult2" class="com.meritconinc.shiplinx.model.Carrier">
+			<result property="id"/>
+			<result property="name" />
+			<result property="trackingURL" />
+			<result property="businessCarrierDiscount" column="business_carrier_discount"/>
+			<result property="implementingClass" column="implementing_class"/>
+			<result property="displayName" column="display_name"/>
+	</resultMap>
+	<resultMap id="CarrierResult3" class="com.meritconinc.shiplinx.model.Carrier">
+           <result property="id"/>
+           <result property="name" />
+           <result property="trackingURL" />
+           <result property="implementingClass" column="implementing_class"/>
+           
+   </resultMap>
+	<select id="getCustomerCarrier" resultMap="CustomerCarrierResult2">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount,c.carrier_id, car.name, c.isLive, 
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c,carrier car where c.customer_id = #customerId# and c.isdefaultaccount = true and car.carrier_id=c.carrier_id
+	</select>
+	
+	<select id="getCarrierAccounts" resultMap="CustomerCarrierResult2">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount,c.carrier_id, car.name, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c,carrier car where c.customer_id = #customerId# and c.isdefaultaccount = true and car.carrier_id=c.carrier_id and c.country=#country#
+	</select>
+
+	<select id="getCarrierAccount" resultMap="CustomerCarrierResult2">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount,c.carrier_id, car.name, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c,carrier car where c.isdefaultaccount = true and car.carrier_id=c.carrier_id  
+   		 and c.customer_id = #customerId#
+		 <isGreaterThan prepend="and" property="businessId" compareValue="0">
+		 		c.business_id = #businessId#
+		 </isGreaterThan>	
+		 <isGreaterThan prepend="and" property="carrierId" compareValue="0">
+		 		c.carrier_id = #carrierId#
+		 </isGreaterThan>	
+		 <isNotNull prepend="and" property="country">
+		 		c.country=#country#
+		 </isNotNull>			  
+		 <isNotNull prepend="and" property="toCountry">
+		 		c.to_country=#toCountry#
+		 </isNotNull>			  
+	</select>
+	
+	<select id="getAllCustomerCarrier" resultMap="CustomerCarrierResult2">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount, c.carrier_id, car.name, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c,carrier car where c.customer_id = #customerId#  and c.business_id=#businessId# and car.carrier_id=c.carrier_id
+	</select>
+	
+	<select id="getAllCustomersCarrier" resultMap="CustomerCarrierResult3">
+	select * from customer_carrier c where  c.carrier_id=#carrierId# and c.business_id=#businessId#
+	</select>
+	
+	<select id="getServicesForCarrier" resultMap="CarrierServicesResultNew">
+   select  s.service_id,s.name,s.description,s.code, s.transit_code,s.service_time_mins,s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id, s.master_service_id from service s where s.master_carrier_id = #carrierId#  
+ 	</select>
+
+	
+	<select id="getService" resultMap="CarrierServicesResult1">
+	select  * from service s where s.service_id = #serviceId#
+	</select>
+	
+	<select id="findMasterServiceId" resultMap="CarrierServicesResult1">
+	select * from service where master_service_id= #serviceId# 
+	</select>
+	
+	<select id="getServiceByCarrierIdAndTransitCode" resultMap="CarrierServicesResult">
+	select  s.service_id, s.name, s.description, s.code, s.transit_code,s.service_time_mins, s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id from service s where
+				s.carrier_id = #carrierId# and s.transit_code=#transitCode#
+	</select>
+
+	<select id="getServiceByCarrierIdAndCode" resultMap="CarrierServicesResult">
+	select  s.service_id, s.name, s.description, s.code, s.transit_code,s.service_time_mins, s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id from service s where
+				s.carrier_id = #carrierId# and s.code=#code#
+	</select>
+
+	<select id="getCarrierByBusiness" resultMap="CarrierResult2">
+		select c.*, b.business_carrier_discount, b.display_name from carrier c left join business_carrier b on (c.carrier_id=b.carrier_id) where c.carrier_id = #carrierId# and b.business_id=#businessId#	
+	</select>
+
+	<select id="getCarrier" resultMap="CarrierResult">
+		select  * from carrier c where
+				c.carrier_id = #carrierId#
+	</select>
+
+	<select id="getCutomerCarrierDefaultAccount" resultMap="CustomerCarrierResult">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country, c.isdefaultaccount,c.carrier_id, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c where c.customer_id = #customerId# and c.isdefaultaccount = true and c.carrier_id = #carrierId#
+	</select>
+	
+	<select id="getDefAccountByCountry" resultMap="CustomerCarrierResult">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country, c.isdefaultaccount,c.carrier_id, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		 from customer_carrier c 
+		 <dynamic prepend="where">
+		  c.customer_id = #customerId# and c.isdefaultaccount = true and c.carrier_id = #carrierId# and c.country=#country#
+		 <isNotNull  property="liveMode">
+					and c.isLive=#liveMode#
+		</isNotNull>
+		</dynamic>
+		 
+	</select>
+	
+	<select id="getOrderCustomerCarrier" resultMap="CustomerCarrierResult2">
+	select  c.carrieraccount_id,c.customer_id,c.country,c.to_country, c.isdefaultaccount,c.carrier_id, car.name, c.isLive,
+			c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5 
+			from customer_carrier c,carrier car,shipping_order so where c.customer_id = so.customer_id and so.order_id=#orderId# and so.carrier_id=c.carrier_id and c.isdefaultaccount = true and car.carrier_id=c.carrier_id
+	</select>
+	
+	<select id="getCustomerCarrierInfo"  resultMap="CustomerCarrierResult">
+		select * from customer_carrier c where c.customer_id = #customerId#
+	</select>
+	
+	<select id="getCustomerCarrierById"  resultMap="CustomerCarrierResult2">
+		select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount,c.carrier_id, car.name, c.isLive,
+				c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		from customer_carrier c,carrier car where c.customer_id = #customerId# and c.carrieraccount_id = #carrierAccountId# and car.carrier_id=c.carrier_id
+	</select>
+		
+	<select id="isCarrierAccountRegistered" resultClass="int">
+			select count(1) as count from customer_carrier where carrier_id=#carrierId#
+			<isNotNull  property="accountNum">
+				 and (account_number1=#accountNum# or account_number2=#accountNum#)
+			</isNotNull>			
+			
+	</select>
+	<insert id="saveCustomerCarrier" parameterClass="com.meritconinc.shiplinx.model.CustomerCarrier">
+		insert into customer_carrier 
+				(customer_id, business_id, country, 	isdefaultaccount,carrier_id, isLive, account_number1, account_number2, property_1, property_2, property_3, property_4, property_5) 
+		values 	(#customerId#,#businessId#, #country#,#defaultAccount#,#carrierId#,#live#, #accountNumber1#,#accountNumber2#,#property1#,#property2#,#property3#,#property4#,#property5#)
+	</insert>
+	
+	<delete id = "deleteCustomerCarrier">
+			delete from customer_carrier where carrieraccount_id = #carrierAccountId#
+	</delete>
+
+	<select id="getAllCarrier"  resultMap="CarrierResult">
+		select * from carrier c 
+	</select>
+	<select id="getAllCarrierForBusiness"  resultMap="CarrierResult2">
+		select c.*, b.business_carrier_discount, b.display_name from carrier c left join business_carrier b on (c.carrier_id=b.carrier_id) where b.business_id=#businessId# 
+	</select>
+
+	<update id = 'editCustomerCarrier'>
+		update customer_carrier set customer_id=#customerId#, country=#country#, isdefaultaccount=#defaultAccount#, carrier_id=#carrierId#, isLive=#live#,
+			account_number1=#accountNumber1#, account_number2=#accountNumber2#, property_1=#property1#, property_2=#property2#, property_3=#property3#, property_4=#property4#, property_5=#property5# 
+		where carrieraccount_id=#carrierAccountId#
+	</update>
+	
+	<update id = 'setOtherCarrierAccountAsFalse'>
+		update customer_carrier set isdefaultaccount  = #default# where customer_id = #customerId# and country  = #country# and carrier_id = #carrierId#
+	</update>
+
+	<select id="getCustomerCarrierByAccountNumber"  resultMap="CustomerCarrierResult2">
+		select  c.carrieraccount_id,c.customer_id,c.country,c.to_country,c.isdefaultaccount, c.carrier_id, car.name, c.isLive,
+				c.account_number1, c.account_number2, c.property_1, c.property_2, c.property_3, c.property_4, c.property_5
+		from customer_carrier c,carrier car 
+		where (c.account_number1=#accountNumber# or c.account_number2=#accountNumber#) and car.carrier_id=c.carrier_id
+	</select>	
+	
+	<select id="getMaxServiceIdForCarrier" resultClass="long">
+		select max(service_id) from service where carrier_id=#carrierId#
+	</select>
+
+	<insert id="addService" parameterClass="com.meritconinc.shiplinx.model.Service">
+	    insert into service(service_id, name,	carrier_id, description, code, transit_code, mode) 
+			 values (#id#, #name#, #carrierId#, #description#, #code#, #transitCode#, #mode# ) 
+	</insert>
+	<select id="getCustomerCarrierForBusiness"  resultMap="CarrierResult3">
+       
+       select * from carrier c where c.carrier_id in(select s.carrier_id from service s where s.service_id in(select cm.service_id from customer_markup cm where cm.customer_id=#customerId# and cm.business_id=1 and cm.disabled=0))
+   </select>
+<select id="getCustomerforServicesForCarrier" resultMap="CarrierServicesResult">
+ 
+ select s.service_id,s.name,s.description,s.code, s.transit_code,s.service_time_mins,s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id from customer_markup cm right join service s on(cm.service_id=s.service_id) where cm.disabled=0 and s.carrier_id = #carrierId# and cm.customer_id=#customerId# group by s.name order by s.service_id, s.name; 
+ </select>
+ <select id="getServicesByCarrierId" resultMap="CarrierServicesResult1">
+ select  * from service s where s.carrier_id = #carrierId#
+ </select>
+</sqlMap>

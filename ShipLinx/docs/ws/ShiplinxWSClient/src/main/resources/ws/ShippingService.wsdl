@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="ShippingService" targetNamespace="http://www.proxy.ws.shiplinx.meritconinc.com/" 
+			xmlns:ns1="http://schemas.xmlsoap.org/soap/http" 
+			xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+			xmlns:tns="http://www.proxy.ws.shiplinx.meritconinc.com/" 
+			xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:dt="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes"
+			xmlns:req="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingRequest"
+			xmlns:res="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingResponse">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes" schemaLocation="datatypes.xsd" />
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingRequest" schemaLocation="ShippingRequest.xsd" />
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingResponse" schemaLocation="ShippingResponse.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	
+	<wsdl:message name="ShippingShipmentMessage">
+		<wsdl:part name="Body" element="req:ShippingRequest"/>
+		<wsdl:part name="Security" element="req:Security"/>
+	</wsdl:message>
+	<wsdl:message name="ShippingResponseMessage">
+		<wsdl:part name="Body" element="res:ShippingResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ShippingException">
+		<wsdl:part name="ShippingErrors" element="dt:ShippingErrors"/>
+	</wsdl:message>	
+ 
+	<wsdl:portType name="ShippingPortType">
+		<wsdl:operation name="ShipOrder">
+			<wsdl:input name="ShippingRequest" message="tns:ShippingShipmentMessage"/>
+			<wsdl:output name="ShippingResponse" message="tns:ShippingResponseMessage"/>
+			<wsdl:fault name="ShippingErrors" message="tns:ShippingException"/>
+		</wsdl:operation>
+	</wsdl:portType> 
+  
+	<wsdl:binding name="ShippingBinding" type="tns:ShippingPortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="ShipOrder">
+			<soap:operation soapAction="http://onlinetools.meritcon.com/webservices/ShippingBinding/v1.1" style="document"/>
+			<wsdl:input name="ShippingRequest">
+				<soap:body parts="Body" use="literal"/>
+				<soap:header message="tns:ShippingShipmentMessage" part="Security" use="literal">
+					<soap:headerfault message="tns:ShippingException" part="ShippingErrors" use="literal"/>
+				</soap:header>
+			</wsdl:input>
+			<wsdl:output name="ShippingResponse">
+				<soap:body parts="Body" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="ShippingErrors">
+				<soap:fault name="ShippingErrors" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>  
+  
+	<wsdl:service name="ShippingService">
+    	<wsdl:port binding="tns:ShippingBinding" name="ShippingServiceImplPort">
+      		<soap:address location="https://localhost:8443/shiplinx/services/ShippingService"/>
+    	</wsdl:port>
+  	</wsdl:service>
+</wsdl:definitions>

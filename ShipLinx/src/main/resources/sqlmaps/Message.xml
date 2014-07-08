@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Message">
+	<cacheModel id="message" type ="LRU" readOnly="true">
+	  <flushInterval hours="24"/>
+	  <property name="cache-size" value="1000" />
+	</cacheModel>
+	<!--  the sql statements for the DAO -->
+	<select id="getMessage" resultClass="java.lang.String" cacheModel="message">
+		SELECT msg_content from resourcebundle 
+		WHERE msg_id = #messageId# AND locale = #locale#
+		ORDER BY is_fmk LIMIT 1
+	</select>
+	
+	<resultMap id="resultLocale" class="com.meritconinc.mmr.model.common.LocaleVO">
+  		<result property="locale" column="locale" columnIndex="1"/>
+  		<result property="description" column="description" columnIndex="2"/>
+  		<result property="localeText" column="locale_text" columnIndex="3"/>
+	</resultMap> 
+
+	<resultMap id="resultLocaleText" class="com.meritconinc.mmr.model.common.LocaleVO">
+  		<result property="locale" column="locale" columnIndex="1"/>
+  		<result property="description" column="description" columnIndex="2"/>
+  		<result property="localeText" column="locale_text" columnIndex="3"/>
+	</resultMap>
+	
+	<resultMap id="resultCountry" class="com.meritconinc.mmr.model.common.CountryVO">
+  		<result property="countryCode" column="country_code" columnIndex="1"/>
+  		<result property="countryName" column="msg_content" columnIndex="2"/>
+	</resultMap>
+	
+	<select id="getLocalesOLD" resultMap="resultLocale" cacheModel="message">
+		SELECT a.locale, a.description, ifnull(b.msg_content, a.locale_text) AS locale_text
+		FROM locale a
+		LEFT JOIN resourcebundle b
+		ON ('label.language.'+a.locale = b.msg_id) AND b.locale=a.locale	
+		WHERE b.is_fmk = 
+			(select min(cast(is_fmk as signed)) from resourcebundle 
+			 where msg_id = 'label.language.'+a.locale and locale=a.locale)
+		AND a.active = 1
+	</select>
+
+	<select id="getLocales" resultMap="resultLocale" cacheModel="message">
+		SELECT a.locale, a.description, locale_text
+		FROM locale a
+		WHERE a.active = 1
+	</select>
+
+	<select id="getLanguagesByLocale" resultMap="resultLocale" cacheModel="message">
+		SELECT l.locale, l.description, ifnull(rb.msg_content, l.locale_text) as 'locale_text'
+		FROM locale l LEFT JOIN resourcebundle rb ON rb.msg_id = 'label.language.'+l.locale
+		AND rb.locale = #locale#
+		WHERE rb.is_fmk = 
+			(select min(cast(is_fmk as signed)) from resourcebundle 
+			 where msg_id = 'label.language.'+l.locale and locale=#locale#)
+		AND l.active = 1
+	</select>
+	
+	<select id="getMessageForApp" resultClass="java.lang.String" cacheModel="message">
+		SELECT msg_content
+		FROM resourcebundle
+		WHERE msg_id = #messageId# AND locale = #locale# AND is_fmk = #isFmk#
+	</select>
+
+	<select id="getCountries" resultMap="resultCountry" cacheModel="message">
+		SELECT c.country_code, r.msg_content
+		FROM country c LEFT JOIN resourcebundle r ON c.msg_id=r.msg_id
+		WHERE r.locale = #locale# AND r.is_fmk = 
+			 (select min(cast(is_fmk as signed)) from resourcebundle 
+			 where msg_id = c.msg_id and locale=#locale#) 
+		ORDER BY c.display_order, CAST(r.msg_content AS char(100))
+	</select>
+
+	<select id="getCountryName" resultClass="java.lang.String" cacheModel="message">
+		SELECT r.msg_content
+		FROM country c LEFT JOIN resourcebundle r ON c.msg_id=r.msg_id
+		WHERE c.country_code = #countryCode# AND r.locale = #locale# AND r.is_fmk = 
+			(select min(cast(is_fmk as signed)) from resourcebundle 
+			 where msg_id = c.msg_id and locale=#locale#)		
+		ORDER BY c.display_order, CAST(r.msg_content AS char(100))
+	</select>
+	<select id="getPath" resultClass="java.lang.String" cacheModel="message">
+	SELECT msg_content FROM resourcebundle where msg_id = #url#;
+	</select>
+</sqlMap>

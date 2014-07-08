@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib
+        PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+        "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>mmr</short-name>
+	<uri>/mmr-tags</uri>
+	<description>
+		MMR Tag Library
+	</description>
+
+	<tag>
+		<name>access</name>
+		<tag-class>com.meritconinc.mmr.web.MmrTag</tag-class>
+		<body-content>scriptless</body-content>
+		<description>
+			Allows or denies access to the section of a web page.
+		</description>
+
+		<attribute>
+			<name>section</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Evaluates given section name to user roles, provides or
+				denies access to the portion of page for this section
+				name.
+			</description>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>user</name>
+		<tag-class>
+			com.meritconinc.mmr.web.AuthenticationTag
+		</tag-class>
+		<description>
+			Allows access to the current Authentication object.
+		</description>
+		<attribute>
+			<name>operation</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Must be one of the methods of an instance that
+				implements the UserDetails interface. Use the JavaBean
+				style property, you can provide a custom prefix for the
+				method to call.
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>methodPrefix</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Must be get or is. This is used to determine the name of
+				the method to be called. The default is get.
+			</description>
+		</attribute>
+		<attribute>
+			<name>format</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Used to apply format to operation (i.e. datetime)
+			</description>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>message</name>
+		<tag-class>com.meritconinc.mmr.web.MmrMessageTag</tag-class>
+		<body-content>scriptless</body-content>
+		<description>
+			MMR Message Support
+		</description>
+		
+		<attribute>
+			<name>messageId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Message ID
+			</description>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>property</name>
+		<tag-class>com.meritconinc.mmr.web.MmrPropertyTag</tag-class>
+		<body-content>scriptless</body-content>
+		<description>
+			Get the property value from fmk_property table
+		</description>
+
+		<attribute>
+			<name>scope</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Property Scope
+			</description>
+		</attribute>
+		
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Property Name
+			</description>
+		</attribute>		
+	</tag>	
+	
+	<tag>
+		<name>param</name>
+		<tag-class>com.meritconinc.mmr.web.MmrMessageParamTag</tag-class>
+		<body-content>scriptless</body-content>
+		<description>
+			WBTS Messaging Parameter
+		</description>
+	</tag>
+	
+
+</taglib>

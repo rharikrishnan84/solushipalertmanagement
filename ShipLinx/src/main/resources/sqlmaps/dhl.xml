@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="dhl">
+
+	<resultMap id="dhlZoneMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DHLZone">
+		<result property="zoneCode"	column="zone_code"/>	
+		<result property="countryCode"	column="country_code"/>
+		<result property="countryName"	column="country_name"/>
+		<result property="weightUnit"	column="weight_unit"/>
+		<result property="dimUnit"	column="dim_unit"/>
+		<result property="region"	column="region"/>
+	</resultMap>
+
+	<resultMap id="dhlTariffMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff">
+		<result property="businessId"	column="business_id"/>
+		<result property="serviceId"	column="service_id"/>
+		<result property="packageId"	column="package_type_id"/>
+		<result property="weightLB"	column="weight_lb"/>
+		<result property="zone"	column="zone"/>
+		<result property="rateNonDoc"	column="rate_non_doc"/>
+		<result property="rateDoc" column="rate_doc" />
+		<result property="weightKG"	column="weight_kg"/>		
+	</resultMap>
+	<resultMap id="dhlThirdCountryTariffMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff">
+		<result property="businessId"	column="business_id"/>
+		<result property="serviceId"	column="service_id"/>
+		<result property="packageId"	column="package_type_id"/>
+		<result property="weightLB"	column="weight_lb"/>
+		<result property="rateNonDoc"	column="rate"/>
+		<result property="rateDoc" column="rate" />
+		<result property="weightKG"	column="weight_kg"/>		
+	</resultMap>
+
+	<resultMap id="dhlAccMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DHLAccCharges">
+		<result property="businessId"	column="business_id"/>
+		<result property="chargeCode"	column="charge_code"/>
+		<result property="chargeCodeLevel2"	column="charge_code_level_2"/>
+		<result property="cost"	column="cost"/>
+		<result property="charge"	column="charge"/>
+		<result property="perPackage"	column="per_package"/>
+		<result property="minCharge" column="min_charge" />
+		<result property="maxCharge"	column="max_charge"/>		
+		<result property="countryCode"	column="country_code"/>		
+	</resultMap>
+	
+	<resultMap id="dhlShipValidateResponseMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse">
+		<result property="id"						column="id"/>
+		<result property="orderId"					column="order_id"/>
+		<result property="airwayBillNumber"			column="airway_bill_number"/>
+		<result property="destServiceAreaCode"		column="dest_service_area_code"/>
+		<result property="productShortName"			column="product_short_name"/>
+		<result property="shipperFederalTaxId"		column="shipper_federal_tax_id"/>
+		<result property="shipperStateTaxId"		column="shipper_state_tax_id"/>
+		<result property="consigneeStateTaxId"		column="consignee_state_tax_id"/>
+		<result property="consigneeFederalTaxId"	column="consignee_federal_tax_id"/>
+		<result property="productContentCode"		column="product_content_code"/>
+		<result property="originServiceAreaCode"	column="origin_service_area_code"/>
+		<result property="outBoundSortCode"			column="out_bound_sort_code"/>
+		<result property="inBoundSortCode"			column="in_bound_sort_code"/>
+		<result property="destFacilityCode"			column="dest_facility_code"/>
+		<result property="internalServiceCode"		column="internal_service_code"/>
+		<result property="deliveryTimeCode"			column="delivery_time_code"/>
+		<result property="deliveryDateCode"			column="delivery_date_code"/>
+		<result property="shipperAccountNumber"		column="shipper_account_number"/>
+		<result property="reference"				column="reference"/>
+		<result property="contentsDescription"		column="contents_description"/>
+		<result property="dhlRoutingDataId"			column="dhl_routing_data_id"/>
+		<result property="dhlRoutingCode"			column="dhl_routing_code"/>
+		<result property="weightUnit"				column="weight_unit"/>
+		<result property="specialServiceType"		column="special_service_type"/>
+		<result property="dutyPaymentType"			column="duty_payment_type"/>
+		<result property="dutyAccountNumber"		column="duty_account_number"/>
+		<result property="insuredAmount"			column="insured_amount"/>
+		<result property="dutyDeclaredValue"		column="duty_declared_value"/>
+		<result property="dutyDeclaredCurrency"		column="duty_declared_currency"/>
+		<result property="dutyTermsOfTrade"			column="duty_terms_of_trade"/>
+		<result property="billingAccountNumber"		column="billing_account_number"/>	
+		<result property="globalProductCode"		column="global_product_code"/>
+		<result property="pieces"					column="id" select="getShipValidatePiece"/>
+	</resultMap>	
+
+	<resultMap id="dhlShipValidatePieceMap" class="com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidatePiece">
+		<result property="id"					column="id"/>
+		<result property="shipValResponseId"	column="ship_val_response_id"/>
+		<result property="number"				column="number"/>
+		<result property="weight"				column="weight"/>
+		<result property="pieceIdentifier"		column="piece_identifier"/>
+		<result property="licensePlate"			column="license_plate"/>
+	</resultMap>	
+
+	<resultMap id="dhlESD" class="com.meritconinc.shiplinx.carrier.dhl.model.DHLESD">
+		<result property="countryCode"/>	
+		<result property="stateCode"/>
+		<result property="stateName"/>
+		<result property="IATACode"/>
+		<result property="cityName"/>
+		<result property="empty"/>
+		<result property="zipCodeStart"/>
+		<result property="zipCodeEnd"/>
+		<result property="irr"/>
+		<result property="empty2"/>
+		<result property="dhlServiceAreaCode"/>
+		<result property="irr2"/>
+		<result property="dayDefinite"/>		
+	</resultMap>
+
+	<select id="findTariffRecordLB" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff" resultMap="dhlTariffMap">
+		 	select * from dhl_canada_tariff where service_id=#serviceId# 
+		 	and zone=#zone# and weight_lb>=#weightLB# limit 1
+	</select>
+	
+	<select id="findTariffRecordKG" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff" resultMap="dhlTariffMap">
+		 	select * from dhl_canada_tariff where service_id=#serviceId# 
+		 	and zone=#zone# and weight_kg>=#weightKG# limit 1
+	</select>
+
+	<select id="findZoneRecord" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLZone" resultMap="dhlZoneMap">
+		 	select * from dhl_zone where country_code=#countryCode#
+	</select>
+
+	<select id="findMaxLBWeightForService"  resultClass="java.lang.Double">
+		 	select max(weight_lb) from dhl_canada_tariff where service_id=#serviceId#
+	</select>
+
+	<select id="findMaxKGWeightForService"  resultClass="java.lang.Double">
+		 	select max(weight_kg) from dhl_canada_tariff where service_id=#serviceId#
+	</select>
+
+	<select id="getAccCharge"  parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLAccCharges" resultMap="dhlAccMap">
+		 	select * from dhl_canada_acc_charges where business_id=#businessId#
+	 		<isNotNull prepend="and" property="chargeCode">
+	 			charge_code = #chargeCode#
+	 		</isNotNull>	
+	 		<isNotNull prepend="and" property="chargeCodeLevel2">
+	 			charge_code_level_2 = #chargeCodeLevel2#
+	 		</isNotNull>	
+	 		<isNotNull prepend="and" property="countryCode">
+	 			country_code = #countryCode#
+	 		</isNotNull>	
+		 	
+	</select>
+
+	<insert id="addShipValidateResponse" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse">
+		  insert into dhl_ship_val_response	(order_id, airway_bill_number, dest_service_area_code, product_short_name, shipper_federal_tax_id, shipper_state_tax_id, consignee_state_tax_id, consignee_federal_tax_id, product_content_code, origin_service_area_code, out_bound_sort_code, in_bound_sort_code, dest_facility_code, internal_service_code, delivery_time_code, delivery_date_code, shipper_account_number, reference, contents_description, dhl_routing_data_id, dhl_routing_code, weight_unit, special_service_type, duty_payment_type, duty_account_number, insured_amount, duty_declared_value, duty_declared_currency, duty_terms_of_trade, billing_account_number, global_product_code) 
+		 					 values 		(#orderId#,#airwayBillNumber#,#destServiceAreaCode#,  #productShortName#, #shipperFederalTaxId#,  #shipperStateTaxId#,  #consigneeStateTaxId#,  #consigneeFederalTaxId#,  #productContentCode#, #originServiceAreaCode#,  #outBoundSortCode#,  #inBoundSortCode#,  #destFacilityCode#, #internalServiceCode#, #deliveryTimeCode#, #deliveryDateCode#, #shipperAccountNumber#, #reference#,#contentsDescription#,#dhlRoutingDataId#, #dhlRoutingCode#, #weightUnit#, #specialServiceType#,#dutyPaymentType#, #dutyAccountNumber#, #insuredAmount#,#dutyDeclaredValue#, #dutyDeclaredCurrency#, #dutyTermsOfTrade#,  #billingAccountNumber#, #globalProductCode#) 
+		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+	
+	<insert id="addShipValidatePiece" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidatePiece">
+		  insert into dhl_ship_val_piece	(ship_val_response_id, number,  weight,  piece_identifier,   license_plate) 
+		 					 values 		(#shipValResponseId#, #number#,#weight#, #pieceIdentifier#, #licensePlate#) 
+		<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>	
+	
+	<select id="getShipValidatePiece" resultMap="dhlShipValidatePieceMap">
+		 	select * from dhl_ship_val_piece where ship_val_response_id=#shipValResponseId#
+	</select>	
+	
+	<select id="getShipValidateResponse" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse" resultMap="dhlShipValidateResponseMap">
+		 	select * from dhl_ship_val_response where order_id=#orderId# or airway_bill_number=#airwayBillNumber#
+	</select>	
+
+	<select id="findThirdCountryTransitCode" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff" resultClass="java.lang.String">
+		 	select transit_code from dhl_canada_third_country_transit where from_zone=#fromZone# and to_zone=#toZone#
+	</select>
+	<select id="findMaxLBWeightForServiceThirdCountry"  resultClass="java.lang.Double">
+		 	select max(weight_lb) from dhl_canada_third_country_tariff where service_id=#serviceId#
+	</select>
+	<select id="findTariffRecordLBThirdCountry" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff" resultMap="dhlThirdCountryTariffMap">
+		 	select * from dhl_canada_third_country_tariff where service_id=#serviceId# 
+		 	and transit_code=#transitCode# and weight_lb>=#weightLB# limit 1
+	</select>
+	<select id="findMaxKGWeightForServiceThirdCountry"  resultClass="java.lang.Double">
+		 	select max(weight_kg) from dhl_canada_third_country_tariff where service_id=#serviceId#
+	</select>
+	<select id="findTariffRecordKGThirdCountry" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff" resultMap="dhlThirdCountryTariffMap">
+		 	select * from dhl_canada_third_country_tariff where service_id=#serviceId# 
+		 	and transit_code=#transitCode# and weight_kg>=#weightKG# limit 1
+	</select>
+
+		<select id="findESDByZip"  resultMap="dhlESD">
+		  SELECT * FROM `dhl_esd` where country_code = #countryCode#
+		  and zip_code_start like '$zipCodeStart$%' 
+		  order by zip_code_start limit 100
+		 </select>
+
+	<select id="findESDByCity" parameterClass="com.meritconinc.shiplinx.carrier.dhl.model.DHLESD" resultMap="dhlESD">
+		SELECT * FROM `dhl_esd` where country_code = #countryCode#
+		and city_name like '$cityName$%'
+		order by city_name limit 100	
+	</select>
+	
+</sqlMap>
+

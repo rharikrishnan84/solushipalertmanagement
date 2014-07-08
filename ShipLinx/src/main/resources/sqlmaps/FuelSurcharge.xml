@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="customer">
+<resultMap id="fuelSurcharge" class="com.meritconinc.shiplinx.model.FuelSurcharge">
+		<result column="id" property="id"/>
+		<result column="carrier_id" property="carrierId" />
+		<result column="type" property="type" />
+		<result column="value" property="value"/>
+		<result column="from_country" property="fromCountry" />
+		<result column="to_country" property="toCountry" />
+</resultMap> 
+
+<select id="getFuelSurcharge" resultMap="fuelSurcharge">
+	select  * from fuel_surcharge f where f.id = #id#
+</select>
+
+<select id="getFuelSurcharges" parameterClass="com.meritconinc.shiplinx.model.FuelSurcharge" resultMap="fuelSurcharge">
+	select  * from fuel_surcharge  
+	<dynamic prepend="where">
+ 		<isGreaterThan prepend="and" property="carrierId" compareValue="0">
+ 			carrier_id = #carrierId#
+ 		</isGreaterThan>	
+		<isNotNull  prepend="and" property="fromCountry">
+			from_country=#fromCountry#
+		</isNotNull>
+		<isNotNull  prepend="and" property="type">
+			type=#type#
+		</isNotNull>
+		<isNotNull  prepend="and" property="toCountry">
+			to_country=#toCountry#
+		</isNotNull>
+	</dynamic>
+	
+</select>
+
+
+</sqlMap>
