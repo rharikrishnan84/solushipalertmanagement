@@ -191,6 +191,17 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private List<Products> warehouseProductsList;
 	List<Products> warehouseAllProdList = new ArrayList<Products>();
 	
+	private Map<String, Long> importsSearchResult= new HashMap<String, Long>();
+ 	
+		public Map<String, Long> getImportsSearchResult() {
+			return importsSearchResult;
+		}
+	
+	
+		public void setImportsSearchResult(Map<String, Long> importsSearchResult) {
+			this.importsSearchResult = importsSearchResult;
+		}
+	
 	private List<Address> addresses = null;
 	
 //	private List<Carrier> carriers;
@@ -1339,7 +1350,16 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        if (this.getShippingOrder() != null && this.getShippingOrder().getToAddress() != null) {
 		          this.getShippingOrder().getToAddress().setProvinceCode(address.getProvinceCode());
 		        } 
-		      }
+			}else if (type.equalsIgnoreCase("broker")) {
+							        if (this.getShippingOrder() != null && this.getShippingOrder().getCustomsInvoice().getBrokerAddress() != null) {
+								          this.getShippingOrder().getCustomsInvoice().getBrokerAddress().setProvinceCode(address.getProvinceCode());
+								        } 
+								      }
+			else if (type.equalsIgnoreCase("clear")) {
+		        if (this.getShippingOrder() != null && this.getShippingOrder().getCustomsInvoice().getBrokerAddress() != null) {
+			          this.getShippingOrder().getCustomsInvoice().getBrokerAddress().setProvinceCode(address.getProvinceCode());
+			        } 
+			      }
 			else if (type.equalsIgnoreCase("buyer")) {
 							        if (this.getShippingOrder() != null && this.getShippingOrder().getToAddress() != null) {
 								          this.getShippingOrder().getCustomsInvoice().getBuyerAddress().setProvinceCode(address.getProvinceCode());
@@ -1876,6 +1896,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		String countryCode="";
 		List<Province> fromProvinces;
 		List<Province> toProvinces;
+		String abbrevationBroker = request.getParameter("abbrbroker");
 		String type = request.getParameter("type");
 		String addressId = request.getParameter("addressid");
 		String strReturn = null;
@@ -1962,6 +1983,30 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						strReturn = "success6";
 						
 					}
+		else if("brokerAddressNew".equals(type)){
+						   Address address = addressService.findAddressById(request.getParameter("addressid"));   
+						   shippingOrder.getCustomsInvoice().getBrokerAddress().copyAddress(address); 
+						   shippingOrder.getCustomsInvoice().getBrokerAddress().setAbbreviationName(abbrevationBroker);
+						   
+						   
+						   fromCountry = address.getCountryCode();
+						   fromProvinces = addressService.getProvinces(fromCountry);
+			
+						        getSession().put("brokerProvinces", fromProvinces);
+						   //shippingOrder.getCustomsInvoice().setBrokerAddress(address);
+						   getSession().put("shippingOrder",shippingOrder);
+						   getSession().put("br_abbreviationName",address.getAbbreviationName());
+						   getSession().put("br_address1",address.getAddress1());
+						   getSession().put("br_address2",address.getAddress2());
+						   getSession().put("br_postalCode",address.getPostalCode());
+						   getSession().put("br_city",address.getCity());
+						   getSession().put("br_countryCode",address.getCountryCode());
+						   getSession().put("br_phoneNo",address.getPhoneNo());
+						   getSession().put("br_faxNo",address.getFaxNo());
+						   getSession().put("br_emailAddress",address.getEmailAddress());
+						   getSession().put("br_contactName",address.getContactName()); 
+						   strReturn = "success9";
+						  }
 		else 	//pickup address
 		{	
 			Pickup pickup = this.getPickup();
@@ -2267,6 +2312,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      // getSession().put("BillToType", shippingOrder.getBillToType());
 	      request.setAttribute("BillToType",
 	          shippingOrder.getBillToType() + " - " + shippingOrder.getBillToAccountNum());
+	    
+	    	    this.addresslist();
 	    return SUCCESS;
 
 	  }
@@ -2334,6 +2381,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		ShippingOrder shippingOrder = getShippingOrder();
 		String pickupRequired=request.getParameter("pickupRequired");
 		  shippingOrder.getPickup().setPickupRequired(Boolean.parseBoolean(pickupRequired));
+		  String brokerName = request.getParameter("broker");
+		  if(brokerName!=null){
+		  shippingOrder.getCustomsInvoice().getBrokerAddress().setAbbreviationName(brokerName);
+		  }
 		// shippingOrder.setBillToAccountNum(null);
 		//shippingOrder.getCustomsInvoice().setBillTo("1");
 				String currency=request.getParameter("cur");
@@ -2422,6 +2473,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				        for (int i = 0; i < r.getCharges().size(); i++) {
 				          r.getCharges().get(i).setCarrierId(chargeCarrier.getId());
 				          r.getCharges().get(i).setCarrierName(chargeCarrier.getName());
+				          if(r.getCharges().get(i).getName().equals(ShiplinxConstants.TAX_GST)){
+				        	  				        	  r.getCharges().get(i).setChargeCode(ShiplinxConstants.TAX_TAX);
+				        	  				          }
 				          if (r.getCharges().get(i).getType() == 0) {
 				            quoteTotalCost += r.getCharges().get(i).getCost();
 				            quoteTotalCharge += r.getCharges().get(i).getCharge();
@@ -3531,6 +3585,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			}			if (carrierId != null && !"".equalsIgnoreCase(carrierId) && "5".equals(clickableButtonId)
 			          && !("80".equals(carrierId))) {
 			        getSession().put("CARRIER_ID", carrierId);
+			        response.setContentType("application/pdf");
+			        					response.setHeader("Content-Disposition",
+			        							"attachment;filename=EODManifest.pdf");	
 			        printManifest();
 			      } else if ((carrierId == null || "".equalsIgnoreCase(carrierId) || fromDate == null
 			          || "".equalsIgnoreCase(fromDate) || toDate == null || "".equalsIgnoreCase(toDate))
@@ -4652,7 +4709,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			              
 			              String name = (userNames[i] == null ? "" : userNames[i]);
 			              String statusText = (userStatusTexts[i + 1] == null ? "" : userStatusTexts[i + 1]);		 
-			              String ediNumber=(userEdiInvoiceNumber[i]==null?"":userEdiInvoiceNumber[i]);
+			              String ediNumber="";
 							 int costcurr = StringUtil.getInteger(costCurrency[i]);
 				             int chargecurr = StringUtil.getInteger(chargeCurrency[i]);
 				              BigDecimal exchangerate = StringUtil.getBigDecimal(exchangeRate[i]);
@@ -4666,10 +4723,17 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						}
 					}
 			          ShippingOrder curOrder = new ShippingOrder();
+			          int count =0;
 			          for (int i = 0; i < this.getSelectedOrder().getCharges().size(); i++) {
 			            if (this.getSelectedOrder().getCharges().get(i).getType() == 1) {
 			              totalActualCharge += this.getSelectedOrder().getCharges().get(i).getCharge();
 			              totalActualCost += this.getSelectedOrder().getCharges().get(i).getCost();
+			              if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
+			            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+			            	  			              }else if(this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() == null && userEdiInvoiceNumber[count]!=null){
+			            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+			            	  			              }
+			            	  			              count++;
 			            }
 			          }
 			          DecimalFormat round = new DecimalFormat("###.##");
@@ -4678,6 +4742,18 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			          curOrder.setActualTotalCharge(Double.valueOf(round.format(totalActualCharge)));
 			          shippingDAO.updateTotalCharges(curOrder);
 
+				}else{
+					int count =0;
+					  for (int i = 0; i < this.getSelectedOrder().getCharges().size(); i++) {
+				            if (this.getSelectedOrder().getCharges().get(i).getType() == 1) {
+				              if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
+				            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+				            	  			              }else if(this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() == null && userEdiInvoiceNumber[count]!=null){
+				            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+				            	  			              }
+				            	  			              count++;
+				            }
+				          }
 				}
 			}
 	    } catch (Exception e) {
@@ -6329,6 +6405,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			  public void printManifest() {
 				    ShippingOrder so = this.getShippingOrder();
 				    User user = UserUtil.getMmrUser();
+				    File file;
 				    so.setCustomerId(user.getCustomerId());
 				    Date date = new Date();
 				    String fromDate = this.request.getParameter("shippingOrder.fromDate");
@@ -6342,15 +6419,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				    String manifestFileName = fromDate + "_" + toDate + "_" + carrierId;
 
 				    String shipperAddress;
-				    String directory = (request.getSession().getServletContext().getRealPath("/") + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/jasperreports/pdf/");
+				    String directory = (request.getSession().getServletContext().getRealPath("/") + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/pdf/");
+				    Boolean folderNew = (new File((request.getSession().getServletContext().getRealPath("/") + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/pdf")).mkdir()); 
+				    				    if(folderNew){
+				    				    	log.debug("----->New Folder Created for EOD----> "+directory);
+				    				    }
 				     File f = new File(request.getSession().getServletContext().getRealPath("/")
 
-				        + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/jasperreports/"
+				        + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/pdf/"
 				        + manifestFileName + ".pdf");
 					  // FileUtils.cleanDirectory(directory);
 					    try {
 					     // FileUtils.cleanDirectory(directory);
-					     File file = new File(directory);
+					     file = new File(directory);
 					      String[] myFiles;
 					      if (file.isDirectory()) {
 					        myFiles = file.list();
@@ -6445,7 +6526,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				                charge_QST += order.get(i).getCharges().get(j).getCharge();
 				                totalChargeTemp += order.get(i).getCharges().get(j).getCharge();
 				              } else if ((order.get(i).getCharges().get(j).getName().length() > 15 && order.get(i)
-				                  .getCharges().get(j).getName().toLowerCase().contains("special handling"))
+				                  .getCharges().get(j).getName().toLowerCase().contains("handling"))
 				                  || (order.get(i).getCharges().get(j).getName().length() > 5 && order.get(i)
 				                      .getCharges().get(j).getName().toLowerCase().contains("danger"))) {
 				                value_SH_DG += order.get(i).getCharges().get(j).getCharge();
@@ -6490,7 +6571,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				          + order.get(0).getFromAddress().getCity() + " "
 				          + order.get(0).getFromAddress().getProvinceCode() + " "
 				          + order.get(0).getFromAddress().getPostalCode();
-				      parameters.put("carrierInc", order.get(0).getCarrierName() + " inc");
+				      parameters.put("carrierInc", order.get(0).getCarrier().getName() + " inc");
 				      parameters.put("serviceDate", serviceDate);
 				      parameters.put("manifestNo", manifestNo);
 				      parameters.put("shipperAddress", shipperAddress);
@@ -6506,23 +6587,37 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, ds);
 				      JasperExportManager.exportReportToPdfFile(jasperPrint, request.getSession()
 				          .getServletContext().getRealPath("/")
-				         + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/jasperreports/pdf/"
+				         + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/pdf/"
 				          + manifestFileName + ".pdf");
 				      // JasperExportManager.exportReportToPdfFile(jasperPrint,
 				      // "C:/Users/Mitosis/Desktop/Manifest/Manifest-"+manifestNo+".pdf");
 				      // }
-				      File file = new File(request.getSession().getServletContext().getRealPath("/")
-				    		 + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/jasperreports/pdf/"
+				      try{
+				    	  				      file = new File(request.getSession().getServletContext().getRealPath("/")
+				    		 + "WEB-INF/classes/com/meritconinc/shiplinx/carrier/purolator/pdf/"
 				          + manifestFileName + ".pdf");
 				      // checkPdf = null;
-				      getSession().put("file", file);
-				      try {
+				      /*try {
 
 				        inputStream = new DataInputStream(new FileInputStream(file));
 
 				      } catch (FileNotFoundException e) {
-				        e.printStackTrace();
+				        e.printStackTrace();*/
+				    	  				    //                                     ----->  Code for download Manifest PDF <-----
+				    	  				    				      FileInputStream fileInputStream = new FileInputStream(file);
+				    	  				    						OutputStream outputStream = response.getOutputStream();	
+				    	  				    				        int read=0;
+				    	  				    						byte[] bytes = new byte[1024];
+				    	  				    				        while((read = fileInputStream.read(bytes))!= -1){
+				    	  				    				        	outputStream.write(bytes, 0, read);
+				    	  				    						}
+				    	  				    				        outputStream.flush();
+				    	  				    				        outputStream.close();
+				    	  				    				      }
+				    	  				    				      catch(FileNotFoundException e){
+				    	  				    				    	  e.printStackTrace();
 				      }
+				      
 				    } catch (Exception e) {
 				      e.printStackTrace();
 				    }
@@ -6549,4 +6644,24 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						
 						return tempPath + File.separator + fName + curDateTime.getTime() + ".pdf";
 					}
+			
+			public void addresslist(){
+							     String searchParameter = "";
+				
+							     ShippingOrder shippingorder = this.getShippingOrder();
+							     							     String countryCode = shippingorder.getToAddress().getCountryCode();
+							     							     String customerId = shippingorder.getCustomerId().toString();
+							     							     
+							     							     List<Address> address = this.addressService.searchCustomsBrokerAddress(customerId, countryCode);
+				
+							        // First record is empty
+							        importsSearchResult.put("", 0L);
+				
+							        for (Address cust : address) {
+							        									         importsSearchResult.put(cust.getAbbreviationName(), cust.getAddressId());
+							        									        }
+				
+							        session.put("importslist", importsSearchResult);    
+							   }
+							
 }

@@ -107,23 +107,40 @@ function assignCompany()
 				//end of ajax call --
 		}
 		function clearBrokerInformation(){
-		var confirmationMessage=confirm('Are you sure want to clear "Broker Information"?');
-		if(confirmationMessage==true){
-		var dojos = getElementsByClassName("dojoComboBox");
-		dojos[4].value="";		
-		document.getElementById("shippingOrder.customsInvoice.brokerAddress.abbreviationName").value="";
-		document.getElementById("ci.address1").value="";
-		document.getElementById("ci.address2").value="";
-		document.getElementById("ci.postcalCode").value="";
-		document.getElementById("ci.city1").value="";
-		document.getElementById("firstBoxb").value="";
-		document.getElementById("shippingOrder.customsInvoice.brokerAddress.provinceCode").innerHTML="";
-		document.getElementById("ci.phoneNo").value="";
-		document.getElementById("ci.faxNo").value="";
-		document.getElementById("ci.emailid").value="";
-		document.getElementById("ci.contactName").value="";		
+			var confirmationMessage=confirm('Are you sure want to clear "Broker Information"?');
+						if(confirmationMessage==true){
+						document.getElementById("imports3").value="";
+						document.getElementById("ci.address1").value="";
+						document.getElementById("ci.address2").value="";
+						document.getElementById("ci.postcalCode").value="";
+						document.getElementById("ci.city1").value="";		
+						document.getElementById("ci.phoneNo").value="";
+						document.getElementById("ci.faxNo").value="";
+						document.getElementById("ci.emailid").value="";
+						document.getElementById("ci.contactName").value="";		
+						document.getElementById("stateidb").value="";
+						}
 		}
-		}
+
+		 function searchbroker(){
+			 			   ajax_ChangeTo=ajaxFunction();
+			 			   ajax_ChangeTo.onreadystatechange=function()
+			 			     {
+			 			       if(ajax_ChangeTo.readyState==4)
+			 			     {
+			 			     reponse=ajax_ChangeTo.responseText;
+			 			     js_stateid=document.getElementById("brokerAuto");
+			 			     js_stateid.innerHTML= reponse;
+			 			     }
+			 			    }
+			 			   var addressId=document.getElementById("imports33").value;
+			 			   var abbr = document.getElementById("imports3").value;
+			 			   var url = "selectShippingAddress.action?addressid="+addressId+"&type=brokerAddressNew&abbrbroker="+abbr;
+			 			   
+			 			   ajax_ChangeTo.open("GET",url,true);
+			 			   ajax_ChangeTo.send(this);
+			 			   
+			 			  }
 </script>
 		
 <script type="text/javascript">
@@ -293,7 +310,7 @@ function toShoworHide(checked)
 	var p_uprice = document.getElementById("new_prod_uprice").value;
 	p_uprice = parseFloat(p_uprice).toFixed(2);
 	//var p_desc = dojo.widget.byId("autoproductdesc").getSelectedValue();	
-	var p_desc = dojos[6].value;	
+	var p_desc = dojos[2].value;	
 	//alert("P_DESC:::"+p_desc);
 	var p_hcode = document.getElementById("new_prod_hcode").value;
 	//alert(p_hcode);
@@ -551,7 +568,9 @@ function toShoworHide(checked)
 										<div class="fields">
 											<label><mmr:message messageId="label.currency"/>&nbsp;<span>*</span>  </label>
 											<div class="controls" id="currency"><span>:</span>
-												<sx:autocompleter name="shippingOrder.customsInvoice.currency"  id="ci.currency"cssStyle=" width:160	px;  " list="{'CAD','USD'}"  autoComplete="false" preload="true"/>
+												<s:hidden id="currency" />			
+
+				<s:textfield id="currencyautocomplete" name="shippingOrder.customsInvoice.currency" class="customerautocmpt" />
 											</div>
 										</div>
 										
@@ -613,9 +632,11 @@ function toShoworHide(checked)
 												<s:param name="customerId" value="%{shippingOrder.customerId}"/>	
 												<s:param name="shipToCountryCode" value="%{shippingOrder.toAddress.countryCode}"/>	         
 												</s:url>
-												<sx:autocompleter id="br.abbreviationName" cssStyle=" width:160px;" keyName="address.addressId" name="searchString" href="%{addressList}" dataFieldName="addressSearchResult" loadOnTextChange="true"  value="%{shippingOrder.customsInvoice.brokerAddress.abbreviationName}" onkeyup="javascript: assignCompany();" loadMinimumCount="1" autoComplete="true"  valueNotifyTopics="/value_address"  preload="true"/>
+												<s:hidden id="imports33" />   
+               							 <s:textfield id="imports3" value="%{shippingOrder.customsInvoice.brokerAddress.abbreviationName}" name="shippingOrder.customsInvoice.brokerAddress.abbreviationName" />
 											</div>
 										</div>
+										<div id="brokerAuto">
 										<%-- <s:include value="customsBrokerInformations.jsp"/> --%>
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.address1"/></label>
@@ -680,7 +701,7 @@ function toShoworHide(checked)
 												<s:textfield  id="ci.contactName" key="shippingOrder.customsInvoice.brokerAddress.contactName" name="shippingOrder.customsInvoice.brokerAddress.contactName" value="%{shippingOrder.customsInvoice.brokerAddress.contactName}" />
 											</div>
 										</div>
-										
+										</div>
 										
 									</div>	
 								</div>
@@ -777,3 +798,65 @@ function toShoworHide(checked)
 
 </body>
 </html>
+<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/autocomplete.js"></script>
+<script type="text/javascript">
+
+var customers = {
+		<s:iterator value='importsSearchResult'>
+  "<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
+      </s:iterator>
+ };
+
+ delete customers["0"];
+ var customersArray = $.map(customers, function (value, key) { return { value: value, data: key }; });
+
+ 
+ // Initialize autocomplete with local lookup:
+      $('#imports3').newautocomplete({
+       lookup: customersArray,
+       triggerSelectOnValidInput: false,
+  minChars: 0,
+  onSelect: function (suggestion) {
+  if(suggestion.value != ""){
+           $('#imports33').val(suggestion.data);
+           searchbroker();
+   }
+        }
+   });
+ 
+ function compare(a,b) {
+   if (a.value < b.value)
+   return -1;
+   if (a.value > b.value)
+ return 1;
+   return 0;
+ }
+</script>
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/autocomplete.js"></script>
+				<script type="text/javascript">
+
+var currencies = {
+		"": "",
+		"CAD": "CAD",
+		"USD": "USD",
+      
+ };
+
+	
+	var currencyArray = $.map(currencies, function (value, key) { return { value: value, data: key }; });
+
+	
+	// Initialize autocomplete with local lookup:
+      $('#currencyautocomplete').newautocomplete({
+       lookup: currencyArray,
+		minChars: 0,
+		onSelect: function (suggestion) {
+		if(suggestion.value != ""){
+           $('#currency').val(suggestion.data);
+			
+			}
+        }
+   });
+	
+</script>

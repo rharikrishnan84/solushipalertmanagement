@@ -763,6 +763,7 @@
 			<result name="success4">/mmr/jsp/shipping/customsBrokerInformations.jsp</result>
 			<result name="success5">/mmr/jsp/shipping/customsBuyerInformations.jsp</result>
 			<result name="success6">/mmr/jsp/admin/pickup.jsp</result>
+			<result name="success9">/mmr/jsp/shipping/imports_broker_auto.jsp</result>
         </action>
 		<action name="new.quote" method="newQuote" class="shipmentAction">
 		 	<result type="tiles" name="success">quoteShipment</result>           
@@ -870,8 +871,12 @@
         </action>         
         <action name="update.actual.charge.shipment" method="updateActualCharge" class="shipmentAction">
 			<interceptor-ref name="mmrStackTrackToken" />
-            <result type="tiles" name="success">viewShipment</result>
             <result name="input">viewShipment</result>
+            <result type="redirectAction" name="success">
+              <param name="actionName">view.shipment.action</param>
+              <param name="namespace">/admin</param>
+              <param name="viewShipmentId">${selectedOrder.id}</param>
+            </result>
         </action>   
         <action name="update.quoted.charge.shipment" method="updateQuotedCharge" class="shipmentAction">
  			<interceptor-ref name="mmrStackTrackToken" />
@@ -1263,10 +1268,12 @@
         </action>
         
         <action name="editproduct" method="editProduct" class="productManagerAction">
+        	<result name="input" type="tiles">addNewProduct</result>
         	<result type="tiles">addNewProduct</result>
         </action>
         
         <action name="deleteProduct" method="deleteProduct" class="productManagerAction">
+        <result name="input" type="tiles">searchProduct</result>
         	<result type="tiles">searchProduct</result>
         </action>
         

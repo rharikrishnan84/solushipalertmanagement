@@ -285,11 +285,13 @@ public class EdiManagerImpl implements EdiManager {
 				if ( !isReadyForRelease(items) ) {
 					return EdiItem.FILE_NOT_READY_FOR_RELEASE;
 				}
+				if (isReadyForRelease(items) ) {
 				// Release all items in this EDI file
 				for (EdiItem item:items) {
 					if ( !this.releaseEdiInvoice(item.getId(), item.getInvoiceNumber()) ) {
 						throw new Exception("Failed to release EDI File:" + ediFileName + " Invoice Number:" + item.getInvoiceNumber());
 					}
+				}
 				}
 				return EdiItem.FILE_RELEASED_SUCCESSFULLY;
 			}

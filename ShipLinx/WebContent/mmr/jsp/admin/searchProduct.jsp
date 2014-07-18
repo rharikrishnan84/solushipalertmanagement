@@ -323,7 +323,7 @@ var vkey = "";
 			<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
 			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
 			<ul id="actionmenu">
-				<li><s:a href="/shiplinx/admin/addnewproduct.action" >ADD PRODUCT</s:a></li>
+				<li><a href="<%=request.getContextPath()%>/admin/addnewproduct.action" >ADD PRODUCT</a></li>
 				<li><s:a onclick="editProduct();" href="#" cssClass="gridedit" >EDIT</s:a></li>
 				<li><s:a onclick="deleteProduct()" href="#" cssClass="griddelete">DELETE</s:a></li>
 			</ul>
@@ -348,7 +348,7 @@ var vkey = "";
 <tbody>	
 		<s:iterator id="product"  status="rowstatus" value="productList">	
 			<tr>	
-			<s:hidden name="products.productId" value="%{products.productId}"/>
+			<s:hidden name="products.pId" value="%{products.productId}"/>
 			<s:hidden name="products.cid" value="%{products.customerId}"/>
 			<td><input  class="dataTable-checkbox" type="checkbox" name="searchProductCheckBox"  value="<s:property value="productId"/>" </td>
 			<td><s:property value="productName"/></td>

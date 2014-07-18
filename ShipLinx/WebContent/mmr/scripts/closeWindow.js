@@ -1229,63 +1229,63 @@ var currentDate="";
 				$('#buyerPostalCode').flushCache();*/
 		} // End function showState() 
 		
-	function getSuggestBrokerAddress() {	
-		var form = document.userform;
-	  	var selectedCountry = form.elements['shippingOrder.customsInvoice.brokerAddress.countryCode'].value;
-	    if(selectedCountry != 'US' && selectedCountry != 'CA'){
-	    	return;
-	    }
-	    document.getElementById("loading-img-to").style.display = 'block';
-		var error = false;
-		form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value = (form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value).replace(/\s/g,"");
-			if((form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value).length == 5){
-				var mask = new RegExp('^\\d{5}$');
-				if(mask.exec(form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value) == null) {
-					alert('(Ship To) Postal Code should be in US format #####');
-					error = true;
-				}else{
-					form.elements['shippingOrder.customsInvoice.brokerAddress.countryCode'].value = 'US';
-				}
-			}
-			else if((form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value).length == 6){
-					var mask = new RegExp('^[a-zA-Z]\\d[a-zA-Z][ ]{0,1}\\d[a-zA-Z]\\d$');
-					if(mask.exec(form.elements['shippingOrder.customsInvoice.brokerAddress.postalCode'].value) == null) {
-						alert('(Ship To) Postal Code should be in Canadian format A#A#A# or A#A #A# ' );
-						error = true;
-					}else{
-						form.elements['shippingOrder.customsInvoice.brokerAddress.countryCode'].value = 'CA';
-					}
-				
-			}else{
-				alert('Postal code should be only of US or Canada');
-				error = true;
-				document.getElementById("loading-img-to").style.display = 'none';
-			}
-			showShipToStateb();			
-			if(!error){
-				ajax_City=ajaxFunction();
-				ajax_City.onreadystatechange=function()
-				  {
-					   if(ajax_City.readyState==4)
-						{
-						reponse=ajax_City.responseText;
-						form.elements['shippingOrder.customsInvoice.brokerAddress.city'].value = reponse;
-						showShipToStateb();
-						document.getElementById("loading-img-to").style.display = 'none';
-						}
-				  }
-				  billToPostalCode = document.getElementById('ci.postcalCode').value;
-				  toCountry = form.elements['shippingOrder.customsInvoice.brokerAddress.countryCode'].value
-					param="postalCode="+billToPostalCode+"&countryCode="+toCountry+"&type=to";
-					url=contextPath+"/getAddressSuggest.action?" + param;
-				  //+"&country="+toCountry;
-					ajax_City.open("GET",url,true);
-					ajax_City.send(this);
-			}
-			else{
-				document.getElementById("loading-img-to").style.display = 'none';
-			}
-	}
+		  function getSuggestBrokerAddress() {	
+			  	var form = document.userform;
+			  	var selectedCountry = document.getElementById('firstBoxb').value;
+			  	if(selectedCountry != 'US' && selectedCountry != 'CA'){
+			  		return;
+			  	}
+			  	document.getElementById("loading-img-to").style.display = 'block';
+			  	var error = false;
+			  	document.getElementById('ci.postcalCode').value = (document.getElementById('ci.postcalCode').value).replace(/\s/g,"");
+			  	if((document.getElementById('ci.postcalCode').value).length == 5){
+			  		var mask = new RegExp('^\\d{5}$');
+			  		if(mask.exec(document.getElementById('ci.postcalCode').value) == null) {
+			  			alert('(Ship To) Postal Code should be in US format #####');
+			  			error = true;
+			  		}else{
+			  			document.getElementById('firstBoxb').value = 'US';
+			  		}
+			  	}
+			  	else if((document.getElementById('ci.postcalCode').value).length == 6){
+			  		var mask = new RegExp('^[a-zA-Z]\\d[a-zA-Z][ ]{0,1}\\d[a-zA-Z]\\d$');
+			  		if(mask.exec(document.getElementById('ci.postcalCode').value) == null) {
+			  			alert('(Ship To) Postal Code should be in Canadian format A#A#A# or A#A #A# ' );
+			  			error = true;
+			  		}else{
+			  			document.getElementById('firstBoxb').value = 'CA';
+			  		}
+			  
+			  	}else{
+			  		alert('Postal code should be only of US or Canada');
+			  		error = true;
+			  		document.getElementById("loading-img-to").style.display = 'none';
+			  	}
+			  	showShipToStateb();			
+			  	if(!error){
+			  		ajax_City=ajaxFunction();
+			  		ajax_City.onreadystatechange=function()
+			  		{
+			  			if(ajax_City.readyState==4)
+			  			{
+			  				reponse=ajax_City.responseText;
+			  				document.getElementById("ci.city1").value = reponse;
+			  				showShipToStateb();
+			  				document.getElementById("loading-img-to").style.display = 'none';
+			  			}
+			  		}
+			  		billToPostalCode = document.getElementById('ci.postcalCode').value;
+			  		toCountry = document.getElementById('firstBoxb').value
+			  		param="postalCode="+billToPostalCode+"&countryCode="+toCountry+"&type=broker";
+			  		url=contextPath+"/getAddressSuggest.action?" + param;
+			  		//+"&country="+toCountry;
+			  		ajax_City.open("GET",url,true);
+			  		ajax_City.send(this);
+			  	}
+			  	else{
+			  		document.getElementById("loading-img-to").style.display = 'none';
+			  	}
+			  }
 			
 	function showShipToStateb() {
 			ajax_Country=ajaxFunction();

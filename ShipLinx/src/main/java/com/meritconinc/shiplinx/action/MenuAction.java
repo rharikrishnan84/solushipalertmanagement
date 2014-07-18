@@ -1,14 +1,11 @@
 package com.meritconinc.shiplinx.action;
 
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
@@ -18,8 +15,7 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.PropertyDAO;
 import com.meritconinc.mmr.model.common.LocaleVO;
-import com.meritconinc.mmr.utilities.MessageUtil;
-import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.mmr.model.common.PropertyVO;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.opensymphony.xwork2.Preparable;
 
@@ -31,6 +27,7 @@ import com.opensymphony.xwork2.Preparable;
 public class MenuAction extends BaseAction implements Preparable,ServletRequestAware{
 	private static final long serialVersionUID	= 25092007;
 	private MenusDAO menuItemDAO;
+	private PropertyDAO propertyDAO;
 	private static final Logger log = LogManager.getLogger(MenuAction.class);
 	private HttpServletRequest request;
 	private Map<String, Long> menuId = new HashMap<String, Long>();
@@ -91,9 +88,10 @@ public class MenuAction extends BaseAction implements Preparable,ServletRequestA
 	        	 String index[]=path.split("/");
 	        	 String method =index[index.length-1].substring(0,index[index.length-1].lastIndexOf("."));
 	       	    url = method+"."+language;
-	        	String file = MessageUtil.getPath(url); 
-	            url = file;
-	            inputStream = new FileInputStream(url);
+	       	 PropertyVO propertyVO = propertyDAO.getPath(language); 
+	       		            url = propertyVO.getDbValue();
+	       		            String file = url+"/"+method+".html";
+	       		            inputStream = new FileInputStream(file);
 	        }       
 	        catch (Exception e){
 	            System.out.println(e.toString());
@@ -109,5 +107,14 @@ public class MenuAction extends BaseAction implements Preparable,ServletRequestA
 	public void setMenuItemDAO(MenusDAO menuItemDAO) {
 		this.menuItemDAO = menuItemDAO;
 	}
+	
+	public PropertyDAO getPropertyDAO() {
+				return propertyDAO;
+			}
+		
+		
+			public void setPropertyDAO(PropertyDAO propertyDAO) {
+				this.propertyDAO = propertyDAO;
+			}
 	
 }

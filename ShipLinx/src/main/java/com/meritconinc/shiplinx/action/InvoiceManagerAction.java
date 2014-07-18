@@ -210,6 +210,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   }
 
   public String execute() throws Exception {
+	  getSession().remove("invoice");
 	  Customer c = new Customer();
 	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 	    customers = customerService.search(c);

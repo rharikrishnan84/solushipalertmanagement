@@ -408,13 +408,13 @@
 						<td><s:property value="invoiceNum" /></td>
 						<td><s:property value="customer.name" /></td>
 						<td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
-						<td style="text-align:right">$<s:property value="invoiceAmount" /></td>
+						<td style="text-align:right">$<s:property value="getText('{0,number,#,##0.00}',{invoiceAmount})"/></td>
 						<s:if test="%{#session.ROLE.contains('busadmin')}">
-						<td style="text-align:right">$<s:property value="invoiceCost" /></td>
+						<td style="text-align:right">$<s:property value="getText('{0,number,#,##0.00}',{invoiceCost})"/></td>
 						</s:if>
 		
 		
-						<td style="text-align:right">$<s:property value="invoiceTax" /></td>
+						<td style="text-align:right">$<s:property value="getText('{0,number,#,##0.00}',{invoiceTax})"/></td>
 						<td><s:property value="paymentStatusString" /></td>
 					</tr>
 					<s:set var="index" value="#index+1" />

@@ -2,6 +2,75 @@
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
+
+<script>	
+var ALERT_TITLE = "Oops!";
+var ALERT_BUTTON_TEXT = "Ok";
+var Confirm_BUTTON_TEXT = "Cancel";
+
+
+
+
+if(document.getElementById) {
+	window.alert1 = function(txt,v) {
+		createCustomAlert1(txt,v);
+	}
+	
+}
+
+function createCustomAlert1(txt,v) {
+	d = document;
+
+	if(d.getElementById("modalContainer")) return;
+
+	mObj = d.getElementsByTagName("body")[0].appendChild(d.createElement("div"));
+	mObj.id = "modalContainer";
+	mObj.style.height = d.documentElement.scrollHeight + "px";
+	
+	alertObj = mObj.appendChild(d.createElement("div"));
+	alertObj.id = "alertBox";
+	if(d.all && !window.opera) alertObj.style.top = document.documentElement.scrollTop + "px";
+	var leftMargin = (d.documentElement.scrollWidth - alertObj.offsetWidth)/2;
+	alertObj.style.left = (leftMargin-40) + "px";
+	alertObj.style.visiblity="visible";
+
+	/*h1 = alertObj.appendChild(d.createElement("h1"));
+	h1.appendChild(d.createTextNode(ALERT_TITLE));*/
+
+	msg = alertObj.appendChild(d.createElement("p"));
+	//msg.appendChild(d.createTextNode(txt));
+	msg.innerHTML = txt;
+
+	btn = alertObj.appendChild(d.createElement("a"));
+	btn.id = "closeBtn";
+	btn.appendChild(d.createTextNode(ALERT_BUTTON_TEXT));
+	btn.href = "#";
+	btn.focus();
+	btn.onclick = function() { removeCustomAlert1(v);return false; }
+
+	alertObj.style.display = "block";
+	
+}
+
+
+function createCustomConfirm(txt) {
+
+}
+
+function removeCustomAlert1(v) {
+	document.getElementsByTagName("body")[0].removeChild(document.getElementById("modalContainer"));
+	if(v=="totalvalue")
+		{
+		document.getElementById("ci.totalvalue").focus();
+		}
+	else
+		{
+		document.getElementById("currencyautocomplete").focus();
+		}
+}
+
+	</script>
+
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/orderManager.js">
 </script>
 <link rel="stylesheet" type="text/css"
@@ -149,7 +218,21 @@ var radioselected = 0;
 			for (i=0;i<editUserId.length;i++){
 			if (editUserId[i].checked){
 					
-						checkbox_value = editUserId[i].value;
+				var carrier=document.getElementById("shipmentCarrierId"+editUserId[i].value).value;
+												checkbox_value = editUserId[i].value;
+												}
+												}
+			if(carrier==20 && document.getElementById("toCountry").value=="UNITED STATES"  && document.getElementById("fromCountry").value=="CANADA"&& document.getElementById("currencyautocomplete").value==""){												
+										error=false;
+										alert1("Please enter the Currency and Total value on Customs Invoice Information","currency");
+																document.getElementById("customs_invoice_panel").style.display = 'block';		
+																document.getElementById("customs_invoice_checkbox").checked=true;
+																					document.getElementById("currencyautocomplete").focus();
+																					return;
+															
+														   }
+														   
+														 else{
 						Login_url = document.getElementsByName("check_value"+checkbox_value)[0].value;
 						ratelist_id = document.getElementsByName("id_value"+checkbox_value)[0].value;
 						var curCarrierId = document.getElementById("shipmentCarrierId"+checkbox_value).value;
@@ -157,7 +240,7 @@ var radioselected = 0;
 							Login_url='null';
 						}
 						
-			}
+			
 			}
 			
 			
@@ -256,19 +339,21 @@ var radioselected = 0;
 						}
 					}
 				}
-				cur=dojo.widget.byId("ci.currency").getValue();
+				cur= document.getElementById("currencyautocomplete").value;
 				billToAcc=document.getElementById("billToAccountNum").value; 
+				var broker=document.getElementById("imports3").value;
 				if(radioselected == '3' && document.getElementById("billToAccountNum").value=='')
 				{
 					alert("Please enter the Account Number for the Third Party BillTo Address");
 					error=false;
 				}
-				else if(dojo.widget.byId("ci.currency").getValue()=='')
+				else if(document.getElementById("currencyautocomplete").value=='')
 				{
 					error=false;
-					alert("Please enter the Currency in Customs Invoice Information");					
+					alert1("Please enter the Currency in Customs Invoice Information","currency");
+										document.getElementById("currencyautocomplete").focus();				
 				}
-				else if(document.getElementById("ci.contactName").value=='' && document.getElementById("shippingOrder.customsInvoice.brokerAddress.abbreviationName").value!='')
+				else if(document.getElementById("ci.contactName").value=='' && document.getElementById("imports3").value!='')
 				{
 					error=false;
 					alert("Please enter the Contact Name in Broker Information");					
@@ -276,7 +361,7 @@ var radioselected = 0;
 				else if(document.getElementById("ci.totalvalue").value=='' )
 				{
 					error= false;
-					alert("Please enter the Total Value in Customs Invoice Information");
+					alert1("Please enter the Total Value in Customs Invoice Information","totalvalue");
 					document.getElementById("ci.totalvalue").focus();
 				}
 				else if(document.getElementById("ci.totalvalue").value>2000 && document.getElementById("consigneeTax").value=='')
@@ -303,7 +388,7 @@ var radioselected = 0;
 						{
 							$('#loader').css('display','block');
 								document.userform.elements['shippingOrder.rateIndex'].value = val;
-								document.userform.action= "shipment.save.action?pickupRequired="+pickup+"&billTo="+billTo+"&cur="+cur+"&billToAcc="+billToAcc;
+								document.userform.action= "shipment.save.action?pickupRequired="+pickup+"&billTo="+billTo+"&cur="+cur+"&billToAcc="+billToAcc+"&broker="+broker;
 								document.userform.submit();				
 						}
 						else if(error && url!="null")
@@ -334,7 +419,7 @@ var radioselected = 0;
 		{
 		$('#loader').css('display','block');
 		document.userform.elements['shippingOrder.rateIndex'].value = val;
-		document.userform.action= "shipment.save.action?pickupRequired="+pickup+"&billTo="+billTo+"&cur="+cur+"&billToAcc="+billToAcc;
+		document.userform.action= "shipment.save.action?pickupRequired="+pickup+"&billTo="+billTo+"&cur="+cur+"&billToAcc="+billToAcc+"&broker="+broker;
 			document.userform.submit();			
 		}
 		else if(error && url!="null")
@@ -527,6 +612,8 @@ var radioselected = 0;
 					</s:else>
 			<!--  	</td>
 				<td class="hlp_sprt" width="15%"> -->
+				<s:hidden value="%{shippingOrder.toAddress.countryName}" id="toCountry"/>
+				<s:hidden value="%{shippingOrder.fromAddress.countryName}" id="fromCountry"/>
 					<s:if test='%{shippingOrder.toProvinceName !="" && shippingOrder.toAddress.countryName == ""}'>
 						<s:property value="%{shippingOrder.toProvinceName}"/>&nbsp;,&nbsp;
 					</s:if>

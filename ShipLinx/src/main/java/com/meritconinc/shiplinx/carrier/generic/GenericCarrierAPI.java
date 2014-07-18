@@ -697,8 +697,10 @@ public class GenericCarrierAPI implements CarrierService {
     log.debug(s.getMasterCarrierId());
     f.setFromCountry("ANY"); // fromCountry);
     List<FuelSurcharge> fuelsurcharges = fuelSurchargeService.getFuelSurcharge(f);
+    if(fuelsurcharges!=null && fuelsurcharges.size()>0){
     f = fuelsurcharges.get(0);
     log.debug(f);
+    }
     Charge c = new Charge();
     log.debug("Test Integratted Carriers");
     log.debug(c.getTariffRate());
@@ -712,7 +714,7 @@ public class GenericCarrierAPI implements CarrierService {
     // c.setTariffRate(tariff_rate * f.getValue()/100);
     log.debug("Fuel Charge");
     log.debug(rate.doubleValue());
-    log.debug(f.getValue());
+    
     // c.setCost(rate.doubleValue() * f.getValue() / 100);
     c.setCost(rate.doubleValue() * fsc.doubleValue() / 100);
     c.setCurrency(currency);

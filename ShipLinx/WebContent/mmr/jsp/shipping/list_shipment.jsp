@@ -159,7 +159,7 @@
     for (i=0;i<uploadMarkupId.length;i++){
      if(uploadMarkupId[i].checked){
       statusid = document.getElementById("status").value;
-      id = document.getElementById("id_order").value;
+      id=uploadMarkupId[i].value;
       
       
      }
@@ -184,6 +184,13 @@ function midlandEOD(){
 	var carrierId = document.getElementById("firstBox").value;
 	window.location.href="list.shipment.action?shippingOrder.toDate="+toDate+"&shippingOrder.fromDate="+fromDate+"&d-16544-e=5&shippingOrder.carrierId="+carrierId;	
 }
+
+function manifestEOD(){
+		var fromDate=document.getElementById("f_date_c").value;
+		var toDate=	document.getElementById("t_date_c").value;
+		var carrierId = document.getElementById("firstBox").value;
+		window.location.href="list.shipment.action?shippingOrder.toDate="+toDate+"&shippingOrder.fromDate="+fromDate+"&d-16544-e=5&shippingOrder.carrierId="+carrierId;	
+	}
 </script>	
 <style>
 	.width150{ width:150px !important; }
@@ -391,6 +398,9 @@ function midlandEOD(){
  	<a href="shipment.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
  	<s:if test="%{#request.shippingOrder.carrierId == 80}" >
  	&nbsp;<a href="javascript:midlandEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
+ 	</s:if>
+ 	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin'))}" >
+ 	&nbsp;<a href="javascript:manifestEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
 </div>
 

@@ -249,11 +249,16 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		
 		//if there is a code, then remember this in the session
 		//Also get the sales person associated with this code
+		if(business == null){
+						Business newBusiness = new Business();		
+						newBusiness.setId(1);
+						business = newBusiness;
+					}
 		if(!StringUtil.isEmpty(code) && business!=null){
 			logger.info("Sales Person");
 			logger.info(code);
 			logger.info(business);
-			logger.info(business.getId());
+			//logger.info(business.getId());
 			request.getSession().setAttribute(ShiplinxConstants.USER_CODE, code);
 			UserSearchCriteria criteria = new UserSearchCriteria();
 			criteria.setBusinessId(business.getId());
@@ -263,6 +268,10 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 			if(salesUsers!=null && salesUsers.size()==1){ //only if exact match
 				logger.info("Sales Person and Sales User");
 				request.getSession().setAttribute("logoURL", salesUsers.get(0).getLogoURL());
+			}//this else block to reset the IC logo when there are no sales user in bussiness id 2;
+						else{
+							request.getSession().removeAttribute("logoURL");
+							
 
 			}
 		}

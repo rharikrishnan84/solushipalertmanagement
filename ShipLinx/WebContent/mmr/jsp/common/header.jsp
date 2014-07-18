@@ -145,10 +145,10 @@ function removeCustomAlert() {
 			});
 		});
 	
-	 function helpFile() {
-			var url="<%=request.getContextPath()%>/helpMenu.action";
-			window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
-		} 
+		function helpFile() {
+			   var url="<%=request.getContextPath()%>/helpMenu.action";
+			   window.open(url,'','width=842,height=540,left=100,top=100,scrollbars=1');
+			  }
 	 
 	  function supportURL(){   
 		   window.open("http://soluship.fastsupport.com",'','width=860,height=540,left=100,top=100,scrollbars=1'); 

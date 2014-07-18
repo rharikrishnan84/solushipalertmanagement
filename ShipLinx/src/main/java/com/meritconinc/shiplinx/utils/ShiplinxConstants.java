@@ -47,6 +47,7 @@ public class ShiplinxConstants {
 	public static final String TAX_HST = "HST";
 	public static final String TAX_GST = "GST";
 	public static final String TAX_QST = "QST";
+	public static final String TAX_TAX = "TAX";
 
 	public static final String FUEL_SURCHARGE = "Fuel";
 	public static final String OTHER_SURCHARGE = "Other";

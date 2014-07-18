@@ -23,5 +23,7 @@ public interface PropertyDAO {
   public List<PropertyVO> readTextProperties();
 
   public void updateTextProperty(String scope, String name, String value);
+  
+  public PropertyVO getPath(String language);
 
 }

@@ -178,4 +178,5 @@ public interface ShippingDAO {
   //Written By Mohan R
   public CarrierChargeCode getChargeByChargeGroupId(long carrierId, int chargeGroupId);
   //
+  public void updateEDI(String ediNumber,long chargeId);
 }

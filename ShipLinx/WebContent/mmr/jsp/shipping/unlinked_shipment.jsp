@@ -20,20 +20,18 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>	
 
-	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/orderManager.js">
-</script>
 
 		<head> 
 	   <sj:head jqueryui="true" />
 	   <sx:head />
 	   </head>
 	   <style type="text/css">
-#customerautocomplete,#auto{ background-position: 145px 4px; background-size:8px 8px; }
+#customerautocomplete,#auto{ background-position: 285px 4px; background-size:8px 8px; }
 
 </style>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#sample1').dataTable(); 
+			$('#sample1').dataTable({"iDisplayLength":-1}); 
 			$("#check_all").click(function(){
 				var temp=$(".dataTable-checkbox").attr("checked");
 				if(temp == null){
@@ -185,10 +183,10 @@
         </div>  
        <div class="cont_data_body">
          <div class="rows">
-          <div class="fieldsl">
+          <div class="fieldsl" style="width:525px !important;">
            <label><strong><mmr:message messageId="label.customer.name" /></strong></strong></label>
 		  <s:url id="customerList" action="listCustomers" />
-          <div class="controls"><span>:</span>
+          <div class="controls" style="width:325px !important;"><span>:</span>
 										 <s:url id="customerList" action="listCustomersWithOrphan" />
                		<%-- <s:select key="shippingOrder.webCustomerId" cssClass="text_01_combo_big" cssStyle="height:20px; width: 150px;" 
 
@@ -196,7 +194,7 @@
 
 				 	<s:hidden id="custId" />			
 
-				<s:textfield id="customerautocomplete" />
+				<s:textfield id="customerautocomplete" style="width:300px !important"/>
 			 <%-- <s:url id="customerList" action="listCustomers" />
 
 

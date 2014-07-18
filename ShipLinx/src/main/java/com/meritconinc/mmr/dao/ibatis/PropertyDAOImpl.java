@@ -65,4 +65,16 @@ public class PropertyDAOImpl extends SqlMapClientDaoSupport implements PropertyD
     params.put("value", value);
     getSqlMapClientTemplate().update("updateTextProperty", params);
   }
+  
+  @Override
+    public PropertyVO getPath(String language) {
+     PropertyVO propertyVO = null;
+     try{
+      propertyVO = (PropertyVO) getSqlMapClientTemplate().queryForObject("getPaths", language);
+    }
+    catch(Exception e){
+     e.printStackTrace();
+    }
+      return propertyVO;
+    }
 }

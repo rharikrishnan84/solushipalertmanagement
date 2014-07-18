@@ -169,7 +169,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
         double taxableAmount = 0;
         List<CarrierChargeCode> applicableTaxes = new ArrayList<CarrierChargeCode>();
         for (Charge c : o.getCharges()) {
-          if (c.getStatus() == null || c.getStatus() != ShiplinxConstants.CHARGE_READY_TO_INVOICE)
+        	if (c.getStatus() == null || c.getStatus() != ShiplinxConstants.CHARGE_READY_TO_INVOICE || c.getType()==0)
             continue;
           // Need to include charges where the charge is 0 but cost is
           // greater than 0 as it affects commissions which is based
@@ -206,7 +206,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
 
         // calculate taxes after all charges are taken into account
         for (Charge c : o.getCharges()) {
-          if (c.getStatus() == null || c.getStatus() != ShiplinxConstants.CHARGE_READY_TO_INVOICE)
+        	if (c.getStatus() == null || c.getStatus() != ShiplinxConstants.CHARGE_READY_TO_INVOICE || c.getType() == 0)
             continue;
           CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(o.getCarrierId(),
               c.getChargeCode(), c.getChargeCodeLevel2());

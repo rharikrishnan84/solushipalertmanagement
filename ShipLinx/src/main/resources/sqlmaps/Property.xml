@@ -9,6 +9,10 @@
 		<result property="dbValue" column="value" columnIndex="3"/>
 	</resultMap>
 	
+	<resultMap id="results" class="com.meritconinc.mmr.model.common.PropertyVO">
+		<result property="dbValue" column="value"/>
+	</resultMap>
+
 	<!--<cacheModel id="property" type ="LRU" readOnly="true">
 	  <flushInterval hours="24"/>
 	  <property name="cache-size" value="1000" />
@@ -59,4 +63,8 @@
 		from property_text 
 		order by scope desc, name
 	</select>
+	<select id="getPaths" resultMap="results">
+		select value
+		from property where name = #language#
+		</select>
 </sqlMap>

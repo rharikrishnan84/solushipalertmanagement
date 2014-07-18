@@ -25,6 +25,7 @@
 	
 	<bean id="menuAction" scope="prototype" class="com.meritconinc.shiplinx.action.MenuAction">
 	<property name="menuItemDAO" ref="menuItemDAO"/>
+	<property name="propertyDAO" ref="propertyDAO"/>
 	</bean>
 	<bean id="menuItemDAO" class="com.meritconinc.mmr.dao.ibatis.MenusDAOImpl">
 		<property name="sqlMapClient" ref="sqlMapClient"/>

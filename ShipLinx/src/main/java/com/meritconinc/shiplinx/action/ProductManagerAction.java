@@ -66,6 +66,9 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 	
 	private List<Products> productList;
 	
+	public void setProductList(List<Products> productList) {
+				this.productList = productList;
+			}
 	private List<ProductLine> productLineList;
 	
 	private List<PackageTypes> packageTypesList;
@@ -136,11 +139,11 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 			
 		String strmethod = request.getParameter("method");
 		try {
-			if(strmethod!=null)
+			/*if(strmethod!=null)
 			{
 				getSession().remove("products");
 				return SUCCESS;
-			}
+			}*/
 			String strSrch = request.getParameter("searchString");
 			String customerId = String.valueOf(UserUtil.getMmrUser().getCustomerId());
 			log.debug("Search string is : " + strSrch);
@@ -151,9 +154,9 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 			p.setProductDescription(strSrch);
 			p.setCustomerId(Long.valueOf(customerId));
 			
-			List<Products> productsList = productManagerService.searchProducts(p,false);
+			productList = productManagerService.searchProducts(p,false);
 					
-			for(Products prods: productsList)
+			for(Products prods: productList)
 			{
 					productSearchResult.put(prods.getProductDescription()+" - "+prods.getProductHarmonizedCode(),prods.getProductId());
 			}

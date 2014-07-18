@@ -216,10 +216,10 @@ function keyPressSubmit(myfield,e) {
 			<div id="wrapper_logo" style=" width:100%; float:left; text-align:center" > 
     <s:if test="%{#session.logoURL!=null}">
        <s:set name="url" value="%{#session.logoURL}" />
-       <img src="<s:property value="%{url}"/>" border="0" height="400" includeContext="true"/>
+       <img src="<s:property value="%{url}"/>" border="0" width="960" height="360" includeContext="true"/>
      </s:if> 
      <s:else>
-       <img src="<%=request.getContextPath()%>/mmr/images/ic-logo-helping.png" height="400" />
+       <img src="<%=request.getContextPath()%>/mmr/images/ic-logo-helping.png" width="960" height="360">
      </s:else> 
      
     <div id="messages">

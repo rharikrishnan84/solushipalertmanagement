@@ -62,7 +62,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="false">
+			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
 				<reportElement key="textField-2" style="Arial_Regular_7" positionType="Float" mode="Transparent" x="176" y="0" width="52" height="13" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[$F{charge} > 0]]></printWhenExpression>
 				</reportElement>
@@ -75,7 +75,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["$ "+$F{charge}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{charge}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -91,12 +91,12 @@
 				</textElement>
 				<text><![CDATA[Sub Total:]]></text>
 			</staticText>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="164" y="2" width="65" height="13" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["$ "+$V{totalCharge}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{totalCharge}]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="187" y="1" width="41" height="1"/>

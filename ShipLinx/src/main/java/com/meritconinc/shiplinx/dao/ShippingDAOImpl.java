@@ -727,6 +727,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       paramObj.put("statusReadyToInvoice", ShiplinxConstants.CHARGE_READY_TO_INVOICE);
       paramObj.put("billingStatusAwaitingConfirmation",
           ShiplinxConstants.BILLING_STATUS_AWAITING_CONFIRMATION);
+      paramObj.put("statusChargeInvoice", ShiplinxConstants.CHARGE_INVOICED);
 
       getSqlMapClientTemplate().update("releaseCharges", paramObj);
     } catch (Exception e) {
@@ -1187,6 +1188,13 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 	    return searchResult;
 	  }
   
+  public void updateEDI(String ediNumber,long chargeId){
+	  	  Map<String, Object> paramObj = new HashMap<String, Object>();
+	        paramObj.put("ediNumber",ediNumber);
+	        paramObj.put("id", chargeId);
+	  	  getSqlMapClientTemplate().update("updateEDI", paramObj);
+	    }
+	   
   //End
 
 }

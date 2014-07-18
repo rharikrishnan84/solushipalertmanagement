@@ -654,6 +654,7 @@ public class ShippingServiceImpl implements ShippingService {
                 .getGroupCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE))) {
           charge.setCharge(markupManagerService.applyMarkup(shipment, charge, true));
         }
+        charge.setStatus(ShiplinxConstants.BILLING_STATUS_CUSTOMER_CONFIRMATION);
         updateCharge(charge);
         // else {
         // if(charge.getTariffRate()!=null)

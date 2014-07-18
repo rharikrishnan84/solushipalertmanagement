@@ -1594,9 +1594,19 @@ function deletecharge(action){
 											<td class="ordrdtl_title_val">
 												<s:property value="invoiceNum" />
 											</td>	
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<!--<s:if test="%{#session.ROLE.contains('busadmin')}">
 												<td class="ordrdtl_title_val"><s:property value="ediInvoiceNumber" /></td>
-											</s:if>
+											</s:if>-->
+											<s:if test="%{#session.ROLE.contains('busadmin')}">
+												<s:if test="%{ediInvoiceNumber == null || ediInvoiceNumber ==''}">
+													<td class="ordrdtl_title_val"><s:textfield size="4" key="actualEdiInvoiceNumber" 
+													name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/></td>
+ 												</s:if>
+												<s:else>
+												<s:hidden name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/>
+ 													<td class="ordrdtl_title_val"><s:property value="ediInvoiceNumber" /></td>
+												</s:else>
+ 											</s:if>
 											<td></td>
 											
 										</s:else>

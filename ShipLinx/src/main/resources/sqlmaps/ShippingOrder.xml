@@ -445,8 +445,12 @@
 	 		</selectKey>			
 	</insert>
 	<insert id="addCharge" parameterClass="com.meritconinc.shiplinx.model.Charge"> 
-			  insert into charges(charge_id,order_id, name,   cost,   charge,     currency,   discount_amount,    edi_invoice_number, status,     charge_code,    charge_code_level_2,tariff_rate,  type, carrier_id,  carrier_name,quote_charge_id,cost_currency,charge_currency,exchange_rate) 
-              values ((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),  #orderId#,  #name#, #cost#, #charge#,   #currency#, #discountAmount#,   #ediInvoiceNumber#, #status#,   #chargeCode#,   #chargeCodeLevel2#, #tariffRate#, #type#, #carrierId#, #carrierName#,#quoteChargeId#,#costcurrency#,#chargecurrency#,#exchangerate#)
+			  insert into charges(charge_id,name,tariff_rate,cost,charge,order_id,charge_code,charge_code_level_2,currency,discount_amount,edi_invoice_number,
+				status,type,quote_charge_id,carrier_id,carrier_name,cost_currency,charge_currency,exchange_rate)
+				VALUES((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),
+				#name#, #tariffRate#, #cost#, #charge#, #orderId#, #chargeCode#, #chargeCodeLevel2#, #currency#,
+				#discountAmount#, #ediInvoiceNumber#, #status#, #type#, #quoteChargeId#, #carrierId#, #carrierName#,
+				#costcurrency#, #chargecurrency#, #exchangerate#);
  			<selectKey resultClass="long" type="post" keyProperty="chargeId" >select LAST_INSERT_ID() as value
 
  	 		</selectKey>			
@@ -582,6 +586,9 @@
 			</isGreaterThan> 
 			<isGreaterThan prepend="," property="statusId" compareValue="0">
 				status_id = #statusId#
+			</isGreaterThan> 
+			<isGreaterThan prepend="," property="billingStatus" compareValue="0">
+				billing_status = #billingStatus#
 			</isGreaterThan> 
 			<isNotNull property="billedWeight" >
 				<isGreaterThan prepend="," property="billedWeight" compareValue="0">
@@ -922,7 +929,7 @@
 		update charges c left join shipping_order so on  (c.order_id=so.order_id)
     		set c.status=#statusReadyToInvoice#
 			where c.edi_invoice_number=#ediInvoiceNumber# and 
-					c.status=#statusPendingRelease# and 
+					(c.status=#statusPendingRelease# or c.status=#statusChargeInvoice#) and 
 					so.billing_status!=#billingStatusAwaitingConfirmation#
 	</update>
 	
@@ -1138,5 +1145,9 @@
 		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
 		where ccc.carrier_id=#carrierId# and ccc.charge_group_id=#chargeGroupId# 				
 	</select>
+	
+	<insert id="updateEDI">
+			 update charges set edi_invoice_number=#ediNumber# where id=#id#              				
+ 	</insert>
 </sqlMap>
 
