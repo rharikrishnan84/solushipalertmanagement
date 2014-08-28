@@ -200,6 +200,9 @@
 
 <div class="content_table" style="background-color:#fff">
 	<div id="srchaddrss_results">
+	<div id="srchusr_res">
+	<span><mmr:message messageId="label.address"/></span>
+	</div>
 		<div class="form_buttons">
 		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>

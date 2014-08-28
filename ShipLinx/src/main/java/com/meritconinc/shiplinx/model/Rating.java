@@ -75,7 +75,36 @@ public class Rating implements Serializable {
   private long zoneStructureId;
 
   private long slaveServiceId;
+  private long slaveCarrierId;
+    
+  
+  private int variable;    
+      public int getVariable() {
+  	return variable;
+  }
+  
+  public void setVariable(int variable) {
+  	this.variable = variable;
+  }
+  
+  
+    public long getSlaveCarrierId() {
+	return slaveCarrierId;
+}
 
+public void setSlaveCarrierId(long slaveCarrierId) {
+	this.slaveCarrierId = slaveCarrierId;
+}
+
+public String getSlaveCarrierName() {
+	return slaveCarrierName;
+}
+
+public void setSlaveCarrierName(String slaveCarrierName) {
+	this.slaveCarrierName = slaveCarrierName;
+}
+
+	private String slaveCarrierName;
   public long getCarrierId() {
     return carrierId;
   }

@@ -13,6 +13,39 @@
 <SCRIPT language="JavaScript">
 </SCRIPT>
 
+<script type="text/javascript">
+
+function submitPay(){
+	
+	var uploadMarkupId = document.getElementsByClassName("check_uncheck_row");
+	
+	 var i1,txt1 = 0;
+   for (i1=0;i1<uploadMarkupId.length;i1++){
+	if (uploadMarkupId[i1].checked){
+	 txt1 += 1;      
+	}
+   }
+   if(txt1 < 1){
+	alert('Please select at least one');
+   }
+    else{
+	 var i1,shipmentid,value_checked,stored_value="";
+     for (i1=0;i1<uploadMarkupId.length;i1++){
+          if (uploadMarkupId[i1].checked){
+          shipmentid = uploadMarkupId[i1].value;
+          value_checked = document.getElementsByName("shipmentcheckbox"+shipmentid)[0].value;
+          stored_value = stored_value  + value_checked+ "," ;
+      }
+   }
+	 
+	document.payInvoiceForm.action = "invoice.pay.action?invoiceIdselect="+stored_value;
+	document.payInvoiceForm.submit();
+    }
+}
+
+</script>
+
+
 <div id="messages">
 <jsp:include page="../common/action_messages.jsp"/>
 </div>
@@ -66,16 +99,8 @@
 						</div>
 						<div class="fields_topdown">
 							<label>&nbsp;</label>
-							<div class="controls">
-								<s:url id="payInvoice" value="invoice.pay.action"/>
-									<sj:submit 
-										id="formSubmit2"
-										href="%{payInvoice}" 
-										targets="formResult" 
-										value="Pay Now" 
-										indicator="indicator"
-										button="true"
-										/>
+							<div class="form_buttons" style="margin-right: 75px;position: relative;bottom: 3px;">
+										<a href="javascript: submitPay()" >Pay Now</a>
 							</div>
 						</div>
 					</div>

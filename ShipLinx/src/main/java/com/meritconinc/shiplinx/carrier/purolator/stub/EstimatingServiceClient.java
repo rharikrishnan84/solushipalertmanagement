@@ -268,8 +268,10 @@ public class EstimatingServiceClient {
 					}
 
 					Rating rate = new Rating();
-					rate.setServiceId(shiplinxService.getId());	
-					rate.setCarrierId(ShiplinxConstants.CARRIER_PUROLATOR);
+					rate.setServiceId(shiplinxService.getId());		
+									
+											rate.setCarrierId(ShiplinxConstants.CARRIER_PUROLATOR);
+										
 //					rate.setCarrierName(ShiplinxConstants.CARRIER_PUROLATOR_STRING);
 					rate.setTransitDays(estimate.getEstimatedTransitDays());
 					rate.setTotal(estimate.getTotalPrice().doubleValue());

@@ -106,7 +106,10 @@ window.onload = doOnload;
 	{
 		//local boolean check if everything is ok, then submit the form
 		var check = true;
-		var isShowRef=document.getElementById("showref").checked;
+		var isShowRef = false;
+				var salesCheck = '<s:property value="%{role}"/>';
+				if(salesCheck != "sales")
+			     isShowRef=document.getElementById("showref").checked;
 		if(CCSectionActive) //if the credit card section is active or the user has selected to enter or update the credit card info, then check.
 		{
 			if(document.getElementById("ccid").value == '')

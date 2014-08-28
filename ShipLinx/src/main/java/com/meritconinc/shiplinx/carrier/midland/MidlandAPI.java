@@ -385,11 +385,11 @@ public class MidlandAPI implements CarrierService{
 	}
 
 	public boolean cancelOrder(ShippingOrder order, CustomerCarrier customerCarrier) {
-		if(StringUtil.isEmpty(order.getMasterTrackingNum()))
+		/*if(StringUtil.isEmpty(order.getMasterTrackingNum()))
 			return true; //if no tracking # was generated, we can safely treat this shipment as cancelled
-
+*/
 //		boolean isCanceled=request_builder.createAndSendVoidRequest(order);	
-		return false;
+		return true;
 
 	}
 

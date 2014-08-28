@@ -326,7 +326,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{ShippingOrder}.getCustomsInvoice().getBillToAddress().getAddress1() + ", " + $P{ShippingOrder}.getCustomsInvoice().getBillToAddress().getAddress2()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="24" y="307" width="170" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="24" y="307" width="152" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -340,7 +340,7 @@
 				<text><![CDATA[Desc. of Goods]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="194" y="307" width="108" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="176" y="307" width="100" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -354,7 +354,7 @@
 				<text><![CDATA[Harmonized Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="302" y="307" width="39" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="276" y="307" width="39" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -368,7 +368,7 @@
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="341" y="307" width="55" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="315" y="307" width="73" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -382,7 +382,7 @@
 				<text><![CDATA[Unit Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="396" y="307" width="55" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="388" y="307" width="74" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -396,7 +396,7 @@
 				<text><![CDATA[Total Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="451" y="307" width="65" height="17" backcolor="#999999"/>
+				<reportElement mode="Opaque" x="462" y="307" width="54" height="17" backcolor="#999999"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -599,8 +599,8 @@
 	</columnHeader>
 	<detail>
 		<band height="17" splitType="Stretch">
-			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="396" y="0" width="55" height="17" isRemoveLineWhenBlank="true"/>
+			<textField isStretchWithOverflow="true" pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="388" y="0" width="74" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -609,10 +609,10 @@
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA["$ "+$F{productTotalPrice}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{productTotalPrice}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="451" y="0" width="65" height="17" isRemoveLineWhenBlank="true"/>
+				<reportElement x="462" y="0" width="54" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -624,7 +624,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{productOrigin}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="24" y="0" width="170" height="17" isRemoveLineWhenBlank="true"/>
+				<reportElement x="24" y="0" width="152" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -636,7 +636,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{productDesc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="194" y="0" width="108" height="17" isRemoveLineWhenBlank="true"/>
+				<reportElement x="176" y="0" width="100" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -648,7 +648,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{productHC}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement x="302" y="0" width="39" height="17" isRemoveLineWhenBlank="true"/>
+				<reportElement x="276" y="0" width="39" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -659,8 +659,8 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{productQuantity}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="341" y="0" width="55" height="17" isRemoveLineWhenBlank="true"/>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="315" y="0" width="73" height="17" isRemoveLineWhenBlank="true"/>
 				<box>
 					<pen lineWidth="1.0"/>
 					<topPen lineWidth="1.0"/>
@@ -669,7 +669,7 @@
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA["$ "+$F{productUnitPrice}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{productUnitPrice}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -869,25 +869,25 @@ Signature: _______________________________
 				<text><![CDATA[UOM:LBS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="253" y="1" width="49" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement x="227" y="1" width="49" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Total:]]></text>
 			</staticText>
 			<rectangle>
-				<reportElement x="302" y="0" width="39" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement x="276" y="0" width="39" height="20" isRemoveLineWhenBlank="true"/>
 			</rectangle>
 			<rectangle>
-				<reportElement x="396" y="0" width="55" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement x="388" y="0" width="74" height="20" isRemoveLineWhenBlank="true"/>
 			</rectangle>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement x="302" y="0" width="39" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement x="276" y="0" width="39" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{totalUnits}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.00" isBlankWhenNull="true">
-				<reportElement x="396" y="0" width="55" height="20" isRemoveLineWhenBlank="true"/>
+			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="388" y="0" width="74" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA["$ "+$V{totalPrice}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{totalPrice}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="30" y="116" width="40" height="12"/>

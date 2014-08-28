@@ -45,7 +45,7 @@ var pplistr = "<%= request.getAttribute("ppList")%>";
 var pplists= pplistr.substring(1,pplistr.length-1);
 var pplist = pplists.split(",");
 
-var pclistr = "<%= request.getAttribute("pcList")%>";
+var pclistr = "<%= request.getAttribute("chbList")%>";
 var pclists= pclistr.substring(1,pclistr.length-1);
 var pclist = pclists.split(",");
 
@@ -133,9 +133,9 @@ var pslist = pslists.split(",");
 			//alert("check");
 			//calling ajax function to populate the commission percentages
 			if(elem.selectedIndex > 0){
-				document.getElementById('new_comm_percentage_ps').value = pclist[elem.selectedIndex-1];
+				document.getElementById('new_comm_percentage_ps').value = pslist[elem.selectedIndex-1];
 				document.getElementById('new_comm_percentage_pp').value = pplist[elem.selectedIndex-1];
-				document.getElementById('new_comm_percentage_chb').value = pslist[elem.selectedIndex-1];
+				document.getElementById('new_comm_percentage_chb').value = pclist[elem.selectedIndex-1];
 			}
 			else
 			{

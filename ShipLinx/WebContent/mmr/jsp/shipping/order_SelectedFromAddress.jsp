@@ -8,6 +8,11 @@
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags"%> 
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
+<style>
+                                    .autocomplete-suggestions{
+	                              width:300px !important;
+                                      }
+                                  </style>
 <div class="content">
 	
 	<div class="content_body">
@@ -46,9 +51,7 @@
 											</div>
 					</div>
 					
-					<div class="fields">
-						&nbsp;
-					</div>
+					
 									
 								
 						<div id="fromAdd_inner">
@@ -65,7 +68,7 @@
 <script type="text/javascript">
 
 var customers = {
-		<s:iterator value='customerSearchResults'>
+		<s:iterator value='#session.usersList'>
 		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
  };
@@ -81,6 +84,8 @@ var customers = {
 		minChars: 0,
 		onSelect: function (suggestion) {
 		if(suggestion.value != ""){
+			var resfrom = suggestion.value.split(",");
+			 $('#customerautocompletes').val(resfrom[0]);
            $('#custId').val(suggestion.data);
 			searchfrom();
 			}

@@ -24,6 +24,7 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.ChargeGroup;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Markup;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.service.CarrierServiceManager;
@@ -50,8 +51,16 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
   private Long carrierId;
   private String uploadFileName;
   private File upload;
+  private Map<String, Long> customerSearchResult = new HashMap<String, Long>();
+  public Map<String, Long> getCustomerSearchResult() {
+	return customerSearchResult;
+}
 
-  private static final Logger log = LogManager.getLogger(MarkupManagerAction.class);
+public void setCustomerSearchResult(Map<String, Long> customerSearchResult) {
+	this.customerSearchResult = customerSearchResult;
+}
+
+private static final Logger log = LogManager.getLogger(MarkupManagerAction.class);
   public HttpServletRequest request;
 
   public Long getCarrierId() {
@@ -275,7 +284,7 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
         getSession().put("COUNTRIES", countries);
 
         populateCountryNamesInMarkupList();
-
+        this.populateCustomersList();
         if (this.carrierServiceManager != null) {
           if (getSession().get("CARRIERS") == null) {
             carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser()
@@ -323,7 +332,12 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
 
   private List<Service> getMarkupServices(long carrierCode) {
     // TODO Auto-generated method stub
-    List<Service> sList = this.carrierServiceManager.getServicesForCarrier(carrierCode);
+	  List<Service> sList = new ArrayList<Service>();
+	  	  if(UserUtil.getMmrUser().getUserRole().equals("busadmin")){
+	  		  sList = this.carrierServiceManager.getServicesForCarrierAdmin(carrierCode);
+	  	  }else{
+	  		  sList = this.carrierServiceManager.getServicesForCarrier(carrierCode);
+	  	  }
     Service s = new Service();
     s.setId(-1L);
     s.setName("");
@@ -464,20 +478,30 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
   public String saveMarkupList() throws Exception {
     try {
       loadListsFromSession();
-      if (this.getMarkupList() != null && this.markupManagerService != null) {
-        String[] mPs = this.request.getParameterValues("markupPercentage");
-        String[] mFs = this.request.getParameterValues("markupFlat");
-        String[] mDs = this.request.getParameterValues("disabledFlag");
-        if (this.getMarkupList().size() == mPs.length) {
-          for (int i = 0; i < this.getMarkupList().size(); i++) {
-            Markup m = this.getMarkupList().get(i);
-            int p = Integer.parseInt(mPs[i]);
-            double f = Double.parseDouble(mFs[i]);
-            boolean d = convertStringToBoolean(mDs[i]);
-            if (isMarkupDirty(m, p, f, d)) {
+      String selectedItem=request.getParameter("selectedItem");    	   
+          	      	String percentage=request.getParameter("percentage");
+          	    	  	String flat=request.getParameter("flat");
+          	    	  	String disabledFlag=request.getParameter("disabledFlag");
+          	    	  	String variable=request.getParameter("variable");
+          	    	  	String item[]= selectedItem.split(",");
+          	    	  	String mPs[]= percentage.split(",");
+          	    	  	String mFs[]=flat.split(",");
+          	    	  	String mDs[]=disabledFlag.split(",");    	  
+          	    	  	String mVs[]=variable.split(",");
+          	         // if (this.getMarkupList().size() != item.length)
+          	    	  	for(int i1=0;i1<item.length;i1++)
+          	          {
+          	            //for (int i = 0; i < this.getMarkupList().size(); i++) {
+          	              Markup m = this.getMarkupList().get(Integer.parseInt(item[i1]));
+          	              int p = Integer.parseInt(mPs[i1]);
+          	              double f = Double.parseDouble(mFs[i1]);
+          	              boolean d = convertStringToBoolean(mDs[i1]);
+          	              int v = Integer.parseInt(mVs[i1]);
+                  if (isMarkupDirty(m, p, f, d, v)) {
               m.setMarkupPercentage(p);
               m.setMarkupFlat(f);
               m.setDisabledFlag(d);
+              m.setVariable(v);
               // If user is in Customer Markup and modified default markup
               // it should be added as a new record customer specific markup
               if (m.getCustomerId().longValue() == 0
@@ -489,8 +513,6 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
               }
             }
           }
-        }
-      }
     } catch (Exception e) {
       e.printStackTrace();
       addActionError(getText("content.error.unexpected"));
@@ -499,10 +521,10 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
     return init();
   }
 
-  private boolean isMarkupDirty(Markup m, int p, double f, boolean d) {
+  private boolean isMarkupDirty(Markup m, int p, double f, boolean d, int v) {
     // TODO Auto-generated method stub
     if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
-        || m.getDisabledFlag() != d)
+    		|| m.getDisabledFlag() != d || m.getVariable() != v)
       return true;
     return false;
   }
@@ -803,5 +825,22 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
     String checkboxOverwrite = request.getParameter("checkboxOverwrite");
     return StringUtil.toBoolean(checkboxOverwrite);
   }
-
+  public void populateCustomersList() {
+	  	    String searchParameter = "";
+	  
+	  	    Customer c = new Customer();
+	  	    c.setName(searchParameter);
+	  	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	    List<Customer> customers = this.customerService.search(c);
+	  
+	  	    // First record is empty
+	  	    customerSearchResult.put("", 0L);
+	  
+	  	    for (Customer cust : customers) {
+	  	    	String withoutQuotesCustomer = cust.getName().replace("\"", "");
+	  	    		      customerSearchResult.put(withoutQuotesCustomer, cust.getId());
+	  	    }
+	  
+	  	    getSession().put("fromcustomersList", customerSearchResult);
+	  	  }
 }

@@ -52,5 +52,7 @@ public interface CarrierServiceDAO {
   public List<Service> getCustomerServicesForCarrier(Long carrierId, Long customerId);
   
   public List<Service> getServicesByCarrierId(long carrierId);
+  
+  public List<Service> getServicesForCarrierAdmin(Long carrierId);
 
 }

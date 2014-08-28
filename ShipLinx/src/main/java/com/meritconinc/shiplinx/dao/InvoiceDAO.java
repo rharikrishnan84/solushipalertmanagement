@@ -34,4 +34,6 @@ public interface InvoiceDAO {
 	public void updateInvoiceStatus(Invoice invoice);
 	
 	 public ARTransaction getinvoicebyinvoiceid(long invoiceid);
+	 
+	 public void updateInvoiceCharges(Invoice invoice);
 }

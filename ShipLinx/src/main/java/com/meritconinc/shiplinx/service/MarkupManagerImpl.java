@@ -249,7 +249,16 @@ public class MarkupManagerImpl implements MarkupManager {
     }
     return null;
   }
-
+  public Markup getUniqueMarkupList(Markup markup) {
+	  	    // TODO Auto-generated method stub
+	  	    if (markupDAO != null && markup != null) {
+	  	      List<Markup> mList = markupDAO.getMarkupList(markup);
+	  	      if (mList != null && mList.size() > 0) {
+	  	        return applyRules(mList, markup);
+	  	      }
+	      }
+	  	    return null;
+	  	  }
   public Double applyMarkup(ShippingOrder shipment, Charge charge, boolean setShipmentMarkup) {
     // TODO Auto-generated method stub
     Markup markup = null;
@@ -303,7 +312,7 @@ public class MarkupManagerImpl implements MarkupManager {
             amount = (FormattingUtil.add(charge.getCost().doubleValue(), f)).doubleValue();
           }
         }
-      }
+      }   
       /*
        * else if(markPerc >=0 && typeText.equals("Flat")){ if (markType ==
        * ShiplinxConstants.TYPE_MARKDOWN){ double f =markPerc; amount =
@@ -460,6 +469,9 @@ public class MarkupManagerImpl implements MarkupManager {
     if (m.getFromWeight().doubleValue() <= markup.getFromWeight().doubleValue()
         && m.getToWeight().doubleValue() >= markup.getToWeight().doubleValue())
       return true;
+    if (m.getFromWeight().doubleValue() >= markup.getFromWeight().doubleValue()
+    		            && m.getToWeight().doubleValue() >= markup.getToWeight().doubleValue())
+    		          return true;
     return false;
   }
 
@@ -649,5 +661,37 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
   public List<Markup> getMarkupListForCustomerForFilter(Markup markup) {
     return markupDAO.getMarkupListForCustomerForFilter(markup);
   }
-
+    public List<Markup> getMarkupList(Markup markup) {
+	      // TODO Auto-generated method stub
+	      if (markupDAO != null && markup != null) {
+	         if (markup.getCustomerId() > 0) {
+	          Long orgCustId = markup.getCustomerId();
+	           List<Markup> custMarkupList = markupDAO.getMarkupList(markup);
+	           if (custMarkupList != null) {
+	             markup.setCustomerId(0L);
+	             List<Markup> defMarkupList = markupDAO.getMarkupList(markup);
+	             for (Markup m : custMarkupList) {
+	               int n = findMarkup(defMarkupList, m);
+	               if (n == -1) {
+	                 // this situation should not happen
+	                 defMarkupList.add(m);
+	               } else {
+	                 defMarkupList.remove(n); // There is already a customized markup, therfore remove
+	                                          // default Markup
+	                 defMarkupList.add(m); // add customized markup in the list
+	               }
+	            }
+	             custMarkupList.clear();
+	             markup.setCustomerId(orgCustId);
+	             return defMarkupList;
+	          }
+	         }
+	         return markupDAO.getMarkupList(markup);
+	       }
+	       return null;
+	    }
+    
+    public Markup findBaseMarkup(Markup markup){
+    		  return markupDAO.findBaseMarkup(markup);
+    	  }
 }

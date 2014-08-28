@@ -110,7 +110,7 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
       updateMarkupParamObj.put("disabled", markup.getDisabled());
       updateMarkupParamObj.put("fromWeight", markup.getFromWeight());
       updateMarkupParamObj.put("toWeight", markup.getToWeight());
-
+      updateMarkupParamObj.put("toVariable", markup.getVariable());
       getSqlMapClientTemplate().insert("updateMarkup", updateMarkupParamObj);
     }
   }
@@ -384,4 +384,23 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 	    }
 	    return null;
 	  }
+	  
+	  public List<Markup> getMarkupList(Markup markup) {
+		  	    // TODO Auto-generated method stub
+		  	    if (markup != null) {
+		        List<Markup> markupList = (List<Markup>) getSqlMapClientTemplate().queryForList(
+		  	          "findMarkupList", markup);
+		  	      return markupList;
+		      }
+		      return null;
+		  	  }
+	  
+	  public Markup findBaseMarkup(Markup markup){
+		  	  if (markup != null) {
+		  		  Markup baseMarkup = (Markup) getSqlMapClientTemplate().queryForObject(
+		  		          "findBaseMarkup", markup);
+		  		      return baseMarkup;
+		  		    }
+		  		    return null;
+		    }
 }

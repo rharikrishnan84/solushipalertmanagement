@@ -296,12 +296,14 @@
 	</tr>
 	</thead>
 	<tbody>
+	
 			<s:set var="index" value="0" />
 				<s:set var="total" value="0" />
 				<s:set var="totals" value="0" />
 				<s:set var="totalAmt" value="0" />
+				<s:set var="count" value="0" />
             <s:iterator id="invoicetable" value="invoices" status="rowstatus">
-			
+			<s:if test="commissionAmount!=0">
              <tr>
 			 <s:set name="invoiceId" value="invoices[#index].getInvoiceId()" />
 	           
@@ -309,7 +311,13 @@
 				 <td><s:property value="invoiceNum"/></td>
 				 	 <td style="text-align: left;" <span title="<s:property value="customer.name"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
 	            <td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
-				<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="commissionAmount" /></s:text></td>
+				<!-- this is for test 
+				this block of code is to suppress the commission if its values is 0.00
+				-->
+				
+				
+					<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="commissionAmount" /></s:text></td>
+				
 				<td style="text-align:right;">$<s:property value="invoiceAmount" />
 				<s:if test="%{#session.ROLE.contains('busadmin')}">
 				<td style="text-align:right;padding-right:20px">$<s:property value="invoiceCost" /></td>
@@ -317,12 +325,12 @@
 				</td>
 				<td><s:property value="paymentStatusString" /></td>
 				
-
 						</tr>	
-<s:set var="index" value="#index+1" />	
+				<s:set var="index" value="#index+1" />	
 				 <s:set var="total" value="%{#total+commissionAmount}"/> 
 				 <s:set var="totals" value="%{#totals+invoiceAmount}"/> 
 				 <s:set var="totalAmt" value="%{#totalAmt+invoiceCost}"/> 
+				 </s:if>
 			</s:iterator>
 
 </tbody>

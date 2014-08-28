@@ -120,10 +120,11 @@
 	<s:iterator id="invoicesTable" value="invoices" status="rowstatus">	
 	<tr>
 	<s:if test="%{#request.postPayment == false}">
-		<td>
+		<!-- <td>
 		 <input  class="dataTable-checkbox" type="checkbox" name="select[%{#index}]" value="select[%{#index}]"/> 
 		 <input type="hidden"  name="selectedInvoices[%{#index}].invoiceId" value="%{invoiceId}" />
-		</td>
+		</td> -->
+		<td> <input type="checkbox"  Class="check_uncheck_row" name="shipmentcheckbox<s:property value='invoiceId'/>"  value="<s:property value='invoiceId'/>" /> </td>
 	</s:if>
 		<td><s:property value="invoiceNum" /></td>
 		<td><s:property value="customer.name" /></td>

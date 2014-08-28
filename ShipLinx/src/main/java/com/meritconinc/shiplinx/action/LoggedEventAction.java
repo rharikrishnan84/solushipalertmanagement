@@ -79,7 +79,7 @@ public class LoggedEventAction extends BaseAction implements ServletRequestAware
 		loggedEvent.setDeletedMessage(true);
 		loggedEventService.deleteLoggedEventInfo(loggedEvent);
 		
-		if(!UserUtil.getMmrUser().getUserRole().equals("busadmin"))
+		/*if(!UserUtil.getMmrUser().getUserRole().equals("busadmin"))
 		{
 			loggedEvent.setPrivateMessage(false);
 			loggedEvent.setDeletedMessage(false);
@@ -89,7 +89,15 @@ public class LoggedEventAction extends BaseAction implements ServletRequestAware
 		{
 			loggedList = loggedEventService.getLoggedEventInfo(loggedEvent,true);
 		}
+		*/
 		
+		if(UserUtil.getMmrUser().getUserRole().equals("busadmin")||UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("solutions_manager")){
+			loggedList = loggedEventService.getLoggedEventInfo(loggedEvent,true);
+		}else{
+			loggedEvent.setPrivateMessage(false);
+			loggedEvent.setDeletedMessage(false);
+			loggedList = loggedEventService.getLoggedEventInfo(loggedEvent,false);
+		}
 		return SUCCESS;
 	}
 

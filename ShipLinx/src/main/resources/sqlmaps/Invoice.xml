@@ -173,6 +173,10 @@
 			where invoice_id = #invoiceId#
 	</update>
 
+    <update id = "updateInvoiceCharges" parameterClass="com.meritconinc.shiplinx.model.Invoice">
+			update invoice set invoice_amount=#invoiceAmount#,invoice_cost=#invoiceCost#, invoice_tax=#invoiceTax# where invoice_id = #invoiceId#
+	</update>
+
 	<update id = "updateInvoiceStatus" parameterClass="com.meritconinc.shiplinx.model.Invoice">
 			update invoice set payment_status=#paymentStatus#, sales_username=#salesRep# where invoice_id = #invoiceId#
 	</update>

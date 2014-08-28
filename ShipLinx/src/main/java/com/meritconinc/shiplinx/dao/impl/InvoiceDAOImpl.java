@@ -137,6 +137,16 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 	 public ARTransaction getinvoicebyinvoiceid(long invoiceid){
 		  return (ARTransaction) getSqlMapClientTemplate().queryForObject("getinvoicebyinvoiceid", invoiceid);
 		 }
+	 
+	 @Override
+	 	public void updateInvoiceCharges(Invoice invoice) {
+	 		try{
+	 			getSqlMapClientTemplate().update("updateInvoiceCharges", invoice);
+	 		}catch(Exception e){
+	 			e.printStackTrace();
+	 		}
+	 		
+	 	}
 
 
 }

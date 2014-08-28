@@ -11,6 +11,7 @@
 <html>
 
 <head>
+<link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon.ico"/>
 	<link rel="stylesheet" type="text/css"	href="<s:url value='%{#session.cssToLoad}' includeContext="true"/>" /> 
 	<script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar-setup.js" type="text/javascript"></script>

@@ -50,7 +50,6 @@
 		<result property="businessId"	column="business_id"/>
 		<result property="business" column="business_id" select="getBusinessesById"/>
 		<result property="defaultMenuId"	column="default_menu_id"/>
-		<result property="commissionPercentage"	column="commission_percentage"/>
 		<result property="commissionPercentagePP" column="commission_perc_PP"/>
 		<result property="commissionPercentagePS" column="commission_perc_PS"/>
 		<result property="userRole" column="username" select="getUserRole"/>
@@ -64,6 +63,7 @@
 		<result property="userGLOrRefNumber" column="gl_refno"/>
 		<result property="userCode" column="user_code"/>
 		<result property="logoURL" column="logo_url"/>
+		<result property="commissionPercentageCHB" column="commission_perc_CHB"/>
     <result property="timeZone" column="time_zone"/>
 	</resultMap>
 	
@@ -248,7 +248,7 @@
 			postal_zip = #postal_zip#, session_timeout = #session_timeout#, 
 			phone_number_ext = #phone_number_ext#, 
 			locale = #locale#,
-			expiration_date = #expDate#, commission_percentage=#commissionPercentage#, commission_perc_PP=#commissionPercentagePerPalletService#, commission_perc_PS=#commissionPercentagePerSkidService#,
+			expiration_date = #expDate#, commission_perc_CHB=#commisionPercentagePerCHB#, commission_perc_PP=#commissionPercentagePerPalletService#, commission_perc_PS=#commissionPercentagePerSkidService#,
 			print_num_of_labels = #printNoOfLabels#, print_num_of_ci = #printNoOfCI#, print_preferred_label_size = #preferredLabelSize#, print_auto = #autoPrint#,
 			default_from_address_id = #fromAddressId#, default_to_address_id = #toAddressId#, gl_refno = #userGLOrRefNumber#,user_code=#userCode#,logo_url=#logoURL#,unit_measure=#unitmeasure#,time_zone=#timeZone#
 			where username = #username#
@@ -349,12 +349,12 @@
 			email, user_comments, account_status, created_by, created,
 			company, phone_number, phone_number_ext, occupation,
 			address_line, city, state_province, country_code, postal_zip, session_timeout,
-			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id,commission_percentage,commission_perc_PP,commission_perc_PS, default_menu_id, print_num_of_labels, print_num_of_ci, print_preferred_label_size, print_auto, branch, default_from_address_id, default_to_address_id, gl_refno,unit_measure,time_zone) 
+			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id,commission_perc_CHB,commission_perc_PP,commission_perc_PS, default_menu_id, print_num_of_labels, print_num_of_ci, print_preferred_label_size, print_auto, branch, default_from_address_id, default_to_address_id, gl_refno,unit_measure,time_zone) 
 			values (#username#, #password#, #today#, #first_name#, 
 			#last_name#, #email#, #user_comments#, #account_status#, #created_by#, 
 			#created#, #company#, #phone_number#, #phone_number_ext#, #occupation#, 
 			#address_line#, #city#, #state_province#, #country_code#, #postal_zip#, #session_timeout#,
-			#locale#, #expiration_date#,IFNULL(#customerId#,0),#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#,IFNULL(#commissionPercentage#,0),IFNULL(#commissionPercentagePerPalletService#,0),IFNULL(#commissionPercentagePerSkidService#,0),#default_menuId#, IFNULL(#printNoOfLabels#,1), IFNULL(#printNoOfCI#,3), #preferredLabelSize#, #autoPrint#, #branch#, IFNULL(#fromAddressId#,0), IFNULL(#toAddressId#,0), #userGLOrRefNumber#,#unitmeasure#,#timeZone#)
+			#locale#, #expiration_date#,IFNULL(#customerId#,0),#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#,IFNULL(#commisionPercentagePerCHB#,0),IFNULL(#commissionPercentagePerPalletService#,0),IFNULL(#commissionPercentagePerSkidService#,0),#default_menuId#, IFNULL(#printNoOfLabels#,1), IFNULL(#printNoOfCI#,3), #preferredLabelSize#, #autoPrint#, #branch#, IFNULL(#fromAddressId#,0), IFNULL(#toAddressId#,0), #userGLOrRefNumber#,#unitmeasure#,#timeZone#)
 	</insert>
 	
 	<!-- 

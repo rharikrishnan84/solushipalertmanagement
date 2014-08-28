@@ -32,7 +32,7 @@ height:200px;
 display:none;
 }
 #customersautocomplete,#auto{ background-position: 146px 5px; background-size:8px 8px; }
-#customerautocomplete,#auto{ background-position: 115px 4px; background-size:8px 8px; }
+#customerautocomplete,#auto{ background-position: 146px 4px; background-size:8px 8px; }
 </style> 	
 
 <script type="text/javascript">
@@ -56,19 +56,33 @@ display:none;
 		} );
 
 		function ontimevalidate(val,perc,rowType,index){
-		
+			var evenPercId = "evenPercId"+index;
+							            var evenFlatId = "evenFlatId"+index;
+							            var oddPercId = "oddPercId"+index;
+						            var oddFlatId = "oddFlatId"+index;
+						            
+							            if(val==0){
+											if(rowType=="even"){
+							                var percentageEven=parseInt(document.getElementById(evenPercId.toString()).value);
+							                var flatEven=parseInt(document.getElementById(evenFlatId).value);
+									if(percentageEven==0 && flatEven==0)
+											alert("Either Percentage or Flat should have the value greater than 0.");
+											}
+											else{
+							                var percentageOdd=parseInt(document.getElementById(oddPercId).value);
+							                var flatOdd=parseInt(document.getElementById(oddFlatId).value);
+											if(percentageOdd==0 && flatOdd==0)
+											alert("Either Percentage or Flat should have the value greater than 0.");
+											}
+									}
 			if(val!=0){
-            var evenPercId = "evenPercId"+index;
-            var evenFlatId = "evenFlatId"+index;
-            var oddPercId = "oddPercId"+index;
-            var oddFlatId = "oddFlatId"+index;
-            if(rowType=="even"){
-                var percentageEven=document.getElementById(evenPercId.toString()).value;
+				if(rowType=="even"){
+										var percentageEven=document.getElementById(evenPercId.toString()).value;
                 var flatEven=document.getElementById(evenFlatId).value;
                 if(perc=="perc" && flatEven!=0){
                     alert("Either Percentage or Flat should have the value greater than 0.");
                     document.getElementById(evenFlatId).value =0;
-                }else if(percentageEven!=0){
+                }else if(perc=="flat"  && percentageEven!=0){
                     alert("Either Percentage or Flat should have the value greater than 0.");
                     document.getElementById(evenPercId).value =0
                 }
@@ -78,7 +92,7 @@ display:none;
                 if(perc=="perc" && flatOdd!=0){
                     alert("Either Percentage or Flat should have the value greater than 0.");
                     document.getElementById(oddFlatId).value =0;
-                }else if(percentageOdd!=0){
+                }else if(perc=="flat"  && percentageOdd!=0){
                     alert("Either Percentage or Flat should have the value greater than 0.");
                     document.getElementById(oddPercId).value =0
                 }
@@ -296,8 +310,29 @@ display:none;
 	}	
 	function saveMarkupList()
 	{
-	 document.searchform.action = "saveMarkupList.action";
-	 document.searchform.submit();
+		var savemarkup=document.getElementsByName("markupCheckBox");
+					var i1,txt1 = 0;
+							   for (i1=0;i1<savemarkup.length;i1++){
+								if (savemarkup[i1].checked){
+							 txt1 += 1;      
+								}
+							   }
+							   if(txt1 < 1)
+								alert('Please select at least one');		
+							   else{
+									var i,selectedItem="",percentage="",flat="",disabledflag="",variable="";
+										for(i=0;i<savemarkup.length;i++){
+											if(savemarkup[i].checked){
+												selectedItem=selectedItem+savemarkup[i].value+",";
+												percentage=percentage+document.getElementsByName("markupPercentage")[i].value+",";
+												flat=flat+document.getElementsByName("markupFlat")[i].value+",";
+												disabledflag=disabledflag+document.getElementsByName("disabledFlag")[i].value+",";					
+												variable=variable+document.getElementsByName("variable")[i].value+",";
+								}			
+						}
+					  	document.searchform.action = "saveMarkupList.action?selectedItem="+selectedItem+"&percentage="+percentage+"&flat="+flat+"&disabledFlag="+disabledflag+"&variable="+variable;
+				     	document.searchform.submit();
+					}
 	}
 	function defaultmarkup(customerId)
 	{
@@ -427,7 +462,7 @@ display:none;
            <div  class="controls"><span>:</span>
            <s:select  listKey="countryCode" 
 							listValue="countryName" name="markup.fromCountryCode" list="#session.COUNTRIES" 
-							 headerKey="" headerValue="ANY" id="fromCountry" theme="simple"  />
+							 headerKey="ANY" headerValue="ANY" id="fromCountry" theme="simple"  />
            </div>
           </div>
           <div class="fields">
@@ -435,7 +470,7 @@ display:none;
            <div class="controls"><span>:</span>
            	<s:select  listKey="countryCode" 
 							listValue="countryName" name="markup.toCountryCode" list="#session.COUNTRIES" 
-							 headerKey="" headerValue="ANY" id="toCountry" theme="simple"  />
+							 headerKey="ANY" headerValue="ANY" id="toCountry" theme="simple"  />
            </div>
           </div>
 		  <div class="fields">
@@ -469,7 +504,13 @@ display:none;
             <s:textfield  key="markup.markupFlat" name="markup.markupFlat"   />
            </div>
           </div>
-		  
+		  <div class="fields">
+           <label><mmr:message messageId="label.markup.variable"/> </label>
+           <div class="controls"><span>:</span>
+           <s:select value="%{markup.variable}" name="markup.variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" />
+   			</div>
+									
+           </div>
 		<s:if test='%{markup.customerBusName != "Default"}' >
 		<div class="rows">
 		<div class="fields">
@@ -484,8 +525,8 @@ display:none;
 										<label>From</label>
 										<div class="controls"><span>:</span>
 										<s:url id="customerList" action="listCustomers" />
-		               <input id="auto" type="hidden" value="" name="id">
-<input id="customersautocomplete" type="text" value="" name="searchString" autocomplete="off">
+		               <s:hidden id="custId" name="markup.sourceCustomerId"/>			
+		               						<s:textfield id="customerautocomplete" />
 										</div>
 									</div>
 		<div class="fields">
@@ -543,6 +584,7 @@ display:none;
 	<th><span style="width:60px !important; float:left;">FROM</span></th>
 	<th><span style="width:60px !important; float:left;">TO</span></th>
 
+<th><span style="width:60px !important; float:left;">VARIABLE</span></th>
 	<th style="text-align:right;padding-right:18px">%</th>
 	<th style="text-align:right;padding-right:18px">$</th>
 	<th>INACTIVE</th>
@@ -553,7 +595,7 @@ display:none;
 	 <s:iterator id="markupTable" value="markupList" status="rowstatus">
 								<tr>
 								<s:if test="#rowstatus.even == true">
-								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='serviceId'/>"/>
+								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='#index'/>"/>
 									<input type="hidden" name="fromCountryCode<s:property value='serviceId'/>" value="<s:property value='fromCountryCode'/>" />
 									<input type="hidden"  name="toCountryCode<s:property value='serviceId'/>" value="<s:property value='toCountryCode'/>" />
 									<input type="hidden"  name="customerId<s:property value='serviceId'/>" value="<s:property value='customerId'/>" />
@@ -576,12 +618,13 @@ display:none;
 								</td>
 								<td ><s:property value="fromWeight"/></td>
 								<td ><s:property value="toWeight"/></td>
+								<td><s:select value="%{variable}" id="evenVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
 								<td ><s:textfield size="5" id="evenPercId%{index}"   key="markupPercentage" name="markupPercentage" onchange="ontimevalidate(this.value,'perc','even',%{index});" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 								<td><s:textfield size="5"  id="evenFlatId%{index}"   key="markupFlat" name="markupFlat" onchange="ontimevalidate(this.value,'flat','even',%{index});" cssClass="text_02_tf_small flat%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 								<td ><s:select key="disabledFlag"   id="evenInactiveId%{index}"  name="disabledFlag" headerKey="1" list="{'true','false'}"   cssClass="text_01_combo_small disabled%{serviceId}" cssStyle="width: 60px"/></td>		
 								</s:if>
 								<s:else>
-								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='serviceId'/>"/>
+								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='#index'/>"/>
 									<input type="hidden" name="fromCountryCode<s:property value='serviceId'/>" value="<s:property value='fromCountryCode'/>" />
 									<input type="hidden"  name="toCountryCode<s:property value='serviceId'/>" value="<s:property value='toCountryCode'/>" />
 									<input type="hidden"  name="customerId<s:property value='serviceId'/>" value="<s:property value='customerId'/>" />
@@ -609,7 +652,8 @@ display:none;
 								<td><s:property value="fromWeight"/></td>
 								<td><s:property value="toWeight"/></td>									
 
-									<td ><s:textfield size="5" id="oddPercId%{index}" class="perc"  onchange="ontimevalidate(this.value,'perc','odd',%{index});" key="markupPercentage" name="markupPercentage" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
+									<td><s:select value="%{variable}" id="oddVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
+								<td ><s:textfield size="5" id="oddPercId%{index}" class="perc"  onchange="ontimevalidate(this.value,'perc','odd',%{index});" key="markupPercentage" name="markupPercentage" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 
                                 <td><s:textfield size="5"  id="oddFlatId%{index}" class="flat"  onchange="ontimevalidate(this.value,'flat','odd',%{index});" key="markupFlat" name="markupFlat" cssClass="text_02_tf_small flat%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 
@@ -645,23 +689,20 @@ display:none;
 
 <script type="text/javascript">
 var customers = {
-		 <s:iterator value='#session.customersList'>
+		<s:iterator value='#session.fromcustomersList'>
 		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
  };
 	var customersArray = $.map(customers, function (value, key) { return { value: value, data: key }; });
 	// Initialize autocomplete with local lookup:
-     $('#customersautocomplete').newautocomplete({
+     $('#customerautocomplete').newautocomplete({
         lookup: customersArray,
 		minChars: 0,
 		onSelect: function (suggestion) {
 		if(suggestion.value != ""){
-            $('#fileNameList').val(suggestion.data);
+			$('#custId').val(suggestion.data);
 			}
-		},		
-		        onInvalidateSelection: function() {
-		            $('#fileNameList').val("");
-		        }
+		}
 		    });
 	
 	function compare(a,b) {

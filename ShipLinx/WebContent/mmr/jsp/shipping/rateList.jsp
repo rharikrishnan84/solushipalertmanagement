@@ -2,7 +2,6 @@
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
-
 <script>	
 var ALERT_TITLE = "Oops!";
 var ALERT_BUTTON_TEXT = "Ok";
@@ -843,7 +842,7 @@ var radioselected = 0;
 						<th>Total Cost</th>
 						</s:if>
 						<s:else>
-						<th>Total Prize</th>
+						<th>Total Price</th>
 						</s:else>
 					</s:else>
 					<th></th> <!-- for making better  view of request qoute message-->
@@ -871,7 +870,12 @@ var radioselected = 0;
 					<s:if test="%{transitDaysMin > 0 && transitDaysMin != transitDays}">
 					<s:property value="transitDaysMin" /> to 
 					</s:if>
+					<s:if test="%{transitDays == 0}">
+               			<s:property value="" />
+          			 </s:if>
+          			 <s:else>
 					<s:property value="transitDays" />
+					</s:else>
 				</td>
 				<td style="text-align:right"><s:property value="billWeight" /></td>
 				<s:if test="%{#request.BillToType!=null}">
@@ -890,9 +894,11 @@ var radioselected = 0;
 							<s:param name="value" value="%{cost}" /></s:text> :<s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
 							</s:iterator>
 							
-							<s:if test="%{[#index].markupTypeText == 'Flat'}">
-<s:text name="format.money" ><s:param name="value" value="%{markupTypeText}" /></s:text> : <s:text name="format.money" ><s:param name="value" value="%{markupFlat}" /></s:text>$
-                        </s:if>
+							<s:set var="markupTypeText" value="%{shippingOrder.rateList[#rowstatus.index].markupTypeText}"/>
+							<s:if test="#markupTypeText.equals('Flat')">
+								<s:property value="%{markupTypeText}"/> :<s:text name="format.money" ><s:param name="value" value="%{markupFlat}" /></s:text>
+								
+                        	</s:if>
 
                         <s:else>				
 

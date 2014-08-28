@@ -177,6 +177,30 @@
 		
 	</resultMap>
 	
+	<resultMap id="getChargesResult" class="com.meritconinc.shiplinx.model.Charge">
+     <result property="chargeId" column="charge_id"/>
+      <result property="orderId" column="order_id"/>
+      <result property="name" column ="name"/>
+      <result property="cost" column ="cost"/>
+      <result property="charge" column ="charge"/>
+      <result property="currency" column ="currency"/>
+      <result property="discountAmount" column ="discount_amount"/>
+      <result property="ediInvoiceNumber" column ="edi_invoice_number"/>
+      <result property="status" column ="status"/>
+      <result property="id" column ="id"/>
+      <result property="chargeCode" column ="charge_code"/>
+      <result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+      <result property="tariffRate" column ="tariff_rate"/>
+      <result property="type" column ="type"/>
+      <result property="quoteChargeId" column ="quote_charge_id"/>
+      <result property="carrierId" column ="carrier_id"/>
+       <result property="carrierName" column ="carrier_name"/>
+      <result property="costcurrency" column="cost_currency" />
+            <result property="chargecurrency" column="charge_currency" />
+             <result property="exchangerate" column="exchange_rate" />
+			<result property="chargeGroupId" column="charge_group_id" />
+       </resultMap>
+	
   <resultMap id="chargesResult" class="com.meritconinc.shiplinx.model.Charge">
       <result property="chargeId" column="charge_id"/>
       <result property="orderId" column="order_id"/>
@@ -217,6 +241,22 @@
 			<result property="displayOrder" column="display_order"/>
 	</resultMap>
 	
+	<resultMap id="carrierChargeCodeGroupResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+			<result property="id" column="id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="chargeCode" column ="charge_code"/>
+			<result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+			<result property="chargeName" column ="charge_name"/>
+			<result property="chargeDesc" column ="charge_desc"/>
+			<result property="groupId" column="group_id"/>
+			<result property="groupCode" column="group_code"/>
+			<result property="groupName" column="group_name"/>
+			<result property="groupDesc" column="group_desc"/>
+			<result property="tax" column="is_tax"/>
+			<result property="taxRate" column="tax_rate"/>
+			<result property="displayOrder" column="display_order"/>
+	</resultMap>
+
       <resultMap id="ajaxCarrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
          <result property="chargeCode" column ="charge_code"/>
      </resultMap>
@@ -235,6 +275,19 @@
 			<result property="taxRate" column="tax_rate"/>
 			<result property="displayOrder" column="display_order"/>
 	</resultMap>
+	
+	<resultMap id="carrierChargeCode" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
+			<result property="id" column="id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="chargeCode" column ="charge_code"/>
+			<result property="chargeCodeLevel2" column ="charge_code_level_2"/>
+			<result property="chargeName" column ="charge_name"/>
+			<result property="chargeDesc" column ="charge_desc"/>
+			<result property="groupId" column="charge_group_id"/>
+			<result property="carrierCharge" column="charge"/>
+			<result property="carrierCost" column="cost"/>
+			<result property="customerId" column="customer_id"/>
+    </resultMap>
 	
 	<resultMap id="labelResultMap" class="com.meritconinc.shiplinx.model.ShippingLabel">
 			<result property="id" column="id"/>
@@ -365,6 +418,7 @@
 		<result property="exportDataName" column="export_data_name"/>
 		<result property="exportData" column="export_data"/>
 		<result property="buyerAddressId" column="buyer_id"/>
+		<result property="buyerAddress" column="buyer_id" select="findAddressById" />
 		<result property="incoTerms" column="inco_terms"/>
 	</resultMap>
 	
@@ -430,6 +484,12 @@
    <result property="quoteChargeId" column ="quote_charge_id"/>
    </resultMap>
 	
+	<resultMap id="carrierResult" class="com.meritconinc.shiplinx.model.Carrier">
+			<result property="id" column="carrier_id"/>
+			<result property="name" column="name"/>
+			<result property="trackingURL" column="tracking_url"/>
+			<result property="implementingClass" column="implementing_class"/>
+	</resultMap>
 	
 	<insert id="addShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
 			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id) 
@@ -445,15 +505,11 @@
 	 		</selectKey>			
 	</insert>
 	<insert id="addCharge" parameterClass="com.meritconinc.shiplinx.model.Charge"> 
-			  insert into charges(charge_id,name,tariff_rate,cost,charge,order_id,charge_code,charge_code_level_2,currency,discount_amount,edi_invoice_number,
-				status,type,quote_charge_id,carrier_id,carrier_name,cost_currency,charge_currency,exchange_rate)
-				VALUES((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),
-				#name#, #tariffRate#, #cost#, #charge#, #orderId#, #chargeCode#, #chargeCodeLevel2#, #currency#,
-				#discountAmount#, #ediInvoiceNumber#, #status#, #type#, #quoteChargeId#, #carrierId#, #carrierName#,
-				#costcurrency#, #chargecurrency#, #exchangerate#);
- 			<selectKey resultClass="long" type="post" keyProperty="chargeId" >select LAST_INSERT_ID() as value
-
- 	 		</selectKey>			
+			  insert into charges(charge_id,order_id, name,   cost,   charge,     currency,   discount_amount,    edi_invoice_number, status,     charge_code,    charge_code_level_2,tariff_rate,  type, carrier_id,  carrier_name,quote_charge_id,cost_currency,charge_currency,exchange_rate,charge_group_id) 
+              values ((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),  #orderId#,  #name#, #cost#, #charge#,   #currency#, #discountAmount#,   #ediInvoiceNumber#, #status#,   #chargeCode#,   #chargeCodeLevel2#, #tariffRate#, #type#, #carrierId#, #carrierName#,#quoteChargeId#,#costcurrency#,#chargecurrency#,#exchangerate#,#chargeGroupId#)
+  			<selectKey resultClass="long" type="post" keyProperty="chargeId" >select LAST_INSERT_ID() as value
+ 
+  	 		</selectKey>			
 			
 	</insert>
 
@@ -1022,7 +1078,7 @@
 	</select>
 	
 	<select id="getShippingOrderByCurrentShipDate" resultMap="SearchOrderResult">
-  		select * from shipping_order so where DATEDIFF(so.scheduled_ship_date,now()) = 0 and so.carrier_id='80' and so.customer_id=4570
+  		select * from shipping_order so where DATEDIFF(so.scheduled_ship_date,now()) = 0 and so.carrier_id='80' and so.customer_id=4570 and so.status_id!=40
  	</select>
 
     <delete id = "deleteLabel">
@@ -1045,7 +1101,7 @@
                </isNotNull>
                where order_id=#id#
  </update>
-<select id="getChargeById" resultMap="chargesResult">
+<select id="getChargeById" resultMap="getChargesResult">
       select * from charges where id=#id#
   </select>
   <delete id="deleteChargesByOrderId">
@@ -1149,5 +1205,26 @@
 	<insert id="updateEDI">
 			 update charges set edi_invoice_number=#ediNumber# where id=#id#              				
  	</insert>
+ 	<select id="getCarrierByServiceId" resultMap="carrierResult" >
+      select c.* from carrier c,service s  where c.carrier_id=s.carrier_id and s.service_id=#serviceId#
+  </select>
+  
+  <select id="getChargeCodeById" resultMap="carrierChargeCode">
+     select * from carrier_charge_code where id=#id#
+  </select>
+  
+  <select id="getChargeByCarrierAndCodesGroup" resultMap="carrierChargeCodeGroupResultMap" >
+		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
+		where ccc.carrier_id=#carrierId#
+		<isNotNull  property="chargeCode">
+		 and ccc.charge_code=#chargeCode# 
+		</isNotNull>
+		<isNotNull  property="chargeCodeLevel2">
+		 and ccc.charge_code_level_2=#chargeCodeLevel2# 
+		</isNotNull>	
+		<isGreaterThan  property="chargeGroupId" compareValue="0">
+		 	and ccc.charge_group_id=#chargeGroupId#
+		</isGreaterThan>	
+	</select>
 </sqlMap>
 

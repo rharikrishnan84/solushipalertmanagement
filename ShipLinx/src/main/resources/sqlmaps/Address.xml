@@ -34,6 +34,7 @@
 	<resultMap id="AddressMaps" class="com.meritconinc.shiplinx.model.Address">
 	<result property="abbreviationName" />
 	<result property="addressId" />
+	<result property="address1" />
 	</resultMap>
 
 
@@ -256,7 +257,7 @@
 	</select>
 	
   	<select id="getCustomerUser" resultMap="AddressMaps">
-		select abbreviation_name,address_id from address a where customer_id = #customerId#
+		select abbreviation_name,address_id,address1 from address a where customer_id = #customerId#
 	</select> 
 		<select id="findDefaultFromAddressForAddress" resultMap="AddressMap">
 		select a.* from address a where a.address_id=#addressId# limit 1

@@ -436,7 +436,8 @@ public class EdiLoomisParser extends EdiParser {
 			charge.setEdiInvoiceNumber(item.getInvoiceNumber());
 			charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 			charge.setDiscountAmount(new Double(0.0));
-
+			charge.setCarrierId(shipment.getCarrierId());
+			charge.setCarrierName(ShiplinxConstants.CARRIER_LOOMIS_STRING);
 			if (chargeGroupCode != null && 
 					(chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
 					chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {
@@ -506,8 +507,12 @@ public class EdiLoomisParser extends EdiParser {
 			if (ediCharge != null) {
 				Charge dbCharge = findCharge(dbShipment, ediCharge);
 				if (dbCharge == null) {
+					ediCharge.setCarrierId(dbShipment.getCarrierId());
+					ediCharge.setCarrierName(ShiplinxConstants.CARRIER_LOOMIS_STRING);
 					addCharge(dbShipment, ediCharge);
 				} else {
+					dbCharge.setCarrierId(dbShipment.getCarrierId());
+					dbCharge.setCarrierName(ShiplinxConstants.CARRIER_LOOMIS_STRING);
 					updateCharge(ediCharge, dbCharge);
 				}
 			}

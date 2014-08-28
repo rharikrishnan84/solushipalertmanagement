@@ -379,7 +379,12 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 
     log.debug("In pay Invoices");
     List<Long> invoiceIds = new ArrayList<Long>();
-    for (int i = 0; i < select.size(); i++) {
+    String id = request.getParameter("invoiceIdselect");
+        String[] ids = id.split(",");
+        for(int i=0;i<ids.length;i++){
+        	invoiceIds.add(Long.valueOf(ids[i]));
+        }
+        /*for (int i = 0; i < select.size(); i++) {
       // If this checkbox was selected:
       if (select.get(i) != null && select.get(i)) {
         // Get the matching test scenario:
@@ -387,10 +392,15 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
         // ...and launch it:
         invoiceIds.add(invoice.getInvoiceId());
       }
-    }
+   }*/
+   if(invoiceIds.size()>0)
 
     invoices = invoiceManager.processPayment(invoiceIds, creditCard, true);
-    request.setAttribute("postPayment", new Boolean(true));
+   String args[] = new String[1];
+       args[0] = String.valueOf(invoices.size());
+       addActionMessage(getText("creditCard.payment.processed", new String[] { args[0] }));
+       //request.setAttribute("postPayment", new Boolean(true));
+   
     return SUCCESS;
   }
 
@@ -733,6 +743,9 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 
   public String editInvoice() {
     String invoiceId = request.getParameter("invoiceId");
+    if(invoiceId !=null){
+    getSession().put("invoiceId", invoiceId);
+    }
     if (invoiceId != null) {
       long l = Long.parseLong(invoiceId);
       Invoice invoice = invoiceManager.getInvoiceById(l);
@@ -756,6 +769,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
         invoice = invoiceManager.updateInvoice(invoice, ids, userCharges, userCosts, userNames,
             trackNos);
         this.setInvoice(invoice);
+        addActionMessage("Charge Updated Successfully..");
       }
     } catch (Exception e) {
       e.printStackTrace();

@@ -281,7 +281,7 @@ window.onload = function() {
 							<div class="fields">
 								<label><!--<mmr:message messageId="label.commission.percentage"/>-->SPD %: </label>
 								<div class="controls"><span>:</span>
-								<s:textfield size="10" key="user.commissionPercentage" name="user.commissionPercentage"  />
+								<s:textfield size="10" key="user.commissionPercentagePS" name="user.commissionPercentagePS"  />
 								</div>
 							</div>
 							<div class="fields">
@@ -293,7 +293,7 @@ window.onload = function() {
 							<div class="fields">
 								<label><!--<mmr:message messageId="label.commission.percentage.ps"/>-->CHB %: </label>
 								<div class="controls"><span>:</span>
-								<s:textfield size="10" key="user.commissionPercentagePS" name="user.commissionPercentagePS"  />
+								<s:textfield size="10" key="user.commissionPercentageCHB" name="user.commissionPercentageCHB"  />
 								</div>
 							</div>
 						</div>

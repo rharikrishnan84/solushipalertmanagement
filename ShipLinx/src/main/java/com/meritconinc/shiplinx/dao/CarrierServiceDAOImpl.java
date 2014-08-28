@@ -224,4 +224,17 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
   public List<Service> getServicesByCarrierId(long carrierId){
 	  return (List<Service>)getSqlMapClientTemplate().queryForList("getServicesByCarrierId", carrierId);
 	 }
+  
+  public List<Service> getServicesForCarrierAdmin(Long carrierId) {
+	  	    Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	  	    paramObj.put("carrierId", carrierId);
+	  	    List<Service> carrierServicesList = new ArrayList<Service>();
+	  	    try {
+	  	      carrierServicesList = (List) getSqlMapClientTemplate().queryForList("getServicesForCarrieradmin",
+	  	          paramObj);
+	  	    } catch (Exception e) {
+	  	      e.printStackTrace();
+	  	    }
+	  	    return carrierServicesList;
+	  	  }
 }

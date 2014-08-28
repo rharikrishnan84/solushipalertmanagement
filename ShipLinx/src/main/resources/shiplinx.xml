@@ -666,7 +666,12 @@
 			<result type="tiles" name="input">new.shipment</result>
             <result type="tiles" name="success">order.rates</result>
              <result type="tiles" name="success2">viewShipment</result>
-             <result type="redirectAction" name="ship">shipment.save.2</result>
+             <!-- <result type="redirectAction" name="ship">shipment.save.2</result>-->
+             <result type="redirectAction" name="ship">
+              <param name="actionName">shipment.save.2</param>
+              <param name="namespace">/admin</param>
+              <param name="pickupRequired">${shippingOrder.pickup.pickupRequired}</param>
+           </result>
         </action>
         <action name="shipment.stageThree.quote" method="stageThree" class="shipmentAction">
          	<result type="tiles" name="input">quoteShipment</result>
@@ -704,7 +709,12 @@
 		<!-- Without token interceptor as it does not seem to be working with redirect coming from new.shipment page -->
 		<action name="shipment.save.2" method="save" class="shipmentAction">
          	<result type="tiles" name="input">order.rates</result>
-            <result type="tiles" name="success">viewShipment</result>
+            <!--   <result type="tiles" name="success">viewShipment</result>-->
+           <result type="redirectAction" name="success">
+              <param name="actionName">view.shipment.action</param>
+              <param name="namespace">/admin</param>
+              <param name="viewShipmentId">${selectedOrder.id}</param>
+           </result>
             <result type="tiles" name="error">new.shipment</result>
         </action>
         
@@ -896,7 +906,13 @@
         <action name="delete.actual.charge.shipment" method="deleteCharge" class="shipmentAction">
             <result type="tiles" name="success">viewShipment</result>
             <result name="input">viewShipment</result>
-        </action>  
+        </action> 
+        <action name="delete.actual.charge.editinvoice" method="deleteInvoiceCharge" class="shipmentAction">
+            <result type="redirectAction" name="success">
+              <param name="actionName">edit.invoice.action</param>
+              <param name="invoiceId">${session.invoiceId}</param>
+              </result>
+        </action> 
         <action name="copy.actual.charge" method="copyToActualCharges" class="shipmentAction">
             <result type="redirectAction" name="success">
               <param name="actionName">view.shipment.action</param>
@@ -1666,6 +1682,7 @@
         <action name="edit.invoice" method="editInvoice" class="invoiceManagerAction">
           <!--   <result name="success">/mmr/jsp/admin/view_edit_invoice.jsp</result>-->
            <result type="tiles" name="success">editInvoice</result>
+           
        	</action> 
         <action name="update.invoice" method="updateInvoice" class="invoiceManagerAction">
            <!--  <result name="success">invoice.list</result> -->

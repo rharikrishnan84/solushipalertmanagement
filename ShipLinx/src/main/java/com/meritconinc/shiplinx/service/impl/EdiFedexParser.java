@@ -351,7 +351,8 @@ public class EdiFedexParser extends EdiParser {
 			charge.setCost(cost); 
 			charge.setEdiInvoiceNumber(item.getInvoiceNumber());
 			charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
-			
+			charge.setCarrierId(shipment.getCarrierId());
+			charge.setCarrierName(ShiplinxConstants.CARRIER_FEDEX_STRING);
 			if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
 				charge.setTariffRate(tariff);
 				charge.setCharge( applyMarkup(shipment, charge, item) );
@@ -483,8 +484,12 @@ public class EdiFedexParser extends EdiParser {
 			if (ediCharge != null) {
 				Charge dbCharge = findCharge(dbShipment, ediCharge);
 				if (dbCharge == null) {
+					ediCharge.setCarrierId(dbShipment.getCarrierId());
+					ediCharge.setCarrierName(ShiplinxConstants.CARRIER_FEDEX_STRING);
 					addCharge(dbShipment, ediCharge);
 				} else {
+					dbCharge.setCarrierId(dbShipment.getCarrierId());
+					dbCharge.setCarrierName(ShiplinxConstants.CARRIER_FEDEX_STRING);
 					updateCharge(ediCharge, dbCharge);
 				}
 			}

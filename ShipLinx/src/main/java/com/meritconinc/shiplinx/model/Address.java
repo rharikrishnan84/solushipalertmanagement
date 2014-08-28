@@ -356,6 +356,8 @@ public class Address implements Serializable, Cloneable {
 		this.setContactName(sourceAddress.getContactName());
 		this.setFaxNo(sourceAddress.getFaxNo());
 		this.setTaxId(sourceAddress.getTaxId());
+		this.setResidential(sourceAddress.getResidential());
+		this.setSendNotification(sourceAddress.sendNotification);
 	}
 	public boolean isZipCodeRequired() {
 		return zipCodeRequired;

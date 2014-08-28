@@ -48,7 +48,7 @@
 		<band height="13" splitType="Stretch">
 			<printWhenExpression><![CDATA[$F{charge} > 0]]></printWhenExpression>
 			<textField pattern="" isBlankWhenNull="false">
-				<reportElement key="textField-1" style="Arial_Regular_7" mode="Opaque" x="2" y="0" width="176" height="13" forecolor="#000000" backcolor="#FFFFFF">
+				<reportElement key="textField-1" style="Arial_Regular_7" mode="Opaque" x="2" y="0" width="162" height="13" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[$F{charge} > 0]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -63,7 +63,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
-				<reportElement key="textField-2" style="Arial_Regular_7" positionType="Float" mode="Transparent" x="176" y="0" width="52" height="13" forecolor="#000000" backcolor="#FFFFFF">
+				<reportElement key="textField-2" style="Arial_Regular_7" positionType="Float" mode="Transparent" x="164" y="0" width="64" height="13" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[$F{charge} > 0]]></printWhenExpression>
 				</reportElement>
 				<box>

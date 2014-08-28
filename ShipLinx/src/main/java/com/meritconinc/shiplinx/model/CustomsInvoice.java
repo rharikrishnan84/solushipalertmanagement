@@ -102,7 +102,11 @@ public class CustomsInvoice {
 	}
 
 	public void setReference(String reference) {
-		this.reference = reference;
+		if(reference!=null){
+		this.reference = reference.replaceAll(",", "");
+		}else{
+			this.reference = reference;
+		}
 	}
 
 	public String getCurrency() {

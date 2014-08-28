@@ -165,7 +165,6 @@ public class CustomerManagerImpl implements CustomerManager {
 				customer.setPayableDays(business.getDefaultNetTerms());
 
 			customer.setActive(true);
-
 			long customerId = customerDAO.addCustomer(customer);
 			customerDAO.addUser(customer, customerId);
 
@@ -175,7 +174,7 @@ public class CustomerManagerImpl implements CustomerManager {
 												// the Spend criteria.
 				// Copy markups from source customer to target customer
 				markupManagerService.copyCustomerMarkup(lstCustomerTier.get(0)
-						.getCustomerId(), customerId, business.getId());
+						.getCustomerId(), customerId, business.getId());				
 				log.debug("Copied the Markup from the Customer:"
 						+ lstCustomerTier.get(0).getCustomerId()
 						+ " to the new Customer:" + customerId);
@@ -228,8 +227,10 @@ public class CustomerManagerImpl implements CustomerManager {
 
 			if (salesUser != null) {
 				CustomerSalesUser customerSalesUser = new CustomerSalesUser();
-				customerSalesUser.setCommissionPercentage(salesUser
-						.getCommissionPercentage());
+				/*customerSalesUser.setCommissionPercentage(salesUser
+						.getCommissionPercentage());*/
+				customerSalesUser.setCommisionPercentagePerCHB((salesUser
+					      .getCommissionPercentageCHB()));
 				customerSalesUser
 						.setCommissionPercentagePerPalletService(salesUser
 								.getCommissionPercentagePP());
@@ -246,8 +247,10 @@ public class CustomerManagerImpl implements CustomerManager {
 					User salesuser = siteUserDAO.findUserByUserCode(code);
 					if(salesuser!=null){
 					CustomerSalesUser customerSalesUser = new CustomerSalesUser();
-					customerSalesUser.setCommissionPercentage(salesuser
-							.getCommissionPercentage());
+					/*customerSalesUser.setCommissionPercentage(salesuser
+							.getCommissionPercentage());*/
+					customerSalesUser.setCommisionPercentagePerCHB((salesuser
+						      .getCommissionPercentageCHB()));
 					customerSalesUser
 							.setCommissionPercentagePerPalletService(salesuser
 									.getCommissionPercentagePP());
@@ -788,9 +791,9 @@ public class CustomerManagerImpl implements CustomerManager {
 			if (!found) {
 				// Disable all services for this carrier and customer
 				carriersToDisable.add(carrier);
-				markupManagerService
+				/*markupManagerService
 						.disableOrEnableAllServicesForCustomerAndCarrier(
-								customer.getId(), carrier.getId(), true);
+								customer.getId(), carrier.getId(), true);*/
 			}
 		}
 

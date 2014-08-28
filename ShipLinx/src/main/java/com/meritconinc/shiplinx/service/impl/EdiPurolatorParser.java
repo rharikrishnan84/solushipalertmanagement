@@ -373,6 +373,8 @@ public class EdiPurolatorParser extends EdiParser {
 		}
 		
 //		charge.setCharge(new Double(0.0));
+		charge.setCarrierId(shipment.getCarrierId());
+		charge.setCarrierName(ShiplinxConstants.CARRIER_PUROLATOR_STRING);
 		charge.setChargeCode(chargeCode);
 		charge.setChargeCodeLevel2(chargeCodeLevel2);
 		// If charge code is "OTH" then charge name should be the name of the field
@@ -531,8 +533,12 @@ public class EdiPurolatorParser extends EdiParser {
 				if (ediCharge != null) {
 					Charge dbCharge = findCharge(dbShipment, ediCharge);
 					if (dbCharge == null) {
+						ediCharge.setCarrierId(dbShipment.getCarrierId());
+						ediCharge.setCarrierName(ShiplinxConstants.CARRIER_PUROLATOR_STRING);
 						addCharge(dbShipment, ediCharge);
 					} else {
+						dbCharge.setCarrierId(dbShipment.getCarrierId());
+						dbCharge.setCarrierName(ShiplinxConstants.CARRIER_PUROLATOR_STRING);
 						updateCharge(ediCharge, dbCharge);
 					}
 				}

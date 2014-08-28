@@ -53,14 +53,7 @@ background-position: 145px 4px; background-size:8px 8px; }
 							</div>		
 							<div class="cont_data_body" id="geninv_srch_table">
 								<div class="rows">
-									<div class="fields">
-										<label><mmr:message messageId="label.customer.name" /></label>
-									<div class="controls">
-									<span>:</span>
-											<input id="custId" type="hidden" value="" name="id">
-<input id="customersautocomplete" type="text"  value="" name="customerName" autocomplete="off">
-										</div>
-									</div>	
+										
 								</div>
 							</div>
 						</div>

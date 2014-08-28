@@ -151,7 +151,8 @@ function removeCustomAlert() {
 			  }
 	 
 	  function supportURL(){   
-		   window.open("http://soluship.fastsupport.com",'','width=860,height=540,left=100,top=100,scrollbars=1'); 
+		  var supportURL=document.getElementById("supportURL").value;		 
+		  		   window.open(supportURL,'','width=860,height=540,left=100,top=100,scrollbars=1'); 
 		  }
 	</script>
 	
@@ -272,7 +273,7 @@ function removeCustomAlert() {
 				</div>
 			</div>
 		</div>
-		
+		<s:hidden name="supportURL" id="supportURL" value="%{#session.business.supportURL}"/>
 		<div class="wrapper_btm">
 			<div class="wrapper_btm_inner">
 				<div class="wrapper_body">
@@ -289,7 +290,9 @@ function removeCustomAlert() {
 				</s:iterator>
 							
 						</ul>
+						<s:if test="%{!#session.ROLE.contains('sales')}">
 						<p>WELCOME&nbsp;&nbsp;&nbsp;&nbsp;<s:property value="#session['username']" />
+						</s:if>
 		</p>
 					</div>
 				

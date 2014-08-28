@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import com.meritconinc.shiplinx.service.PinBlockManager;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -51,6 +52,7 @@ import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Attachment;
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
@@ -171,6 +173,11 @@ public class GenericCarrierAPI implements CarrierService {
   }
 
   public void requestPickup(Pickup pickup) {
+	  long[] pin = new long[1];
+	  	  	  PinBlockManager pinBlockManager = (PinBlockManager) MmrBeanLocator.getInstance().findBean(
+	  	                "pinBlockManager");
+	  	  	  pin=pinBlockManager.getNewPinNumbers("CONFIRMATION_NUM",1,1);
+	  	  	 pickup.setConfirmationNum(String.valueOf(pin[0]));
   }
 
   public long getCarrierId() {
@@ -403,6 +410,9 @@ public class GenericCarrierAPI implements CarrierService {
     rating.setServiceId(s.getId());
     rating.setCarrierId(s.getCarrierId());
     rating.setSlaveServiceId(sr.getServiceId());
+    Carrier slaveCarrier=shippingDAO.getCarrierByServiceId(sr.getServiceId());
+        rating.setSlaveCarrierId(slaveCarrier.getId());
+        rating.setSlaveCarrierName(slaveCarrier.getName());
     rating.setServiceName(s.getName());
     if (s.getCarrier() != null) {
       rating.setCarrierName(s.getCarrier().getName());
@@ -648,6 +658,9 @@ public class GenericCarrierAPI implements CarrierService {
         rating.setServiceId(s.getId());
         rating.setCarrierId(s.getCarrierId());
         rating.setSlaveServiceId(pr.getServiceId());
+        Carrier slaveCarrier=shippingDAO.getCarrierByServiceId(pr.getServiceId());
+                rating.setSlaveCarrierId(slaveCarrier.getId());
+                rating.setSlaveCarrierName(slaveCarrier.getName());
         rating.setServiceName(s.getName());
         if (s.getCarrier() != null) {
           rating.setCarrierName(s.getCarrier().getName());
@@ -663,6 +676,7 @@ public class GenericCarrierAPI implements CarrierService {
         // it will be used to compare cheaper rates
         // if Rated rates are cheaper it will be used for Rating
         if (prRatedAs != null) {
+        	rating.setFuel_perc(prRatedAs.getFscPercent());
           Charge chargeRatedAs = getFreightCharge(prRatedAs.getRate(), pr.getCurrency());
           chargeRatedAs.setCost(chargeRatedAs.getCost() * weightAsRated);
           if (chargeRatedAs.getCost().doubleValue() < c.getCost().doubleValue()) {
@@ -743,6 +757,9 @@ public class GenericCarrierAPI implements CarrierService {
     StringBuffer stb = new StringBuffer();
     String subject = MessageUtil.getMessage("label.shipment.notification");
     String message = MessageUtil.getMessage("content.ltl.shipment");
+    if(order.getId()==null){
+    	return;
+    }
     subject = new String(subject.replaceAll("%ORDERID", order.getId().toString()));
 
     Customer customer = customerDAO.getCustomerInfoByCustomerId(order.getCustomerId(),

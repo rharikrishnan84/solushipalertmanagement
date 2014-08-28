@@ -104,6 +104,7 @@ public class EODManifestCreator implements BinaryExportView {
       StringBuilder content = new StringBuilder();
       // Split Year ,Month and Date
       for (ShippingOrder order : shippingOrder) {
+    	  if(order.getStatusId() != ShiplinxConstants.STATUS_CANCELLED){
     	  customerCarrier = carrierServiceDAO.getCutomerCarrierDefaultAccount(order.getCarrierId(),
     			  order.getCustomerId());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -247,7 +248,7 @@ public class EODManifestCreator implements BinaryExportView {
         content.append(StringUtils.rightPad(removeNull(customerCarrier.getAccountNumber2()), 6)
             .substring(0, 6));
         content.append(StringUtils.rightPad("", 107).substring(0, 107) + "\n");
-
+    	  }
       }
 
       // bufferWritter.append(content.toString());

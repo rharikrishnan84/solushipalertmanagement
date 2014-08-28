@@ -94,7 +94,7 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("loginfailedcount", user.getLoginFailedCount());
     paramObj.put("enabled", user.getEnabled());
     paramObj.put("customerId", user.getCustomerId());
-    paramObj.put("commissionPercentage", user.getCommissionPercentage());
+    paramObj.put("commisionPercentagePerCHB", user.getCommissionPercentageCHB());
     paramObj.put("commissionPercentagePerPalletService", user.getCommissionPercentagePP());
     paramObj.put("commissionPercentagePerSkidService", user.getCommissionPercentagePS());
 
@@ -453,7 +453,7 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("username", user.getUsername());
     paramObj.put("locale", user.getLocale());
     paramObj.put("expDate", user.getExpDate());
-    paramObj.put("commissionPercentage", user.getCommissionPercentage());
+    paramObj.put("commisionPercentagePerCHB", user.getCommissionPercentageCHB());
     paramObj.put("commissionPercentagePerPalletService", user.getCommissionPercentagePP());
     paramObj.put("commissionPercentagePerSkidService", user.getCommissionPercentagePS());
     // print setup configuration

@@ -167,7 +167,7 @@
      
      
     }
-    if((userrole == "busadmin")||(statusid==60)||(statusid==80)){
+    if((userrole == "busadmin")||(statusid==60)||(statusid==80)||(userrole == "solutions_manager")){
       
       window.location.href="process.shipment.action?order_id="+id;
      }
@@ -209,7 +209,7 @@ function manifestEOD(){
 	</s:else>
 	</div>	-->
 
-	<s:if test="%{#session.ROLE.contains('busadmin')}">
+	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
   <s:hidden value="busadmin" id="role" />
  </s:if>
  <s:else>
@@ -266,7 +266,7 @@ function manifestEOD(){
     <thead>
 		<tr>
 			<th><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')}"> 
+			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}"> 
 			<th>Company</th>
 			</s:if>
 			<th><span style="width:60px !important; float:left;">Order #</span></th>
@@ -290,7 +290,7 @@ function manifestEOD(){
 			<th ><span style="width:100px !important; float:left;">Billed Charge</span></th>
 			<th><span style="width:100px !important; float:left;">From Address</span></th>
 			<th><span style="width:100px !important; float:left;">To Address</span></th>
-			<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')}">
+			<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager')}">
 			<th><span style="width:100px !important; float:left;">Status</span></th>
 			</s:if>
 			<s:else>
@@ -308,10 +308,11 @@ function manifestEOD(){
 				<s:hidden name="selectedShipments[%{#index}].id" value="%{id}"/>
 					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" name="check_uncheck" />
 					<input type="hidden" type="checkbox" id="status" value="<s:property value="statusId"/>" />
+					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoice.id"/>" />
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />
 				
 				</td>
-				<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')}">
+				<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}">
 					<td title="<s:property value="customer.name"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
 				
 				</s:if>
@@ -357,13 +358,13 @@ function manifestEOD(){
 				<td style="width:70px">
 					$<s:property value="%{shipments[#index].quoteTotalCharge}"/>
 					
-					<s:if test="%{#session.ROLE.contains('busadmin')}">
+					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 					 /$<s:property value="%{shipments[#index].quoteTotalCost}"/>
 					</s:if>
 					</td>
 					<td>
 					$<s:property value="%{shipments[#index].actualTotalCharge}"/>
-					<s:if test="%{#session.ROLE.contains('busadmin')}">
+					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 					/ $
 					<s:property value="%{shipments[#index].actualTotalCost}"/>
 					</s:if>
@@ -373,7 +374,7 @@ function manifestEOD(){
 				<td title="<s:property value="toAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toAddress.longAddress"/></div></td>
 				
 				
-				<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')}">
+				<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager')}">
 					<td title="<s:property value="statusName"/><img src="<s:url value="/mmr/images/stamp_check.png" includeContext="true" />" alt="Update" border="0" onclick="javascript:updateShipment('<s:property value="id"/>');" style="cursor: pointer;">"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="statusName"/><img src="<s:url value="/mmr/images/stamp_check.png" includeContext="true" />" alt="Update" border="0" onclick="javascript:updateShipment('<s:property value="id"/>');" style="cursor: pointer;"></div></td>
 					
 					</td>
@@ -399,7 +400,7 @@ function manifestEOD(){
  	<s:if test="%{#request.shippingOrder.carrierId == 80}" >
  	&nbsp;<a href="javascript:midlandEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
- 	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin'))}" >
+ 	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
  	&nbsp;<a href="javascript:manifestEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
 </div>

@@ -70,4 +70,6 @@ public interface MarkupManagerDAO {
   public boolean getMarkupListForCustomerAndCarrier(Markup markup);
 
   public List<Markup> getMarkupListForCustomerForFilter(Markup markup);
+  public List<Markup> getMarkupList(Markup markup);
+  public Markup findBaseMarkup(Markup markup);
 }

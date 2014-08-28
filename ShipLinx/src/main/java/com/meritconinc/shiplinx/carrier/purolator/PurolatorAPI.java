@@ -148,20 +148,6 @@ public class PurolatorAPI implements CarrierService{
 
 		ShippingServiceClient shippingServiceClient = new ShippingServiceClient(order, customerCarrier);
 		shippingServiceClient.voidShipment();
-		
-		try{
-			if(order.getPickup()!=null && order.getPickup().getConfirmationNum()!=null){
-				Pickup pickup = new Pickup();
-				pickup.setConfirmationNum(order.getPickup().getConfirmationNum());
-				pickup.setCarrierAccount(customerCarrier);
-				PickUpServiceClient pickupServiceClient = new PickUpServiceClient();
-				pickupServiceClient.voidPickup(pickup);
-			}
-		}
-		catch(Exception e){
-			logger.debug("Could not cancel pick up for order : " + order.getId());
-		}
-
 		return true;
 	}
 
@@ -260,7 +246,7 @@ public class PurolatorAPI implements CarrierService{
 		com.meritconinc.shiplinx.model.Service shiplinxService = carrierServiceDAO.getService(rateInfo.getServiceId());
 		//get the cubed weight
 		double cubingFactor;
-		if(shiplinxService.getMode()==ShiplinxConstants.MODE_TRANSPORT_AIR_VALUE)
+		if(shiplinxService.getMode()==ShiplinxConstants.MODE_TRANSPORT_AIR_VALUE && (!(order.getFromAddress().getProvinceCode().equalsIgnoreCase("ON")&& order.getToAddress().getProvinceCode().equalsIgnoreCase("ON")&& shiplinxService.getId()==2002)))
 			cubingFactor = AIR_CUBING_FACTOR;
 		else
 			cubingFactor = GROUND_CUBING_FACTOR;

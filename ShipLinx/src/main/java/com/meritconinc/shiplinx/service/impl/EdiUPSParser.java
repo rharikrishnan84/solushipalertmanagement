@@ -316,7 +316,8 @@ public class EdiUPSParser extends EdiParser {
 		charge.setTariffRate(FormattingUtil.add(charge.getCost(), charge.getDiscountAmount()).doubleValue());
 		charge.setEdiInvoiceNumber(item.getInvoiceNumber());
 		charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
-		
+		charge.setCarrierId(shipment.getCarrierId());
+		charge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
 		if (chargeGroupCode != null && (chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
 										chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {
 			charge.setCharge( applyMarkup(shipment, charge, item) );
@@ -515,8 +516,12 @@ public class EdiUPSParser extends EdiParser {
 			
 			Charge dbCharge = findCharge(dbShipment, ediCharge);
 			if (dbCharge == null) {
+				ediCharge.setCarrierId(dbShipment.getCarrierId());
+				ediCharge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
 				addCharge(dbShipment, ediCharge);
 			} else {
+				dbCharge.setCarrierId(dbShipment.getCarrierId());
+				dbCharge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
 				updateCharge(ediCharge, dbCharge);
 			}
 		}

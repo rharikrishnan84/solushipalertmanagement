@@ -38,11 +38,11 @@ var product_id=0;
 		}	
 	}
 		function addActualCharge() {
-			document.viewform.action = "add.actual.charge.shipment.action";
+			document.viewform.action = "add.actual.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newActualCharge_chargeId').value;
 			document.viewform.submit();
 		}
 		function addQuotedCharge() {
-			document.viewform.action = "add.quoted.charge.shipment.action";
+			document.viewform.action = "add.quoted.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newQuotedCharge_chargeId').value;
 			document.viewform.submit();
 		}		
 		function updateActualCharge() {
@@ -1008,7 +1008,8 @@ function deletecharge(action){
 						value="%{selectedOrder.statusName}" /></p>
 										</div>
 									</div>	
-							<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.statusId==50}"> 
+							<s:if test="%{selectedOrder.statusId==50}"> 
+							<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager'))">
 							<div class="fields">
 										<label><s:a 
 									href="javascript: clearExceptionStatus()" 
@@ -1019,9 +1020,10 @@ function deletecharge(action){
 											<p> <s:select cssClass="text_01" cssStyle="width:158px;" listKey="id" listValue="name" name="status_id" list="#session.orderStatusList" headerKey="-1"  id="status_id" theme="simple"/></p>
 										</div>
 									</div>
+									</s:if>
 								</s:if>
 								
-										<s:if test="%{#session.ROLE.contains('busadmin')}"> 
+										<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 						<s:if test="%{selectedOrder.markType == 1}">
 							<div class="fields">Mark-up Applied</div>
 						</s:if>
@@ -1107,10 +1109,11 @@ function deletecharge(action){
 									<div class="content_header">
 								<div class="cont_hdr_title">Quote Charges:</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
+								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeQuoted}" /></s:text>
-									
+								</s:if>	
 								</div>
-								<s:if test="%{selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('busadmin')}">
+								<s:if test="%{selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('busadmin') || selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('solutions_manager')}">
 								
 								
 					<div id="copy2actual" class="" style="float:right; width:305px; margin-top:-2px; ">
@@ -1137,14 +1140,17 @@ function deletecharge(action){
 							    <td class="ordrdtl_title_hdng" width="18%"><strong>Code</strong></td>
 								<td class="ordrdtl_title_hdng" width="16%"><strong>Charge Name</strong></td>
 
-								<s:if test="%{#session.ROLE.contains('busadmin')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" width="5"><strong>Tariff</strong></td>
 									<td class="ordrdtl_title_hdng" width="12"><strong>&nbsp;&nbsp;Cost</strong></td>
 									<td class="ordrdtl_title_hdng" width="12"><strong>&nbsp;&nbsp;CUR</strong></td>
 
 								</s:if>
-								<td class="ordrdtl_title_hdng" width="12"><strong>Charge</strong></td>
-								 <s:if test="%{#session.ROLE.contains('busadmin')}">
+								<!-- this is to hide the charge for customer_shipper user-->
+								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
+								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
+								</s:if>
+								 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
                                <td class="ordrdtl_title_hdng" width="12"><strong>CUR</strong></td>
                                <td class="ordrdtl_title_hdng" width="12"><strong>EX Rate</strong></td>
                                </s:if>
@@ -1157,7 +1163,7 @@ function deletecharge(action){
 									<tr>
 										<!-- status=30=Billed -- >
 										<!-- Unbilled charges will only be displayed to Business Admin -->
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val">
 													<s:property value="carrierName" />
 											</td>
@@ -1170,7 +1176,7 @@ function deletecharge(action){
 										</s:else>
 										<td style="text-align: center" class="ordrdtl_title_val">
 										<s:if test="%{name == 'Freight'}">
-											<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
+											<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
 										    </s:if>
 										    <s:else>
@@ -1182,7 +1188,7 @@ function deletecharge(action){
 										</s:else>
 											</td>
 
-										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin')}">
+										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') ||status != 30 && #session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val">
 												<s:textfield size="10"
 													key="quotedChargeName" name="quotedChargeName"
@@ -1243,7 +1249,7 @@ function deletecharge(action){
 										</s:if>
 										<s:else>
 											<td class="ordrdtl_title_val"><s:property value="name" /></td>
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val"><s:property
 												value="tariffRate" /></td>	
 												<td class="ordrdtl_title_val"><s:property value="cost" /></td>
@@ -1259,8 +1265,11 @@ function deletecharge(action){
 											</td>
 																					
 											</s:if>
-											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<!-- this to hide the charge for user customer_shipper -->
+											<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
+ 											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
+											</s:if>
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
                                           
                                            <td class="ordrdtl_title_val">
                                            <s:if test="%{chargecurrency==1}">
@@ -1288,7 +1297,7 @@ function deletecharge(action){
 									</tr>
 								</s:iterator></td>
 							</tr>
-							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')}">
+							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="6" class="ordrdtl_title_val" style="padding:10px 3px;">
 										<a href="javascript: updateQuotedCharge()" style="padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;">
@@ -1301,7 +1310,7 @@ function deletecharge(action){
 									
 							</tr>
 							</s:if>
-							<s:if test="%{#session.ROLE.contains('busadmin')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 							<tr style="background-color:#d1d1d1; width:100%;">
 									<td  class="ordrdtl_title" ><strong>Carrier:</strong></td>
 									<td  class="ordrdtl_title" ><strong>Code:</strong></td>
@@ -1309,7 +1318,13 @@ function deletecharge(action){
 									<td> </td>
 									<td  class="ordrdtl_title" ><strong>Cost:</strong></td>
 									<td class="ordrdtl_title" width="12"><strong>&nbsp;&nbsp;CUR:</strong></td>
-									<td  class="ordrdtl_title" ><strong>Charge:</strong></td>
+									<!-- this is to hide the charge for customer_shipper user-->
+									<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
+									<!-- this is to hide the charge for customer_shipper user-->
+								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
+ 								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
+								</s:if>
+									</s:if>
 									<td class="ordrdtl_title" width="12"><strong>CUR:</strong></td>
                                <td class="ordrdtl_title" width="12"><strong>EX Rate:</strong></td>
 							   <td class="ordrdtl_title" width="12"><strong>&nbsp;</strong></td>
@@ -1393,7 +1408,7 @@ function deletecharge(action){
 							</s:if>
 							
 							</table>
-							<s:if test="%{#session.ROLE.contains('busadmin')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 								<!--<table width="960px" cellpadding="3" cellspacing="0" style="margin-left: 10px;">
 								
 								
@@ -1404,9 +1419,11 @@ function deletecharge(action){
 								<div class="content_header">
 								<div class="cont_hdr_title">Actual Charges:</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
+								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeActual}" /></s:text>
+								</s:if>
 					</div>
-					<s:if test="%{selectedOrder.actualCharges.size >0 && #session.ROLE.contains('busadmin')}">
+					<s:if test="%{selectedOrder.actualCharges.size >0 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size >0 && #session.ROLE.contains('solutions_manager')}">
 					<div id="copy2actual" style="float:right; width:285px; margin-top:-2px; ">
 						<div class="fields">
 							<label style="padding-left:38px !important; width:100px !important;">
@@ -1430,20 +1447,20 @@ function deletecharge(action){
 							    <td class="ordrdtl_title_hdng" ><strong style="width:98px !important; float:left;">Code</strong></td>
 								<td style="width:130px !important; float:left;"><strong>Charge Name</strong></td>
 
-								<s:if test="%{#session.ROLE.contains('busadmin')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" width="6%"  ><strong>Tariff</strong></td>
 									<td class="ordrdtl_title_hdng" width="4%"><strong>&nbsp;&nbsp;Cost</strong></td>
 									<td class="ordrdtl_title_hdng" width="4%"><strong>CUR</strong></td>
  								</s:if>
 
 								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
-								<s:if test="%{#session.ROLE.contains('busadmin')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
                                <td class="ordrdtl_title_hdng" width="4%"><strong>CUR</strong></td>
                                <td class="ordrdtl_title_hdng" width="10%"><strong>EX Rate</strong></td>
                                </s:if>
 								<td class="ordrdtl_title_hdng" width="13%"><strong>Status</strong></td>
 								<td class="ordrdtl_title_hdng" width="12%"><strong>Invoice#</strong></td>
-								<s:if test="%{#session.ROLE.contains('busadmin')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" width="8%"><strong>&nbsp;EDI#</strong></td>
 								</s:if>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
@@ -1465,7 +1482,7 @@ function deletecharge(action){
 									          </td> -->
 										<td style="text-align: center" class="ordrdtl_title_val">
 											<s:if test="%{name == 'Freight'}">
-												<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0}">
+												<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
 										    </s:if>
 										    <s:else>
@@ -1476,7 +1493,7 @@ function deletecharge(action){
 												<s:property value="chargeCode" />
 											</s:else>
 										</td>
-										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') && cancelledInvoice!='Yes'}">
+										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') && cancelledInvoice!='Yes'||status != 30 && #session.ROLE.contains('solutions_manager')&& cancelledInvoice!='Yes'}">
 											<td style="width:130px !important; float:left;">
 												<s:textfield size="10"
 													key="actualChargeName" name="actualChargeName"
@@ -1486,7 +1503,7 @@ function deletecharge(action){
 												<s:property value="tariffRate" />
 											</td> --%>
 
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val"  >
 												<s:property value="tariffRate" />
 											</td>
@@ -1530,7 +1547,7 @@ function deletecharge(action){
 											<td class="ordrdtl_title_val">
 												<s:property value="invoiceNum" />
 											</td>
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 												<s:if test="%{ediInvoiceNumber == null || ediInvoiceNumber ==''}">
 													<td class="ordrdtl_title_val"><s:textfield size="4" key="actualEdiInvoiceNumber" 
 													name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/></td>
@@ -1551,7 +1568,7 @@ function deletecharge(action){
 										</s:if>
 										<s:else>
 											<td ><s:property value="name" /></td>
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val">
 												<s:property value="tariffRate" />
 											</td>
@@ -1566,8 +1583,12 @@ function deletecharge(action){
                                            </s:elseif>
                                                </td>
 											</s:if>
-											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
-											 <s:if test="%{#session.ROLE.contains('busadmin')}">
+											<!-- this is to hide the charges for customer_shipper user-->
+											
+											<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
+ 											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
+											</s:if>
+											 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
                                            
                                            <td class="ordrdtl_title_val">
                                            <s:if test="%{chargecurrency==1}">
@@ -1597,7 +1618,7 @@ function deletecharge(action){
 											<!--<s:if test="%{#session.ROLE.contains('busadmin')}">
 												<td class="ordrdtl_title_val"><s:property value="ediInvoiceNumber" /></td>
 											</s:if>-->
-											<s:if test="%{#session.ROLE.contains('busadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 												<s:if test="%{ediInvoiceNumber == null || ediInvoiceNumber ==''}">
 													<td class="ordrdtl_title_val"><s:textfield size="4" key="actualEdiInvoiceNumber" 
 													name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/></td>
@@ -1619,7 +1640,7 @@ function deletecharge(action){
 							<!--</table>
 							
                            <table width="920px" cellpadding="2" cellspacing="0" style="font-size:12px;">-->
-                           <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')}">
+                           <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><a
 										href="javascript: updateActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; text-decoration:none; padding:3px 10px;">
@@ -1634,7 +1655,7 @@ function deletecharge(action){
 							</tr>
 							</s:if>
 							
-							<s:if test="%{#session.ROLE.contains('busadmin')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 								<tr style="background-color:#d1d1d1;">
 									<td  class="ordrdtl_title" align=""><strong>Carrier:</strong></td>
 									<td  class="ordrdtl_title" align=""><strong>Code:</strong></td>
@@ -1741,7 +1762,7 @@ function deletecharge(action){
 					<display:column headerClass="payment_info_tableTitle" property="processorTransactionId"  sortable="true" title="Processor Ref #" ></display:column>
 					<display:column headerClass="payment_info_tableTitle" property="cardNumCharged"  sortable="true" title="CC #" ></display:column>
 					<!-- Implementation of Refund Charge based on Role and Status: Status should be 30 for 'Processed' -->
-					<s:if test="%{#session.ROLE.contains('busadmin') && #status==30}">
+					<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
 						<display:column headerClass="payment_info_tableTitle" sortable="true" title="">
 						<a href="">Refund Charge</a> <!-- Implementation of Refund Charge Logic. -->
 						</display:column>

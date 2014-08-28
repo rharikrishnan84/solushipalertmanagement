@@ -31,11 +31,29 @@ public class Charge implements Serializable {
   private BigDecimal exchangerate;
 //Written By Mohan R
   private int chargeGroupId;
+  private long slaveServiceId;
+    private String slaveCarrierName;
   public long getQuoteChargeId() {
 	    return quoteChargeId;
 	 }
 	
-	 public int getChargeGroupId() {
+	 public long getSlaveServiceId() {
+	return slaveServiceId;
+}
+
+public void setSlaveServiceId(long slaveServiceId) {
+	this.slaveServiceId = slaveServiceId;
+}
+
+public String getSlaveCarrierName() {
+	return slaveCarrierName;
+}
+
+public void setSlaveCarrierName(String slaveCarrierName) {
+	this.slaveCarrierName = slaveCarrierName;
+}
+
+	public int getChargeGroupId() {
 return chargeGroupId;
 }
   

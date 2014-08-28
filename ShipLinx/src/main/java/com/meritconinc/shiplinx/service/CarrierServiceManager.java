@@ -68,5 +68,7 @@ public interface CarrierServiceManager {
   public List<Carrier> getCustomerCarriersForBusiness(long customerId);
 
   public List getCustomerServicesForCarrier(Long carrierId, long customerId);
+  
+  public List getServicesForCarrierAdmin(Long carrierId);
 
 }

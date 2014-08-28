@@ -38,9 +38,7 @@
 												<s:checkbox cssClass="text_01" value="%{shippingOrder.saveFromAddress}"  name="shippingOrder.saveFromAddress"/>
 											</div>
 					</div>
-						<div class="fields">
-						&nbsp;
-						</div>						
+											
 				
 					<div id="toAdd_inner">
 						<s:include value="toAddress_inner.jsp"/>
@@ -57,7 +55,7 @@
 <script type="text/javascript">
 
 var customers = {
-		<s:iterator value='customerSearchResults'>
+		<s:iterator value='#session.usersList'>
 		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
  };
@@ -71,9 +69,12 @@ var customers = {
        lookup: customersArray,
        triggerSelectOnValidInput: false,
 		minChars: 0,
-		onSelect: function (suggestion) {
+		onSelect: function (suggestion) {			
 		if(suggestion.value != ""){
+			 var resto = suggestion.value.split(",");
+			 $('#customerautocompto').val(resto[0]);
            $('#custIdto').val(suggestion.data);
+          
 			searchto();
 			}
         }

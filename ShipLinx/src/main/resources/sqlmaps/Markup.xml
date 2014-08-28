@@ -18,6 +18,7 @@
 		<result property="fromWeight" />
 		<result property="toWeight" />
 		<result property="serviceType" />
+		<result property="variable" />
 	</resultMap>
 	
 	<resultMap id="carrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
@@ -171,7 +172,7 @@
 	 
 	<select id="getMarkupListForCustomer" resultMap="MarkupResult">
 		select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
-				m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+				m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type, m.variable
 		 from customer_markup m, service s, carrier c
 		 where m.service_id=s.service_id  and s.carrier_id=c.carrier_id 
 		 and m.customer_id = #customerId#  
@@ -179,7 +180,7 @@
 	</select>
  
 	<select id="findMarkupListForCustomer" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
-		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type, m.variable
 		 from customer_markup m, service s, carrier c
 		<dynamic prepend="where">
 			m.service_id=s.service_id and s.carrier_id=c.carrier_id and m.customer_id = #customerId#  and m.business_id = #businessId#
@@ -214,8 +215,46 @@
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc ,m.from_weight desc, m.to_weight desc                                 
 	</select>	
 
+<select id="findMarkupList" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type, m.variable
+		 from customer_markup m, service s, carrier c
+		<dynamic prepend="where">
+			m.service_id=s.service_id and s.carrier_id=c.carrier_id and m.customer_id = #customerId#  and m.business_id = #businessId#
+			<isNotNull  property="serviceId">
+				 and m.service_id=#serviceId#
+			</isNotNull>
+			<isNotNull  property="carrierId">
+				<isGreaterThan property="carrierId" compareValue="0">
+				 	and c.carrier_id=#carrierId#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="fromCountryCode">
+				and m.from_country=#fromCountryCode#
+			</isNotNull>
+		<isNotNull property="toCountryCode">
+				and m.to_country=#toCountryCode#
+			</isNotNull>
+			<isNotNull  property="type">
+			 and m.type=#type#
+			</isNotNull>
+			<isNotNull  property="fromWeight">
+				 <isGreaterThan property="fromWeight" compareValue="0">
+				 <![CDATA[and m.from_weight<=#fromWeight#]]>
+				 
+				 </isGreaterThan>
+		</isNotNull>
+			<isNotNull  property="toWeight">
+		 <isLessThan property="toWeight" compareValue="0">
+				 <![CDATA[and m.to_weight>=#toWeight#]]>
+				 
+				 </isLessThan>
+			</isNotNull>									
+		</dynamic> 
+		order by c.carrier_id asc, m.from_country desc, m.to_country desc ,m.from_weight desc, m.to_weight desc                                 
+	</select>
+
 	<select id="findMarkupListForUniqueMarkup" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
-		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type,m.variable
 		 from customer_markup m, service s , carrier c
 		<dynamic prepend="where">
 			m.service_id=s.service_id and s.carrier_id=c.carrier_id and 
@@ -233,18 +272,32 @@
 			<isNotNull  property="type">
 				 and m.type=#type#
 			</isNotNull>
+			<isGreaterThan property="rate" compareValue="0">
+			<isNotNull  property="fromWeight">
+				 <isGreaterThan property="fromWeight" compareValue="0">
+				 <![CDATA[and m.from_weight<=#fromWeight#]]>
+				 
+				 </isGreaterThan>
+		</isNotNull>
+			<isNotNull  property="toWeight">
+		 <isLessThan property="toWeight" compareValue="0">
+				 <![CDATA[and m.to_weight>=#toWeight#]]>
+				 
+				 </isLessThan>
+			</isNotNull>
+		</isGreaterThan>
 		</dynamic>    
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc                                 
 	</select>	
 	
 	
 	<insert id="addMarkup" parameterClass="com.meritconinc.shiplinx.model.Markup">
-		insert into customer_markup (customer_id, service_id, business_id, from_country, to_country, mu_perc, disabled, flat_mu, type, from_weight, to_weight) 
-							values (#customerId#, #serviceId#, #businessId#, #fromCountryCode# ,#toCountryCode#, #markupPercentage#, #disabled#, IFNULL(#markupFlat#,0.0), #type#, #fromWeight#, #toWeight# )
+		insert into customer_markup (customer_id, service_id, business_id, from_country, to_country, mu_perc, disabled, flat_mu, type, from_weight, to_weight, variable) 
+							values (#customerId#, #serviceId#, #businessId#, #fromCountryCode# ,#toCountryCode#, #markupPercentage#, #disabled#, IFNULL(#markupFlat#,0.0), #type#, #fromWeight#, #toWeight#, #variable#  )
 	</insert>
 	
 	<update id="updateMarkup">
-		update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled# 
+		update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled#, variable=#toVariable# 
 				where 	customer_id=#customerId# and business_id=#businessId# and service_id=#serviceId# and 
 						from_country=#fromCountryCode# and to_country=#toCountryCode# and from_weight=#fromWeight# and to_weight=#toWeight#
 	</update>	
@@ -455,7 +508,7 @@
 		
     <select id="getMarkupListForCustomerAndCarrier" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupResult">
        select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
-               m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type
+               m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type , m.variable
         from customer_markup m, service s, carrier c
         where  s.carrier_id=c.carrier_id  
         and m.service_id=s.service_id
@@ -466,5 +519,9 @@
    
    <select id="getMarkupListForCustomerForFilter" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupFilterResult">
        select * from customer_markup where (customer_id = #customerId# or customer_id=0) and service_id=#serviceId# and disabled=0
+   </select>
+   
+   <select id="findBaseMarkup" parameterClass="com.meritconinc.shiplinx.model.Markup" resultMap="MarkupFilterResult">
+   			select * from customer_markup where service_id=#serviceId# and customer_id=#customerId# and disabled=0 and business_id=#businessId# order by from_weight limit 1
    </select>
 </sqlMap>

@@ -134,8 +134,8 @@ display:none;
 										<label>Customer Name</label>
 										<s:url id="customerList" action="listCustomers" />
 										<div class="controls">
-											<input id="custId" type="hidden" value="" name="id">
-<input id="customersautocomplete" type="text"  value="" name="customerName" autocomplete="off">
+											<input id="custId" type="hidden" value="" name="salesRecord.customerId">
+<input id="customersautocomplete" type="text"  value="" name="customerName" style="width:300px;background-position: 286px 4px;"autocomplete="off">
 										</div>
 									</div>
 				</div>		

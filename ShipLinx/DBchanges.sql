@@ -525,8 +525,115 @@ UPDATE `menu` SET `url`='/admin/updateAR.action' WHERE `id`='184';
 
 UPDATE `menu` SET `url`='/admin/searchAR.action' WHERE `id`='185';
 
+update action set menu_id=405 where action='addnewproduct'
+update action set menu_id=405 where action='updateproduct'
+update action set menu_id=405 where action='editproduct'
+
+INSERT INTO `property` (`property_id`,`scope`, `name`, `value`) VALUES ('34','SYSTEM', 'English', '/home/soluship/help/English');
+INSERT INTO `property` (`property_id`, `scope`, `name`, `value`) VALUES ('35', 'SYSTEM', 'Francais', '/home/soluship/help/Francais');
+
+ALTER TABLE `charges` 
+CHANGE COLUMN `cost_currency` `cost_currency` INT(11) NULL DEFAULT '0' ,
+CHANGE COLUMN `charge_currency` `charge_currency` INT(11) NULL DEFAULT '0' ;
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.address', 'Addresses', 'en_CA', 1);
+UPDATE `action` SET `menu_id`='403' WHERE `id`='406';
+UPDATE `resourcebundle` SET `msg_content`='Addresses' WHERE `resourcebundle_id`='1713' and`msg_id`='label.address' and`locale`='en_CA' and`is_fmk`=1;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.markup.variable', 'variable', 'en_CA', 1, NULL);
+
+ALTER TABLE `customer_markup` 
+ADD COLUMN `variable` INT NULL DEFAULT '0' AFTER `to_weight`;
+insert into pins values('8', 'CONFIRMATION_NUM', '1001', '9999999', '1001', '1', NULL);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1017');
+
+
+INSERT INTO `menu` (`id`,`name`,`url`,`display_order`,`level`,`level_no`,`parent_id`,`label_id`,`image`,`image_over`,`help_tag`,`support_tag`) VALUES
+ ('427', 'delete address', '/delete.actual.charge.editinvoice.action', '2', 'LEVEL_2', '1', '0', 'temp', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`,`reload_safe`,`id`) VALUES ('delete.actual.charge.editinvoice', 427, 1, 'delete charges in edit invoice',1,'1017');
+
+alter table resourcebundle modify msg_content nvarchar(10000);
+
+ALTER TABLE `charges` 
+ADD COLUMN `charge_group_id` INT(11) NULL DEFAULT 0 AFTER `exchange_rate`;
+
 ############################################################
 
 		Need To Go Live
 #############################################################
 
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '261');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '270');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '282');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '271');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '488');
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '1013');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '1014');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '503');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '1004');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '1005');
+
+
+INSERT INTO `role_menu` (`menu_id`, `role`) VALUES ('261', 'solutions_manager');
+INSERT INTO `role_menu` (`menu_id`, `role`) VALUES ('270', 'solutions_manager');
+
+INSERT INTO `role_menu` (`menu_id`, `role`) VALUES ('271', 'solutions_manager');
+INSERT INTO `role_menu` (`menu_id`, `role`) VALUES ('416', 'solutions_manager');
+
+ALTER TABLE `user_history` 
+ADD COLUMN `comm_perc_CHB` DOUBLE NULL DEFAULT '0' AFTER `commission_percentage`;
+
+ALTER TABLE `user` 
+ADD COLUMN `comm_perc_CHB` DOUBLE NULL DEFAULT '0' AFTER `commission_percentage`;
+
+
+ALTER TABLE `user` 
+DROP COLUMN `comm_perc_CHB`,
+CHANGE COLUMN `commission_percentage` `commission_perc_PS` DOUBLE NULL DEFAULT '0' ,
+CHANGE COLUMN `commission_perc_PS` `commission_perc_CHB` DOUBLE NULL DEFAULT '0' ;
+
+ALTER TABLE `user_history` 
+DROP COLUMN `comm_perc_CHB`,
+CHANGE COLUMN `commission_percentage` `commission_perc_PS` DOUBLE NULL DEFAULT '0' ,
+CHANGE COLUMN `commission_perc_PS` `commission_perc_CHB` DOUBLE NULL DEFAULT '0' ;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('text.role.solutions.manager', 'Solutions Manager', 'en_CA', 1);
+
+/// ====================================Stored Procedure=========================================================///
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_quote_total`()
+begin
+set @count=(select count(*) from shipping_order where quote_total is null);
+while @count >0 do
+set @orderId=(select order_id from shipping_order where quote_total is null order by order_id desc limit 1);
+update shipping_order set quote_total=(select sum(charge) from charges where type=0 and order_id=@orderId) where order_id=@orderId;
+end while;
+END $$
+DELIMITER ;
+
+////============================END Stored Procedure =============================================================///
+
+
+
+///======================= Start Total Quote Charge Trigger ====================================================////
+
+DELIMITER $$
+create Trigger total_quoted_charges
+after insert on charges
+for each row
+begin 
+set @orderId=(select order_id from charges order by id desc limit 1);
+update shipping_order set quote_total=(select sum(charge) from charges where type=0 and order_id=@orderId) where order_id=@orderId;
+end $$
+DELIMITER ;
+
+///===================End Total Quote Charge Trigger ===========================================================////

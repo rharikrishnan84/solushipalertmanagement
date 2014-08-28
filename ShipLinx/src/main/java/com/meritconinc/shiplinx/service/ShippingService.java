@@ -148,7 +148,7 @@ public interface ShippingService {
 
   public List<ShippingOrder> searchReferenceShipments(ShippingOrder order);
 
-  public ShippingOrder repeatOrder(String strOrderId);
+  public ShippingOrder repeatOrder(String strOrderId,String customs);
 
   public void runBillingUpdate();
 

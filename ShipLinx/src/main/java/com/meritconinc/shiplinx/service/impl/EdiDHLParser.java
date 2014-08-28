@@ -143,7 +143,6 @@ public class EdiDHLParser extends EdiParser {
 		catch(Exception e){
 			shipment.setQuantity(0); 
 		}
-		
 		shipment.setFromZone(getEdiField(FROM_ZONE));
 		shipment.setToZone(getEdiField(TO_ZONE));
 		shipment.setPodDateTime(getDateTime(getEdiField(POD_DATE), getEdiField(POD_TIME), DATE_FORMAT));
@@ -231,6 +230,8 @@ public class EdiDHLParser extends EdiParser {
 					double chargeAmount = FormattingUtil.add(freightCharge.getCharge() * 0.15, resCharge * 0.15).doubleValue();
 					charge.setCharge(FormattingUtil.formatDecimalTo2PlacesDouble(chargeAmount));
 					charge.setStaticAmount(resCharge * fuelPercent);
+					charge.setCarrierId(shipment.getCarrierId());
+					charge.setCarrierName(ShiplinxConstants.CARRIER_DHL_STRING);
 					//set the tariff fuel to 15% of freight in order to ensure that if shipment is re-assigned, then fuel charge stays at 15%
 					double tariffRate = FormattingUtil.add(freightCharge.getTariffRate() * 0.15, resCharge * 0.15).doubleValue();
 					charge.setTariffRate(FormattingUtil.formatDecimalTo2PlacesDouble(tariffRate));
@@ -493,8 +494,12 @@ public class EdiDHLParser extends EdiParser {
 			if (ediCharge != null) {
 				Charge dbCharge = findCharge(dbShipment, ediCharge);
 				if (dbCharge == null) {
+					ediCharge.setCarrierId(dbShipment.getCarrierId());
+					ediCharge.setCarrierName(ShiplinxConstants.CARRIER_DHL_STRING);
 					addCharge(dbShipment, ediCharge);
 				} else {
+					dbCharge.setCarrierId(dbShipment.getCarrierId());
+					dbCharge.setCarrierName(ShiplinxConstants.CARRIER_DHL_STRING);
 					updateCharge(ediCharge, dbCharge);
 				}
 			}

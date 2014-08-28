@@ -31,7 +31,7 @@ left join carrier c on c.carrier_id=shippingorder.carrier_id
 left join package p on p.order_id=shippingorder.order_id
 left join address customeraddress on customeraddress.customer_id=shippingorder.customer_id
 where  shippingorder.scheduled_ship_date>=$P{fromDate} and shippingorder.customer_id=$P{customerId}
-and shippingorder.scheduled_ship_date<=$P{toDate} and shippingorder.carrier_id='80' and cc.carrier_id='80'
+and shippingorder.scheduled_ship_date<=$P{toDate} and shippingorder.carrier_id='80' and cc.carrier_id='80' and shippingorder.status_id!=40
 group by shippingorder.order_id]]>
 	</queryString>
 	<field name="account_number1" class="java.lang.String"/>

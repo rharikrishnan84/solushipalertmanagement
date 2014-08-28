@@ -8,15 +8,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.TimeZone;
+
 import javax.mail.MessagingException;
 
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -45,6 +46,7 @@ import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
+import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
@@ -164,6 +166,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
     List<ShippingOrder> ordersInInvoice = new ArrayList<ShippingOrder>();
     try {
       List<Charge> allChargesForInvoice = new ArrayList<Charge>();
+      double totalTax=0.0;
       for (ShippingOrder o : orders) {
         boolean added = false;
         double taxableAmount = 0;
@@ -186,8 +189,18 @@ public class InvoiceManagerImpl implements InvoiceManager {
             added = true;
           }
           Long carrier_id=((c.getCarrierId()!=null && c.getCarrierId()>0)?c.getCarrierId():o.getCarrierId());
-                    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(carrier_id,
-              c.getChargeCode(), c.getChargeCodeLevel2());
+          Charge charge = shippingDAO.getChargeById(c.getId());
+                              if(charge!=null){
+                    	          	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
+                    	          	int chargeGroupId = 0;
+                    	          	if(chargeGroup!=null){
+                    	          		chargeGroupId = (int)chargeGroup.getGroupId();
+                    	          	}
+                    	                    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id,
+                    	              c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
+                    
+                              /*CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(carrier_id,
+                        c.getChargeCode(), c.getChargeCodeLevel2());*/
 
           log.info(c.getChargeCode() + " " + c.getChargeCodeLevel2());
           if (ccc != null && !ccc.isTax()) {
@@ -202,24 +215,58 @@ public class InvoiceManagerImpl implements InvoiceManager {
             double cost = FormattingUtil.add(i.getInvoiceTaxCost(), c.getCost()).doubleValue();
             i.setInvoiceTaxCost(FormattingUtil.roundFigureRates(cost, 2));
           }
+                              }
         }
 
         // calculate taxes after all charges are taken into account
         for (Charge c : o.getCharges()) {
         	if (c.getStatus() == null || c.getStatus() != ShiplinxConstants.CHARGE_READY_TO_INVOICE || c.getType() == 0)
             continue;
-          CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(o.getCarrierId(),
-              c.getChargeCode(), c.getChargeCodeLevel2());
+        	/*CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(c.getCarrierId(),
+        	              c.getChargeCode(), c.getChargeCodeLevel2());*/
+        	        	
+        	        	Charge charge = shippingDAO.getChargeById(c.getId());
+        	        	            if(charge!=null){
+        	        	            	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
+        	        	            	int chargeGroupId= 0;
+        	        	            	if(chargeGroup!=null){
+        	        	            		chargeGroupId = (int)chargeGroup.getGroupId();
+        	        	            	}
+        	        	          CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(c.getCarrierId(),
+        	        	          c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
+        	boolean taxFlag=true;
           if (ccc != null && ccc.isTax()) {
-            double tax = taxableAmount * ccc.getTaxRate() / 100;
+        	  double tax = 0;
+        	          	  if(taxableAmount >0 && ccc.getTaxRate() >0){
+        	                tax = taxableAmount * ccc.getTaxRate() / 100;
+        	          	  }else{
+        	          		tax =  ccc.getTaxRate(); 
+        	          	  }
             c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
-            double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
+             totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
             i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+            taxFlag=false;
           }
-
+          Charge charges = shippingDAO.getChargeById(c.getId());
+                    if(charges!=null && charges.getChargeGroupId()>0){
+                	ChargeGroup chargeGroups=shippingDAO.getChargeGroup(charges.getChargeGroupId());
+                          	if(chargeGroups!=null && chargeGroups.isTax() && taxFlag){
+                		double tax = taxableAmount * chargeGroup.getTaxRate() / 100;
+                        c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
+                        try {
+                      	  			shippingDAO.updateCharge(c);
+                      	  		} catch (Exception e) {
+                      	  			// TODO Auto-generated catch block
+                      	  			e.printStackTrace();
+                      	  		}
+                      	            totalTax+=tax;
+                      	            //double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
+                        i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+                	}
+                  }
         }
       }
-
+      }
       if (allChargesForInvoice.size() == 0) // did not find any charges
         // that can be invoiced
         return null;
@@ -346,16 +393,27 @@ public class InvoiceManagerImpl implements InvoiceManager {
     i.setInvoiceTax(new Double(0));
     i.setInvoiceTaxCost(new Double(0));
 
+    double totalTax=0.0;
     for (ShippingOrder o : i.getOrders()) {
       double taxableAmount = 0;
       List<CarrierChargeCode> applicableTaxes = new ArrayList<CarrierChargeCode>();
       for (Charge c : o.getChargesForInvoice()) {
 
-        CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(o.getCarrierId(),
-            c.getChargeCode(), c.getChargeCodeLevel2());
+    	  /*CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(c.getCarrierId(),
+    	              c.getChargeCode(), c.getChargeCodeLevel2());*/
+    	      	  
+    	      	  Charge charge = shippingDAO.getChargeById(c.getId());
+    	      	            if(charge!=null){
+    	      	  	          	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
+    	      	  	          	int chargeGroupId = 0;
+    	      	            	if(chargeGroup!=null){
+    	      	  	          		chargeGroupId = (int)chargeGroup.getGroupId();
+    	      	  	          	}
+    	      	  	                    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(c.getCarrierId(),
+    	      	  	              c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
 
         log.info(c.getChargeCode() + " " + c.getChargeCodeLevel2());
-        if (!ccc.isTax()) {
+        if (ccc!=null && !ccc.isTax()) {
           double cost = FormattingUtil.add(i.getInvoiceCost(), c.getCost()).doubleValue();
           i.setInvoiceCost(FormattingUtil.roundFigureRates(cost, 2));
           double amount = (FormattingUtil.add(i.getInvoiceAmount(), c.getCharge())).doubleValue();
@@ -366,19 +424,54 @@ public class InvoiceManagerImpl implements InvoiceManager {
           applicableTaxes.add(ccc);
           double cost = FormattingUtil.add(i.getInvoiceTaxCost(), c.getCost()).doubleValue();
           i.setInvoiceTaxCost(FormattingUtil.roundFigureRates(cost, 2));
+          i.setInvoiceTax(c.getCharge());
         }
+    	      	            }
       }
 
       for (Charge c : o.getChargesForInvoice()) {
-        CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(o.getCarrierId(),
-            c.getChargeCode(), c.getChargeCodeLevel2());
-        if (ccc.isTax()) {
+    	  Charge charge = shippingDAO.getChargeById(c.getId());
+    	      	            if(charge!=null){
+    	      	  	          	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
+    	      	  	          	int chargeGroupId = 0;
+    	      	  	          	if(chargeGroup!=null){
+    	      	  	          		chargeGroupId = (int)chargeGroup.getGroupId();
+    	      	  	          	}
+    	      	  	                    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(c.getCarrierId(),
+    	      	  	              c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
+        boolean taxFlag=true;
+        if (ccc!=null && ccc.isTax()) {
           double tax = taxableAmount * ccc.getTaxRate() / 100;
           c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
-          double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
+          try {
+        	  			shippingDAO.updateCharge(c);
+        	  		} catch (Exception e) {
+        	  			// TODO Auto-generated catch block
+        	  			e.printStackTrace();
+        	  		}
+        	            totalTax+=tax;
+        	            //double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
           i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+          taxFlag=false;
         }
-
+        Charge charges = shippingDAO.getChargeById(c.getId());
+                if(charges!=null && charges.getChargeGroupId()>0){
+            	ChargeGroup chargeGroups=shippingDAO.getChargeGroup(charges.getChargeGroupId());
+                    	if(chargeGroups!=null&& chargeGroups.isTax() && taxFlag){
+            		double tax = taxableAmount * chargeGroup.getTaxRate() / 100;
+                    c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
+                    try {
+                  	  			shippingDAO.updateCharge(c);
+                  	  		} catch (Exception e) {
+                  	  			// TODO Auto-generated catch block
+                  	  			e.printStackTrace();
+                  	  		}
+                  	            totalTax+=tax;
+                  	            //double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
+                    i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+            	}
+                }
+    	      	            }
       }
     }
     if (i.getBalanceDue() == 0)

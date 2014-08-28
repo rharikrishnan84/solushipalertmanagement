@@ -89,6 +89,7 @@ public class CustomerManagerAction extends CustomerManagerBaseAction implements 
 
   private String signupJSP;
 private long customerId;
+private String role;
 
 private CustomerSalesUser custSalesUser;
   public CustomerSalesUser getCustSalesUser() {
@@ -195,6 +196,7 @@ public String execute() throws Exception {
 	      // getSession().remove("edit");
 	      // String country = "US";
 	      request.setAttribute("add", "true");
+	      role = UserUtil.getMmrUser().getUserRole();
 	    } catch (Exception e) {
 	      addActionError(getText("error.timeZones"));
 	    }
@@ -422,7 +424,7 @@ public String execute() throws Exception {
 	      if (StringUtil.isEmpty(customer.getDefaultCurrency()))
 	        customer.setDefaultCurrency("");
 	      getService().add(customer, null);
-	     // sendAddCustomerEmailNotification();
+	      sendAddCustomerEmailNotification();
 	    } catch (UsernameAlreadyTakenException ue) {
 	      addActionError(getText("error.username.taken"));
 	      // addActionMessage(getText("error.username.taken"));
@@ -761,7 +763,7 @@ public String execute() throws Exception {
     boolean emailSent = false;
     try {
       Customer customer = this.getCustomer();
-      String id = request.getParameter("id");
+      String id = request.getParameter("custId");
       if (id != null) {
         long customerId = Long.valueOf(id);
         emailSent = getService().sendCustomerMailNotification(customerId, UserUtil.getMmrUser());
@@ -1258,5 +1260,13 @@ public String execute() throws Exception {
 			
 			return tempPath + File.separator + fName + curDateTime.getTime() + ".xls";
 		}
+		
+		public String getRole() {
+						return role;
+					}
+			
+					public void setRole(String role) {
+						this.role = role;
+					}
 
 }

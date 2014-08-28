@@ -1,14 +1,17 @@
 package com.meritconinc.shiplinx.dao;
 
 import java.util.List;
+
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.model.BillingStatus;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
 import com.meritconinc.shiplinx.model.DangerousGoods;
+import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.OrderProduct;
 import com.meritconinc.shiplinx.model.OrderStatus;
 import com.meritconinc.shiplinx.model.Package;
@@ -17,7 +20,6 @@ import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
-import com.meritconinc.shiplinx.model.InvoiceCharge;
 public interface ShippingDAO {
 
   public List<String> findPackageTypeByName(String name);
@@ -51,6 +53,8 @@ public interface ShippingDAO {
   public List<String> getSearchOrderResult(ShippingOrder order);
 
   public void saveLabel(ShippingLabel label);
+  
+  public CarrierChargeCode getChargeCodeById(long id);
 
   public List<ShippingLabel> getLabelsByOrderId(long longValue);
 
@@ -179,4 +183,10 @@ public interface ShippingDAO {
   public CarrierChargeCode getChargeByChargeGroupId(long carrierId, int chargeGroupId);
   //
   public void updateEDI(String ediNumber,long chargeId);
+  public Carrier getCarrierByServiceId(Long serviceId);
+  
+  public List<CarrierChargeCode> getChargeListByCarrierAndCodesGroup(long carrierId, String chargeCode,
+		  		        String chargeCodeLevel2, int chargeGroupId);
+  public CarrierChargeCode getChargeByCarrierAndCodesGroup(long carrierId, String chargeCode,
+		  		      String chargeCodeLevel2, int chargeGroupId);
 }

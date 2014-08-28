@@ -72,7 +72,7 @@
 			<th><span style="width:250px !important; float:left;">Status</span></th>
 			<th><span style="width:200px !important; float:left;">Message</span></th>
 			<th><span style="width:300px !important; float:left;">Log</span></th>
-				<s:if test="%{#session.ROLE.contains('busadmin')}">
+				<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 			<th><span style="width:150px !important; float:left;">UpdatedBy</span></th>
 			<th><span style="width:110px !important; float:left;">Private</span></th>
 			<th><span style="width:110px !important; float:left;">Delete</span></th>
@@ -140,7 +140,7 @@
 				</td>
 				   <td style="text-align: left;"><s:property value="message"/></td>
 				      <td style="text-align: left;"><s:property value="systemLog"/></td>
-					  	<s:if test="%{#session.ROLE.contains('busadmin')}">
+					  	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 					   <td style="text-align: left;"><s:property value="eventUsername"/></td>
 					     <td style="text-align: left;"><s:property value="Private"/>
 						 <s:if test="%{privateMessage != true}">

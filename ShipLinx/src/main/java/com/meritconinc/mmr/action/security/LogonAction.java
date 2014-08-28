@@ -387,6 +387,9 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 			getSession().remove("uCustomerId");
 			return "return2";
 		}
+		String menu = "Admin";
+		getSession().remove("HighLightMenu");
+		getSession().put("HighLightMenu", menu);
 		return "return";
 		
 	}

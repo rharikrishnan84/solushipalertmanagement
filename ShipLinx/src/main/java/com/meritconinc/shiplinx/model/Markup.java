@@ -24,7 +24,15 @@ public class Markup {
 	private Long sourceCustomerId;
 //	private String typeText;
 	private int serviceType;
-	 
+	
+	private int variable;
+	private int rate;
+	public int getRate() {
+		return rate;
+	}
+	public void setRate(int rate) {
+		this.rate = rate;
+	}
 	public Long getCustomerId() {
 		return customerId;
 	}
@@ -195,4 +203,10 @@ public class Markup {
 		return "[" + name + ":" + value + "] ";
 	}
 	
+	public int getVariable() {
+				return variable;
+			}
+			public void setVariable(int variable) {
+				this.variable = variable;
+			}
 }

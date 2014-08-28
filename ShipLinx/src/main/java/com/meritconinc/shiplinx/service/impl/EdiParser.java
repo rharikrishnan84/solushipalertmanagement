@@ -355,7 +355,7 @@ public abstract class EdiParser {
 		EdiItem item = populateEdiItem(fileName);
 		if (item != null) {
 			ShippingOrder ediShipment = populateShipment(item);
-			ShippingOrder dbShipment = findShipment(ediShipment);
+			ShippingOrder dbShipment = findShipment(ediShipment);			
 			if (dbShipment == null) {
 				addShipment(ediShipment, item);
 			} else {

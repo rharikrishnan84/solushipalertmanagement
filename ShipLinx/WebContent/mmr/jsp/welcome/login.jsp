@@ -3,6 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head>
+<link rel="icon" href="mmr/images/menu/favicon.ico" type="image/x-icon">
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title><s:property value="%{#session.business.systemName}"/></title>
 <style type="text/css">
@@ -119,7 +120,7 @@ function keyPressSubmit(myfield,e) {
 	.login_box ul li select,.login_box ul li input{ float:left;  padding:0px;}
 	.login_box ul li select{ height:22px; width:122px; }
 	.login_box ul li input{ height:20px; width:120px; }
-	.login_box input[type="submit"]{border:0px; background:transparent; font-size:10px;  float:left; margin-top:52px;}
+	.login_box input[type="submit"]{border:0px; background:transparent; font-size:10px; padding:0px;  float:right; margin-top:52px;}
 	
 	.footer{ position:absolute; bottom:0px;}
 	
@@ -216,10 +217,10 @@ function keyPressSubmit(myfield,e) {
 			<div id="wrapper_logo" style=" width:100%; float:left; text-align:center" > 
     <s:if test="%{#session.logoURL!=null}">
        <s:set name="url" value="%{#session.logoURL}" />
-       <img src="<s:property value="%{url}"/>" border="0" width="960" height="360" includeContext="true"/>
+       <img src="<s:property value="%{url}"/>" border="0" height="400" includeContext="true"/>
      </s:if> 
      <s:else>
-       <img src="<%=request.getContextPath()%>/mmr/images/ic-logo-helping.png" width="960" height="360">
+       <img src="<%=request.getContextPath()%>/mmr/images/ic-logo-helping.png" height="400">
      </s:else> 
      
     <div id="messages">

@@ -973,7 +973,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       pickup.setStatus(ShiplinxConstants.STATUS_PICKUP_ACTIVE);
       pickupId = pickupService.add(pickup);
       if (!StringUtil.isEmpty(pickup.getConfirmationNum()))
-        sendPickupNotificationMail(pickup);
+    	  sendPickupNotificationMail(pickup,service);
     } catch (ShiplinxException e) {
       log.error("Error in pick up request!", e);
       for (String s : e.getErrorMessages()) {
@@ -988,7 +988,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
     return pickupId;
   }
 
-  private boolean sendPickupNotificationMail(Pickup pickup) {
+  private boolean sendPickupNotificationMail(Pickup pickup, Service service) {
     boolean retval = false;
     String toAddress = null;
     Business business = businessService.getBusinessById(pickup.getBusinessId());
@@ -1037,10 +1037,17 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       body = new String(body.replaceAll("%TOTALWEIGHT", pickup.getTotalWeight() + ""));
       body = new String(body.replaceAll("%WEIGHTUNITS", pickup.getWeightUnit()));
       String fromAddress[] = business.getAddress().getEmailAddress().split(";");
-
+      List<String> bccAddress = new ArrayList<String>();
+            bccAddress.add(business.getLtlEmail());
+      if(service!=null && service.getEmailType() != null && service.getEmailType().equalsIgnoreCase("LTL")){
+      	 retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+      	          business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress[0],
+      	          toAddress, bccAddress, subject, body, null, true);
+      }else{
       retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
           business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress[0],
           toAddress, null, subject, body, null, true);
+      }
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);
       retval = false;
@@ -1272,8 +1279,8 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
        * copyFromOrderToPickup(order, rate); pickupId = createPickup(order.getPickup()); }
        */
       if (order.getCarrierId() != ShiplinxConstants.CARRIER_GENERIC) {
-        carrierService.shipOrder(order, rate, rate.getCustomerCarrier());
-      }
+          carrierService.shipOrder(order, rate, rate.getCustomerCarrier());                  
+        }
       // save the markup information
       order.setMarkPercent(rate.getMarkupPercentage());
       order.setMarkType(rate.getMarkupType());
@@ -1294,7 +1301,6 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       } else {
         shippingService.save(order);
       }
-
       // if no trackin # is assigned, then use the order Id
       if (StringUtil.isEmpty(order.getMasterTrackingNum())) {
         order.setMasterTrackingNum(order.getId().toString());
@@ -1793,6 +1799,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       // mark all disabled services
       Markup markup = markupManagerService.getMarkupObj(order);
       markup.setServiceId(rate.getServiceId());
+      markup.setRate(1);
       markup = markupManagerService.getUniqueMarkup(markup);
 
       if (markup == null && service.getMasterCarrierId() == ShiplinxConstants.CARRIER_GENERIC
@@ -1818,6 +1825,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
           Service findService = carrierServiceDAO.getService(service.getMasterServiceId());
           Markup markups = markupManagerService.getMarkupObj(order);
           markups.setServiceId(findService.getId());
+          markups.setRate(1);
           markup = markupManagerService.getUniqueMarkup(markups);
           rate.setCarrierId(findService.getCarrierId());
           rate.setCarrierName(findService.getCarrier().getName());
@@ -1853,11 +1861,22 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       }
 
       shippingService.applyAdditionalHandling(order, rate, ShiplinxConstants.CHARGE_TYPE_QUOTED);
-
-      rate.setMarkupPercentage(markup.getMarkupPercentage());
+     rate.setMarkupPercentage(markup.getMarkupPercentage());
       rate.setMarkupTypeText(markup.getTypeText());
       rate.setMarkupType(markup.getType());
-
+      /*if (markup != null) {
+    	            rate.setMarkupPercentage(markup.getMarkupPercentage());
+    	            rate.setMarkupTypeText(markup.getTypeText());
+    	            rate.setMarkupType(markup.getType());
+    	          } else {
+    	            rate.setMarkupPercentage(0);
+    	          }
+    	          if (markup.getMarkupPercentage() == 0
+    	                  && markup.getMarkupFlat() != 0) {                 	             
+    	             	  rate.setMarkupFlat(markup.getMarkupFlat());          	                  
+    	                rate.setMarkupTypeText("Flat");
+    	              }*/
+      rate.setVariable(markup.getVariable());
       // Issue No:112
       /*
        * if(markup.getServiceType() == SERVICE_TYPE_LTL_SKID) {
@@ -1902,6 +1921,42 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
                 .getGroupCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE))) {
           // String typeText=rate.getMarkupTypeText();
           c.setCharge(markupManagerService.applyMarkup(order, c, false));
+          /*Markup searchMarkup = markupManagerService.getMarkupObj(order);
+                    if(searchMarkup!=null && rate.getCarrierId()==ShiplinxConstants.CARRIER_GENERIC){
+                        searchMarkup.setServiceId(service.getMasterServiceId());  
+                        Markup baseMarkup=markupManagerService.findBaseMarkup(searchMarkup);
+                        double baseAmount=0;
+                        boolean baseMarkupFlatText=false;
+                                    if(baseMarkup==null){
+                                    	Markup mark=searchMarkup;
+                                    	mark.setCustomerId(0l);
+                                   	baseMarkup=markupManagerService.findBaseMarkup(mark);
+                                    }
+                                    if (baseMarkup!=null && baseMarkup.getMarkupPercentage() == 0
+                                            && baseMarkup.getMarkupFlat() != 0) {  
+                                  	  double baseFlat=baseMarkup.getMarkupFlat();
+                                  	  baseAmount=(FormattingUtil.add(c.getCost().doubleValue(),baseFlat)).doubleValue();
+                                        }else{
+                                      	  if(baseMarkup!=null){
+                                      	  double baseMarkupAmt = (FormattingUtil.subtract(c.getCost().floatValue(),
+                                                    c.getStaticAmount())).doubleValue()
+                                                    * baseMarkup.getMarkupPercentage() / 100;
+                                      	  baseAmount = (FormattingUtil.add(c.getCost().doubleValue(),baseMarkupAmt)).doubleValue();
+                                      	  }
+                                        }
+                                 if(c.getCharge()<baseAmount){
+                              	   c.setCharge(baseAmount);
+                              	   if (baseMarkup!=null && baseMarkup.getMarkupPercentage() == 0
+                                             && baseMarkup.getMarkupFlat() != 0) { 
+                              		   rate.setMarkupTypeText("Flat");
+                              		   rate.setMarkupFlat(baseMarkup.getMarkupFlat());
+                              	   }else{
+                              		   rate.setMarkupPercentage(baseMarkup.getMarkupPercentage());
+                              		   rate.setMarkupTypeText(baseMarkup.getTypeText());
+                              	   }
+                                 }
+                        
+                       }*/
         } else {
           if (!(PurolatorAPI.SPECIAL_HANDLING_CODE).equals(c.getChargeCode())) {
             if (c.getTariffRate() != null)
@@ -2667,6 +2722,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
     c.setCharge(tax_charge);
     c.setCost(tax_cost);
     c.setTariffRate(tax_tariff);
+    c.setChargeGroupId((int)taxChargeGroup.getGroupId());
 
     c.setCharge(FormattingUtil.roundFigureRates(c.getCharge(), 2));
     c.setCost(FormattingUtil.roundFigureRates(c.getCost(), 2));
@@ -2842,7 +2898,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       for (i = 0; i < ratingList.size(); i++) {
         long serviceId = ratingList.get(i).getServiceId();
         Service service = getService(serviceId);
-
+        if(service.getServiceType() == ShiplinxConstants.SERVICE_TYPE_LTL_SKID){
         if (service != null && service.getServiceType() == ShiplinxConstants.SERVICE_TYPE_LTL_SKID) {
           log.debug("Applying markup based on # of skids: " + order.getPackages().size());
           order.setWeightToMarkup((double) order.getPackages().size());
@@ -2996,52 +3052,162 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
             } else if (order.getQuantity() != null && order.getQuantity().intValue() > 0) {
               rate = ltlSkidRate.getSkidRate(order.getQuantity().intValue());
             }
-            List<Charge> charges = ratingList.get(i).getCharges();
-            ratingList.get(i).getCharges().removeAll(ratingList.get(i).getCharges());
-            Markup markup1 = markupManagerService.getMarkupObj(order);
-            markup1.setServiceId(service.getMasterServiceId());
-            markup1 = markupManagerService.getUniqueMarkup(markup1);
-            if (markup1 != null) {
-              ratingList.get(i).setMarkupPercentage(markup1.getMarkupPercentage());
-              ratingList.get(i).setMarkupTypeText(markup1.getTypeText());
-              ratingList.get(i).setMarkupType(markup1.getType());
-            } else {
-              ratingList.get(i).setMarkupPercentage(0);
-            }
+            
             Charge freightCharge = new Charge();
+            Charge fuelCharge = new Charge();
             freightCharge.setChargeCode(ShiplinxConstants.GROUP_FREIGHT_CHARGE);
             freightCharge.setName(ShiplinxConstants.FREIGHT_STRING);
             freightCharge.setCost(rate);
-            if (ratingList.get(i).getMarkupPercentage() != 0
-                || (ratingList.get(i).getMarkupPercentage() == 0 && ratingList.get(i)
-                    .getMarkupFlat() == 0)) {
-              freightCharge.setCharge(freightCharge.getCost()
-                  + (freightCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
-            } else if (ratingList.get(i).getMarkupPercentage() == 0
-                && ratingList.get(i).getMarkupFlat() != 0) {
-              freightCharge.setCharge(freightCharge.getCost() + ratingList.get(i).getMarkupFlat());
-              ratingList.get(i).setMarkupTypeText("Flat");
-            }
-            ratingList.get(i).getCharges().add(freightCharge);
-            Charge fuelCharge = new Charge();
             fuelCharge.setChargeCode(ShiplinxConstants.GROUP_FUEL_CHARGE);
-            fuelCharge.setName(ShiplinxConstants.FUEL_SURCHARGE);
-
-            fuelCharge.setCost(rate * ltlSkidRate.getFscPercent().doubleValue() / 100);
-            if (ratingList.get(i).getMarkupPercentage() != 0
-                || (ratingList.get(i).getMarkupPercentage() == 0 && ratingList.get(i)
-                    .getMarkupFlat() == 0)) {
-              fuelCharge.setCharge(fuelCharge.getCost()
-                  + (fuelCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
-            } else if (ratingList.get(i).getMarkupPercentage() == 0
-                && ratingList.get(i).getMarkupFlat() != 0) {
-            	if(fuelCharge.getCost()>0){
-              fuelCharge.setCharge(fuelCharge.getCost() + ratingList.get(i).getMarkupFlat());
-            	}else{
-            		 fuelCharge.setCharge(0.0);
-            	}
-              ratingList.get(i).setMarkupTypeText("Flat");
-            }
+                        fuelCharge.setName(ShiplinxConstants.FUEL_SURCHARGE);
+                        fuelCharge.setCost(rate * ltlSkidRate.getFscPercent().doubleValue() / 100);
+                        double totalCost = freightCharge.getCost()+fuelCharge.getCost();
+                                    List<Charge> charges = ratingList.get(i).getCharges();
+                                    ratingList.get(i).getCharges().removeAll(ratingList.get(i).getCharges());
+                                    Markup markup1 = new Markup(); 
+                                    markup1 = markupManagerService.getMarkupObj(order);
+                                    markup1.setServiceId(service.getMasterServiceId());  
+                                    Markup baseMarkup=markupManagerService.findBaseMarkup(markup1);
+                                    boolean baseMarkupFlatText=false;
+                                                if(baseMarkup==null){
+                                                	Markup mark=markup1;
+                                                	mark.setCustomerId(0l);
+                                                	baseMarkup=markupManagerService.findBaseMarkup(mark);
+                                                }
+                                                Charge baseFreightCharge=new Charge();
+                                                Charge baseFuelCharge=new Charge();
+                                   if(ratingList.get(i).getVariable()==1){
+                                    	markup1.setFromWeight(totalCost);
+                                        markup1.setToWeight(totalCost);
+                                        markup1 = markupManagerService.getUniqueMarkupList(markup1);         
+                                        if (markup1 != null) {
+                                            ratingList.get(i).setMarkupPercentage(markup1.getMarkupPercentage());
+                                            ratingList.get(i).setMarkupTypeText(markup1.getTypeText());
+                                            ratingList.get(i).setMarkupType(markup1.getType());
+                                            ratingList.get(i).setMarkupFlat(markup1.getMarkupFlat());
+                                          }            
+                                          else {
+                                            ratingList.get(i).setMarkupPercentage(0);
+                                          }                   	
+                                                	if(markup1 !=null && totalCost<=markup1.getToWeight()){
+                                                		if (markup1.getMarkupPercentage() != 0
+                                                                || (markup1.getMarkupPercentage() == 0 && markup1
+                                                                    .getMarkupFlat() == 0)) {
+                                                              freightCharge.setCharge(freightCharge.getCost()
+                                                                  + (freightCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                                                              fuelCharge.setCharge(fuelCharge.getCost()
+                                                                  + (fuelCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                                                            }
+                                                		if (markup1.getMarkupPercentage() == 0
+                                                                && markup1.getMarkupFlat() != 0) {
+                                                		freightCharge.setCharge(freightCharge.getCost() + markup1.getMarkupFlat());
+                            /* if(fuelCharge.getCost()>0){
+                            	 fuelCharge.setCharge(fuelCharge.getCost() + markup1.getMarkupFlat());
+                               	}else{
+                               		 fuelCharge.setCharge(0.0);
+                               	}*/
+                                 ratingList.get(i).setMarkupTypeText("Flat");
+                                                		}
+                                                		if(baseMarkup!=null){
+                                                			                        			if (baseMarkup.getMarkupPercentage() != 0
+                                                			                                            || (baseMarkup.getMarkupPercentage() == 0 && baseMarkup
+                                                			                                                .getMarkupFlat() == 0)) {
+                                                			                        				baseFreightCharge.setCharge(freightCharge.getCost()
+                                                			                                                + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+                                                			                        				baseFuelCharge.setCharge(fuelCharge.getCost()
+                                                			                                               + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));  
+                                                			                        				
+                                                			                                          }else if (baseMarkup.getMarkupPercentage() == 0
+                                                			                                              && baseMarkup.getMarkupFlat() != 0) {
+                                                			                                        	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+                                                			                                        	 /* if(fuelCharge.getCost()>0){
+                                                			                                        		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
+                                                			                                                	}else{
+                                                			                                                		baseFuelCharge.setCharge(0.0);
+                                                			                                                	}*/
+                                                			                                       	  baseMarkupFlatText=true;                        				
+                                                			                        			}
+                                                			                        			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
+                                                			                        				freightCharge.setCharge(baseFreightCharge.getCharge());
+                                                			                        				if(fuelCharge.getCost()>0){
+                                                			                        				fuelCharge.setCharge(baseFuelCharge.getCharge());
+                                                			                        					}
+                                                			                        				if(baseMarkupFlatText){
+                                                			                        					ratingList.get(i).setMarkupTypeText("Flat");
+                                                			                        				}else{
+                                                			                        					ratingList.get(i).setMarkupTypeText(baseMarkup.getTypeText());
+                                                			                        				}
+                                                			                        				ratingList.get(i).setMarkupPercentage(baseMarkup.getMarkupPercentage());                                       
+                                                			                                        ratingList.get(i).setMarkupType(baseMarkup.getType());                                        
+                                                			                                        ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
+                                                			                        		}   
+                                                		}
+                        }
+                                   }else{                        	           
+                                	                               	markup1 = markupManagerService.getUniqueMarkup(markup1);            
+                                	                              if (markup1 != null) {
+                                	                                 ratingList.get(i).setMarkupPercentage(markup1.getMarkupPercentage());
+                                	                                 ratingList.get(i).setMarkupTypeText(markup1.getTypeText());
+                                	                                 ratingList.get(i).setMarkupType(markup1.getType());
+                                	                                 ratingList.get(i).setMarkupFlat(markup1.getMarkupFlat());
+                                	                               }            
+                                	                               else {
+                                	                                 ratingList.get(i).setMarkupPercentage(0);
+                                	                               } 
+                                	                               if (ratingList.get(i).getMarkupPercentage() != 0
+                                	                                       || (ratingList.get(i).getMarkupPercentage() == 0 && ratingList.get(i)
+                                	                                           .getMarkupFlat() == 0)) {
+                                	                                     freightCharge.setCharge(freightCharge.getCost()
+                                	                                         + (freightCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+                                	                                     fuelCharge.setCharge(fuelCharge.getCost()
+                                	                                         + (fuelCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+                                	                                   } else if (ratingList.get(i).getMarkupPercentage() == 0
+                                	                                       && ratingList.get(i).getMarkupFlat() != 0) {
+                                	                                   	freightCharge.setCharge(freightCharge.getCost() + ratingList.get(i).getMarkupFlat());
+                                	                                  	            /*  if(fuelCharge.getCost()>0){
+                                	                                  	            	                  fuelCharge.setCharge(fuelCharge.getCost() + ratingList.get(i).getMarkupFlat());
+                                	                                   	            	                	}else{
+                                	                                   	            	                		 fuelCharge.setCharge(0.0);
+                                	                                   	            	                	}*/
+                                	                                     ratingList.get(i).setMarkupTypeText("Flat");
+                                	                                   }
+                                	                               if(baseMarkup!=null){
+                                	                            	                       			if (baseMarkup.getMarkupPercentage() != 0
+                                	                            	                                           || (baseMarkup.getMarkupPercentage() == 0 && baseMarkup
+                                	                            	                                              .getMarkupFlat() == 0)) {
+                                	                            	                       				baseFreightCharge.setCharge(freightCharge.getCost()
+                                	                            	                                               + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+                                	                            	                       				baseFuelCharge.setCharge(fuelCharge.getCost()
+                                	                            	                                               + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));  
+                                	                            	                       				
+                                	                            	                                         }else if (baseMarkup.getMarkupPercentage() == 0
+                                	                            	                                             && baseMarkup.getMarkupFlat() != 0) {
+                                	                            	                                       	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+                                	                            	                                       	  /*if(fuelCharge.getCost()>0){
+                                	                            	                                       		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
+                                	                            	                                               	}else{
+                                	                            	                                               		baseFuelCharge.setCharge(0.0);
+                                	                            	                                               	}*/
+                                	                            	                                       	  baseMarkupFlatText=true;                        				
+                                	                            	                       			}
+                                	                            	                       			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
+                                	                            	                       				freightCharge.setCharge(baseFreightCharge.getCharge());
+                                	                            	                       				if(fuelCharge.getCost()>0){
+                                	                            	                      				fuelCharge.setCharge(baseFuelCharge.getCharge());
+                                	                            	                       					}
+                                	                            	                       				if(baseMarkupFlatText){
+                                	                            	                       					ratingList.get(i).setMarkupTypeText("Flat");
+                                	                            	                       				}else{
+                                	                            	                       					ratingList.get(i).setMarkupTypeText(baseMarkup.getTypeText());
+                                	                            	                      				}
+                                	                            	                       				ratingList.get(i).setMarkupPercentage(baseMarkup.getMarkupPercentage());                                       
+                                	                            	                                       ratingList.get(i).setMarkupType(baseMarkup.getType());                                        
+                                	                            	                                       ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
+                                	                            	                      		}
+                                	                            	                       }
+                                	                            	                          }
+                                	                           
+                        ratingList.get(i).getCharges().add(freightCharge);   
             ratingList.get(i).getCharges().add(fuelCharge);
             ratingList.get(i).setCharges(ratingList.get(i).getCharges());
             double total = freightCharge.getCharge() + fuelCharge.getCharge();
@@ -3049,6 +3215,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
             ratingList.get(i).setTotal(total);
           }
         }
+      }
       }
       Collections.sort(ratingList, Rating.PriceComparator);
     }
@@ -3393,7 +3560,11 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
               } else {
                 ratingList.get(i).setMarkupPercentage(0);
               }
-
+             /* if (ratingList.get(i).getMarkupPercentage() == 0
+            		                        && ratingList.get(i).getMarkupFlat() != 0) {                 	             
+            		                   	  ratingList.get(i).setMarkupFlat(markup.getMarkupFlat());          	                  
+            		                      ratingList.get(i).setMarkupTypeText("Flat");
+            		                    }*/
               // Frieght Charge
               Charge c = new Charge();
               c.setChargeCode(ShiplinxConstants.GROUP_FREIGHT_CHARGE);
@@ -3418,8 +3589,13 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
 
               if (c.getCost() < ltlPoundRate.getMinimum())
                 c.setCost(ltlPoundRate.getMinimum());
+              /*if (ratingList.get(i).getMarkupPercentage() == 0
+            		                        && ratingList.get(i).getMarkupFlat() != 0) {  
+            		              	  c.setCharge(c.getCost()+ratingList.get(i).getMarkupFlat());
+            		                }else{*/
               c.setCharge(c.getCost()
                   + (c.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+            		                /*}*/
               ratingList.get(i).getCharges().add(c);
 
               // Fuel Charge
@@ -3428,8 +3604,13 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
               charge.setName(ShiplinxConstants.FUEL_SURCHARGE);
               charge.setCost(c.getCost().doubleValue() * ltlPoundRate.getFscPercent().doubleValue()
                   / 100);
+           /*   if (ratingList.get(i).getMarkupPercentage() == 0
+            		                        && ratingList.get(i).getMarkupFlat() != 0) { 
+            		              	  charge.setCharge(charge.getCost()+ratingList.get(i).getMarkupFlat());
+            		                }else{*/
               charge.setCharge(charge.getCost()
                   + (charge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+            		                /*}*/
               charge.setCurrency(ltlPoundRate.getCurrency());
               ratingList.get(i).getCharges().add(charge);
               ratingList.get(i).setBillWeight((Long) Math.round(totWeight + 0.4));
@@ -3510,4 +3691,8 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   public List getCustomerServicesForCarrier(Long carrierId, long customerId) {
     return getCarrierServiceDAO().getCustomerServicesForCarrier(carrierId, customerId);
   }
+  
+  public List<Service> getServicesForCarrierAdmin(Long carrierId) {
+	  	    return getCarrierServiceDAO().getServicesForCarrierAdmin(carrierId);
+	  	  }
 }

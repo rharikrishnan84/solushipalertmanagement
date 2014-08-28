@@ -8,20 +8,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
-import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
+
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.model.BillingStatus;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
 import com.meritconinc.shiplinx.model.DangerousGoods;
+import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.OrderProduct;
 import com.meritconinc.shiplinx.model.OrderStatus;
 import com.meritconinc.shiplinx.model.Package;
@@ -31,7 +35,6 @@ import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
-import com.meritconinc.shiplinx.model.InvoiceCharge;
 public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingDAO {
   private static final Logger log = LogManager.getLogger(ShippingDAOImpl.class);
 
@@ -1196,5 +1199,56 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 	    }
 	   
   //End
-
+  public Carrier getCarrierByServiceId(Long serviceId) {
+	    	Map<String, Object> paramObj = new HashMap<String, Object>();
+	     	Carrier carrierDet=new Carrier();
+	      	paramObj.put("serviceId", serviceId);
+	      	carrierDet = (Carrier) getSqlMapClientTemplate().queryForObject("getCarrierByServiceId", paramObj);
+	      	return carrierDet;
+	      }
+  
+  @Override
+    public CarrierChargeCode getChargeCodeById(long id) {
+  	return (CarrierChargeCode) getSqlMapClientTemplate().queryForObject("getChargeCodeById", id);
+     }
+     
+  public List<CarrierChargeCode> getChargeListByCarrierAndCodesGroup(long carrierId, String chargeCode,
+		  		  	      String chargeCodeLevel2, int chargeGroupId){
+		  		  
+		  		  	    // Currently we have 2 carriers for UPS, hard-coding here so that the charge codes are shared.
+		  		  	    // Other option is to duplicate the charge code entries
+		  		  	    // in the carrier_charge_code table for carrier id 5
+		  		  	    if (carrierId == ShiplinxConstants.CARRIER_UPS_USA)
+		  		  	      carrierId = ShiplinxConstants.CARRIER_UPS;
+		  		  
+		  		  	    List<CarrierChargeCode> searchResult = null;
+		  		  	    try {
+		  		  	      Map<String, Object> paramObj = new HashMap<String, Object>();
+		  		  	      paramObj.put("carrierId", carrierId);
+		  		  	      paramObj.put("chargeCode", chargeCode);
+		  		  	      paramObj.put("chargeCodeLevel2", chargeCodeLevel2);
+		  		  	      paramObj.put("chargeGroupId", chargeGroupId);
+		  		  	      searchResult = (List<CarrierChargeCode>) getSqlMapClientTemplate().queryForList(
+		  		  	          "getChargeByCarrierAndCodesGroup", paramObj);
+		  		  	    } catch (Exception e) {
+		  		  	      e.printStackTrace();
+		  		  	    }
+		  		  
+		  		       return searchResult;
+		  		    }
+		    
+		        public CarrierChargeCode getChargeByCarrierAndCodesGroup(long carrierId, String chargeCode,
+		  		  	      String chargeCodeLevel2, int chargeGroupId){
+		  		  	// Currently we have 2 carriers for UPS, hard-coding here so that the charge codes are shared.
+		  		  	    // Other option is to duplicate the charge code entries
+		  		  	    // in the carrier_charge_code table for carrier id 5
+		  		  	    if (carrierId == ShiplinxConstants.CARRIER_UPS_USA)
+		  		  	      carrierId = ShiplinxConstants.CARRIER_UPS;
+		  		  
+		  		  	    List<CarrierChargeCode> searchResult = this.getChargeListByCarrierAndCodesGroup(carrierId,
+		  		  	        chargeCode, chargeCodeLevel2, chargeGroupId);
+		  		  	    if (searchResult == null || searchResult.size() == 0)
+		  		  	      return null;
+		  		  	    return searchResult.get(0);
+		  		     }
 }

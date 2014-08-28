@@ -71,5 +71,7 @@ public LtlSkidRate getSkidRate(LtlSkidRate skidRateTobeSearched);
 public boolean getMarkupListForCustomerAndCarrier(Markup markup);
 
   public List<Markup> getMarkupListForCustomerForFilter(Markup markup);
-
+  public List<Markup> getMarkupList(Markup markup);
+  public Markup getUniqueMarkupList(Markup markup);
+  public Markup findBaseMarkup(Markup markup);
 }

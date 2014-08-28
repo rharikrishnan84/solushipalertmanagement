@@ -234,6 +234,7 @@
 			<th>Ref #</th>
 			<th ><span style="width:120px !important; float:left;">Date Created</span></th>
 			<th>Service</th>
+			<th>Total</th>
 			<th>Addresses</th>
 			<th><span style="width:120px !important; float:left;">Billing Status</span></th>
 	</tr>
@@ -251,7 +252,13 @@
 				 <td><s:property value="masterTrackingNum"/></td>
 				  <td><s:property value="referenceOne"/></td>
 	            <td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
-				<td style="text-align: left;" <span title="<s:property value="service.name"/>"></span><div style="width:100px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="service.name"/></div></td>			 
+				<td style="text-align: left;" <span title="<s:property value="service.name"/>"></span><div style="width:100px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="service.name"/></div></td>
+				<td> <sx:tree  cssClass="text_01" label="<b>Total : %{shipments[#index].totalChargeActual} / %{shipments[#index].totalCostActual}</b>" >
+	  
+						<s:iterator  value="%{shipments[#index].actualCharges}">
+						 <sx:treenode cssClass="text_01" label="%{name} : %{charge} / %{cost}" />
+						</s:iterator>
+					 </sx:tree></td>			 
 				<td>
 						 <sx:tree label="From : %{shipments[#index].fromAddress.abbreviationName}">
 								<sx:treenode label="%{shipments[#index].fromAddress.address1} : %{shipments[#index].fromAddress.city}" />                       

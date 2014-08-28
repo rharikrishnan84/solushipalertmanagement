@@ -9,7 +9,6 @@
 <SCRIPT language="JavaScript">
 	function processNow() {
 	if(document.getElementById("uploadBox").value != "") {
-		alert('Processing File Now...');
 		document.uploadEdiform.action = "uploadAndProcess.action";
 		document.uploadEdiform.submit();
 	}
@@ -23,6 +22,16 @@
 		document.uploadEdiform.submit();
 	}	
 </SCRIPT>
+ <script>
+		$(document).ready(function(){
+			
+		$('#upload_edi,#upload_edi_later').click(function(){
+				$('#loader').css('display','block');
+				$('#loaderImg').css('display','block');
+				
+		});
+		});
+	</script>
 <script>
 	$(window).load(function() {
 	  var wndo = $(window).height();
@@ -30,6 +39,10 @@
 	  $('#wrapper_new').css('min-height',wndo);
 	});
 </script>
+<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+</div>
 <div class="content">
 <div id="messages">
 <jsp:include page="../common/action_messages.jsp"/>
@@ -43,8 +56,8 @@
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="menu.admin.uploadedi"/></div>
 								<div class="form_buttons" >	
-									<a href="javascript: processNow()" ><mmr:message messageId="label.edi.process.now"/></a>
-									<a href="javascript: processLater()" onclick="return false"><mmr:message messageId="label.edi.process.later"/></a>
+									<a href="javascript: processNow()" id="upload_edi" ><mmr:message messageId="label.edi.process.now"/></a>
+									<a href="javascript: processLater()" id="upload_edi_later" onclick="return false"><mmr:message messageId="label.edi.process.later"/></a>
 								</div>
 							</div>		
 							<div class="cont_data_body">

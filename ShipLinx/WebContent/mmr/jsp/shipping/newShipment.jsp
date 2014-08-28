@@ -1,4 +1,4 @@
-\<%
+<%
 	response.setHeader("Cache-Control","no-cache");
 	response.setHeader("Pragma","no-cache");
 	response.setDateHeader("Expires",0);
@@ -285,9 +285,14 @@ var count=parseInt(prevQuantity);
 	} 	 
 	function getRates()
 	{
-		document.userform.action = "shipment.stageThree.action";
+		var myParam = location.search.split('customsinvoice=')[1];
+				if(myParam=="true"){
+				document.userform.action = "shipment.stageThree.action?customs="+myParam;
 	 	document.userform.submit();
-	 	
+				}else{
+							document.userform.action = "shipment.stageThree.action?customs="+myParam;
+						 	document.userform.submit();
+						}
 	} 	
 	function quickShip()
 	{   
@@ -626,6 +631,16 @@ var count=parseInt(prevQuantity);
   $('#wrapper_new').css('min-height',wndo);
   });
 	</script>
+	<script>
+		$(document).ready(function(){
+			
+		$('#get_rates_td').click(function(){
+				$('#loader').css('display','block');
+				$('#loaderImg').css('display','block');
+				
+		});
+		});
+	</script> 
 <script>
 
 // Start Autocomplete Script
@@ -859,6 +874,10 @@ var count=parseInt(prevQuantity);
 			ajax_ChangeTo.send(this);	
 	} 
 	</script> 
+	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+</div>
 <div id="messages">
 	<jsp:include page="../common/action_messages.jsp"/>
 </div>
@@ -1083,7 +1102,7 @@ var count=parseInt(prevQuantity);
 </div>	
 	<!-- End: Implementation of Quick Ship UI-->
 	<div class="content">
-		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false}">
+		<s:if test="%{(#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false || #session.ROLE.contains('solutions_manager') && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<s:include value="shipping_additional_fields.jsp"/>
 	
 		<div class="content_body">	
@@ -1104,7 +1123,7 @@ var count=parseInt(prevQuantity);
 		<div class="content_table borderLeftRight " style=" overflow:auto; width:955px !important; padding:0px 3px 10px 0px; ">
 			<div class="form_buttons id="img_get_rates" style=" width:200px; float:right !important;">
 				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager')) }">
-					<div align="left" style="float:right !important;" id="get_rates_td"><a href="javascript:quickShip()" onclick="return (validateOrder(3,1))">Create</a></div>
+					<div align="left" style="float:right !important;"><a  href="javascript:quickShip()" onclick="return (validateOrder(3,1))">Create</a></div>
 				</s:if>
 			</div>
 		</div>
@@ -1113,7 +1132,7 @@ var count=parseInt(prevQuantity);
 		<div class="content_table borderLeftRight borderOnlyBottom" style=" overflow:auto; width:958 px !important; padding:0px 0px 10px 0px; margin-bottom:20px;">
 			<div class="form_buttons" id="img_get_rates" style=" width:210px; float:right !important;">
 				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">Save Shipment</a></div>
-				<div align="left" style="float:left !important;" id="get_rates_td"><a href="javascript:getRates()" onclick="return (validateOrder(3,1))">Get Rates</a></div>
+				<div align="left" style="float:left !important;" id="get_rates_td"><a id="getratesBtn" href="javascript:getRates()" onclick="return (validateOrder(3,1))">Get Rates</a></div>
 				
 			</div>
 		</div>

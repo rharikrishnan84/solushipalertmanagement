@@ -78,7 +78,7 @@ public class ShippingServiceImpl implements ShippingService {
   private CarrierServiceManager carrierServiceManager;
   private List<ShippingOrder> shipments = null;
   private BatchShipmentInfo batchInfo = null;
-
+ 
   public List<String> findPackageTypeByName(String name) {
     return getShippingDAO().findPackageTypeByName(name);
   }
@@ -228,7 +228,7 @@ public class ShippingServiceImpl implements ShippingService {
       }
     }
 
-    log.debug("---------saveCharges-----------");
+    log.debug("---------saveCharges-----------");    
     saveCharges(shippingOrder.getCharges(), shippingOrder.getId());
     shippingDAO.updateShippingOrderBillingStatus(shippingOrder);
 
@@ -485,6 +485,7 @@ public class ShippingServiceImpl implements ShippingService {
         p.setLength(new BigDecimal(FormattingUtil.roundFigureRates(p.getLength().doubleValue(), 0)));
         p.setHeight(new BigDecimal(FormattingUtil.roundFigureRates(p.getHeight().doubleValue(), 0)));
         p.setWidth(new BigDecimal(FormattingUtil.roundFigureRates(p.getWidth().doubleValue(), 0)));
+    	 
       }
     }
     return order;
@@ -941,8 +942,8 @@ public class ShippingServiceImpl implements ShippingService {
       if (service != null && service.getEmailType().equalsIgnoreCase("SPD")) {
         String package_details = new String("<ul>");
         for (Package p : so.getPackages()) {
-          package_details = package_details + "<li>" + p.getLength() + " x " + p.getWidth() + " x "
-              + p.getHeight() + " - " + p.getWeight() + " " + so.getBilledWeightUOM() + " - "
+        	package_details = package_details + "<li>" + p.getLength().setScale(2, BigDecimal.ROUND_HALF_UP) + " x " + p.getWidth().setScale(2, BigDecimal.ROUND_HALF_UP) + " x "
+        			           + p.getHeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " - " + p.getWeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " " + so.getBilledWeightUOM() + " - "
               + p.getDescription() + "</li>";
         }
         package_details = package_details + "</ul>";
@@ -968,8 +969,8 @@ public class ShippingServiceImpl implements ShippingService {
           if (p.getFreightClass() == null) {
             p.setFreightClass("");
           }
-          package_details = package_details + "<li>" + p.getLength() + " x " + p.getWidth() + " x "
-              + p.getHeight() + " - " + p.getWeight() + " " + so.getBilledWeightUOM() + " - Class "
+         package_details = package_details + "<li>" + p.getLength().setScale(2, BigDecimal.ROUND_HALF_UP) + " x " + p.getWidth().setScale(2, BigDecimal.ROUND_HALF_UP) + " x "
+              + p.getHeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " - " + p.getWeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " " + so.getBilledWeightUOM() + " - Class "
               + p.getFreightClass() + " - " + packageType + " - " + p.getDescription() + "</li>";
         }
         package_details = package_details + "</ul>";
@@ -1587,11 +1588,14 @@ public class ShippingServiceImpl implements ShippingService {
     return this.shippingDAO.searchReferenceShipments(order);
   }
 
-  public ShippingOrder repeatOrder(String orderId) {
+  public ShippingOrder repeatOrder(String orderId,String customs) {
     // ShippingOrder order = getShippingOrder(Long.valueOf(orderId));
 
     ShippingOrder order = getShippingNewOrder(Long.parseLong(orderId));
 
+    if(customs!=null && customs.equalsIgnoreCase("true")){
+    	    	order.setCustomsInvoiceRequired(true);
+    	    }
     ShippingOrder newShippingOrder = new ShippingOrder();
 
     copyOrder(order, newShippingOrder);
@@ -1684,6 +1688,28 @@ public class ShippingServiceImpl implements ShippingService {
        * .setCustomsInvoiceRequired(sourceOrder.isCustomsInvoiceRequired ());
        * destOrder.setCustomsInvoice(sourceOrder.getCustomsInvoice()); }
        */
+      
+      destOrder.setSaveFromAddress(sourceOrder.isSaveFromAddress());
+            destOrder.setSaveToAddress(sourceOrder.isSaveToAddress());
+            destOrder.setUnitmeasure(sourceOrder.getUnitmeasure());
+            destOrder.setDutiableAmount(sourceOrder.getDutiableAmount());
+            destOrder.setTradeShowDelivery(sourceOrder.isTradeShowDelivery());
+            destOrder.setTradeShowPickup(sourceOrder.isTradeShowPickup());
+            destOrder.setInsidePickup(sourceOrder.isInsidePickup());
+            destOrder.setAppointmentDelivery(sourceOrder.isAppointmentDelivery());
+            destOrder.setAppointmentPickup(sourceOrder.isAppointmentPickup());
+            destOrder.setToTailgate(sourceOrder.isToTailgate());
+            destOrder.setDutiableAmount(sourceOrder.getDutiableAmount());
+            
+            
+             if(sourceOrder.isCustomsInvoiceRequired()) { 
+          	   destOrder.setCustomsInvoiceRequired(sourceOrder.isCustomsInvoiceRequired ());
+          	   destOrder.setCustomsInvoice(sourceOrder.getCustomsInvoice());
+                	 for(int i=0;i<sourceOrder.getCustomsInvoice().getProducts().size();i++){
+            		   destOrder.getCustomsInvoice().getProducts().get(i).setUnitPrice(new BigDecimal(sourceOrder.getCustomsInvoice().getProducts().get(i).getProductUnitPrice()));
+            	   } 
+          	   }
+             
 
     } catch (Exception e) {
       log.error("Error occured in copying Source Object to dest object", e);
@@ -1783,8 +1809,9 @@ public class ShippingServiceImpl implements ShippingService {
       if (service != null && service.getEmailType().equalsIgnoreCase("SPD")) {
         String package_details = new String("<ul>");
         for (Package p : so.getPackages()) {
-          package_details = package_details + "<li>" + p.getLength() + " x " + p.getWidth() + " x "
-              + p.getHeight() + " - " + p.getWeight() + " " + so.getBilledWeightUOM() + " - "
+        	
+        	package_details = package_details + "<li>" + p.getLength().setScale(2, BigDecimal.ROUND_HALF_UP) + " x " + p.getWidth().setScale(2, BigDecimal.ROUND_HALF_UP) + " x "
+              + p.getHeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " - " + p.getWeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " " + so.getBilledWeightUOM() + " - "
               + p.getDescription() + "</li>";
         }
         package_details = package_details + "</ul>";
@@ -1836,8 +1863,8 @@ public class ShippingServiceImpl implements ShippingService {
           if (p.getFreightClass() == null) {
             p.setFreightClass("");
           }
-          package_details = package_details + "<li>" + p.getLength() + " x " + p.getWidth() + " x "
-              + p.getHeight() + " - " + p.getWeight() + " " + so.getBilledWeightUOM() + " - Class "
+          package_details = package_details + "<li>" + p.getLength().setScale(2, BigDecimal.ROUND_HALF_UP) + " x " + p.getWidth().setScale(2, BigDecimal.ROUND_HALF_UP) + " x "
+        		            + p.getHeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " - " + p.getWeight().setScale(2, BigDecimal.ROUND_HALF_UP) + " " + so.getBilledWeightUOM() + " - Class "
               + p.getFreightClass() + " - " + packageType + " - " + p.getDescription() + "</li>";
         }
         package_details = package_details + "</ul>";

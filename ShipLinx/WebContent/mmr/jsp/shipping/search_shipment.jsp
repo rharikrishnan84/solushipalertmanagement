@@ -14,6 +14,7 @@
 border: 1px solid #999;
 background: #FFF;
 cursor: default;
+width:300px !important;
 overflow: auto;
 -webkit-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 -moz-box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
@@ -87,6 +88,62 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 				alert('Please check atmost one');
 			}
 			else{
+				var temp = "";
+								for (var i=0;i<editUserId.length;i++){
+									if (editUserId[i].checked){
+										temp = editUserId[i].value ;					
+									}
+								}
+								
+								var customs = document.getElementById("customsinvoice"+temp).value;
+								if(customs != ""){
+								var ALERT_BUTTON_TEXT = 'Ok';
+								var CANCEL_BUTTON_TEXT = 'No';
+								d = document;
+								if(d.getElementById("modalContainer")) return;
+								mObj = d.getElementsByTagName("body")[0].appendChild(d.createElement("div"));
+								mObj.id = "modalContainer";
+								mObj.style.height = d.documentElement.scrollHeight + "px";
+								alertObj = mObj.appendChild(d.createElement("div"));
+								alertObj.id = "alertBox";
+								if(d.all && !window.opera) alertObj.style.top = document.documentElement.scrollTop + "px";
+								var leftMargin = (d.documentElement.scrollWidth - alertObj.offsetWidth)/2;
+								alertObj.style.left = (leftMargin-40) + "px";
+								alertObj.style.visiblity="visible";
+								
+								msg = alertObj.appendChild(d.createElement("p"));
+								
+								msg.innerHTML = "would you like to recreate the commercial invoice details with this shipment?";
+								
+								
+								btnbodyObj = alertObj.appendChild(d.createElement("div"));
+								btnbodyObj.id = "btnBody";
+								
+								
+								btnconfirm = btnbodyObj.appendChild(d.createElement("a"));
+								btnconfirm.id = "confirmBtn";
+								
+								btnconfirm.appendChild(d.createTextNode(ALERT_BUTTON_TEXT));
+								btnconfirm.href = "#";
+								btnconfirm.focus();
+								$('#confirmBtn').css('margin-left','127px');
+								
+								btnconfirmCancel = btnbodyObj.appendChild(d.createElement("a"));
+								btnconfirmCancel.id = "confirmCancelBtn";
+								btnconfirmCancel.appendChild(d.createTextNode(CANCEL_BUTTON_TEXT));
+								btnconfirmCancel.href = "#";
+								btnconfirmCancel.focus();
+								$('#confirmCancelBtn').css('margin-right','111px');
+								
+								
+								
+								$('#confirmBtn').click(function(){
+									removeCustomConfirm();
+								
+								
+								
+								
+								
 				var i,txt;
 				for (i=0;i<editUserId.length;i++){
 					if (editUserId[i].checked){
@@ -95,11 +152,39 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 				}
 				
 				document.searchform.action = "repeat.order.action?order_id="+txt;
+				document.searchform.action = "repeat.order.action?order_id="+txt+"&customsinvoice=true";
 				document.searchform.submit();
 			
-		}
+								});
+												$('#confirmCancelBtn').click(function(){
+													var i,txt;
+													for (i=0;i<editUserId.length;i++){
+														if (editUserId[i].checked){
+															txt = editUserId[i].value ;					
+														}
+													}
+													document.searchform.action = "repeat.order.action?order_id="+txt+"&customsinvoice=false";
+													document.searchform.submit();
+													
+												});
+												alertObj.style.display = "block";
+												function removeCustomConfirm() {
+												document.getElementsByTagName("body")[0].removeChild(document.getElementById("modalContainer"));
+												}
 			//alert(oid);
-			
+								}
+												else{
+													
+													var i,txt;
+													for (i=0;i<editUserId.length;i++){
+														if (editUserId[i].checked){
+															txt = editUserId[i].value ;					
+														}
+													}
+													document.searchform.action = "repeat.order.action?order_id="+txt;
+													document.searchform.submit();
+												}
+										}
 		}
 	</SCRIPT>
 		<script>

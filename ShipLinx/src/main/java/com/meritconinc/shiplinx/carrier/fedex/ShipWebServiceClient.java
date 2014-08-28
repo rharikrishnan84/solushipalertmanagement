@@ -175,10 +175,12 @@ public class ShipWebServiceClient extends FedExRequestHelper {
       } else if (order.getPackageTypeId().getPackageTypeId() == ShiplinxConstants.PACKAGE_TYPE_PAK) {
         requestedShipment.setPackagingType(PackagingType.FEDEX_PAK);
       }
-
-      if (customerCarrier.getCountry().equalsIgnoreCase(ShiplinxConstants.CANADA))
+      if(order.getFromAddress().getCountryCode().equals("US")&&(order.getToAddress().getCountryCode().equals("US"))){
+    	  setCurrency(FedExConstants.CURRENCY_TYPE_VALUE_USD);
+		}
+      else if (customerCarrier.getCountry().equalsIgnoreCase(ShiplinxConstants.CANADA))
         setCurrency(FedExConstants.CURRENCY_TYPE_VALUE_CAD);
-      if (customerCarrier.getCountry().equalsIgnoreCase(ShiplinxConstants.US))
+      else if (customerCarrier.getCountry().equalsIgnoreCase(ShiplinxConstants.US))
         setCurrency(FedExConstants.CURRENCY_TYPE_VALUE_USD);
 
       // setting ship from info
