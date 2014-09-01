@@ -1102,7 +1102,7 @@ var count=parseInt(prevQuantity);
 </div>	
 	<!-- End: Implementation of Quick Ship UI-->
 	<div class="content">
-		<s:if test="%{(#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false || #session.ROLE.contains('solutions_manager') && shippingOrder.isAdditionalFieldsEditable() != false}">
+		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false || #session.ROLE.contains('solutions_manager') && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<s:include value="shipping_additional_fields.jsp"/>
 	
 		<div class="content_body">	

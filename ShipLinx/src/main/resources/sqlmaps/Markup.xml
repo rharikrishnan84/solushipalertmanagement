@@ -272,7 +272,6 @@
 			<isNotNull  property="type">
 				 and m.type=#type#
 			</isNotNull>
-			<isGreaterThan property="rate" compareValue="0">
 			<isNotNull  property="fromWeight">
 				 <isGreaterThan property="fromWeight" compareValue="0">
 				 <![CDATA[and m.from_weight<=#fromWeight#]]>
@@ -285,7 +284,6 @@
 				 
 				 </isLessThan>
 			</isNotNull>
-		</isGreaterThan>
 		</dynamic>    
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc                                 
 	</select>	
