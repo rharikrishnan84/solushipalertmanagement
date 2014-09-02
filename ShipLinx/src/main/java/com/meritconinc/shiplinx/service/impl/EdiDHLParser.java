@@ -379,7 +379,8 @@ public class EdiDHLParser extends EdiParser {
 			charge.setCost(cost); 
 			charge.setEdiInvoiceNumber(item.getInvoiceNumber());
 			charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
-			
+			charge.setCarrierId((long)ShiplinxConstants.CARRIER_DHL);
+			charge.setCarrierName(ShiplinxConstants.CARRIER_DHL_STRING);
 //			if (chargeGroupCode != null && 
 //					(chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
 //					chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {

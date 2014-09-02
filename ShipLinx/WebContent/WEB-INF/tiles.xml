@@ -511,6 +511,9 @@
     <definition name="searchInvoice" extends="admin.layout.window">
         <put-attribute name="mainBody" value="/mmr/jsp/admin/searchInvoice.jsp"/>
     </definition>  
+    <definition name="invoicePayList" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/invoicePayList.jsp"/>
+    </definition> 
     <definition name="editInvoice" extends="admin.layout.window">
         <put-attribute name="mainBody" value="/mmr/jsp/admin/view_edit_invoice.jsp"/>
     </definition>  

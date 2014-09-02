@@ -1652,7 +1652,8 @@
        	</action> 
         <action name="invoice.pay" method="payInvoices" class="invoiceManagerAction">
 			<interceptor-ref name="mmrStackTrackToken" />
-          <result name="success">/mmr/jsp/admin/invoicePayList.jsp</result>
+			 <result type="tiles" name="success">invoicePayList</result>
+         <!-- <result name="success">/mmr/jsp/admin/invoicePayList.jsp</result> --> 
         </action>
         <action name="updateAR" method="updateAR" class="invoiceManagerAction">
          <result type="tiles" name="success">updateAR</result>          

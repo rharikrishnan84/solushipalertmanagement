@@ -26,13 +26,7 @@ public class Markup {
 	private int serviceType;
 	
 	private int variable;
-	private int rate;
-	public int getRate() {
-		return rate;
-	}
-	public void setRate(int rate) {
-		this.rate = rate;
-	}
+	 
 	public Long getCustomerId() {
 		return customerId;
 	}

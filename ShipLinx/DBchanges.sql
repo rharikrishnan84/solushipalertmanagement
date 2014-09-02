@@ -557,12 +557,7 @@ alter table resourcebundle modify msg_content nvarchar(10000);
 
 ALTER TABLE `charges` 
 ADD COLUMN `charge_group_id` INT(11) NULL DEFAULT 0 AFTER `exchange_rate`;
-
-############################################################
-
-		Need To Go Live
-#############################################################
-
+//////////////////////// -----------------   27-08-2014 ------------------------------------------------------------------////////////////
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '261');
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '270');
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '282');
@@ -606,19 +601,30 @@ CHANGE COLUMN `commission_perc_PS` `commission_perc_CHB` DOUBLE NULL DEFAULT '0'
 
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('text.role.solutions.manager', 'Solutions Manager', 'en_CA', 1);
 
+///////////////////---------------------------------------End ----------------------------------------------------------------////////////////
+
+
+
+############################################################
+
+		Need To Go Live
+#############################################################
 /// ====================================Stored Procedure=========================================================///
 
 DELIMITER $$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_quote_total`()
+CREATE PROCEDURE `update_quote_total`()
 begin
-set @count=(select count(*) from shipping_order where quote_total is null);
+set @count=(select  count(distinct s.order_id) from shipping_order s left join charges c on (s.order_id=c.order_id)
+ where s.quote_total is null and c.type=0 );
 while @count >0 do
-set @orderId=(select order_id from shipping_order where quote_total is null order by order_id desc limit 1);
+set @orderId=(select  distinct s.order_id from shipping_order s left join charges c on (s.order_id=c.order_id)
+ where s.scheduled_ship_date>='2014-05-15' and s.quote_total is null and c.type=0 limit 1);
 update shipping_order set quote_total=(select sum(charge) from charges where type=0 and order_id=@orderId) where order_id=@orderId;
+set @count=@count-1;
 end while;
 END $$
 DELIMITER ;
+
 
 ////============================END Stored Procedure =============================================================///
 
@@ -626,7 +632,7 @@ DELIMITER ;
 
 ///======================= Start Total Quote Charge Trigger ====================================================////
 
-DELIMITER $$
+ DELIMITER $$
 create Trigger total_quoted_charges
 after insert on charges
 for each row
@@ -637,3 +643,6 @@ end $$
 DELIMITER ;
 
 ///===================End Total Quote Charge Trigger ===========================================================////
+
+ 
+ UPDATE `action` SET `menu_id`='181' WHERE `id`='186';

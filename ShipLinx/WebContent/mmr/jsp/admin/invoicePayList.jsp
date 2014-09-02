@@ -4,6 +4,7 @@
 	href="<s:url value='/mmr/styles/common.css' includeContext="true"/>" />
 	
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/jsp/shipping/style.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/laptop.css">
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.alerts.js"></script>
@@ -119,13 +120,13 @@
 	<s:set var="index" value="0" />
 	<s:iterator id="invoicesTable" value="invoices" status="rowstatus">	
 	<tr>
-	<s:if test="%{#request.postPayment == false}">
+	
 		<!-- <td>
 		 <input  class="dataTable-checkbox" type="checkbox" name="select[%{#index}]" value="select[%{#index}]"/> 
 		 <input type="hidden"  name="selectedInvoices[%{#index}].invoiceId" value="%{invoiceId}" />
 		</td> -->
 		<td> <input type="checkbox"  Class="check_uncheck_row" name="shipmentcheckbox<s:property value='invoiceId'/>"  value="<s:property value='invoiceId'/>" /> </td>
-	</s:if>
+	
 		<td><s:property value="invoiceNum" /></td>
 		<td><s:property value="customer.name" /></td>
 		<td><s:property value="dateCreated" /></td>
@@ -141,6 +142,11 @@
 	</tbody>
 	</table>
 </div>
+</div>
+<div class="content_body">
+		<div class="content_table">
+		&nbsp;
+		</div>
 </div>
 
 

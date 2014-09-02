@@ -272,7 +272,7 @@
 			<isNotNull  property="type">
 				 and m.type=#type#
 			</isNotNull>
-			<isNotNull  property="fromWeight">
+				<isNotNull  property="fromWeight">
 				 <isGreaterThan property="fromWeight" compareValue="0">
 				 <![CDATA[and m.from_weight<=#fromWeight#]]>
 				 

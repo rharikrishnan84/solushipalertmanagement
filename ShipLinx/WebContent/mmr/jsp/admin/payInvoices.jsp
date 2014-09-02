@@ -99,7 +99,7 @@ function submitPay(){
 						</div>
 						<div class="fields_topdown">
 							<label>&nbsp;</label>
-							<div class="form_buttons" style="margin-right: 75px;position: relative;bottom: 3px;">
+							<div class="form_buttons" style="margin-right: 75px;position: relative;bottom: 3px; width:84px">
 										<a href="javascript: submitPay()" >Pay Now</a>
 							</div>
 						</div>

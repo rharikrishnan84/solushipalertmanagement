@@ -1799,7 +1799,6 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       // mark all disabled services
       Markup markup = markupManagerService.getMarkupObj(order);
       markup.setServiceId(rate.getServiceId());
-      markup.setRate(1);
       markup = markupManagerService.getUniqueMarkup(markup);
 
       if (markup == null && service.getMasterCarrierId() == ShiplinxConstants.CARRIER_GENERIC
@@ -1825,7 +1824,6 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
           Service findService = carrierServiceDAO.getService(service.getMasterServiceId());
           Markup markups = markupManagerService.getMarkupObj(order);
           markups.setServiceId(findService.getId());
-          markups.setRate(1);
           markup = markupManagerService.getUniqueMarkup(markups);
           rate.setCarrierId(findService.getCarrierId());
           rate.setCarrierName(findService.getCarrier().getName());
