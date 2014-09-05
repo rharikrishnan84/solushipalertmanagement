@@ -646,3 +646,22 @@ DELIMITER ;
 
  
  UPDATE `action` SET `menu_id`='181' WHERE `id`='186';
+
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('20', 'TAX', 'HST', 'HST', 'Harmonized Sales Tax', '5', '0', '0', '0');
+
+///======================= Start Total Quote Charge Trigger ====================================================////
+
+DELIMITER $$
+create Trigger total_quoted_charges_cost
+after insert on charges
+for each row
+begin 
+set @orderId=(select order_id from charges order by id desc limit 1);
+update shipping_order set quote_total=(select sum(charge) from charges where type=0 and order_id=@orderId) where order_id=@orderId;
+update shipping_order set quote_cost=(select sum(cost) from charges where type=0 and order_id=@orderId) where order_id=@orderId;
+end $$
+DELIMITER ;
+
+///===================End Total Quote Charge Trigger ===========================================================////
+
+
