@@ -365,7 +365,14 @@ public class EdiPurolatorParser extends EdiParser {
 			chargeCodeLevel2 = chargeCodes.get(0).getChargeCodeLevel2();
 			chargeGroupCode = chargeCodes.get(0).getGroupCode(); 	
 			chargeName = chargeCodes.get(0).getChargeName();
-		} else {
+		}else if(chargeCodeMapInfo[1].equalsIgnoreCase(ShiplinxConstants.TAX_HST)){
+			chargeCodes = shippingService.getChargeListByCarrierAndCodes(
+					item.getCarrierId(), chargeCode, chargeCodeMapInfo[1]);
+			chargeCode = chargeCodes.get(0).getChargeCode();
+			chargeCodeLevel2 = chargeCodes.get(0).getChargeCodeLevel2();
+			chargeGroupCode = chargeCodes.get(0).getGroupCode(); 	
+			chargeName =chargeCodes.get(0).getChargeName();
+		}else {
 			chargeCode = ShiplinxConstants.CHARGE_CODE_PURO_ACC;
 			chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_PURO_OTH;
 			chargeName = chargeCodeMapInfo[0];

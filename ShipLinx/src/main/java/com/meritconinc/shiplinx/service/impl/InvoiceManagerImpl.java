@@ -649,10 +649,11 @@ public class InvoiceManagerImpl implements InvoiceManager {
         // partial
         // paying
         addARTransaction(aRTransaction);
+        invoice.setPaidAmount(balanceDue);
+        invoice.setBalanceDue(0.0);
       } else {
         stb.append("Payment Not Processed!\n");
       }
-
       invoice.setTransaction(transaction); // for display purposes only
       invoices.add(invoice);
 

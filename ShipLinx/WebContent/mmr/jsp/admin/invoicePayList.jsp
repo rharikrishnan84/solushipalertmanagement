@@ -12,7 +12,6 @@
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
-
 <script type="text/javascript">
 	$(window).load(function() {
 		$('#invoicesTable').dataTable(); 
@@ -129,7 +128,7 @@
 	
 		<td><s:property value="invoiceNum" /></td>
 		<td><s:property value="customer.name" /></td>
-		<td><s:property value="dateCreated" /></td>
+		<td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
 		<td>$<s:property value="invoiceAmount" /></td>
 		<td>$<s:property value="invoiceTax" /></td>
 		<td>$<s:property value="totalInvoiceCharge" /></td>

@@ -49,7 +49,11 @@ public class Invoice {
 	private String branch;
 	
 	private boolean cancelled;
-	
+	private Double balanceDue;
+	public void setBalanceDue(Double balanceDue) {
+		this.balanceDue = balanceDue;
+	}
+
 	private int[] paymentStatusList = new int[10];
 	private String salesRep;
 

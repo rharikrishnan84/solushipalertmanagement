@@ -396,9 +396,19 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
    if(invoiceIds.size()>0)
 
     invoices = invoiceManager.processPayment(invoiceIds, creditCard, true);
-   String args[] = new String[1];
-       args[0] = String.valueOf(invoices.size());
-       addActionMessage(getText("creditCard.payment.processed", new String[] { args[0] }));
+/*   String args[] = new String[1];
+       args[0] = String.valueOf(invoices.size());*/
+   for(Invoice invoice:invoices){
+    	   if(invoice.getTransaction().getStatus()!=10 && invoice.getTransaction().getProcessorTransactionId()!=null){
+    		   addActionMessage("Payment has been Approved and your Receipt Id is: "+invoice.getTransaction().getReceiptId());
+    	   }else{
+    		   if(invoice.getTransaction().getProcessorTransactionId()!=null){
+    		   addActionError("Payment has been declined and your Declined Receipt Id is: "+invoice.getTransaction().getReceiptId());
+    		   }else{
+    			   addActionError("Payment has been declined");
+    		   }
+    	   }
+   }
        //request.setAttribute("postPayment", new Boolean(true));
    
     return SUCCESS;
