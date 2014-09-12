@@ -155,11 +155,12 @@
 	</div>
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
-		<tr style="height:25px">
+		<tr style="height:35px">
 			<th style="width:30px; text-align:center;"><input id="check_all" onclick="checkUncheck('check_uncheck_row')" type="checkbox" /></th>
 			<th>Customer</th>
 			<th>Pickup Date</th>
 			<th>Pickup Time</th>
+			<th style="width:100px !important;float:right;margin-top:12px">Pickup Location</th>
 			<th>Carrier</th>
 			<th>Confirmation No</th>
 			<th>Pickup Address</th>
@@ -180,6 +181,7 @@
 				<td>
 					<s:property value="readyHour"/>:<s:property value="readyMin"/>&nbsp;-&nbsp;<s:property value="closeHour"/>:<s:property value="closeMin"/>
 				</td>
+				<td><s:property value="pickupLocation"/></td>
 				<td title="<s:property value="carrier.name"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="carrier.name"/></div></td>
 				
 				<td><s:property value="confirmationNum"/></td>

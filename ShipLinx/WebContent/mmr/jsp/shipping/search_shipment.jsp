@@ -215,7 +215,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 										<a href="javascript: searchShipment()" >SEARCH</a>
 									</div>	
 								</div>
-								<div class="cont_data_body">
+								<div class="cont_data_body borderLeftRight">
 									<div class="rows">
 										<div class="fields">
 											<label>From Date </label>

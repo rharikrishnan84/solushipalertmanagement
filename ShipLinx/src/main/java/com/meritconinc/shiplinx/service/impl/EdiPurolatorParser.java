@@ -38,13 +38,14 @@ public class EdiPurolatorParser extends EdiParser {
 	private static final String INVOICE_AMOUNT			="24_INV_TOTAL_AMT";
 	private static final String INVOICE_CURRENCY		="25_CURRENCY";
 	
-	private static final String PACKAGE_QUANTITY		="29_NUM_OF_PCS";
+	/*private static final String PACKAGE_QUANTITY		="29_NUM_OF_PCS";*/
 	private static final String TRANSACTION_DATE		="81_SERVICE_DATE";
 	private static final String LEAD_SHIPMENT_NUMBER	="83_SHIPMENT_PIN";
 	private static final String ACTUAL_PRODUCT_NUM		="87_ACTUAL_PRODUCT_NUM";
 	private static final String ACTUAL_WGT				="89_ACTUAL_WGT";
 	private static final String ACTUAL_WGT_UOM			="90_ACTUAL_WGT_UOM";
 	private static final String DECLARED_WGT			="95_DECLARED_WGT";
+	private static final String PACKAGE_QUANTITY		="92_PIECES";
 	private static final String DECLARED_WGT_UOM		="96_DECLARED_WGT_UOM";
 
 	private static final String CUSTOMER_REF1			="98_CUSTOMER_REF1";
@@ -368,10 +369,16 @@ public class EdiPurolatorParser extends EdiParser {
 		}else if(chargeCodeMapInfo[1].equalsIgnoreCase(ShiplinxConstants.TAX_HST)){
 			chargeCodes = shippingService.getChargeListByCarrierAndCodes(
 					item.getCarrierId(), chargeCode, chargeCodeMapInfo[1]);
+			if (chargeCodes != null && chargeCodes.size() > 0) {
 			chargeCode = chargeCodes.get(0).getChargeCode();
 			chargeCodeLevel2 = chargeCodes.get(0).getChargeCodeLevel2();
 			chargeGroupCode = chargeCodes.get(0).getGroupCode(); 	
 			chargeName =chargeCodes.get(0).getChargeName();
+			}else{
+				chargeCode = ShiplinxConstants.CHARGE_CODE_PURO_ACC;
+				chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_PURO_OTH;
+				chargeName = chargeCodeMapInfo[0];
+			}
 		}else {
 			chargeCode = ShiplinxConstants.CHARGE_CODE_PURO_ACC;
 			chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_PURO_OTH;
@@ -563,6 +570,9 @@ public class EdiPurolatorParser extends EdiParser {
 		if (!applyExceptionsRules(ediShipment, dbShipment)) {
 			// No exception rules were applied
 			dbShipment.setStatusId((long)ShiplinxConstants.STATUS_DELIVERED);
+		}
+		if(getEdiField(PACKAGE_QUANTITY)!=null && !getEdiField(PACKAGE_QUANTITY).isEmpty()){
+		dbShipment.setQuantity(Integer.parseInt(getEdiField(PACKAGE_QUANTITY)));
 		}
 		this.shippingService.updateShippingOrder(dbShipment);
 	}

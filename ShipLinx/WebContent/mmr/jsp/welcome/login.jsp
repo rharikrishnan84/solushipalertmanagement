@@ -18,6 +18,9 @@
 </head>
 
 <body>
+ <div> 
+						<a href="#"><mmr:message messageId="label.live.button"/></a>
+					</div> 
 	<link rel="stylesheet" id="browsercheck" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/laptop.css"/>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 	<script language="JavaScript"

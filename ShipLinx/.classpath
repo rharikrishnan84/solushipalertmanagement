@@ -101,8 +101,8 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail-1.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail.jar"/>
-	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.37/lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.37/lib/servlet-api.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_45"/>
+	<classpathentry kind="lib" path="/home/salamath/software/apache-tomcat-6.0.41/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/home/salamath/software/apache-tomcat-6.0.41/lib/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-6-openjdk-i386"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

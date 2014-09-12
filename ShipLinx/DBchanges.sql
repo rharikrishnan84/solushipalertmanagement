@@ -603,12 +603,6 @@ INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUE
 
 ///////////////////---------------------------------------End ----------------------------------------------------------------////////////////
 
-
-
-############################################################
-
-		Need To Go Live
-#############################################################
 /// ====================================Stored Procedure=========================================================///
 
 DELIMITER $$
@@ -663,5 +657,21 @@ end $$
 DELIMITER ;
 
 ///===================End Total Quote Charge Trigger ===========================================================////
+
+////////////////////////---------------------- 12/9/14------------------------------///////////////////
+
+insert into resourcebundle (`msg_id`,`msg_content`,`locale`,`is_fmk`) values ('label.live.button',
+'<div id="swifttagcontainer8xy43136qw"><div id="proactivechatcontainer8xy43136qw"></div><div style="display: inline;" id="swifttagdatacontainer8xy43136qw"></div></div> <script type="text/javascript">var swiftscriptelem8xy43136qw=document.createElement("script");swiftscriptelem8xy43136qw.type="text/javascript";var swiftrandom = Math.floor(Math.random()*1001); var swiftuniqueid = "8xy43136qw"; var swifttagurl8xy43136qw="https://soluship.com/kayako/visitor/index.php?/Default/LiveChat/HTML/SiteBadge/cHJvbXB0dHlwZT1jaGF0JnVuaXF1ZWlkPTh4eTQzMTM2cXcmdmVyc2lvbj00LjY0LjEuNDgyNyZwcm9kdWN0PUVuZ2FnZSZzaXRlYmFkZ2Vjb2xvcj13aGl0ZSZiYWRnZWxhbmd1YWdlPWVuJmJhZGdldGV4dD1saXZlaGVscCZvbmxpbmVjb2xvcj0jMTk4YzE5Jm9ubGluZWNvbG9yaG92ZXI9IzVmYWY1ZiZvbmxpbmVjb2xvcmJvcmRlcj0jMTI2MjEyJm9mZmxpbmVjb2xvcj0jYTJhNGFjJm9mZmxpbmVjb2xvcmhvdmVyPSNiZWMwYzUmb2ZmbGluZWNvbG9yYm9yZGVyPSM3MTczNzgmYXdheWNvbG9yPSM3MzdjNGEmYXdheWNvbG9yaG92ZXI9IzllYTQ4MSZhd2F5Y29sb3Jib3JkZXI9IzUxNTczNCZiYWNrc2hvcnRseWNvbG9yPSM3ODhhMjMmYmFja3Nob3J0bHljb2xvcmhvdmVyPSNhMWFlNjYmYmFja3Nob3J0bHljb2xvcmJvcmRlcj0jNTQ2MTE5JmN1c3RvbW9ubGluZT0mY3VzdG9tb2ZmbGluZT0mY3VzdG9tYXdheT0mY3VzdG9tYmFja3Nob3J0bHk9CmU2NTQxZjc0MGQwMzhjNzU4NjBjMmU5Y2EzOTdkYjcxMWQ0YWM2ZmU=";setTimeout("swiftscriptelem8xy43136qw.src=swifttagurl8xy43136qw;document.getElementById("swifttagcontainer8xy43136qw").appendChild(swiftscriptelem8xy43136qw);",1);</script>',
+'en_CA',1);
+UPDATE `resourcebundle` SET `msg_content`='<div id=\"swifttagcontainer8xy43136qw\"><div id=\"proactivechatcontainer8xy43136qw\"></div><div style=\"display: inline;\" id=\"swifttagdatacontainer8xy43136qw\"></div></div> <script type=\"text/javascript\">var swiftscriptelem8xy43136qw=document.createElement(\"script\");swiftscriptelem8xy43136qw.type=\"text/javascript\";var swiftrandom = Math.floor(Math.random()*1001); var swiftuniqueid = \"8xy43136qw\"; var swifttagurl8xy43136qw=\"https://soluship.com/kayako/visitor/index.php?/Default/LiveChat/HTML/SiteBadge/cHJvbXB0dHlwZT1jaGF0JnVuaXF1ZWlkPTh4eTQzMTM2cXcmdmVyc2lvbj00LjY0LjEuNDgyNyZwcm9kdWN0PUVuZ2FnZSZzaXRlYmFkZ2Vjb2xvcj13aGl0ZSZiYWRnZWxhbmd1YWdlPWVuJmJhZGdldGV4dD1saXZlaGVscCZvbmxpbmVjb2xvcj0jMTk4YzE5Jm9ubGluZWNvbG9yaG92ZXI9IzVmYWY1ZiZvbmxpbmVjb2xvcmJvcmRlcj0jMTI2MjEyJm9mZmxpbmVjb2xvcj0jYTJhNGFjJm9mZmxpbmVjb2xvcmhvdmVyPSNiZWMwYzUmb2ZmbGluZWNvbG9yYm9yZGVyPSM3MTczNzgmYXdheWNvbG9yPSM3MzdjNGEmYXdheWNvbG9yaG92ZXI9IzllYTQ4MSZhd2F5Y29sb3Jib3JkZXI9IzUxNTczNCZiYWNrc2hvcnRseWNvbG9yPSM3ODhhMjMmYmFja3Nob3J0bHljb2xvcmhvdmVyPSNhMWFlNjYmYmFja3Nob3J0bHljb2xvcmJvcmRlcj0jNTQ2MTE5JmN1c3RvbW9ubGluZT0mY3VzdG9tb2ZmbGluZT0mY3VzdG9tYXdheT0mY3VzdG9tYmFja3Nob3J0bHk9CmU2NTQxZjc0MGQwMzhjNzU4NjBjMmU5Y2EzOTdkYjcxMWQ0YWM2ZmU=\";setTimeout(\"swiftscriptelem8xy43136qw.src=swifttagurl8xy43136qw;document.getElementById('swifttagcontainer8xy43136qw').appendChild(swiftscriptelem8xy43136qw);\",1);</script>' WHERE `resourcebundle_id`='1718' and`msg_id`='label.live.button' and`locale`='en_CA' and`is_fmk`=1;
+
+UPDATE `resourcebundle` SET `msg_content`='Card Type' WHERE `resourcebundle_id`='674' and`msg_id`='label.creditcard.nameOnCard' and`locale`='en_CA' and`is_fmk`=0;
+
+////////////////////////---------------------- end------------------------------///////////////////
+
+############################################################
+
+		Need To Go Live
+#############################################################
 
 

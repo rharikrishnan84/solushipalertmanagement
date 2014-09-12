@@ -4279,8 +4279,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      String shipmentId = request.getParameter("viewShipmentId");
 	      ShippingOrder selectedOrder;
 
-	      if (shipmentId != null) {
-	        long id = Long.parseLong(shipmentId);
+	      if (shipmentId != null && !shipmentId.isEmpty()) {
+	        long id = Long.valueOf(shipmentId);
 	        selectedOrder = this.shippingService.getShippingOrder(id);
 	        if (selectedOrder != null) {
 	          List<Package> packages = shippingService.getShippingPackages(id);

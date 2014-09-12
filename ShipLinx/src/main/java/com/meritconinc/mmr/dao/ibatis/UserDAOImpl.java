@@ -1,6 +1,7 @@
 package com.meritconinc.mmr.dao.ibatis;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -647,4 +648,20 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
   public Customer getCustomerReference(long id){
 	  		return (Customer)getSqlMapClientTemplate().queryForObject("getCustomerReference",id);
 	  	}
+  
+  public List<User> getUserEmailById(long id, String role, String userName) {
+	  	  	List<User> user=new ArrayList<User>();
+	  	  	Map <String,String> m=new HashMap<String,String>();
+	  	  	
+	  	  	if(role.equalsIgnoreCase("sales") || role.equalsIgnoreCase("Customer_Shipper") || role.equalsIgnoreCase("customer_base")){
+	  	  		m.put("userName", userName);
+	  	  		user=(List<User>) getSqlMapClientTemplate().queryForList("getUserEmailByUserName", m);	
+	  	  	}
+	  	  	else{
+	  	  		m.put("customerId", String.valueOf(id));
+	  	  		m.put("role", role);
+	  	  		user=(List<User>) getSqlMapClientTemplate().queryForList("getUserEmailById", m);
+	  	  	}
+	  	  	return user;
+	  	  }
 }

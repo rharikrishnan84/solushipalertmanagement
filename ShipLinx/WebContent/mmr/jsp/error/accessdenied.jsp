@@ -11,20 +11,28 @@
 <h2>We apologize, an error occurred while processing your request.</h2>
 </div>
 <div class ="browseBox" style="background-color:rgb(248,236,224);color:red">
-<li class="subLevel"> &nbsp Access Denied</li>
+<li class="subLevel"> &nbsp	Your user does not have the privileges required to access this page </li>
 </div>
  &nbsp
-<h3>The error has been logged and we will be investigating the issue shortly. <br/><br/>Please try the following:</h3>
+<h3>Please try the following:</h3>
 <table id="siteMap" width="100%" border="0" cellpadding="0" cellspacing="10">
 	<tr>
 		<td class="unavailableContainer" align="left" valign="top" >		
 		<div class="rightNavList">
 			<ul class="last">
-			<li class="subLevel">Press F5 to clear your cache and then click OK to confirm you would like to clear.</li>
-      		<li class="subLevel">Make sure the address was typed correctly.</li>
-			<li class="subLevel">Open the <a target="_top" id="welcome" title="Open Welcome Page" href="./index.jsp"><b>Welcome Page</b></a>, then navigate to your information.</li>
-			<li class="subLevel">Click the <a title="Go back" href="javascript:history.back(1)"><b>Back</b></a> button to try again.</li>
-</ul>
+			<s:iterator value="users">
+			<s:if test="%{#session.ROLE.contains('sales')}">
+			<li class="subLevel">Contact your company administrator <s:property value="%{firstName}"/>  
+			<s:property value="%{lastName}"/> 
+			<a href=""><s:property value="%{email}"/></a> request privileges</li>
+			</s:if>
+			<s:else>
+			<li class="subLevel">Contact your Customer administrator <s:property value="%{firstName}"/>  
+			<s:property value="%{lastName}"/> 
+			<a href=""><s:property value="%{email}"/></a> request privileges</li>
+			</s:else>
+			</s:iterator>
+			</ul>
 </div>
 </td>
 </tr>
@@ -32,9 +40,7 @@
 
 
 
-<br/>
-<br/>
-If the error persists, please contact our support team <a class="TextLink" href="mailTo:%{getText('email')}"><s:text name="email"/></a> and quote the Error ID listed below.
+
 <br/>
 <s:fielderror/>
 

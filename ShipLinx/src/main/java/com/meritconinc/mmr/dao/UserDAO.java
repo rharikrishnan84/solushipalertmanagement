@@ -64,4 +64,5 @@ public interface UserDAO {
   public List<LocaleVO> findLocale();
   
   public Customer getCustomerReference(long id);
+  public List<User> getUserEmailById(long id,String role,String userName);
 }

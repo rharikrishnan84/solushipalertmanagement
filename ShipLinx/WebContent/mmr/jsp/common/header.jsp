@@ -226,7 +226,7 @@ function removeCustomAlert() {
 						
 					</div>
 					<div class="live_chat">
-						<a href="#" onclick="javascript:supportURL();"><img src="<%=request.getContextPath()%>/mmr/images/livechat.png"></a>
+						<a href="#"><mmr:message messageId="label.live.button"/></a>
 					</div>
 				</div>
 				<div class="navigation">

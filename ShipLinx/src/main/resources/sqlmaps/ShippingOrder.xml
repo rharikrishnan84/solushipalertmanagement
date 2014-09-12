@@ -676,7 +676,12 @@
 				<isNotEmpty prepend="," property="masterTrackingNum">
 					master_tracking_num = #masterTrackingNum# 
 				</isNotEmpty>
-			</isNotNull>									
+			</isNotNull>	
+			<isNotNull property="quantity">
+				<isNotEmpty prepend="," property="quantity">
+					quantity=#quantity#
+				</isNotEmpty>
+			</isNotNull>								
 		</dynamic>
 		where order_id=#id#
 	</update>

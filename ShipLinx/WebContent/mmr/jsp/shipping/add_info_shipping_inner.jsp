@@ -37,7 +37,7 @@
 			$('.navigation ul').slideToggle();
 		   });
 		   // for grid
-			$('table').wrap('<div class="grid_table_body"></div>');
+			/* $('table').wrap('<div class="grid_table_body"></div>'); */
 			$("#sample1_length").wrap("<div class='box-cont1'></div>");
 			$("div.box-cont1").each(function() {
 			  $(this).append($(this).next());
@@ -46,12 +46,13 @@
 			$("div.box-cont2").each(function() {
 			  $(this).append($(this).next());
 			});
-			$('.grid_table_body').css('overflow-x','scroll');
+			/* $('.grid_table_body').css('overflow-x','scroll'); */
 					
 		});
 	
 	</script>
-	
+</head>
+<body>
 
 <div id="comment_table">
 
@@ -61,9 +62,15 @@
 
 <div class="form-container">
 <s:form id="searchUserFormId" cssClass="form" >
+
 	<div id="srchusr_results">
 		<div id="srchusr_res"><span>Status Updates </span></div>
 	</div>
+			<s:if test="%{selectedOrder.customer.paymentType==2}">
+			<div id="sample1_wrapper" class="dataTables_wrapper" role="grid">
+			<div class="box-cont1"><div id="sample1_length" class="dataTables_length"><label>Show <select size="1" name="sample1_length" aria-controls="sample1"><option value="10" selected="selected">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="-1">All</option></select> entries</label></div><div class="dataTables_filter" id="sample1_filter"><label>Search: <input type="text" aria-controls="sample1"></label></div></div>
+			</s:if>	
+	<div class="grid_table_body" style="overflow-x: scroll;">
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" style="float:left; width:100%; height:auto;">
     <thead>
 		<tr>
@@ -81,7 +88,7 @@
 	</thead>
 	<tbody>
             <s:iterator id="comment" value="loggedList" status="rowstatus">
-             <tr>
+             <tr class="odd">
 	         <td class="odd1" width="2%">
 			 <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/> 
 	             </td>
@@ -164,6 +171,8 @@
             </s:iterator>
 </tbody>
 </table>
+</div>
+</div>
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
  Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  <a href="download.viewshipment.action?type=csv&viewShipmentId=<s:property value='%{selectedOrder.id}'/>"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
@@ -184,4 +193,6 @@
 		
 
 <div id="add_info_shipping_res_tbl_end"></div>
+</body>	
+</html>
 

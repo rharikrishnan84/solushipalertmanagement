@@ -1058,7 +1058,7 @@ $P{PackageWidth}.get($V{REPORT_COUNT}-1)+" X "+
 $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="textField" x="172" y="3" width="11" height="12"/>
+				<reportElement key="textField" x="168" y="3" width="15" height="12"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
@@ -1081,7 +1081,7 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 				<text><![CDATA[PCS]]></text>
 			</staticText>
 			<textField>
-				<reportElement key="textField" x="172" y="14" width="12" height="12">
+				<reportElement key="textField" x="168" y="14" width="16" height="12">
 					<printWhenExpression><![CDATA[$F{billedWeight}.equals("0") ? Boolean.FALSE : Boolean.TRUE]]></printWhenExpression>
 				</reportElement>
 				<textElement>

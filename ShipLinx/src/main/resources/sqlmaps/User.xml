@@ -407,4 +407,10 @@
         <select id="customerlanguage" resultMap="userLanguage">
        select locale_text from locale l left join user u on(l.locale=u.locale) where u.username=#username#
     </select> 
+     <select id="getUserEmailByUserName" resultMap="userResult">
+		select * from user where username=(select created_by from user where username=#userName#);
+    </select> 
+            <select id="getUserEmailById" resultMap="userResult">
+		select * from user u inner join  user_role r on r.username=u.username where u.customer_id=#customerId# and r.code=#role#;
+    </select> 
 </sqlMap>

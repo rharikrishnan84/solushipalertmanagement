@@ -12,11 +12,9 @@
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/ipad.css" media="screen and (min-width:768px) and (max-width:1024px)"/>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/smartphone.css" media="screen and (min-width:320px) and (max-width:767px)"/>
-	<style type="text/css">
-		
-	</style>
 	<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
+
 </head>
 <body>
 <SCRIPT language="JavaScript">
@@ -595,6 +593,14 @@ function deletecharge(action){
 				}
 				#back_shipment_list{ margin-right:1px;}
 				
+				
+				
+				
+				.fields .controls input[type="text"], .fields .controls input[type="password"],.fields .controls select{
+					width:146px !important;
+				}
+				
+				
 							</style>	
 <div id="messages"><jsp:include
 	page="../common/action_messages.jsp" /></div>
@@ -621,18 +627,26 @@ function deletecharge(action){
 						<div class="content_table" id="box1" > 
 							  	<s:if test="%{selectedOrder.paymentRequired==true}"> 
 				<!-- Condition to Show or Hide the Payment Panel , Hides: If the Customer need not Pay - Shows: If the Customer is required to make the Payment.-->
-										<div id="payment_rqd_top">Payment Required:
+										
+										
+										
+										
+										
+				<div class="content_header">
+					<div class="cont_hdrtitle_l" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;">Payment Required:</div>
+							<!-- <div id="payment_rqd_top" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:6px 0px 0px 400px;">Payment Required:-->
 								<div id="payment_actions">
-									<div class="form_buttons" style="float:right;">
-			<a href="javascript: processPayment()"><mmr:message messageId="label.pay.now" /></a>
-			<a href="backToShipment.action"><mmr:message messageId="label.shipment.edit" /></a>
+									<div class="form_buttons">
+											<a href="javascript: processPayment()"><mmr:message messageId="label.pay.now" /></a>
+											<a href="backToShipment.action"><mmr:message messageId="label.shipment.edit" /></a>
 									</div>
 								</div>
-												<div class="form_buttons">
-					<a href="javascript: processPayment()"><mmr:message messageId="label.pay.now" /></a>
-			        <a href="backToShipment.action"><mmr:message messageId="label.shipment.edit" /></a>
-		   </div>	
+												
 				</div>
+				
+				
+				
+				<div class="cont_data_body borderLeftRight">
 									<div class="fields">
 										<label><mmr:message	messageId="label.creditcard.number" /></label>
 										<div class="controls">
@@ -684,7 +698,8 @@ function deletecharge(action){
 										<label><mmr:message messageId="label.creditcard.nameOnCard"/></label>
 										<div class="controls">
 											<span>:</span>
-											<p><s:textfield size="24" key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.creditCard.billingAddress.contactName" cssClass="text_02_tf"/></p>
+											<p><s:select list="#{'American Express':'American Express', 'Master Card':'Master Card', 'Visa':'Visa'}"
+key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.creditCard.billingAddress.contactName" cssClass="text_01_combo_medium" /></p>
 										</div>
 									</div>
 									<div class="fields">
@@ -732,13 +747,15 @@ function deletecharge(action){
 										listKey="provinceCode" listValue="provinceName" list="#session.provinces"/></p>
 										</div>
 									</div>
+									
+									
 				<s:if test="%{selectedOrder.business.storeCC == true}">
 				<div id="note_div"><s:checkbox name="storecc" id="storecc_id"/>&nbsp;<mmr:message messageId="label.storecc.note"/> </div>
 			</s:if>	
 				
 				<div id="payment_rqd_end">&nbsp;</div>
 	 		</s:if> 
-							
+							<div class="content_table">
 						
 							<div class="content_header">
 								<div class="cont_hdr_title">Pick Up From :</div>
@@ -1099,7 +1116,8 @@ function deletecharge(action){
 </s:if>
 				</div>
  
- 
+     </div>
+			</div>
 			</div>
 			</div>
 			</s:if>
@@ -1134,16 +1152,16 @@ function deletecharge(action){
 					</div>
 					</s:if>
 							</div>
-						<table width="940px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
+							<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
+						<table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
 							<tr style="background-color:#d1d1d1; width:960px;  font-size:13px;">
-								<td class="ordrdtl_title_hdng" width="22%"><strong>Carrier</strong></td>
-							    <td class="ordrdtl_title_hdng" width="18%"><strong>Code</strong></td>
-								<td class="ordrdtl_title_hdng" width="16%"><strong>Charge Name</strong></td>
-
+								<td class="ordrdtl_title_hdng" ><strong>Carrier</strong></td>
+							    <td class="ordrdtl_title_hdng" ><strong>Code</strong></td>
+								<td class="ordrdtl_title_hdng"><strong>Charge Name</strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" width="5"><strong>Tariff</strong></td>
-									<td class="ordrdtl_title_hdng" width="12"><strong>&nbsp;&nbsp;Cost</strong></td>
-									<td class="ordrdtl_title_hdng" width="12"><strong>&nbsp;&nbsp;CUR</strong></td>
+									<td class="ordrdtl_title_hdng" width="12"><strong>Cost</strong></td>
+									<td class="ordrdtl_title_hdng" width="12"><strong>CUR</strong></td>
 
 								</s:if>
 								<!-- this is to hide the charge for customer_shipper user-->
@@ -1174,7 +1192,7 @@ function deletecharge(action){
 											</td>
 											
 										</s:else>
-										<td style="text-align: center" class="ordrdtl_title_val">
+										<td style="text-align: left" class="ordrdtl_title_val">
 										<s:if test="%{name == 'Freight'}">
 											<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
@@ -1317,7 +1335,7 @@ function deletecharge(action){
 									<td  class="ordrdtl_title"><strong>New Charge:</strong></td>
 									<td> </td>
 									<td  class="ordrdtl_title" ><strong>Cost:</strong></td>
-									<td class="ordrdtl_title" width="12"><strong>&nbsp;&nbsp;CUR:</strong></td>
+									<td class="ordrdtl_title" width="12"><strong>CUR:</strong></td>
 									<!-- this is to hide the charge for customer_shipper user-->
 									<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 									<!-- this is to hide the charge for customer_shipper user-->
@@ -1408,6 +1426,7 @@ function deletecharge(action){
 							</s:if>
 							
 							</table>
+							</div>
 							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 								<!--<table width="960px" cellpadding="3" cellspacing="0" style="margin-left: 10px;">
 								
@@ -1416,7 +1435,7 @@ function deletecharge(action){
 						</s:if>						
 			</s:if> 
 							</div>
-								<div class="content_header">
+								<div class="content_header  borderLeftRight">
 								<div class="cont_hdr_title">Actual Charges:</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
@@ -1439,17 +1458,18 @@ function deletecharge(action){
 					</div>
 					</s:if>
 					</div>
-						<table width="920px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
+					<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
+						<table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
 							
 							
-							<tr style="background-color:#d1d1d1; width:960px;  font-size:13px;">
-								<td class="ordrdtl_title_hdng" ><strong>Carrier</strong></td>
-							    <td class="ordrdtl_title_hdng" ><strong style="width:98px !important; float:left;">Code</strong></td>
-								<td style="width:130px !important; float:left;"><strong>Charge Name</strong></td>
+							<tr style="background-color:#d1d1d1; width:100%;  font-size:13px;">
+								<td class="ordrdtl_title_hdng" ><strong style="width:102px !important; float:left;">Carrier</strong></td>
+							   <td class="ordrdtl_title_hdng" ><strong style="width:58px !important; float:left;">Code</strong></td>
+								<td class="ordrdtl_title_hdng" ><strong>Charge Name</strong></td>
 
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" width="6%"  ><strong>Tariff</strong></td>
-									<td class="ordrdtl_title_hdng" width="4%"><strong>&nbsp;&nbsp;Cost</strong></td>
+									<td class="ordrdtl_title_hdng" width="4%"><strong>Cost</strong></td>
 									<td class="ordrdtl_title_hdng" width="4%"><strong>CUR</strong></td>
  								</s:if>
 
@@ -1480,7 +1500,7 @@ function deletecharge(action){
 										<!-- <td style="text-align: center" class="ordrdtl_title_val">
 												<s:property value="chargeCode" />
 									          </td> -->
-										<td style="text-align: center" class="ordrdtl_title_val">
+										<td style="text-align: left" class="ordrdtl_title_val">
 											<s:if test="%{name == 'Freight'}">
 												<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
@@ -1494,7 +1514,7 @@ function deletecharge(action){
 											</s:else>
 										</td>
 										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') && cancelledInvoice!='Yes'||status != 30 && #session.ROLE.contains('solutions_manager')&& cancelledInvoice!='Yes'}">
-											<td style="width:130px !important; float:left;">
+											<td style="width:100px !important; float:left;">
 												<s:textfield size="10"
 													key="actualChargeName" name="actualChargeName"
 													value="%{name}" cssClass="text_02" />
@@ -1637,9 +1657,9 @@ function deletecharge(action){
 							<s:set var="index" value="#index+1" />
 								</s:iterator></td>
 							</tr>
-							<!--</table>
-							
-                           <table width="920px" cellpadding="2" cellspacing="0" style="font-size:12px;">-->
+							</table>
+							</div>
+                           <table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px;">
                            <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><a
@@ -1661,11 +1681,11 @@ function deletecharge(action){
 									<td  class="ordrdtl_title" align=""><strong>Code:</strong></td>
 									<td  class="ordrdtl_title" align=""><strong>New Charge:</strong></td>
 									<td class="ordrdtl_title">&nbsp;</td>
-									<td  class="ordrdtl_title" align="center"><strong>Cost:</strong></td>
-									<td  class="ordrdtl_title" align="center"><strong>CUR:</strong></td>	
-									<td  class="ordrdtl_title" align="center"><strong>Charge:</strong></td>
-									<td  class="ordrdtl_title" align="center"><strong>CUR:</strong></td>
-                                   <td  class="ordrdtl_title" align="center"><strong>EX Rate:</strong></td>
+									<td  class="ordrdtl_title" align=""><strong>Cost:</strong></td>
+									<td  class="ordrdtl_title" align=""><strong>CUR:</strong></td>	
+									<td  class="ordrdtl_title" align=""><strong>Charge:</strong></td>
+									<td  class="ordrdtl_title" align=""><strong>CUR:</strong></td>
+                                   <td  class="ordrdtl_title" align=""><strong>EX Rate:</strong></td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
@@ -1746,14 +1766,16 @@ function deletecharge(action){
 								</tr>
 						</s:if>
 					</table>
-			
 						<div id="payment_rqd_end">&nbsp;</div>
 			
 			<!-- Start: Payment Info Module -->
 			<s:if test="%{selectedOrder.ccTransactions.size > 0}"> <!--  Condition to display the Payment Info Panel, Shows if there are CCtransactions, else doesnt show. -->
+			
 			<div id="payment_info_table">
-			<div id="payment_inform">&nbsp;&nbsp;Payment Info:</div>
-					<display:table id="payment_info" name="selectedOrder.ccTransactions" export="false" uid="row" cellspacing="0" cellpadding="3">
+			<div class="content_header">
+			<div class="cont_hdrtitle_l" id="payment_inform" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;">&nbsp;&nbsp;Payment Info</div>
+			</div>
+					<%-- <display:table id="payment_info" name="selectedOrder.ccTransactions" export="false" uid="row" cellspacing="0" cellpadding="3">
 					<display:column headerClass="payment_info_tableTitle" sortable="true" title="" />
 					<display:column headerClass="payment_info_tableTitle" property="authNum"  sortable="true" title="Auth #" ></display:column>
 					<display:column headerClass="payment_info_tableTitle" property="statusString"  sortable="true" title="Status" ></display:column>
@@ -1767,13 +1789,51 @@ function deletecharge(action){
 						<a href="">Refund Charge</a> <!-- Implementation of Refund Charge Logic. -->
 						</display:column>
 					</s:if>					
-				</display:table>
+				</display:table> --%>
+				<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" style="float:left; width:100%; height:auto;">
+    <thead>
+		<tr style="height:20px">
+			<th><span style="width:200px !important; color:#fff !important;font-weight: bold; 
+			">Auth #</span></th>
+			<th><span style="width:200px !important;color:#fff !important;font-weight: bold;
+			">Status</span></th>
+			<th><span style="width:110px !important; float:left;color:#fff !important;font-weight: bold;
+			">Amount</span></th>
+			<th><span style="width:80px !important; float:left;color:#fff !important;font-weight: bold;
+			">Reference #</span></th>
+			<th><span style="width:180px !important; float:left;color:#fff !important;font-weight: bold;
+			">Processor Ref #</span></th>
+			<th style="width:70px !important;"><span style="width:70px !important; float:left;color:#fff;font-weight: bold;
+			">CC #</span></th>
+			<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
+			<th></th>
+			</s:if>
+		</tr>
+	</thead>
+	<tbody>
+            <s:iterator id="ccTransactions" value="selectedOrder.ccTransactions" status="rowstatus">
+             <tr>
+                 <td  style="padding-left: 39px;background-color: #E7E7E7 !important;"><s:property value="authNum"/></td>
+ <td style="padding-left: 60px;background-color: #E7E7E7 !important;"><s:property value="statusString"/></td>
+ <td style="padding-left: 37px;background-color: #E7E7E7 !important;"><s:property value="amount"/></td>
+ <td style="padding-left: 3px;background-color: #E7E7E7 !important;"><s:property value="referenceNumber"/></td>
+ <td style="padding-left: 55px;background-color: #E7E7E7 !important;"><s:property value="processorTransactionId"/></td>
+ <td style="padding-left: 15px;background-color: #E7E7E7 !important;"><s:property value="cardNumCharged"/></td> 
+<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
+	<td><a href="">Refund Charge</a></td> 
+	</s:if>		
+            </tr>			
+            </s:iterator>
+</tbody>
+</table>
 			</div>
-			<div id="payment_rqd_end">&nbsp;</div>
+		
+		
 			</s:if>
 			<!-- End: Payment Info Module -->
 			</div>	
 							
+						</div>
 						</div>
 						<div class="content_table" id="box2" > 
 							<div class="content_header">
@@ -1850,7 +1910,7 @@ function deletecharge(action){
 					</div>
 </s:form>					
 					</div>
-					
+				
 </body>
 </html>
 
