@@ -2644,6 +2644,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			shippingOrder.setServiceId(r.getServiceId());
 			shippingOrder.setSlaveServiceId(r.getSlaveServiceId());
 			shippingOrder.setRateIndex(rateIndex);
+			shippingOrder.setAccountNum(r.getAccountNum());
 			shippingOrder.setService(this.shippingService.getServiceById(shippingOrder.getServiceId()));
 			shippingOrder.setCharges(r.getCharges());
 			log.debug("---r.getFuelSurcharge()---"+r.getFuelSurcharge());

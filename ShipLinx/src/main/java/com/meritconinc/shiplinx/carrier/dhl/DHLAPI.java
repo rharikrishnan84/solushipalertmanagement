@@ -193,7 +193,8 @@ public class DHLAPI implements CarrierService {
 		FuelSurcharge f = new FuelSurcharge();
 		f.setCarrierId(ShiplinxConstants.CARRIER_DHL);
 		f.setFromCountry(customerCarrier.getCountry());
-		List<FuelSurcharge> fuelsurcharges = fuelSurchargeService.getFuelSurcharge(f);		
+		List<FuelSurcharge> fuelsurcharges = fuelSurchargeService.getFuelSurcharge(f);	
+		if(fuelsurcharges !=null && fuelsurcharges.size()>0)
 		f = fuelsurcharges.get(0);
 
 		DHLRequestBuilder request_builder = new DHLRequestBuilder();

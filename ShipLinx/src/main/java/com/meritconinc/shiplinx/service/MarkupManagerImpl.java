@@ -262,11 +262,10 @@ public class MarkupManagerImpl implements MarkupManager {
   public Double applyMarkup(ShippingOrder shipment, Charge charge, boolean setShipmentMarkup) {
     // TODO Auto-generated method stub
     Markup markup = null;
-    double amount = new Double(0.0);
+    double amount = 0.0;
 
     int markPerc = 0;
     int markType = 0;
-
     if (shipment != null && charge != null) {
       if (shipment.getMarkPercent() == null) {
         Markup searchMarkup = getMarkupObj(shipment);

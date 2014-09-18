@@ -9,6 +9,7 @@ public class LtlPoundRate {
 	private Long businessId;
 	private Long customerId;
 	private Long serviceId;
+	private String accountNum; 
 	private String fromZone;
 	private String toZone;
 	private String equipment;
@@ -184,5 +185,10 @@ public class LtlPoundRate {
 		
 		}
 	};
-	
+	public String getAccountNum() {
+		return accountNum;
+	}
+	public void setAccountNum(String accountNum) {
+		this.accountNum = accountNum;
+	}
 }

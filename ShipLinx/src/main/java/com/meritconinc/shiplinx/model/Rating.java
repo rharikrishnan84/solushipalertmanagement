@@ -26,7 +26,7 @@ public class Rating implements Serializable {
   // private String transitDays;
   private double billWeight;
   private String billWeightUOM = ShiplinxConstants.WEIGHT_UNITS_LBS; // Currently the system only
-                                                                     // accepts and quotes on LBS.
+  private String accountNum;                                                                  // accepts and quotes on LBS.
   private String currency;
   private boolean schedPickup = false;
   private String instanceAPIName;
@@ -505,5 +505,12 @@ public void setSlaveCarrierName(String slaveCarrierName) {
 
     }
   };
+public String getAccountNum() {
+	return accountNum;
+}
+
+public void setAccountNum(String accountNum) {
+	this.accountNum = accountNum;
+}
 
 }

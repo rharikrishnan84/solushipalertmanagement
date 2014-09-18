@@ -4,7 +4,7 @@
 	<property name="ireport.encoding" value="UTF-8"/>
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="366"/>
+	<property name="ireport.y" value="85"/>
 	<import value="net.sf.jasperreports.engine.*"/>
 	<import value="java.util.*"/>
 	<import value="net.sf.jasperreports.engine.data.*"/>
@@ -17,6 +17,7 @@
 	<parameter name="logo" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="Package" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="totalDims" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="accountNum" class="java.lang.String"/>
 	<field name="weight" class="java.math.BigDecimal"/>
 	<field name="length" class="java.math.BigDecimal"/>
 	<field name="height" class="java.math.BigDecimal"/>
@@ -565,7 +566,7 @@
 				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Address)((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getToAddress()).getAbbreviationName()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="staticText-170" x="11" y="251" width="254" height="54"/>
+				<reportElement key="staticText-170" x="11" y="251" width="123" height="54"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -729,6 +730,20 @@ Canada]]></text>
 				<textElement/>
 				<text><![CDATA[Inside Pickup]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="138" y="255" width="43" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[A/C No:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="180" y="255" width="86" height="15"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{accountNum}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>

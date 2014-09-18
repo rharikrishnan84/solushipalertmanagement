@@ -149,10 +149,11 @@ display:none;
 			alert('Please check atmost one');
 		   }
 		   else{
-				var i,serviceId, fromCountryCode, toCountryCode;
+				var i,serviceId, fromCountryCode, toCountryCode,checked;
 				for (i=0;i<deleteMarkupId.length;i++){
 					if (deleteMarkupId[i].checked){
-						serviceId = deleteMarkupId[i].value ;
+						checked = deleteMarkupId[i].value ;
+						serviceId=document.getElementById("serviceId"+checked).value
 						fromCountryCode = document.getElementsByName("fromCountryCode"+serviceId)[0].value;
 						toCountryCode = document.getElementsByName("toCountryCode"+serviceId)[0].value;					
 					}
@@ -596,6 +597,7 @@ display:none;
 								<tr>
 								<s:if test="#rowstatus.even == true">
 								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='#index'/>"/>
+									<input type="hidden" id="serviceId<s:property value='#index'/>" name="serviceId<s:property value='#index'/>" value="<s:property value='serviceId'/>" />
 									<input type="hidden" name="fromCountryCode<s:property value='serviceId'/>" value="<s:property value='fromCountryCode'/>" />
 									<input type="hidden"  name="toCountryCode<s:property value='serviceId'/>" value="<s:property value='toCountryCode'/>" />
 									<input type="hidden"  name="customerId<s:property value='serviceId'/>" value="<s:property value='customerId'/>" />
@@ -625,6 +627,7 @@ display:none;
 								</s:if>
 								<s:else>
 								<td><input class="dataTable-checkbox" type="checkbox" id="checkboxDatatableBodyId" name="markupCheckBox" value="<s:property value='#index'/>"/>
+									<input type="hidden" id="serviceId<s:property value='#index'/>" name="serviceId<s:property value='#index'/>" value="<s:property value='serviceId'/>" />
 									<input type="hidden" name="fromCountryCode<s:property value='serviceId'/>" value="<s:property value='fromCountryCode'/>" />
 									<input type="hidden"  name="toCountryCode<s:property value='serviceId'/>" value="<s:property value='toCountryCode'/>" />
 									<input type="hidden"  name="customerId<s:property value='serviceId'/>" value="<s:property value='customerId'/>" />

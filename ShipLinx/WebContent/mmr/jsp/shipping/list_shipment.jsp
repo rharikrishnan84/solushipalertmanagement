@@ -158,7 +158,7 @@
     var i,statusid,id;
     for (i=0;i<uploadMarkupId.length;i++){
      if(uploadMarkupId[i].checked){
-      statusid = document.getElementById("status").value;
+    	 statusid = document.getElementById("selectedShipments["+i+"].statusId").value;
       id=uploadMarkupId[i].value;
       
       
@@ -167,10 +167,15 @@
      
      
     }
+   
+    if(!(userrole == "customer_admin")){
     if((userrole == "busadmin")||(statusid==60)||(statusid==80)||(userrole == "solutions_manager")){
       
       window.location.href="process.shipment.action?order_id="+id;
      }
+    }else if((userrole == "customer_admin") && (statusid==80)){
+    	 window.location.href="process.shipment.action?order_id="+id;
+    }
    else{
       alert("you dont have permission to edit");
      }
@@ -212,6 +217,9 @@ function manifestEOD(){
 	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
   <s:hidden value="busadmin" id="role" />
  </s:if>
+ <s:elseif test="%{#session.ROLE.contains('customer_admin')}">
+  <s:hidden value="customer_admin" id="role" />
+ </s:elseif>
  <s:else>
   <s:hidden value="" id="role" />
  </s:else>
@@ -307,7 +315,7 @@ function manifestEOD(){
 				<td>
 				<s:hidden name="selectedShipments[%{#index}].id" value="%{id}"/>
 					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" name="check_uncheck" />
-					<input type="hidden" type="checkbox" id="status" value="<s:property value="statusId"/>" />
+					  <s:hidden name="selectedShipments[%{#index}].statusId" id="selectedShipments[%{#index}].statusId" value="%{statusId}"/>
 					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoice.id"/>" />
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />
 				

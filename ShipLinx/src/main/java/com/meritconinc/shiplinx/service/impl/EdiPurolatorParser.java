@@ -241,7 +241,7 @@ public class EdiPurolatorParser extends EdiParser {
 
 		shipment.setBusinessId(item.getBusinessId());
 		shipment.setCarrierId(item.getCarrierId());
-
+		shipment.setCarrierName(ShiplinxConstants.CARRIER_PUROLATOR_STRING);
 		shipment.setMasterTrackingNum(getEdiField(LEAD_SHIPMENT_NUMBER));
 		
 		boolean isAddressCorrection = false;

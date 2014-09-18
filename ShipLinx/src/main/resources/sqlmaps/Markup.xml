@@ -49,6 +49,7 @@
 			<result property="businessId" column="business_id"/>
 			<result property="customerId" column="customer_id"/>
 			<result property="serviceId" column="service_id"/>
+			<result property="accountNum" column="account_num"/>
 			<result property="fromZone" column="from_zone"/>
 			<result property="toZone" column="to_zone"/>
 			<result property="equipment" column="equipment"/>
@@ -74,6 +75,7 @@
 			<result property="businessId" column="business_id"/>
 			<result property="customerId" column="customer_id"/>
 			<result property="serviceId" column="service_id"/>
+			<result property="accountNum" column="account_num"/>
 			<result property="fromZone" column="from_zone"/>
 			<result property="toZone" column="to_zone"/>
 			<result property="equipment" column="equipment"/>

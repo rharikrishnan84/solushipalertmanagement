@@ -669,9 +669,24 @@ UPDATE `resourcebundle` SET `msg_content`='Card Type' WHERE `resourcebundle_id`=
 
 ////////////////////////---------------------- end------------------------------///////////////////
 
+///////////////////////------------------------ 17/09/14-----------------------///////////////////
+
+ALTER TABLE `ltl_skid_rate` 
+ADD COLUMN `account_num` VARCHAR(45) NULL DEFAULT NULL AFTER `service_id`;
+
+ALTER TABLE `ltl_pound_rate` 
+ADD COLUMN `account_num` VARCHAR(45) NULL DEFAULT NULL AFTER `service_id`;
+
+ALTER TABLE `shipping_order` 
+ADD COLUMN `account_num` VARCHAR(45) NULL DEFAULT NULL AFTER `slave_service_id`;
+
+////////////////////////---------------------- end------------------------------///////////////////
+
 ############################################################
 
 		Need To Go Live
 #############################################################
+
+
 
 

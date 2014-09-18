@@ -163,6 +163,7 @@ public class EdiLoomisParser extends EdiParser {
 		
 		shipment.setBusinessId(item.getBusinessId());
 		shipment.setCarrierId(item.getCarrierId());
+		shipment.setCarrierName(ShiplinxConstants.CARRIER_LOOMIS_STRING);
 		shipment.setScheduledShipDate(getDateTime(getEdiField(SHIP_DATE), null, DATE_FORMAT));
 		shipment.setMasterTrackingNum(getEdiField(TRACKING_NUMBER));
 		shipment.setReferenceOne(getEdiField(SHIP_REF_NUMBER_1));

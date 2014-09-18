@@ -91,7 +91,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   public List<Rating> rateListThread = new ArrayList<Rating>();
   public List<Service> carrierServicesList = new ArrayList<Service>();
   public List<Rating> ratesThread = new ArrayList<Rating>();
-
+  int count=0;
   private UserSearchCriteria criteria;
   private MarkupManagerDAO markupDAO;
   private ShippingDAO shippingDAO;
@@ -105,7 +105,9 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   private CarrierServiceManager carrierServiceManager;
 
   private boolean addDummyRateForLTL = false;
+  public List<Rating> fromRatingList = new ArrayList<Rating>();
 
+public List<Rating> toRatingList = new ArrayList<Rating>();
   public CarrierServiceManagerImpl(CarrierService carrierService,
       List<Service> carrierServicesList, ShippingOrder shippingOrder, List<Rating> rateList,
       CustomerCarrier customerCarrier, CarrierServiceManagerImpl parentThread) {
@@ -195,15 +197,10 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   public List<Rating> rateShipment(ShippingOrder order) {
     List<Rating> ratingList = new ArrayList<Rating>();
     ArrayList threadList = new ArrayList();
-    ShippingOrder shippingorderThread = new ShippingOrder();
     cleanupInput(order);
-    boolean ltlAvailable = false;
-    boolean ltlNoRatesSingleError = false;
-    int count=0;
     if (order.getToAddress().getProvinceCode() == null)
       order.getToAddress().setProvinceCode("");
 
-    ratingList = new ArrayList<Rating>();
     errorMessages = new ArrayList<CarrierErrorMessage>();
     try {
       // get the carrier available to customer
@@ -262,13 +259,76 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
           tempCarriersForBusiness.add(carrier);
         }
       }
+      ShippingOrder upsShippingOrderThread = new ShippingOrder();
       carriersForBusiness = tempCarriersForBusiness;
-      for (Carrier carrier : carriersForBusiness) {
-        CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
+      for (Carrier carrier : carriersForBusiness) {        
         // get the appropriate account to be used to generate/rate the
         // shipment
+    	  CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
+    	      	    ShippingOrder shippingorderThread = new ShippingOrder();
+    	          //////New UPS Issue Mohan
         CustomerCarrier customerCarrier = null;
-
+        String fromCountryCode;
+        		String toCountryCode;
+        		ArrayList groupingThreadList = new ArrayList();
+                if(!(order.getFromAddress().getCountryCode().equalsIgnoreCase(order.getToAddress()
+                        .getCountryCode())) && carrier.getId()==2){
+                	fromCountryCode=order.getFromAddress().getCountryCode();
+               	toCountryCode=order.getToAddress().getCountryCode();
+                
+               	for(int i=0;i<2;i++){        		
+                		if(i==1){
+                			fromCountryCode=order.getToAddress().getCountryCode();
+                			toCountryCode=order.getFromAddress().getCountryCode();
+                		}
+                		try {
+                	          customerCarrier = getCarrierAccount(order.getCustomerId(), order.getBusinessId(),
+                	              carrier.getId(), fromCountryCode, toCountryCode);
+                	        } catch (Exception e) {
+                	          log.error("Could not determine the account to use for shipment!", e);
+                	          customerCarrier = null;
+                	        }
+        
+                	        if (customerCarrier == null) {
+                	          log.warn("No account foound for customer " + order.getCustomerId()
+               	              + " to use for rating of carrier " + carrier.getName());
+                	          continue;
+                	        }
+                	        customerCarrier.setBusinessCarrierDiscount(carrier.getBusinessCarrierDiscount());
+               	        customerCarrier.setCount(i);
+                	        // get the rates for all services
+               	        carrierServicesList = getCarrierServicesList(order,customerCarrier,carrier);
+                	        List<Rating> tempRatingList = new ArrayList<Rating>();
+                	        try {          
+               	          if (carrierServicesList != null && carrierServicesList.size() > 0) {
+                	            shippingorderThread = order;
+                	            CarrierServiceManagerImpl carrierServiceManagerImpl = new CarrierServiceManagerImpl(
+                	                carrierService, carrierServicesList, shippingorderThread, ratingList,
+                	                customerCarrier, this);
+                	            Thread t = new Thread(carrierServiceManagerImpl);
+               	            groupingThreadList.add(t);
+                	            t.start();   
+                	            
+                	          }
+                	        } catch (ShiplinxException e) {
+                	          for (String s : e.getErrorMessages()) {
+                	            CarrierErrorMessage message = new CarrierErrorMessage(carrier.getId(),
+               	                customerCarrier.getCarrierName() + " : " + s);
+                	            this.getParentThread().getErrorMessages().add(message);
+               	          }
+                	          continue;
+                	        }
+                	}
+                	for(int j=0;j<groupingThreadList.size();j++){
+                		((Thread) groupingThreadList.get(j)).join();
+                	}
+                	
+                	upsShippingOrderThread = shippingorderThread;
+                }
+                
+                ///////End UPS Issue
+                
+                else{
         try {
           customerCarrier = getCarrierAccount(order.getCustomerId(), order.getBusinessId(),
               carrier.getId(), order.getFromAddress().getCountryCode(), order.getToAddress()
@@ -289,397 +349,29 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         // example DHL, Loomis for business 1
         customerCarrier.setBusinessCarrierDiscount(carrier.getBusinessCarrierDiscount());
         // get the rates for all services
-        List<Service> carrierServicesList = getServicesForCarrier(carrier.getId());
-        List<Service> fullCarrierServicesList = carrierServicesList;
-        List<Service> tempCarrierServiceList = new ArrayList<Service>();
-        List<Service> tempCarrierServiceListToCopy = new ArrayList<Service>();
-        List<Service> tempCarrierServiceListForFilter = new ArrayList<Service>();
-        Service tempService = new Service();
-        carrierServiceManager = (CarrierServiceManager) MmrBeanLocator.getInstance().findBean(
-            "carrierServiceManager");
-        boolean flagCheckLimit = true;
-        boolean flagCheckForErrorAlert = true;
-        Markup markupForFilter = new Markup();
-        List<Markup> markupResult = new ArrayList<Markup>();
-     // Filter out disabled services for the current carrier to reduce unwanted ltl table lookup
-        for (int i = 0; i < carrierServicesList.size(); i++) {
-          tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
-          markupForFilter.setServiceId(tempService.getId());
-          markupForFilter.setCustomerId(order.getCustomerId());
-          markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-          if (markupResult.size() > 0
-              && (carrierServicesList.get(i).getId()
-                  .equals(carrierServicesList.get(i).getMasterServiceId()) || carrierServicesList
-                  .get(i).getMasterCarrierId() != ShiplinxConstants.CARRIER_GENERIC)) {
-
-            tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
+        carrierServicesList = getCarrierServicesList(order,customerCarrier,carrier);
+                
+                List<Rating> tempRatingList = new ArrayList<Rating>();
+                try {          
+                  if (carrierServicesList != null && carrierServicesList.size() > 0) {
+                    shippingorderThread = order;
+                    CarrierServiceManagerImpl carrierServiceManagerImpl = new CarrierServiceManagerImpl(
+                        carrierService, carrierServicesList, shippingorderThread, ratingList,
+                        customerCarrier, this);
+                    Thread t = new Thread(carrierServiceManagerImpl);
+                    threadList.add(t);
+                    t.start();
           }
+                } catch (ShiplinxException e) {
+                	          for (String s : e.getErrorMessages()) {
+                	            CarrierErrorMessage message = new CarrierErrorMessage(carrier.getId(),
+                	                customerCarrier.getCarrierName() + " : " + s);
+                	            this.getParentThread().getErrorMessages().add(message);
+                	          }
+                	          continue;
         }
-        if(carrierServicesList.size()<1){
-        	        	List<CustomerCarrier> customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
-        	        	if(customerCarriers != null && customerCarriers.size()>0){
-        	        		for (CustomerCarrier customerCarrier2 : customerCarriers) {
-        	        			if(carrier.getId().equals(customerCarrier2.getCarrierId())){
-        	       				carrierServicesList = carrierServiceDAO.getServicesByCarrierId(carrier.getId());
-        	                	}
-        					}
-        	        		for (int i = 0; i < carrierServicesList.size(); i++) {
-                	          tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
-        	        	          markupForFilter.setServiceId(tempService.getId());
-        	        	          markupForFilter.setCustomerId(order.getCustomerId());
-        	        	          markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-        	       	          if (markupResult.size() > 0){
-        	        	        	  tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
-        	        	          }
-        	       	}
-        	        	
-        	        }
-        	        }
-        carrierServicesList = tempCarrierServiceListForFilter;
-     // checking packages whether exceeded size or not for filter out
-        for (int i = 0; i < carrierServicesList.size(); i++) {
-          tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
-          carrierServicesList.get(i).setMasterServiceId(tempService.getMasterServiceId());
-          flagCheckLimit = true;
-       // iterating the packages for checking the maximum length,weight,height
-          for (int j = 0; j < order.getPackages().size(); j++) {
-            if ((order.getPackages().get(j).getLength().longValue() >= tempService.getMaxLength() && tempService
-                .getMaxLength() != 0)
-                || (order.getPackages().get(j).getWidth().longValue() >= tempService.getMaxWidth() && tempService
-                    .getMaxWidth() != 0)
-                || (order.getPackages().get(j).getHeight().longValue() >= tempService
-                    .getMaxHeight() && tempService.getMaxHeight() != 0)
-                || (order.getPackages().get(j).getWeight().longValue() >= tempService
-                    .getMaxWeight() && tempService.getMaxWeight() != 0)) {
-              flagCheckLimit = false;
-            }
-          }
-          if (!flagCheckLimit) {
-        	  flagCheckForErrorAlert = false;
-            /*
-
-        	               * if (carrier.getId()!=null &&
-
-        	               * carrier.getId().equals(ShiplinxConstants.CARRIER_GENERIC) &&
-
-        	               * order.getPackageTypeId().
-        	               * getPackageTypeId().equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) { ltlAvailable =
-
-        	               * true; }
-
-        	               */
-
-                  } else {
-
-
-            markupForFilter.setServiceId(tempService.getId());
-            markupForFilter.setCustomerId(order.getCustomerId());
-            markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-            if (markupResult.size() > 0) {
-              tempCarrierServiceList.add(carrierServicesList.get(i));
-            }
-          }
-        }
-        if (flagCheckForErrorAlert == true && carrier.getId() == 10 && count==carrierServicesList.size()) {
-          addDummyRateForLTL = true;
-          errorLog = MessageUtil.getMessage("error.servicepackage.maxrange",
-              MessageUtil.getLocale());
-          errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-          CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-          errorMessages.add(errorMsg);
-        } else if (!flagCheckForErrorAlert && carrier.getId() != 10) {
-          addDummyRateForLTL = true;
-          errorLog = MessageUtil.getMessage("error.servicepackage.maxrange",
-              MessageUtil.getLocale());
-          errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-          errorLog = new String(errorLog.replaceAll(
-              "Please click request quote to verify service availability and rates.", ""));
-          CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-          errorMessages.add(errorMsg);
-        } else {
-          if (carrierServicesList.size() > 0
-              && order.getPackageTypeId().getPackageTypeId() == ShiplinxConstants.PACKAGE_TYPE_PALLET) {
-            boolean repitive = false;
-            Map<Long, Boolean> checkServiceRemoval = new HashMap<Long, Boolean>();
-            carrierServicesList = tempCarrierServiceList;
-            tempCarrierServiceList = carrierServicesList;
-            boolean zoneError = false;
-            boolean rateError = false;
-
-            if (carrier.getId() == ShiplinxConstants.CARRIER_GENERIC) {
-              for (int serviceSlice = 0; serviceSlice < carrierServicesList.size(); serviceSlice++) {
-            	  List<Service> tempServiceListForLTL = new ArrayList<Service>();
-                Boolean ltlMasterServiceFlag = true;
-                boolean availableGroupRate = false;
-                boolean repitiveRate = false;
-                boolean isMasterServiceZone = true;
-
-                repitive = false;
-                // adding the child service for the above master id.
-                for (Service ltlService : fullCarrierServicesList) {
-                  if (ltlService.getMasterServiceId() != null
-                      && carrierServicesList.get(serviceSlice) != null
-                      && ltlService.getMasterServiceId().equals(
-                          carrierServicesList.get(serviceSlice).getId())) {
-                    tempServiceListForLTL.add(ltlService);
-                  }
-                }
-
-                Zone fromZone = getZone(carrierServicesList.get(serviceSlice).getZoneStructureId(),
-                    order.getFromAddress());
-                Zone toZone = getZone(carrierServicesList.get(serviceSlice).getZoneStructureId(),
-                    order.getToAddress());
-                // checking for master service
-                if (carrierServicesList.get(serviceSlice).getId() == carrierServicesList.get(
-                    serviceSlice).getMasterServiceId()) {
-                  if (fromZone == null
-                      || toZone == null
-                      || (fromZone.getCityName() == null && fromZone.getCountryCode() == null
-                          && fromZone.getFromPostalCode() == null
-                          && fromZone.getProvinceCode() == null
-                          && fromZone.getToPostalCode() == null && fromZone.getZoneId() == null
-                          && fromZone.getZoneName() == null && fromZone.getZoneStructureId() == null)
-                      || (toZone.getCityName() == null && toZone.getCountryCode() == null
-                          && toZone.getFromPostalCode() == null && toZone.getProvinceCode() == null
-                          && toZone.getToPostalCode() == null && toZone.getZoneId() == null
-                          && toZone.getZoneName() == null && toZone.getZoneStructureId() == null)) {
-                    isMasterServiceZone = false;
-                  }
-                  // checking for the list is empty
-                  if (!isMasterServiceZone && tempServiceListForLTL.size() > 0) {
-                    // iterating the child service for the corresponding master service
-                    for (Service serviceGroup : tempServiceListForLTL) {
-                      Zone fromZoneTemp = getZone(serviceGroup.getZoneStructureId(),
-                          order.getFromAddress());
-                      Zone toZoneTemp = getZone(serviceGroup.getZoneStructureId(),
-                          order.getToAddress());
-                      if ((fromZoneTemp != null && toZoneTemp != null)
-                          && (fromZoneTemp.getCityName() != null
-                              || fromZoneTemp.getCountryCode() != null
-                               || fromZoneTemp.getFromPostalCode() != null
-                              || fromZoneTemp.getProvinceCode() != null
-                              || fromZoneTemp.getToPostalCode() != null
-                              || fromZoneTemp.getZoneId() != null
-                              || fromZoneTemp.getZoneName() != null || fromZoneTemp
-                              .getZoneStructureId() != null)
-                          && (toZoneTemp.getCityName() != null
-                              || toZoneTemp.getCountryCode() != null
-                              || toZoneTemp.getFromPostalCode() != null
-                              || toZoneTemp.getProvinceCode() != null
-                              || toZoneTemp.getToPostalCode() != null
-                              || toZoneTemp.getZoneId() != null || toZoneTemp.getZoneName() != null || toZoneTemp
-                              .getZoneStructureId() != null)) {
-                        ltlMasterServiceFlag = false;
-                      }
-                    }
-                  }
-                }
-                // checking whether the master service and child service has any error to display
-                if (ltlMasterServiceFlag && !isMasterServiceZone) {
-
-                  log.debug("Test");
-                  zoneError = true;
-                  repitive = true;
-                } else { // if zone is present and checking the rate occurs for the zone.
-                  boolean addService = true;
-                  // checking for the pound rate condition
-
-                  if (carrierServicesList.get(serviceSlice).getServiceType() == 1) {
-                	// checking the rate for the master service has rates
-                    for (int pack = 0; pack < order.getPackages().size(); pack++) {
-                      String fClass = order.getPackages().get(pack).getFreightClass();
-                      LtlPoundRate poundRateTobeSearched = LtlPoundRate.getObject(
-                          order.getCustomerId(), order.getBusinessId(),
-                          carrierServicesList.get(serviceSlice).getId(), fromZone.getZoneName(),
-                          toZone.getZoneName(), fClass);
-                      LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
-                          order.getTotalWeight());
-                      if (pr == null) {
-                        poundRateTobeSearched.setCustomerId(0L);
-                        pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
-                            order.getTotalWeight());
-                     // if no rates present set the error message
-                        if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
-                          rateError = true;
-                          repitive = true;
-                        }
-                      }
-                    }
-                 // if there is no pound rates described for the master service then checking for
-                   // the child service
-                   if (rateError) {
-                      // looping the child service for the corresponding master service
-                      for (Service poundService : tempServiceListForLTL) {
-                        long poundChildServiceId = poundService.getId();
-                        boolean poundChildRateError = false;
-
-                        // checking the fromzone and tozone for the child service.
-                        fromZone = getZone(poundService.getZoneStructureId(),
-                            order.getFromAddress());
-                        toZone = getZone(poundService.getZoneStructureId(), order.getToAddress());
-                        // checking for the packages added for the order
-                        for (int pack = 0; pack < order.getPackages().size(); pack++) {
-                          String fClass = order.getPackages().get(pack).getFreightClass();
-                          LtlPoundRate poundRateTobeSearched = LtlPoundRate.getObject(
-                              order.getCustomerId(), order.getBusinessId(), poundChildServiceId,
-                              fromZone.getZoneName(), toZone.getZoneName(), fClass);
-                          LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
-                              order.getTotalWeight());
-                          if (pr == null) {
-                            poundRateTobeSearched.setCustomerId(0L);
-                           pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
-                               order.getTotalWeight());
-                           // if no rates present set the error message
-                           if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
-                              poundChildRateError = true;
-                              repitive = true;
-                              addService = false;
-                            }
-                          }
-                        }
-                        if (!poundChildRateError) {
-                          rateError = false;
-                          addService = true;
-                          break;
-                       }
-                     }
-                   }
-                  } else { // checking for the skid rate
-
-                    LtlSkidRate skidRateTobeSearched = LtlSkidRate.getObject(order.getCustomerId(),
-                        order.getBusinessId(), carrierServicesList.get(serviceSlice).getId(),
-                        fromZone.getZoneName(), toZone.getZoneName());
-                    LtlSkidRate pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
-                    // if pr is null for the customer id then set the customer to zero.
-                    if (pr == null) {
-                      skidRateTobeSearched.setCustomerId(0L);
-                      pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
-                      if (pr == null) {
-                    	  rateError = true;
-                        repitive = true;
-                      } /*
-                         * else { repitive = false; availableGroupRate = true; repitiveRate = true;
-                         * }
-                         */
-                   }
-                    // if the master service has no rates then checking for the child services
-                    if (rateError) {
-                      // iterating the child service for corresponding master service
-                      for (Service skidService : tempServiceListForLTL) {
-                        fromZone = getZone(skidService.getZoneStructureId(), order.getFromAddress());
-                        toZone = getZone(skidService.getZoneStructureId(), order.getToAddress());
-                        LtlSkidRate childServiceSkid = LtlSkidRate.getObject(order.getCustomerId(),
-                            order.getBusinessId(), skidService.getId(), fromZone.getZoneName(),
-                            toZone.getZoneName());
-                        pr = this.markupDAO.getSkidRate(childServiceSkid);
-                        boolean skidChildRateError = false;
-                        // if pr is null for the customer id then set the customer to zero.
-                        if (pr == null) {
-                          childServiceSkid.setCustomerId(0L);
-                          pr = this.markupDAO.getSkidRate(childServiceSkid);
-                          if (pr == null) {
-                            rateError = true;
-                            repitive = true;
-                            skidChildRateError = true;
-                            addService = false;
-                          } /*
-                             * else { repitive = false; availableGroupRate = true; repitiveRate =
-                             * true; }
-                             */
-                        }
-                       if (!skidChildRateError) {
-                          rateError = false;
-                          addService = true;
-                          break;
-
-                        }
-                      }
-
-                    }
-                  }
-                  if (addService) {
-                    tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
-                  } /*
-                     * else if (repitiveRate && availableGroupRate) {
-                     * tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice)); }
-                     */
 
                 }
-              }
-              carrierServicesList = tempCarrierServiceListToCopy;
-              if (carrierServicesList.size() <= 0) {
-                addDummyRateForLTL = true;
-              }
-              if (rateError == true
-            	  && carrierServicesList != null
-                  && carrierServicesList.size() > 0
-                  && order.getPackageTypeId().getPackageTypeId()
-                      .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
-
-                errorLog = MessageUtil.getMessage("error.service.rate.notallowed",
-                    MessageUtil.getLocale());
-                errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-                CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-                errorMessages.add(errorMsg);
-              } else if (rateError == true
-                  && carrierServicesList.size() <= 0
-                  && order.getPackageTypeId().getPackageTypeId().intValue() == ShiplinxConstants.PACKAGE_TYPE_PALLET) {
-                ltlNoRatesSingleError = true;
-                errorLog = MessageUtil.getMessage("error.skid.availability.rate",
-                    MessageUtil.getLocale());
-                errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-                CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-                errorMessages.add(errorMsg);
-              }
-              if (zoneError == true
-                  && carrierServicesList.size() > 0
-                  && order.getPackageTypeId().getPackageTypeId()
-                      .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
-
-                errorLog = MessageUtil.getMessage("error.service.zones.notallowed",
-                    MessageUtil.getLocale());
-                errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-                CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-                errorMessages.add(errorMsg);
-              } else if (zoneError == true
-                  && carrierServicesList.size() <= 0
-                		  && order.getPackageTypeId().getPackageTypeId()
-                      .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
-
-                ltlNoRatesSingleError = true;
-                errorLog = MessageUtil.getMessage("error.skid.availability.rate",
-                    MessageUtil.getLocale());
-                errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
-                CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
-                errorMessages.add(errorMsg);
-              }
-            }
-          }
-          // order.setCustomerCarrier(customerCarrier);
-          List<Rating> tempRatingList = new ArrayList<Rating>();
-          try {
-            // tempRatingList = carrierService.rateShipment(order,
-            // carrierServicesList, carrier.getId(), customerCarrier);
-            // if(tempRatingList != null)
-            // ratingList.addAll(tempRatingList);
-            if (carrierServicesList != null && carrierServicesList.size() > 0) {
-              shippingorderThread = order;
-              CarrierServiceManagerImpl carrierServiceManagerImpl = new CarrierServiceManagerImpl(
-                  carrierService, carrierServicesList, shippingorderThread, ratingList,
-                  customerCarrier, this);
-              Thread t = new Thread(carrierServiceManagerImpl);
-              threadList.add(t);
-              t.start();
-            }
-          } catch (ShiplinxException e) {
-            for (String s : e.getErrorMessages()) {
-              CarrierErrorMessage message = new CarrierErrorMessage(carrier.getId(),
-                  customerCarrier.getCarrierName() + " : " + s);
-              this.getParentThread().getErrorMessages().add(message);
-            }
-            continue;
-          }
-        }
       }
       for (int i = 0; i < threadList.size(); i++) {
         Thread t1 = (Thread) threadList.get(i);
@@ -692,7 +384,11 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         }
 
       }
-
+      if(upsShippingOrderThread!=null && upsShippingOrderThread.getToRatingList()==null &&  upsShippingOrderThread.getFromRatingList() !=null && upsShippingOrderThread.getFromRatingList().size()>0){
+    	  ratingList.addAll(upsShippingOrderThread.getFromRatingList());
+      }else if(upsShippingOrderThread!=null && upsShippingOrderThread.getFromRatingList()==null &&  upsShippingOrderThread.getToRatingList() !=null && upsShippingOrderThread.getToRatingList().size()>0){
+    	  ratingList.addAll(upsShippingOrderThread.getToRatingList());
+      }
       setRateListThread(rateListThread);
       setOrderThread(orderThread);
       setErrorMessages(errorMessages);
@@ -1102,7 +798,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         fromCountryCode, null);
     if (carrierAccount != null)
       return carrierAccount;
-
+    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || carrierId !=2 ){
     carrierAccount = carrierServiceDAO.getCarrierAccount(customerId, businessId, carrierId,
         toCountryCode, null);
     if (carrierAccount != null)
@@ -1112,7 +808,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         null);
     if (carrierAccount != null)
       return carrierAccount;
-
+    }
     // Check the defaults now
     carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId,
         fromCountryCode, toCountryCode);
@@ -1123,7 +819,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         fromCountryCode, null);
     if (carrierAccount != null)
       return carrierAccount;
-
+    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || carrierId !=2 ){
     carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId,
         toCountryCode, null);
     if (carrierAccount != null)
@@ -1133,7 +829,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
         null);
     if (carrierAccount != null)
       return carrierAccount;
-
+    }
     return carrierAccount;
   }
 
@@ -1918,6 +1614,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
                 .equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_CHARGE) || chargeGroupCode
                 .getGroupCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE))) {
           // String typeText=rate.getMarkupTypeText();
+        	order.setBilledWeight((float)rate.getBillWeight());
           c.setCharge(markupManagerService.applyMarkup(order, c, false));
           /*Markup searchMarkup = markupManagerService.getMarkupObj(order);
                     if(searchMarkup!=null && rate.getCarrierId()==ShiplinxConstants.CARRIER_GENERIC){
@@ -2672,11 +2369,29 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
       // logger.debug("rates"+ratesThread+" for carrier ="+carrierServiceThread.getCarrierId());
       if (ratesThread != null) {
         log.debug("inside if rate!=null");
+        if(!(orderThread.getFromAddress().getCountryCode().equals(orderThread.getToAddress().getCountryCode()))&&carrierServiceThread.getCarrierId()==2){
+        	        	if(customerCarrierThread.getCount()==0){ 
+        	        	  	for (int x = 0; x < ratesThread.size(); x++) {
+        	        	  			 fromRatingList.add(ratesThread.get(x));
+        	        	         }
+        	        	  
+        	        	  			orderThread.setFromRatingList(fromRatingList);
+        	        	  	}else{
+        	        	  		for (int x = 0; x < ratesThread.size(); x++) {
+        	        	     		 toRatingList.add(ratesThread.get(x));
+        	        	            }
+        	        	  		orderThread.setToRatingList(toRatingList);
+        	        	  	}
+        	            if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
+        		        	 findCheapestRate(rateListThread, orderThread);	         	
+        		          }
+        	            
+        	        }else{
         for (int x = 0; x < ratesThread.size(); x++) {
           rateListThread.add(ratesThread.get(x));
         }
       }
-
+      }
     } catch (ShiplinxException e) {
       for (String s : e.getErrorMessages()) {
         CarrierErrorMessage message = new CarrierErrorMessage(carrierServiceThread.getCarrierId(),
@@ -3204,9 +2919,18 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
                                 	                            	                      		}
                                 	                            	                       }
                                 	                            	                          }
-                                	                           
+                               if(freightCharge!=null && freightCharge.getCharge()==null){
+                            	   freightCharge.setCharge(0.0);
+                            	   ratingList.get(i).getCharges().add(freightCharge); 
+                               }else{
                         ratingList.get(i).getCharges().add(freightCharge);   
-            ratingList.get(i).getCharges().add(fuelCharge);
+                               }
+                               if(fuelCharge!=null && fuelCharge.getCharge()==null){
+                            	   fuelCharge.setCharge(0.0);
+                            	   ratingList.get(i).getCharges().add(fuelCharge);
+                               }else{
+                            	   ratingList.get(i).getCharges().add(fuelCharge);
+                               }
             ratingList.get(i).setCharges(ratingList.get(i).getCharges());
             double total = freightCharge.getCharge() + fuelCharge.getCharge();
             ratingList.get(i).setTotalCost(freightCharge.getCost() + fuelCharge.getCost());
@@ -3620,8 +3344,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
                 ratingList.get(i).setTransitDays(ltlPoundRate.getTtm1());
 
               double total = c.getCharge() + charge.getCharge();
-              ratingList.get(i).setTotalCost(
-                  (Long) Math.round((c.getCost() + charge.getCost()) + 0.4));
+              ratingList.get(i).setTotalCost(FormattingUtil.roundFigureRates((c.getCost() + charge.getCost()), 2));
               ratingList.get(i).setTotal(total);
 
             }
@@ -3693,4 +3416,414 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   public List<Service> getServicesForCarrierAdmin(Long carrierId) {
 	  	    return getCarrierServiceDAO().getServicesForCarrierAdmin(carrierId);
 	  	  }
+  
+  public List<Rating> getFromRatingList() {
+		return fromRatingList;
+	}
+
+	public void setFromRatingList(List<Rating> fromRatingList) {
+		this.fromRatingList = fromRatingList;
+	}
+
+	public List<Rating> getToRatingList() {
+		return toRatingList;
+	}
+
+	public void setToRatingList(List<Rating> toRatingList) {
+		this.toRatingList = toRatingList;
+	}
+	
+	private List<Service> getCarrierServicesList(ShippingOrder order,CustomerCarrier customerCarrier,Carrier carrier) {
+			    boolean ltlAvailable = false;
+			    boolean ltlNoRatesSingleError = false;
+			    int count=0;
+			    ArrayList threadList = new ArrayList();
+			    List<Rating> ratingList = new ArrayList<Rating>();
+		     List<Service> carrierServicesList = getServicesForCarrier(carrier.getId());
+		     List<Service> fullCarrierServicesList = carrierServicesList;
+		      List<Service> tempCarrierServiceList = new ArrayList<Service>();
+		      List<Service> tempCarrierServiceListToCopy = new ArrayList<Service>();
+		      List<Service> tempCarrierServiceListForFilter = new ArrayList<Service>();
+		      Service tempService = new Service();
+		      carrierServiceManager = (CarrierServiceManager) MmrBeanLocator.getInstance().findBean(
+		         "carrierServiceManager");
+		      boolean flagCheckLimit = true;
+		      boolean flagCheckForErrorAlert = true;
+		      Markup markupForFilter = new Markup();
+		      List<Markup> markupResult = new ArrayList<Markup>();
+		   // Filter out disabled services for the current carrier to reduce unwanted ltl table lookup
+		      for (int i = 0; i < carrierServicesList.size(); i++) {
+		        tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
+		        markupForFilter.setServiceId(tempService.getId());
+		        markupForFilter.setCustomerId(order.getCustomerId());
+		        markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+		        if (markupResult.size() > 0
+		            && (carrierServicesList.get(i).getId()
+		                .equals(carrierServicesList.get(i).getMasterServiceId()) || carrierServicesList
+		                .get(i).getMasterCarrierId() != ShiplinxConstants.CARRIER_GENERIC)) {
+		
+		          tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
+		        }
+		      }
+		      if(carrierServicesList.size()<1){
+		      	        	List<CustomerCarrier> customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
+		      	        	if(customerCarriers != null && customerCarriers.size()>0){
+		      	        		for (CustomerCarrier customerCarrier2 : customerCarriers) {
+		      	        			if(carrier.getId().equals(customerCarrier2.getCarrierId())){
+		      	       				carrierServicesList = carrierServiceDAO.getServicesByCarrierId(carrier.getId());
+		      	                	}
+		      					}
+		      	        		for (int i = 0; i < carrierServicesList.size(); i++) {
+		              	          tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
+		      	        	          markupForFilter.setServiceId(tempService.getId());
+		      	        	          markupForFilter.setCustomerId(order.getCustomerId());
+		      	        	          markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+		      	       	          if (markupResult.size() > 0){
+		      	        	        	  tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
+		      	        	          }
+		      	       	}
+		      	        	
+		      	        }
+		      	        }
+		      carrierServicesList = tempCarrierServiceListForFilter;
+		   // checking packages whether exceeded size or not for filter out
+		      for (int i = 0; i < carrierServicesList.size(); i++) {
+		        tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
+		        carrierServicesList.get(i).setMasterServiceId(tempService.getMasterServiceId());
+		        flagCheckLimit = true;
+		     // iterating the packages for checking the maximum length,weight,height
+		        for (int j = 0; j < order.getPackages().size(); j++) {
+		          if ((order.getPackages().get(j).getLength().longValue() >= tempService.getMaxLength() && tempService
+		              .getMaxLength() != 0)
+		             || (order.getPackages().get(j).getWidth().longValue() >= tempService.getMaxWidth() && tempService
+		                  .getMaxWidth() != 0)
+		              || (order.getPackages().get(j).getHeight().longValue() >= tempService
+		                  .getMaxHeight() && tempService.getMaxHeight() != 0)
+		              || (order.getPackages().get(j).getWeight().longValue() >= tempService
+		                  .getMaxWeight() && tempService.getMaxWeight() != 0)) {
+		            flagCheckLimit = false;
+		          }
+		        }
+		        if (!flagCheckLimit) {
+		      	  flagCheckForErrorAlert = false;
+		
+		                } else {
+		
+		
+		          markupForFilter.setServiceId(tempService.getId());
+		          markupForFilter.setCustomerId(order.getCustomerId());
+		          markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+		          if (markupResult.size() > 0) {
+		            tempCarrierServiceList.add(carrierServicesList.get(i));
+		          }
+		        }
+		      }
+		      if (flagCheckForErrorAlert == true && carrier.getId() == 10 && count==carrierServicesList.size()) {
+		        addDummyRateForLTL = true;
+		        errorLog = MessageUtil.getMessage("error.servicepackage.maxrange",
+		            MessageUtil.getLocale());
+		        errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		        CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		        errorMessages.add(errorMsg);
+		      } else if (!flagCheckForErrorAlert && carrier.getId() != 10) {
+		        addDummyRateForLTL = true;
+		       errorLog = MessageUtil.getMessage("error.servicepackage.maxrange",
+		            MessageUtil.getLocale());
+		        errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		        errorLog = new String(errorLog.replaceAll(
+		           "Please click request quote to verify service availability and rates.", ""));
+		        CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		        errorMessages.add(errorMsg);
+		      } else {
+		        if (carrierServicesList.size() > 0
+		            && order.getPackageTypeId().getPackageTypeId() == ShiplinxConstants.PACKAGE_TYPE_PALLET) {
+		        boolean repitive = false;
+		          Map<Long, Boolean> checkServiceRemoval = new HashMap<Long, Boolean>();
+		          carrierServicesList = tempCarrierServiceList;
+		         tempCarrierServiceList = carrierServicesList;
+		          boolean zoneError = false;
+		          boolean rateError = false;
+				          if (carrier.getId() == ShiplinxConstants.CARRIER_GENERIC) {
+		            for (int serviceSlice = 0; serviceSlice < carrierServicesList.size(); serviceSlice++) {
+		          	  List<Service> tempServiceListForLTL = new ArrayList<Service>();
+		              Boolean ltlMasterServiceFlag = true;
+		              boolean availableGroupRate = false;
+		              boolean repitiveRate = false;
+		              boolean isMasterServiceZone = true;
+		
+		              repitive = false;
+		              // adding the child service for the above master id.
+		             for (Service ltlService : fullCarrierServicesList) {
+		                if (ltlService.getMasterServiceId() != null
+		                    && carrierServicesList.get(serviceSlice) != null
+		                    && ltlService.getMasterServiceId().equals(
+		                        carrierServicesList.get(serviceSlice).getId())) {
+		                  tempServiceListForLTL.add(ltlService);
+		                }
+		              }
+		
+		              Zone fromZone = getZone(carrierServicesList.get(serviceSlice).getZoneStructureId(),
+		                  order.getFromAddress());
+		              Zone toZone = getZone(carrierServicesList.get(serviceSlice).getZoneStructureId(),
+		                 order.getToAddress());
+		              // checking for master service
+		              if (carrierServicesList.get(serviceSlice).getId() == carrierServicesList.get(
+		                  serviceSlice).getMasterServiceId()) {
+		                if (fromZone == null
+		                    || toZone == null
+		                    || (fromZone.getCityName() == null && fromZone.getCountryCode() == null
+		                        && fromZone.getFromPostalCode() == null
+		                        && fromZone.getProvinceCode() == null
+		                        && fromZone.getToPostalCode() == null && fromZone.getZoneId() == null
+		                        && fromZone.getZoneName() == null && fromZone.getZoneStructureId() == null)
+		                    || (toZone.getCityName() == null && toZone.getCountryCode() == null
+		                        && toZone.getFromPostalCode() == null && toZone.getProvinceCode() == null
+		                        && toZone.getToPostalCode() == null && toZone.getZoneId() == null
+		                        && toZone.getZoneName() == null && toZone.getZoneStructureId() == null)) {
+		                  isMasterServiceZone = false;
+		                }
+		                // checking for the list is empty
+		                if (!isMasterServiceZone && tempServiceListForLTL.size() > 0) {
+		                  // iterating the child service for the corresponding master service
+		                  for (Service serviceGroup : tempServiceListForLTL) {
+		                    Zone fromZoneTemp = getZone(serviceGroup.getZoneStructureId(),
+		                        order.getFromAddress());
+		                    Zone toZoneTemp = getZone(serviceGroup.getZoneStructureId(),
+		                        order.getToAddress());
+		                    if ((fromZoneTemp != null && toZoneTemp != null)
+		                        && (fromZoneTemp.getCityName() != null
+		                            || fromZoneTemp.getCountryCode() != null
+		                             || fromZoneTemp.getFromPostalCode() != null
+		                            || fromZoneTemp.getProvinceCode() != null
+		                            || fromZoneTemp.getToPostalCode() != null
+		                            || fromZoneTemp.getZoneId() != null
+		                            || fromZoneTemp.getZoneName() != null || fromZoneTemp
+		                            .getZoneStructureId() != null)
+		                       && (toZoneTemp.getCityName() != null
+		                            || toZoneTemp.getCountryCode() != null
+		                            || toZoneTemp.getFromPostalCode() != null
+		                            || toZoneTemp.getProvinceCode() != null
+		                            || toZoneTemp.getToPostalCode() != null
+		                            || toZoneTemp.getZoneId() != null || toZoneTemp.getZoneName() != null || toZoneTemp
+		                            .getZoneStructureId() != null)) {
+		                      ltlMasterServiceFlag = false;
+		                    }
+		                  }
+		                }
+		              }
+		              // checking whether the master service and child service has any error to display
+		              if (ltlMasterServiceFlag && !isMasterServiceZone) {
+		
+		                log.debug("Test");
+		                zoneError = true;
+		                repitive = true;
+		              } else { // if zone is present and checking the rate occurs for the zone.
+		                boolean addService = true;
+		                // checking for the pound rate condition
+		
+		                if (carrierServicesList.get(serviceSlice).getServiceType() == 1) {
+		              	// checking the rate for the master service has rates
+		                  for (int pack = 0; pack < order.getPackages().size(); pack++) {
+		                    String fClass = order.getPackages().get(pack).getFreightClass();
+		                    LtlPoundRate poundRateTobeSearched = LtlPoundRate.getObject(
+		                        order.getCustomerId(), order.getBusinessId(),
+		                        carrierServicesList.get(serviceSlice).getId(), fromZone.getZoneName(),
+		                        toZone.getZoneName(), fClass);
+		                    LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
+		                        order.getTotalWeight());
+		                    if (pr == null) {
+		                      poundRateTobeSearched.setCustomerId(0L);
+		                      pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
+		                          order.getTotalWeight());
+		                   // if no rates present set the error message
+		                      if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
+		                        rateError = true;
+		                        repitive = true;
+		                      }
+		                    }
+		                  }
+		               // if there is no pound rates described for the master service then checking for
+		                 // the child service
+		                 if (rateError) {
+		                    // looping the child service for the corresponding master service
+		                    for (Service poundService : tempServiceListForLTL) {
+		                      long poundChildServiceId = poundService.getId();
+		                      boolean poundChildRateError = false;
+		
+		                      // checking the fromzone and tozone for the child service.
+		                      fromZone = getZone(poundService.getZoneStructureId(),
+		                          order.getFromAddress());
+		                      toZone = getZone(poundService.getZoneStructureId(), order.getToAddress());
+		                      // checking for the packages added for the order
+		                      for (int pack = 0; pack < order.getPackages().size(); pack++) {
+		                        String fClass = order.getPackages().get(pack).getFreightClass();
+		                        LtlPoundRate poundRateTobeSearched = LtlPoundRate.getObject(
+		                            order.getCustomerId(), order.getBusinessId(), poundChildServiceId,
+		                            fromZone.getZoneName(), toZone.getZoneName(), fClass);
+		                        LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
+		                            order.getTotalWeight());
+		                        if (pr == null) {
+		                          poundRateTobeSearched.setCustomerId(0L);
+		                         pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
+		                             order.getTotalWeight());
+		                         // if no rates present set the error message
+		                         if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
+		                            poundChildRateError = true;
+		                            repitive = true;
+		                            addService = false;
+		                          }
+		                        }
+		                      }
+		                      if (!poundChildRateError) {
+		                        rateError = false;
+		                        addService = true;
+		                        break;
+		                     }
+		                   }
+		                 }
+		                } else { // checking for the skid rate
+				                  LtlSkidRate skidRateTobeSearched = LtlSkidRate.getObject(order.getCustomerId(),
+		                      order.getBusinessId(), carrierServicesList.get(serviceSlice).getId(),
+		                      fromZone.getZoneName(), toZone.getZoneName());
+		                  LtlSkidRate pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+		                  // if pr is null for the customer id then set the customer to zero.
+		                  if (pr == null) {
+		                    skidRateTobeSearched.setCustomerId(0L);
+		                    pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+		                    if (pr == null) {
+		                  	  rateError = true;
+		                      repitive = true;
+		                    } /*
+		                       * else { repitive = false; availableGroupRate = true; repitiveRate = true;
+		                       * }
+		                       */
+		                }
+		                  // if the master service has no rates then checking for the child services
+		                  if (rateError) {
+		                    // iterating the child service for corresponding master service
+		                    for (Service skidService : tempServiceListForLTL) {
+		                      fromZone = getZone(skidService.getZoneStructureId(), order.getFromAddress());
+		                      toZone = getZone(skidService.getZoneStructureId(), order.getToAddress());
+		                      LtlSkidRate childServiceSkid = LtlSkidRate.getObject(order.getCustomerId(),
+		                          order.getBusinessId(), skidService.getId(), fromZone.getZoneName(),
+		                          toZone.getZoneName());
+		                      pr = this.markupDAO.getSkidRate(childServiceSkid);
+		                      boolean skidChildRateError = false;
+		                      // if pr is null for the customer id then set the customer to zero.
+		                      if (pr == null) {
+		                        childServiceSkid.setCustomerId(0L);
+		                        pr = this.markupDAO.getSkidRate(childServiceSkid);
+		                        if (pr == null) {
+		                          rateError = true;
+		                          repitive = true;
+		                          skidChildRateError = true;
+		                          addService = false;
+		                        } /*
+		                           * else { repitive = false; availableGroupRate = true; repitiveRate =
+		                           * true; }
+		                           */
+		                      }
+		                     if (!skidChildRateError) {
+		                        rateError = false;
+		                        addService = true;
+		                        break;
+		
+		                      }
+		                    }
+		
+		                  }
+		                }
+		                if (addService) {
+		                  tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
+		                } /*
+		                   * else if (repitiveRate && availableGroupRate) {
+		                   * tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice)); }
+		                   */
+		
+		              }
+		            }
+		            carrierServicesList = tempCarrierServiceListToCopy;
+		            if (carrierServicesList.size() <= 0) {
+		              addDummyRateForLTL = true;
+		            }
+		            if (rateError == true
+		          	  && carrierServicesList != null
+		                && carrierServicesList.size() > 0
+		                && order.getPackageTypeId().getPackageTypeId()
+		                    .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
+		
+		              errorLog = MessageUtil.getMessage("error.service.rate.notallowed",
+		                  MessageUtil.getLocale());
+		              errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		              CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		              errorMessages.add(errorMsg);
+		            } else if (rateError == true
+		                && carrierServicesList.size() <= 0
+		                && order.getPackageTypeId().getPackageTypeId().intValue() == ShiplinxConstants.PACKAGE_TYPE_PALLET) {
+		              ltlNoRatesSingleError = true;
+		              errorLog = MessageUtil.getMessage("error.skid.availability.rate",
+		                  MessageUtil.getLocale());
+		              errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		              CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		              errorMessages.add(errorMsg);
+		            }
+		            if (zoneError == true
+		                && carrierServicesList.size() > 0
+		                && order.getPackageTypeId().getPackageTypeId()
+		                    .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
+		
+		              errorLog = MessageUtil.getMessage("error.service.zones.notallowed",
+		                  MessageUtil.getLocale());
+		              errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		              CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		              errorMessages.add(errorMsg);
+		            } else if (zoneError == true
+		               && carrierServicesList.size() <= 0
+		              		  && order.getPackageTypeId().getPackageTypeId()
+		                    .equals(ShiplinxConstants.PACKAGE_TYPE_PALLET)) {
+		
+		              ltlNoRatesSingleError = true;
+		              errorLog = MessageUtil.getMessage("error.skid.availability.rate",
+		                  MessageUtil.getLocale());
+		              errorLog = new String(errorLog.replaceAll("%CARRIER", carrier.getName()));
+		              CarrierErrorMessage errorMsg = new CarrierErrorMessage(errorLog);
+		              errorMessages.add(errorMsg);
+		            }
+		          }
+		       }
+		        // order.setCustomerCarrier(customerCarrier);
+		       
+		      }
+		      return carrierServicesList;
+		 }
+		  public void findCheapestRate(List<Rating> ratesThread,ShippingOrder orderThread){
+			  if(orderThread.getFromRatingList().size()<orderThread.getToRatingList().size()){
+					List<Rating>tempRatingList = new ArrayList<Rating>();
+					tempRatingList = orderThread.getFromRatingList();
+					orderThread.setFromRatingList(orderThread.getToRatingList());
+					orderThread.setToRatingList(tempRatingList);
+					
+				 }
+				for(int from=0;from<orderThread.getFromRatingList().size();from++){
+					int countFlag=0;
+					for(int to=0;to<orderThread.getToRatingList().size();to++){
+						if(orderThread.getFromRatingList().get(from).getServiceName().equals(orderThread.getToRatingList().get(to).getServiceName())){
+						double fromTotalCharge=orderThread.getFromRatingList().get(from).getBaseCharge();
+							double toTotalCharge=orderThread.getToRatingList().get(to).getBaseCharge();
+							if(fromTotalCharge<toTotalCharge){
+								rateListThread.add(orderThread.getFromRatingList().get(from));
+							}else{
+								rateListThread.add(orderThread.getToRatingList().get(to));
+							}
+							break;
+						}else{
+							countFlag++;
+						}
+						
+					}
+					if(countFlag>0 && orderThread.getToRatingList().size()>0&& countFlag==orderThread.getToRatingList().size()){
+						rateListThread.add(orderThread.getFromRatingList().get(from));
+					}
+				}	
+		  }
 }

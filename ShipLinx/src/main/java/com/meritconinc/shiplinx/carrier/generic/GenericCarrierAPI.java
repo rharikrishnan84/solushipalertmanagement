@@ -410,6 +410,7 @@ public class GenericCarrierAPI implements CarrierService {
     rating.setServiceId(s.getId());
     rating.setCarrierId(s.getCarrierId());
     rating.setSlaveServiceId(sr.getServiceId());
+    rating.setAccountNum(sr.getAccountNum());
     Carrier slaveCarrier=shippingDAO.getCarrierByServiceId(sr.getServiceId());
         rating.setSlaveCarrierId(slaveCarrier.getId());
         rating.setSlaveCarrierName(slaveCarrier.getName());
@@ -658,6 +659,7 @@ public class GenericCarrierAPI implements CarrierService {
         rating.setServiceId(s.getId());
         rating.setCarrierId(s.getCarrierId());
         rating.setSlaveServiceId(pr.getServiceId());
+        rating.setAccountNum(pr.getAccountNum());
         Carrier slaveCarrier=shippingDAO.getCarrierByServiceId(pr.getServiceId());
                 rating.setSlaveCarrierId(slaveCarrier.getId());
                 rating.setSlaveCarrierName(slaveCarrier.getName());
@@ -852,6 +854,7 @@ public class GenericCarrierAPI implements CarrierService {
         }
       }
       parameters.put("logo", logo);
+      parameters.put("accountNum", order.getAccountNum());
       parameters.put("BUSINESS", business);
       parameters.put("Order", order);
       parameters.put("logo", logo);

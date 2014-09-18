@@ -122,7 +122,7 @@ public class ShippingOrder implements Serializable {
   private String manifestNumber = ""; // to be deleted
   private List<Charge> charges = new ArrayList<Charge>();
   private List<Charge> chargesForInvoice = new ArrayList<Charge>();
-
+  private String accountNum;
   private boolean live;
   private String proofOfDelivery;
   private Date dateOfDelivery; // to be deleted
@@ -246,7 +246,8 @@ public class ShippingOrder implements Serializable {
   private Double actualTotalCharge;
   private String fromProvinceName;
   private String toProvinceName; 
-
+  private List<Rating> fromRatingList;
+  private List<Rating> toRatingList;
   public String getFromProvinceName() {
 	return fromProvinceName;
 }
@@ -1899,7 +1900,16 @@ public void setToProvinceName(String toProvinceName) {
   public void setCancelledInvoice(String cancelledInvoice) {
     this.cancelledInvoice = cancelledInvoice;
   }
-  public boolean isInvoiced1() {
+  
+  public String getAccountNum() {
+	return accountNum;
+}
+
+public void setAccountNum(String accountNum) {
+	this.accountNum = accountNum;
+}
+
+public boolean isInvoiced1() {
 	      return isInvoiced;
 	    }
 	    public void setInvoiced(boolean isInvoiced) {
@@ -1938,6 +1948,22 @@ public void setToProvinceName(String toProvinceName) {
 	      }
 
 
+
+public List<Rating> getFromRatingList() {
+			return fromRatingList;
+		}
+
+		public void setFromRatingList(List<Rating> fromRatingList) {
+			this.fromRatingList = fromRatingList;
+		}
+
+		public List<Rating> getToRatingList() {
+			return toRatingList;
+		}
+
+		public void setToRatingList(List<Rating> toRatingList) {
+			this.toRatingList = toRatingList;
+		}
 
 public boolean isInvoiced() {
 	// TODO Auto-generated method stub

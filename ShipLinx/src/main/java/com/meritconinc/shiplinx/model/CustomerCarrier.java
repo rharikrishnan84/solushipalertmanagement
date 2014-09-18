@@ -20,9 +20,17 @@ public class CustomerCarrier {
 	private String property4;
 	private String property5;	
 	private long businessId;
-	 
+	private int count; 
 	private Double businessCarrierDiscount;
 	
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
 	public CustomerCarrier(){
 	}
 		

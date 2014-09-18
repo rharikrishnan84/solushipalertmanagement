@@ -833,6 +833,13 @@ public class ShippingServiceImpl implements ShippingService {
         return;
 
       Charge c = new Charge();
+      
+      if(order!=null && order.getCarrierId()!=null){
+    	        c.setCarrierId(order.getCarrierId());
+    	        }
+    	        if(order!=null && order.getCarrierName()!=null){
+    	    	  c.setCarrierName(order.getCarrierName());
+    	        }
 
       c.setChargeCode(ShiplinxConstants.CHARGE_CODE_UPS_ACC);
       c.setChargeCodeLevel2(ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH);
