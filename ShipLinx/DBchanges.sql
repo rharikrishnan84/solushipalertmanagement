@@ -682,6 +682,238 @@ ADD COLUMN `account_num` VARCHAR(45) NULL DEFAULT NULL AFTER `slave_service_id`;
 
 ////////////////////////---------------------- end------------------------------///////////////////
 
+CREATE TABLE `commission` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `customer_id` INT NULL,
+  `customer_name` VARCHAR(255) NULL,
+  `invoice_id` INT NULL,
+	`invoice_num` INT NULL,
+  `user_id` INT NULL,
+  `sales_user` VARCHAR(255) NULL,
+  `invoice_total` DOUBLE(10,2) NULL DEFAULT 0,
+  `cost_total` DOUBLE(10,2) NULL DEFAULT 0,
+  `commission_payable` DOUBLE(10,2) NULL DEFAULT 0,
+  `customer_paid` INT NULL,
+  `rep_paid` INT NULL,
+  `notes` VARCHAR(255) NULL,
+  `date_created` DATETIME NULL,
+  `total_spd` DOUBLE(10,2) NULL DEFAULT 0,
+  `total_ltl` DOUBLE(10,2) NULL DEFAULT 0,
+  `total_chb` DOUBLE(10,2) NULL DEFAULT 0,
+  PRIMARY KEY (`id`));
+
+alter table shipping_order add column signature_image MEDIUMBLOB DEFAULT NULL;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.shipping.status.exception', 'Exception', 'en_CA', 1);
+
+INSERT INTO `order_billing_status` (`billing_status_id`, `billing_status_name`) VALUES ('80', 'Exception');
+
+ALTER TABLE `business` 
+ADD COLUMN  `US_address_id` INT NULL DEFAULT NULL AFTER `address_id`;
+
+INSERT INTO `address` (`abbreviation_name`, `address1`, `city`, `phone_no`, `email_address`, `contact_name`, `postal_code`, `url`, `residential`, `country_code`, `province_code`, `customer_id`, `default_from`, `send_notification`, `broker_code`) VALUES ('Integrated Carriers', '1111 Harvester Road', 'West Chicago', '', '', 'Jay Cook', '60185', 'http://www.integratedcarriers.com', 1, 'US', 'IL', '0', '', 0, 'CN');
+////////////////////////---------------------- 11/10/14------------------------------///////////////////
+
+
+ALTER TABLE `charges` ADD COLUMN `service` VARCHAR(255) NULL AFTER `charge_group_id`;
+
+insert into resourcebundle values('message.send.salesrep.addcustomer.notification.body','<html>
+   <head>
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <title>Thank you for using Inegrated Carriers SoluShip&trade;</title>
+   <style type="text/css">
+   <!--
+   body {
+   font: 100% Verdana, Arial, Helvetica, sans-serif;
+   background: #fff;
+  margin: 0;
+   padding: 0;
+   text-align: center;
+  color: #000000;
+   }
+   .oneColElsCtr #container {
+   width: 550px;
+   background: #FFFFFF;
+   margin: 0 auto;
+   border: 1px solid #000000;
+   text-align: left;
+   height:auto;
+   }
+   .oneColElsCtr #mainContent {
+   padding: 10px 10px 10px 10px;
+   font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+   font-size: 12px;
+   }
+   .oneColElsCtr #mainContent h1 {
+   padding: 5px 0px 0px 0px;
+   font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+   font-size: 18px;
+   color:#990000;
+   }
+   .oneColElsCtr #mainFooter {
+   padding: 5px 0px 0px 10px;
+   font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+   font-size: 10px;
+   color:#fff;
+   background-color:#000000;
+   height:35px;
+   }
+   #mainContent p{
+   text-align: left;
+   margin-left: 30px;
++   }
+   ul{
+   text-align: left;
+   }
+   -->
+   </style>
+   </head>
+   
+   <body class="oneColElsCtr">
+   
+   <div id="container">
+   <img src="http://www.soluship.com/mmr/images/ic-header.jpg" includeContext="true" />
+     <div id="mainContent">
+       <h1>Thank you for using Integrated Carriers SoluShip&trade;</h1>
+       <p>To all concerned,</p>
+       <p>Please note that the follow customer has been sucessfully added to SoluShip</p>
+       <p>-------------------------------------------------------</p>
+       <p>
+   <b>New Account:</b><br/>
+	  Customer Name: %CUSTOMERNAME <br/>
+      Account#: %ACCOUNT<br/>
+      Contact Name: %CONTACTNAME<br/>
+      Sales Rep Name: %SALESREP<br/>
+      Address1: %ADDRESS1<br/>
+      City: %CITY<br/>
+      Zip/Postal Code: %ZIP<br/>
+      Province: %PROVINCE<br/>
+      Country: %COUNTRY<br/>
+       </p>
+       <p>-------------------------------------------------------</p>
+  
+       <p>Thank you and enjoy Integrated Carriers SoluShip&trade;.</p><br/>
+   <!-- end #mainContent -->
+       </div>
+      <div id="mainFooter">
+      &copy; 2012 Integrated Carriers
+       <!-- end #mainFooter -->
+       </div>
+   <!-- end #container -->
+   </div>
+   </body>
+   </html>','en_CA',1,NULL);
+
+ALTER TABLE `invoice` 
+ADD COLUMN `commission_calculated` BIT NULL DEFAULT 0 AFTER `sales_username`;
+
+
+ALTER TABLE `shipping_order` 
+CHANGE COLUMN `quote_total` `quote_total` DOUBLE(10,2) NULL DEFAULT '0' ,
+CHANGE COLUMN `quote_cost` `quote_cost` DOUBLE(10,2) NULL DEFAULT '0' ,
+CHANGE COLUMN `actual_total` `actual_total` DOUBLE(10,2) NULL DEFAULT '0' ,
+CHANGE COLUMN `actual_cost` `actual_cost` DOUBLE(10,2) NULL DEFAULT '0' ;
+
+/*-------------- stored procedure for commission---------------------*/
+
+DELIMITER $$
+
+CREATE PROCEDURE `insert_commission_amount`()
+begin
+declare ic int;
+declare sc int;
+declare cc int;
+set @invoiceCount = (select count(distinct i.invoice_id) from invoice i left join invoice_charges ic on (i.invoice_id=ic.invoice_id)
+ where i.commission_calculated=0 and ic.cancelled_invoice='No' and i.invoice_date between '2014-10-10' and '2014-10-12');
+
+while @invoiceCount >0 do   
+set ic= @invoiceCount;	
+set @invoiceId=(SELECT invoice_id 
+FROM (SELECT distinct i.* 
+      FROM invoice i left join invoice_charges ic on (i.invoice_id=ic.invoice_id)
+      where i.commission_calculated=0 and ic.cancelled_invoice='No' and 
+      i.invoice_date between '2014-10-10' and '2014-10-12'
+      ORDER BY i.invoice_id 
+      DESC LIMIT ic) AS TOP_invoiceId
+      ORDER BY invoice_id ASC 
+      LIMIT 1);
+
+set @invoiceNumber = (select invoice_num from invoice where invoice_id=@invoiceId);
+set @dateCreated = (select invoice_date from invoice where invoice_id=@invoiceId);
+set @paymentStatus = (select payment_status from invoice where invoice_id=@invoiceId);
+set @invoiceAmount=(select invoice_amount from invoice where invoice_id=@invoiceId);
+set @invoiceCost=(select invoice_cost from invoice where invoice_id=@invoiceId);
+set @customerId=(select customer_id from invoice where invoice_id=@invoiceId);
+set @customerName=(SELECT name FROM customer  where customer_id=@customerId);
+set @salesUserCount = (select count(id) from customer_sales where customer_id=@customerId);
+
+while @salesUserCount >0 do
+set sc=@salesUserCount;
+set @salesUserId=(SELECT distinct id 
+FROM (SELECT * 
+      FROM customer_sales  where  customer_id=@customerId
+      ORDER BY id 
+      DESC LIMIT sc) AS TOP_salesUserId
+ORDER BY id ASC 
+LIMIT 1);
+set @salesUserName = (select sales_user from customer_sales where id=@salesUserId);
+set @commissionAmountValue =0;
+set @commissionCharge =0;
+set @totalSPD=0;
+set @totalLTL=0;
+set @totalCHB=0;
+set @chargeCount = (select count(charge_id) from invoice_charges where invoice_id=@invoiceId);
+
+while @chargeCount >0 do
+set cc=@chargeCount;
+set @chargeId=(SELECT distinct charge_id 
+FROM (SELECT * 
+      FROM invoice_charges  where  invoice_id=@invoiceId
+      ORDER BY charge_id 
+      DESC LIMIT cc) AS TOP_chargeId
+ORDER BY charge_id ASC 
+LIMIT 1);
+set @chargeAmount=(select charge from charges where id=@chargeId);
+set @costAmount=(select cost from charges where id=@chargeId);
+set @orderId=(select order_id from charges where id=@chargeId);
+set @serviceType = (select email_type from service where service_id=(select service_id from shipping_order where order_id=@orderId));
+set @chargeCode = (select charge_code from charges where id=@chargeId);
+set @isTax=(select if(strcmp(@chargeCode,'TAX'),'0','1') from charge_group limit 1);
+set @temp = (select is_tax from charge_group where group_code=@chargeCode);
+set @taxTemp=(select if(strcmp('',@temp),@temp,'0') from charge_group limit 1);
+set @isTaxValue=(select if(strcmp(@isTax,'1'),@taxTemp,'1')from charge_group limit 1);
+
+if (@isTaxValue = 0 or @isTaxValue is null) then
+set @commissionPercentage = (select if(strcmp(@serviceType,'SPD'),(select if(strcmp(@serviceType,'LTL'),(select comm_perc_CHB from customer_sales where customer_id=@customerId and id=@salesUserId), (select comm_perc_PP from customer_sales where customer_id=@customerId and id=@salesUserId)) from customer_sales where customer_id=@customerId and id=@salesUserId), (select comm_perc_PS from customer_sales where customer_id=@customerId and id=@salesUserId)) as commissionPercentage from customer_sales where customer_id=@customerId and id=@salesUserId);
+
+set @totalSPD=@totalSPD+(select if(strcmp(@serviceType,'SPD'),0.0,((charge-cost)*@commissionPercentage/100)) from charges where id=@chargeId);
+
+set @totalLTL=@totalLTL+(select if(strcmp(@serviceType,'LTL'),0.0,((charge-cost)*@commissionPercentage/100)) from charges where id=@chargeId);
+
+
+set @totalCHB=@totalCHB+(select if(strcmp(@serviceType,'CHB'),0.0,((charge-cost)*@commissionPercentage/100)) from charges where id=@chargeId);
+
+set @commissionAmountValue = @commissionAmountValue+ ((@chargeAmount - @costAmount)*@commissionPercentage/100);
+end if;
+set @chargeCount=@chargeCount-1; 
+end while;
+
+
+ set @commissionCharge = @commissionCharge+@commissionAmountValue;
+insert into commission(`customer_id`,`customer_name`,`invoice_id`,`invoice_num`,`user_id`,`sales_user`,`invoice_total`,`cost_total`,`commission_payable`,`customer_paid`,`rep_paid`,`date_created`,`total_spd`,`total_ltl`,`total_chb`)
+values(@customerId,@customerName,@invoiceId,@invoiceNumber,@salesUserId,@salesUserName,@invoiceAmount,@invoiceCost,@commissionCharge,@paymentStatus,@paymentStatus,@dateCreated,@totalSPD,@totalLTL,@totalCHB);
+
+set @salesUserCount=@salesUserCount -1; 
+end while;
+
+update invoice set commission_calculated=true where invoice_id=@invoiceId;
+set @invoiceCount=@invoiceCount-1; 
+end while; 
+END $$
+DELIMITER ;
+
+/*-------------- end ---------------------*/
+
 ############################################################
 
 		Need To Go Live
@@ -690,3 +922,4 @@ ADD COLUMN `account_num` VARCHAR(45) NULL DEFAULT NULL AFTER `slave_service_id`;
 
 
 
+   
