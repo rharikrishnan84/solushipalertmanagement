@@ -11,6 +11,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
@@ -130,7 +131,12 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 		getSqlMapClientTemplate().delete("deleteChargeFromInvoice", paramObj);
 		
 	}	
-	
+
+	public void deleteCommission(long invoiceId) {
+
+		getSqlMapClientTemplate().delete("deleteCommission", invoiceId);
+
+	}
 	public List<SalesRecord> getSalesReport(SalesRecord sales){
 		return getSqlMapClientTemplate().queryForList("getSalesReport", sales);
 	}
@@ -148,5 +154,73 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 	 		
 	 	}
 
+	 public void updateInvoiceStatusCommission(Invoice invoice){
+		 		 			try{
+		 		 				Commission commission = new Commission();
+		 		 				commission.setSalesUser(invoice.getSalesUsername());
+		 		 				commission.setRepPaid(invoice.getPaymentStatus());
+		 		 				commission.setInvoiceId(invoice.getInvoiceId());
+		 		 				getSqlMapClientTemplate().update("updateInvoiceStatusCommission", commission);
+		 		 			}catch(Exception e){
+		 		 				e.printStackTrace();
+		 		 			}
+		 		 		}
+		 		 
+		 		 		public void updateInvoiceCommission(Invoice invoice){
+		 		 			try{
+		 		 				Commission commission = new Commission();
+		 		 				commission.setInvoiceId(invoice.getInvoiceId());
+		 		 				commission.setCustomerPaid(invoice.getPaymentStatus());
+		 		 				getSqlMapClientTemplate().update("updateInvoiceCommission", commission);
+		 		 			}catch(Exception e){
+		 		 				e.printStackTrace();
+		 		 			}
+		 		 		}
+		 	 		public void updateInvoiceCommissionAmount(Commission commission){
+		 		 			getSqlMapClientTemplate().update("updateInvoiceCommissionAmount", commission);
+		 		 		}
+		 		 		public void createcommission(Commission commission){
+		 		 			try{
+		 		 			getSqlMapClientTemplate().insert("savecommission", commission);
+		 		 		}catch(Exception e){
+		 		 			e.printStackTrace();
+		 		 		}
+		 		 		}
+		 		 		
+		 		 		public String getinvoicestatusbyId(long id){
+		 		 			String status = (String) getSqlMapClientTemplate().queryForObject("getInvoiceStatusById", id);
+		 		 			return status;
+		 		 		}
+		 		 		
+		 		 		public List<Invoice> searchInvoicesAr(Invoice invoice){
+		 		 			invoice.setRepPaidList(invoice.getPaymentStatusList());
+		 		 			return (List<Invoice>)getSqlMapClientTemplate().queryForList("searchInvoicesAr", invoice);
+		 		 		}
+		 		 		
+		 		 		public List<Invoice> searchInvoicesCommission(Invoice invoice){
+		 		 			return (List<Invoice>)getSqlMapClientTemplate().queryForList("searchInvoicesCommission", invoice);
+		 		 		}
+		 		 	 		public List<Invoice> searchInvoicesArSearch(Invoice invoice){
+		 		 		 			return (List<Invoice>)getSqlMapClientTemplate().queryForList("searchInvoicesArSearch", invoice);
+		 		 		 		}
+		 		 	 		public List<Commission> searchCommissions(Commission commission){
+		 		 	 			return (List<Commission>)getSqlMapClientTemplate().queryForList("searchCommissions",commission);
+		 		 	 		}
+							@Override
+							public Commission getcommissionbyId(Long invoiceId, String salesUser) {
+								try{
+									Map<String,Object> paramObj= new HashMap<String, Object>();
+									paramObj.put("invoiceId", invoiceId);
+									paramObj.put("salesUser", salesUser);
+									return (Commission)getSqlMapClientTemplate().queryForObject("getcommissionbyId",paramObj);
+								}catch(Exception e){
+									e.printStackTrace();
+								}
+								return null;
+							}
 
+							public List<Commission> getCommissionsByInvoiceId(long invoiceId) {
+								return (List<Commission>) getSqlMapClientTemplate().queryForList(
+										"getCommissionsByInvoiceId", invoiceId);
+							}
 }

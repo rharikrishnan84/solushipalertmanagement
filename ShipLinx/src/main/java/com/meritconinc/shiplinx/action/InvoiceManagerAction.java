@@ -1,6 +1,5 @@
 package com.meritconinc.shiplinx.action;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +23,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import com.meritconinc.shiplinx.model.Charge;
-import com.meritconinc.shiplinx.model.InvoiceCharge;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -40,15 +36,18 @@ import org.w3c.dom.Element;
 
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.mmr.service.UserService;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Charge;
+import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Invoice;
+import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
-import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.SalesRecord;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.CustomerManager;
@@ -107,8 +106,25 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private String invoiceNumber;
   
   private List<String> InvoiceIdList = new ArrayList<String>();
+  private List<Commission> commissions;
+  private String paymentStatus;
+  public List<Commission> getCommissions() {
+	return commissions;
+}
 
-  public String getSalesRep() {
+public void setCommissions(List<Commission> commissions) {
+	this.commissions = commissions;
+}
+
+public String getPaymentStatus() {
+	return paymentStatus;
+}
+
+public void setPaymentStatus(String paymentStatus) {
+	this.paymentStatus = paymentStatus;
+}
+
+public String getSalesRep() {
     return salesRep;
   }
 
@@ -253,6 +269,14 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 	  			      i = new Invoice();
 	  			      i.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
 	  			          Invoice.INVOICE_STATUS_PARTIAL_PAID });
+		} else {
+			int a[] = new int[this.statusList.size()]; // statusList does'nt go
+														// as null back // to
+														// the form.
+			for (int j = 0; j < this.statusList.size(); j++) {
+				a[j] = this.statusList.get(j).getId().intValue();
+			}
+			i.setPaymentStatusList(a);
 	  			    }
 
 	  	i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
@@ -262,7 +286,11 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 	  		      i.setBranch(UserUtil.getMmrUser().getBranch());
 	  		     
 	  		      
-	  		    invoices = invoiceManager.searchInvoices(i);
+	  		  if(i.getPaymentStatusList()[0]==50){ 
+	  				  				  		  invoices = invoiceManager.searchInvoicesAr(i);
+	  				  				  		     }else{
+	  				  			  		    	 invoices = invoiceManager.searchInvoicesArSearch1(i);
+	  				  				  		     }
 	  		    
 	  		    log.debug("Found : " + invoices.size() + " invoices");
 
@@ -439,7 +467,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
     i.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
         Invoice.INVOICE_STATUS_PARTIAL_PAID });
     i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-  invoices = invoiceManager.searchInvoices(i);
+    invoices = invoiceManager.searchInvoicesAr(i);
    // log.debug("Found : " + invoices.size() + " invoices");
 
     if (invoices.size() == 0)
@@ -557,7 +585,20 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 
     getSession().put("invoice", invoice);
   }
-
+  public Commission getCommission(){
+	  	 Commission commission = (Commission) getSession().get("commission");
+	  	    if (commission == null) {
+	  	      commission = new Commission();
+	  	      setCommission(commission);
+	  	    }
+	  	    return commission;
+	  }
+	   
+	  
+	  public void setCommission(Commission commission) {
+	  
+	    getSession().put("commission", commission);
+	  }
   public SalesRecord getSalesRecord() {
     SalesRecord salesRecord = (SalesRecord) getSession().get("salesRecord");
     if (salesRecord == null) {
@@ -699,16 +740,22 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   public String getInvoicePdf() {
     try {
       String invoiceId = request.getParameter("invoiceId");
+      String salesUser = request.getParameter("salesUser");
       if (invoiceId != null) {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Disposition","attachment; filename=label.pdf");
         response.setHeader("Expires", "0");
         response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
         response.setHeader("Pragma", "public");
-        response.setContentType("application/pdf");
+        response.setContentType("application/pdf");        
         Long l = Long.parseLong(invoiceId);
+        if(salesUser!=null){
+        	 this.invoiceManager.getSalesInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
+        	            false,salesUser);
+        }else{
         this.invoiceManager.getInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
             false);
+        }
       }
 
     } catch (Exception e) {
@@ -729,6 +776,9 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
 
 	    if (cancelled) {
 	      this.addActionMessage(getText("invoice.cancelled"));
+			if (invoiceId != null && !invoiceId.isEmpty()) {
+				invoiceManager.deleteCommission(Long.valueOf(invoiceId));
+			}
 	      // For cancelled invoice duplication
 	      invoiceId = request.getParameter("invoiceId");
 	      int l = Integer.parseInt(invoiceId);
@@ -792,7 +842,8 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   public String commReport() throws Exception {
 
     String method = request.getParameter("method");
-
+    String salesRep = request.getParameter("salesRep");
+    String invoiceId = request.getParameter("invoiceIdlist");
     UserSearchCriteria criteria = new UserSearchCriteria();
     criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
     criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
@@ -800,42 +851,27 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
       criteria.setBranch(UserUtil.getMmrUser().getBranch());
     salesUsers = userService.findUsers(criteria, 0, 0);
-
+    if(salesRep!=null && invoiceId!=null){
+    	    	updateInvoiceStatus(salesRep,invoiceId);
+    	    }
     if (method != null) {
-      getSession().remove("invoice");
-      Invoice invoice = getInvoice();
-      // default the date range to last month
-      int month = Calendar.getInstance().get(Calendar.MONTH);
-      int year = Calendar.getInstance().get(Calendar.YEAR);
-
-      month--;
-
-      if (month == -1) {
-        month = 11;
-        year--;
-      }
-
-      Calendar calendar = new GregorianCalendar(year, month, Calendar.DAY_OF_MONTH);
-      calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-      invoice.setToInvoiceDate_web(FormattingUtil.getFormattedDate(calendar.getTime(),
-          FormattingUtil.DATE_FORMAT_WEB));
-      calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-      invoice.setFromInvoiceDate_web(FormattingUtil.getFormattedDate(calendar.getTime(),
-          FormattingUtil.DATE_FORMAT_WEB));
+    	getSession().remove("commission");
+    	Commission commission = getCommission();
 
       return SUCCESS;
     }
 
-    Invoice invoice = this.getInvoice();
-    if (UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SALES)) {
-      invoice.setSalesUsername(UserUtil.getMmrUser().getUsername());
-    }
-    invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 
-    invoices = invoiceManager.generateCommReport(invoice);
-
-    statusId = (invoice.getPaymentStatusList() == null ? 10 : invoice.getPaymentStatusList()[0]);
-
+    Commission commission = this.getCommission();
+    
+        commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
+                FormattingUtil.DATE_FORMAT_WEB));
+        commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+                FormattingUtil.DATE_FORMAT_WEB));
+        
+        commissions = invoiceManager.searchCommissions(commission);
+        statusId = commission.getRepPaid();
+        findPaymentStaus(statusId);
     return SUCCESS;
   }
 
@@ -944,25 +980,25 @@ public String sendEmailNotificationForInvoice() {
     return null;
   }
 
-  public String updateInvoiceStatus() {
+  public String updateInvoiceStatus(String salesRep,String invoiceId) {
 
     log.debug("Update Invoice Status");
-    String salesRep = request.getParameter("salesRep");
+    String[] ids = invoiceId.split(",");
     if (salesRep != null && !salesRep.isEmpty()) {
       try {
         List<Invoice> invoicesToUpdate = new ArrayList<Invoice>();
-        for (int i = 0; i < select.size(); i++) {
+        for (int i = 0; i < ids.length; i++) {
           // If this checkbox was selected:
-          if (select.get(i) != null && select.get(i)) {
-            // Get the matching test scenario:
-            Invoice invoice = this.getSelectedInvoices().get(i);
+        	Invoice invoice = new Invoice();
+        	invoice.setInvoiceId(Long.valueOf(ids[i]));
             invoice.setSalesUsername(salesRep);
             invoice.setSalesRep(salesRep);
             // ...and launch it:
             invoicesToUpdate.add(invoice);
           }
-        }
-        if (invoicesToUpdate.size() > 0) {
+
+      if (invoicesToUpdate.size() > 0) {
+    	  invoiceManager.updateInvoiceStatusCommission(invoicesToUpdate);
           invoiceManager.updateInvoiceStatus(invoicesToUpdate);
 
         }
@@ -1072,39 +1108,21 @@ String type=request.getParameter("type");
 		salesUsers = userService.findUsers(criteria, 0, 0);
 
 		if(method!=null){
-			getSession().remove("invoice");
-			Invoice invoice = getInvoice();
-			//default the date range to last month
-			int month = Calendar.getInstance().get(Calendar.MONTH);
-			int year = Calendar.getInstance().get(Calendar.YEAR);
-			
-			month--;
-			
-			if(month==-1){
-				month = 11;
-				year--;
-			}
-			
-			Calendar calendar = new GregorianCalendar(year, month, Calendar.DAY_OF_MONTH);
-			calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-			invoice.setToInvoiceDate_web(FormattingUtil.getFormattedDate(calendar.getTime(),FormattingUtil.DATE_FORMAT_WEB));
-			calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-			invoice.setFromInvoiceDate_web(FormattingUtil.getFormattedDate(calendar.getTime(),FormattingUtil.DATE_FORMAT_WEB));
+			getSession().remove("commission");
+			Commission commission = getCommission();
 			
 			return SUCCESS;
 		}
-		
-		Invoice invoice = this.getInvoice();
-		if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SALES))
-		{
-			invoice.setSalesUsername(UserUtil.getMmrUser().getUsername());
-		}
-		invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-
-		List<Invoice> invoices = invoiceManager.generateCommReport(invoice);
+		Commission commission = this.getCommission();
+				 commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
+				            FormattingUtil.DATE_FORMAT_WEB));
+				    commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+				            FormattingUtil.DATE_FORMAT_WEB));
+				    
+				    commissions = invoiceManager.searchCommissions(commission);
 		if("xml".equalsIgnoreCase(type)){
 			String shippingLabelFileName =getUniqueTempxmlFileNamecomm("commission");
-			write_XML_File_commission(invoices,shippingLabelFileName);
+			write_XML_File_commission(commissions,shippingLabelFileName);
 			response.setContentType("application/xml");
 			response.setHeader("Content-Disposition",
 					"attachment;filename=commission.xml");
@@ -1126,7 +1144,7 @@ String type=request.getParameter("type");
 			String shippingLabelFileName = getUniqueTempcsvFileNamecomm("commission");
 			
 			FileWriter writer = new FileWriter(shippingLabelFileName);
-			generateCsvFile(invoices,writer);
+			generateCsvFile(commissions,writer);
 			response.setContentType("application/csv");
 			response.setHeader("Content-Disposition",
 					"attachment;filename=commission.csv");
@@ -1148,7 +1166,7 @@ String type=request.getParameter("type");
 		}else if("xl".equalsIgnoreCase(type)){
 			String shippingLabelFileName = getUniqueTempxlFileNamecomm("commission");
 			
-			createxlfilecomm(invoices,shippingLabelFileName);
+			createxlfilecomm(commissions,shippingLabelFileName);
 			response.setContentType("application/msexcel");
 			response.setHeader("Content-Disposition",
 					"attachment;filename=commission.xls");
@@ -1171,7 +1189,7 @@ String type=request.getParameter("type");
 		return SUCCESS;
 	}
 	
-	 public  void write_XML_File_commission(List<Invoice> invoiceList,String shippingLabelFileName){
+	public  void write_XML_File_commission(List<Commission> commissionList,String shippingLabelFileName){
 		 
 			
 		  
@@ -1188,57 +1206,84 @@ String type=request.getParameter("type");
 		 Document doc = builder.newDocument();
 		 Element shipingList = doc.createElement("Reports");
 		 doc.appendChild(shipingList);
-			for(Invoice invoice :invoiceList){
-		  
-	
-		         Element log1 = doc.createElement("Commission");
-		         shipingList.appendChild(log1);
+		 double totalSPD=0.0;
+		 double totalLTL=0.0;
+		 double totalCHB=0.0;
+		 
+		 for(Commission commission :commissionList){
 	
 		         /*Attr attr = doc.createAttribute("id");
 		         attr.setValue(removeNull(Long.toString(sOrder.getId())));*/
 		         
 		         //.appendChild(log1);
 		         
-		         
+			 Element log1 = doc.createElement("Commission");
+	         shipingList.appendChild(log1);
 		         Element number = doc.createElement("InvoiceNumber");
 		         
 		         
-		         number.appendChild(doc.createTextNode(removeNull(invoice.getInvoiceNum())));
+		         number.appendChild(doc.createTextNode(removeNull(commission.getInvoiceNum())));
 		         log1.appendChild(number);
 		         
 		         Element Company = doc.createElement("Company");
 		         
 		         
-		         Company.appendChild(doc.createTextNode(removeNull(invoice.getCustomer().getName())));
+		         Company.appendChild(doc.createTextNode(removeNull(commission.getInvoiceNum())));
 		         log1.appendChild(Company);
 		         
 		         Element datecreated = doc.createElement("DateCreated");
-		         datecreated.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getDateCreated()))));
+		         datecreated.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getDateCreated()))));
 		         log1.appendChild(datecreated);
 	
-		         Element commission = doc.createElement("Commisssion");
-		         commission.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getCommissionAmount()))));
-		         log1.appendChild(commission);
+		         Element commissionElement = doc.createElement("Commisssion");
+		         commissionElement.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getCommissionPayable()))));
+		         log1.appendChild(commissionElement);
 	
 		         Element amount = doc.createElement("Amount");
-		         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getInvoiceAmount()))));
+		         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getInvoiceTotal()))));
 		         log1.appendChild(amount);
 		         
+		         if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
 		         Element cost = doc.createElement("Cost");
-		         cost.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getInvoiceCost()))));
+		         cost.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getCostTotal()))));
 		         log1.appendChild(cost);
+		         }
 		         
 		         Element status = doc.createElement("Status");
-		         status.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getPaymentStatusString()))));
+		         findPaymentStaus(commission.getRepPaid());
+		         status.appendChild(doc.createTextNode(removeNull(String.valueOf(paymentStatus))));
 		         log1.appendChild(status);
 		         
+		         Element SPD = doc.createElement("SPD");
+		         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalSPD()))));
+		         log1.appendChild(SPD);
+	
+		         Element LTL = doc.createElement("LTL");
+		         LTL.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalLTL()))));
+		         log1.appendChild(LTL);
 		         
+		         Element CHB = doc.createElement("CHB");
+		         CHB.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalCHB()))));
+		         log1.appendChild(CHB);
+		         totalSPD+=commission.getTotalSPD();
+		         totalLTL+=commission.getTotalLTL();
+		         totalCHB+=commission.getTotalCHB();
 		       
-		        
-		          
-		           
-	           
 		}
+		 Element log1 = doc.createElement("Commission");
+         shipingList.appendChild(log1);
+		 Element tSPD = doc.createElement("TotalSPD");
+         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(totalSPD))));
+         log1.appendChild(tSPD);
+
+         Element tLTL = doc.createElement("TotalLTL");
+         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(totalLTL))));
+         log1.appendChild(tLTL);
+         
+         Element tCHB = doc.createElement("TotalCHB");
+         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(totalCHB))));
+         log1.appendChild(tCHB);
+		 
 			try{
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 	          Transformer transformer = transformerFactory.newTransformer();
@@ -1337,52 +1382,84 @@ String type=request.getParameter("type");
 		}
 	
 		
-		 private  void generateCsvFile(List<Invoice> invoiceList,FileWriter writer)
+		 private  void generateCsvFile(List<Commission> commissionList,FileWriter writer)
 		   {
 			try
-			{
+			{  
+				double totalSPD=0.0;
+			    double totalLTL=0.0;
+			    double totalCHB=0.0;
 				ArrayList<String> srcList = new ArrayList<String>();
 			    writer.append("invoicenumber");
 			    writer.append(',');
 			    writer.append("company");
 			    writer.append(',');
-			    writer.append("dateCreater");
+			    writer.append("dateCreated");
 			    writer.append(',');
 			    writer.append("commission");
 			    writer.append(',');
 			    writer.append("amount");
 			    writer.append(',');
+			    if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
 			    writer.append("cost");
 			    writer.append(',');
+			    }
 			    writer.append("status");
+			    writer.append(',');
+			    writer.append("SPD");
+			    writer.append(',');
+			    writer.append("LTL");
+			    writer.append(',');
+			    writer.append("CHB");
 			    writer.append('\n');
-			    for(Invoice invoicelist :invoiceList){
+			    for(Commission commission :commissionList){
 			   
 			    
 		 
-			    writer.append(removeNull(invoicelist.getInvoiceNum()));
+			    writer.append(removeNull(commission.getInvoiceNum()));
 			    writer.append(',');
-			    writer.append(removeNull(invoicelist.getCustomer().getName()));
+			    writer.append(removeNull(commission.getCustomerName()));
 			    writer.append(',');
-		        writer.append(removeNull(String.valueOf(invoicelist.getDateCreated())));
+		        writer.append(removeNull(String.valueOf(commission.getDateCreated())));
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(invoicelist.getCommissionAmount())));   
+		        writer.append(removeNull(String.valueOf(commission.getCommissionPayable())));   
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(invoicelist.getInvoiceAmount())));   
+		        writer.append(removeNull(String.valueOf(commission.getInvoiceTotal())));   
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(invoicelist.getInvoiceCost()))); 
+		        if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
+		        writer.append(removeNull(String.valueOf(commission.getCostTotal()))); 
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(invoicelist.getPaymentStatusString())));   
+		        }
+		        findPaymentStaus(commission.getRepPaid());
+		        writer.append(removeNull(String.valueOf(paymentStatus)));   
+		        writer.append(',');
+		        writer.append(removeNull(String.valueOf(commission.getTotalSPD())));   
+		        writer.append(',');
+		        writer.append(removeNull(String.valueOf(commission.getTotalLTL())));   
+		        writer.append(',');
+		        writer.append(removeNull(String.valueOf(commission.getTotalCHB())));
 		        writer.append('\n');
 		    
 			 
-		      
+		        totalSPD+=commission.getTotalSPD();
+		        totalLTL+=commission.getTotalLTL();
+		        totalCHB+=commission.getTotalCHB();
 		         
 			    //generate whatever data you want
 		 
 			   
 			}
-			
+			writer.append("Total SPD");
+			writer.append(',');
+			writer.append(String.valueOf(totalSPD));
+			writer.append(',');
+			writer.append("Total LTL");
+			writer.append(',');
+			writer.append(String.valueOf(totalLTL));
+			writer.append(',');
+			writer.append("Total CHB");
+			writer.append(',');
+			writer.append(String.valueOf(totalCHB));
 			writer.flush();
 		    writer.close();
 		    System.out.println("csv generated successfully");
@@ -1474,33 +1551,69 @@ String type=request.getParameter("type");
 
 		    }
 		 
-		 public void createxlfilecomm(List<Invoice> invoices,String shippingLabelFileName) throws IOException{
+		 public void createxlfilecomm(List<Commission> commissionList,String shippingLabelFileName) throws IOException{
 				
 		        HSSFWorkbook workbook=new HSSFWorkbook();
 		        HSSFSheet sheet =  workbook.createSheet("FirstSheet");  
 		        HSSFRow rowhead=   sheet.createRow((short)0);
+		        
 		        rowhead.createCell((short) 0).setCellValue("invoice number");
 		        rowhead.createCell((short) 1).setCellValue("name");
 		        rowhead.createCell((short) 2).setCellValue("datecreated");
 		        rowhead.createCell((short) 3).setCellValue("Amount");
 		        rowhead.createCell((short) 4).setCellValue("invoice amount");
-		        rowhead.createCell((short) 5).setCellValue("invoice cost");
-		        rowhead.createCell((short) 6).setCellValue("status");
-		       
+		        if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
+		        	rowhead.createCell((short) 5).setCellValue("invoice cost");
+			        rowhead.createCell((short) 6).setCellValue("status");
+			        rowhead.createCell((short) 7).setCellValue("SPD");
+			        rowhead.createCell((short) 8).setCellValue("LTL");
+			        rowhead.createCell((short) 9).setCellValue("CHB");
+		        }else{
+			        rowhead.createCell((short) 5).setCellValue("status");
+			        rowhead.createCell((short) 6).setCellValue("SPD");
+			        rowhead.createCell((short) 7).setCellValue("LTL");
+			        rowhead.createCell((short) 8).setCellValue("CHB");
+		        }
 		        int i=1;
-		        for(Invoice iList :invoices){
+		        double totalSPD=0;
+		        double totalLTL=0;
+		        double totalCHB=0;
+		        for(Commission commission :commissionList){
 		        	
 		        HSSFRow row=   sheet.createRow((short)i);
-		        row.createCell((short) 0).setCellValue(removeNull(iList.getInvoiceNum()));
-		        row.createCell((short) 1).setCellValue(removeNull(iList.getCustomer().getName()));
-		        row.createCell((short) 2).setCellValue(removeNull(String.valueOf(iList.getDateCreated())));
-		        row.createCell((short) 3).setCellValue(removeNull(String.valueOf((iList.getCommissionAmount()))));
-		        row.createCell((short) 4).setCellValue(removeNull(String.valueOf(iList.getInvoiceAmount())));
-		        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(iList.getInvoiceCost())));
-		        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(iList.getPaymentStatusString())));
+		        row.createCell((short) 0).setCellValue(removeNull(commission.getInvoiceNum()));
+		        row.createCell((short) 1).setCellValue(removeNull(commission.getCustomerName()));
+		        row.createCell((short) 2).setCellValue(removeNull(String.valueOf(commission.getDateCreated())));
+		        row.createCell((short) 3).setCellValue(removeNull(String.valueOf((commission.getCommissionPayable()))));
+		        row.createCell((short) 4).setCellValue(removeNull(String.valueOf(commission.getInvoiceTotal())));
+		        if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
+		        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(commission.getCostTotal())));		       
+		        findPaymentStaus(commission.getRepPaid());
+		        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(paymentStatus)));
+		        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(commission.getTotalSPD())));
+		        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(commission.getTotalLTL())));
+		        row.createCell((short) 9).setCellValue(removeNull(String.valueOf(commission.getTotalCHB())));
+		        }else{
+		        	findPaymentStaus(commission.getRepPaid());
+			        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(paymentStatus)));
+			        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(commission.getTotalSPD())));
+			        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(commission.getTotalLTL())));
+			        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(commission.getTotalCHB())));
+		        }
+		        totalSPD+=commission.getTotalSPD();
+		        totalLTL+=commission.getTotalLTL();
+		        totalCHB+=commission.getTotalCHB();
 		        i++;
 				 }
-		        
+		        if(commissionList!=null && commissionList.size()>1){
+		        HSSFRow rowheads=   sheet.createRow((short)commissionList.size()+1);
+		        rowheads.createCell((short) 0).setCellValue("Total SPD");
+		        rowheads.createCell((short) 1).setCellValue(String.valueOf(totalSPD));
+		        rowheads.createCell((short) 2).setCellValue("Total LTL");
+		        rowheads.createCell((short) 3).setCellValue(String.valueOf(totalLTL));
+		        rowheads.createCell((short) 4).setCellValue("Total CHB");
+		        rowheads.createCell((short) 5).setCellValue(String.valueOf(totalCHB));
+		        }
 		        FileOutputStream fileOut =  new FileOutputStream(shippingLabelFileName);
 		        workbook.write(fileOut);
 		        fileOut.close();
@@ -1597,5 +1710,13 @@ String type=request.getParameter("type");
   public void setInvoiceChargeList(List<InvoiceCharge> invoiceChargeList) {
     this.invoiceChargeList = invoiceChargeList;
   }
-
+  public void findPaymentStaus(int statusId){
+	  	if(statusId==10){
+	  		paymentStatus="Unpaid";		
+	  	}else if(statusId==30){
+	  		paymentStatus="Paid";
+	  	}else{
+	  		paymentStatus="PaidToRep";
+	  	}
+}
 }

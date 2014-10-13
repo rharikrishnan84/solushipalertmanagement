@@ -517,10 +517,12 @@ public class EdiUPSParser extends EdiParser {
 			
 			Charge dbCharge = findCharge(dbShipment, ediCharge);
 			if (dbCharge == null) {
+				ediCharge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 				ediCharge.setCarrierId(dbShipment.getCarrierId());
 				ediCharge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
 				addCharge(dbShipment, ediCharge);
 			} else {
+				dbCharge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 				dbCharge.setCarrierId(dbShipment.getCarrierId());
 				dbCharge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
 				updateCharge(ediCharge, dbCharge);

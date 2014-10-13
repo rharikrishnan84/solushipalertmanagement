@@ -55,6 +55,25 @@
 	<resultMap id="invoiceMapWithShipments" class="com.meritconinc.shiplinx.model.Invoice" extends="invoiceMap">
 		<result property="orders" column="invoice_id" select="getShippingOrdersByInvoiceId"/>
 	</resultMap>
+	
+	<resultMap id="commissionMap" class="com.meritconinc.shiplinx.model.Commission">
+		<result property="customerId"	column="customer_id"/>	
+		<result property="customerName"	column="customer_name"/>	
+		<result property="invoiceId"	column="invoice_id"/>
+		<result property="invoiceNum"	column="invoice_num"/>
+		<result property="userId"	column="user_id"/>
+		<result property="invoiceTotal"	column="invoice_total"/>
+		<result property="costTotal"	column="cost_total"/>
+		<result property="commissionPayable"	column="commission_payable"/>
+		<result property="customerPaid"	column="customer_paid"/>
+		<result property="repPaid"	column="rep_paid"/>
+		<result property="notes"	column="notes"/>
+		<result property="dateCreated"	column="date_created"/>
+		<result property="salesUser" column="sales_user"/>
+		<result property="totalSPD" column="total_spd"/>
+		<result property="totalLTL" column="total_ltl"/>
+		<result property="totalCHB" column="total_chb"/>
+	</resultMap>
 
 	<insert id="createInvoice" parameterClass="com.meritconinc.shiplinx.model.Invoice">
 		  insert into invoice(invoice_num, customer_id,date_created,invoice_date, due_date, invoice_amount,invoice_cost,invoice_tax,invoice_tax_cost,payment_status,paid_amount,payable_days,currency,business_id) 
@@ -126,7 +145,7 @@
 	</select>
 
 	<select id="searchPaidToRepInvoices" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
-		select * from invoice where sales_username=#salesRep# and payment_status=50
+		select distinct i.* from invoice i left join commission co on (i.invoice_id=co.invoice_id) where co.sales_user=#salesRep# and co.rep_paid=50
 	</select>
 	
 	<select id="getSalesReport" parameterClass="com.meritconinc.shiplinx.model.SalesRecord" resultMap="salesRecordMap">
@@ -215,6 +234,189 @@
 	<select id="getinvoicebyinvoiceid"  resultMap="arTransactionMap">
      select * from ar_transaction where ar_id=#arId#     
  </select>
+<update id = "updateInvoiceStatusCommission" parameterClass="com.meritconinc.shiplinx.model.Commission">
+			update commission set rep_paid=#repPaid# where invoice_id = #invoiceId# and sales_user=#salesUser#
+	</update>
+	
+	<update id = "updateInvoiceCommission" parameterClass="com.meritconinc.shiplinx.model.Commission">
+			update commission set customer_paid=#customerPaid#,rep_paid=#customerPaid# where invoice_id = #invoiceId#
+	</update>
+	
+	<insert id="savecommission" parameterClass="com.meritconinc.shiplinx.model.Commission">
+	     insert into commission(invoice_num, customer_id,invoice_id,user_id,sales_user,invoice_total,cost_total,customer_paid,rep_paid,date_created,customer_name,commission_payable,total_ltl,total_spd,total_chb) 
+		  values (#invoiceNum#, #customerId#,#invoiceId#,#userId#,#salesUser#, #invoiceTotal#,#costTotal#,#customerPaid#,#repPaid#,#dateCreated#,#customerName#,#commissionPayable#,#totalLTL#,#totalSPD#,#totalCHB#)
+	</insert>
+	
+	<select id="getcommissionbyId"  resultMap="commissionMap">
+		select * from commission where invoice_id=#invoiceId# and sales_user=#salesUser#
+	</select>
+	
+	<select id="searchInvoicesCommission" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
+		 	select distinct i.* from invoice i left join customer c on (i.customer_id=c.customer_id) left join customer_sales cs on (c.customer_id=cs.customer_id) left join commission co on (i.invoice_id=co.invoice_id) where i.business_id = #businessId#	
+		 		<isGreaterThan prepend="and" property="invoiceId" compareValue="0">
+		 			i.invoice_id = #invoiceId#
+		 		</isGreaterThan>	
+		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+		 			i.customer_id = #customerId#
+		 		</isGreaterThan>	
+		 		
+		 		<isNotNull property="invoiceNum">
+			 		<isNotEmpty prepend="and" property="invoiceNum">
+			 			i.invoice_num = #invoiceNum#
+			 		</isNotEmpty>
+		 		</isNotNull>	
+		 		<isNotNull prepend="and" property="currency">
+		 			i.currency = #currency#
+		 		</isNotNull>	
+		 		<isNotNull prepend="AND" property="fromInvoiceDate">
+		 			<![CDATA[i.invoice_date >= #fromInvoiceDate#]]>
+		 		</isNotNull>
+		 		<isNotNull prepend="AND" property="toInvoiceDate">
+	 			<![CDATA[i.invoice_date <= #toInvoiceDate#]]>
+		 		</isNotNull>
+		 		
+		 		<isNotNull prepend="AND" property="repPaid">
+		 			co.rep_paid=#repPaid#
+		 		</isNotNull>
+	 		
+		 		<!-- <iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+  					i.payment_status=#paymentStatusList[]#
+				</iterate> -->
+				<isNotNull prepend="and" property="invoiceNumberString">
+		 			i.invoice_id like '%$invoiceNumberString$%'
+		 		</isNotNull>	
+				<isNotNull property = "branch">
+					<isNotEmpty prepend="and" property = "branch">
+						c.branch = #branch#
+				</isNotEmpty>
+				</isNotNull>						
+				<isNotNull prepend="and" property="salesUsername">
+		 			co.sales_user=#salesUsername#
+		 		</isNotNull>
+		 		<isNotNull property="cancelled">
+					<isEqual property="cancelled" compareValue="false">
+						and (i.payment_status != 40 or i.payment_status is null)	
+					</isEqual>
+				</isNotNull>	
+							 
+	</select>
+	
+<select id="searchInvoicesAr" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
+    select distinct i.* from invoice i left join customer c on (i.customer_id=c.customer_id) left join customer_sales cs on (c.customer_id=cs.customer_id) left join commission co on(i.invoice_id=co.invoice_id) where i.business_id = #businessId# 
+     <isGreaterThan prepend="and" property="invoiceId" compareValue="0">
+      i.invoice_id = #invoiceId#
+     </isGreaterThan> 
+     <isGreaterThan prepend="and" property="customerId" compareValue="0">
+      i.customer_id = #customerId#
+     </isGreaterThan> 
+    
+     <isNotNull property="invoiceNum">
+      <isNotEmpty prepend="and" property="invoiceNum">
+       i.invoice_num = #invoiceNum#
+      </isNotEmpty>
+     </isNotNull> 
+    <isNotNull prepend="and" property="currency">
+      i.currency = #currency#
+     </isNotNull> 
+     <isNotNull prepend="AND" property="fromInvoiceDate">
+      <![CDATA[i.invoice_date >= #fromInvoiceDate#]]>
+     </isNotNull>
+     <isNotNull prepend="AND" property="toInvoiceDate">
+      <![CDATA[i.invoice_date <= #toInvoiceDate#]]>
+     </isNotNull>
+	<iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+       i.payment_status=#paymentStatusList[]#
+    </iterate>
+    <isNotNull prepend="and" property="invoiceNumberString">
+      i.invoice_id like '%$invoiceNumberString$%'
+     </isNotNull> 
+    <isNotNull property = "branch">
+     <isNotEmpty prepend="and" property = "branch">
+      c.branch = #branch#
+     </isNotEmpty>
+    </isNotNull>      
+    <isNotNull prepend="and" property="salesUsername">
+      cs.sales_user=#salesUsername#
+     </isNotNull>
+     <isNotNull property="cancelled">
+     <isEqual property="cancelled" compareValue="false">
+      and (i.payment_status != 40 or i.payment_status is null) 
+     </isEqual>
+    </isNotNull> 
+       
+ </select>
+	
+<select id="searchInvoicesArSearch" parameterClass="com.meritconinc.shiplinx.model.Invoice" resultMap="invoiceMap">
+    select distinct i.* from invoice i left join customer c on (i.customer_id=c.customer_id) left join customer_sales cs on (c.customer_id=cs.customer_id) left join commission co on(i.invoice_id=co.invoice_id) where i.business_id = #businessId# 
+     <isGreaterThan prepend="and" property="invoiceId" compareValue="0">
+     i.invoice_id = #invoiceId#
+     </isGreaterThan> 
+     <isGreaterThan prepend="and" property="customerId" compareValue="0">
+      i.customer_id = #customerId#
+     </isGreaterThan> 
+     
+     <isNotNull property="invoiceNum">
+      <isNotEmpty prepend="and" property="invoiceNum">
+       i.invoice_num = #invoiceNum#
+      </isNotEmpty>
+     </isNotNull> 
+     <isNotNull prepend="and" property="currency">
+     i.currency = #currency#
+     </isNotNull> 
+     <isNotNull prepend="AND" property="fromInvoiceDate">
+      <![CDATA[i.invoice_date >= #fromInvoiceDate#]]>
+     </isNotNull>
+     <isNotNull prepend="AND" property="toInvoiceDate">
+      <![CDATA[i.invoice_date <= #toInvoiceDate#]]>
+     </isNotNull>
+	 <iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+       co.rep_paid=#paymentStatusList[]#
+    </iterate>
+    <isNotNull prepend="and" property="invoiceNumberString">
+      i.invoice_id like '%$invoiceNumberString$%'
+     </isNotNull> 
+    <isNotNull property = "branch">
+     <isNotEmpty prepend="and" property = "branch">
+      c.branch = #branch#
+     </isNotEmpty>
+    </isNotNull>      
+    <isNotNull prepend="and" property="salesUsername">
+      cs.sales_user=#salesUsername#
+     </isNotNull>
+     <isNotNull property="cancelled">
+     <isEqual property="cancelled" compareValue="false">
+      and (i.payment_status != 40 or i.payment_status is null) 
+    </isEqual>
+    
+     <iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
+  		i.payment_status=#paymentStatusList[]#
+	</iterate>
+    </isNotNull> 
+        
+ </select>
 
+	<update id = "updateInvoiceCommissionAmount" parameterClass="com.meritconinc.shiplinx.model.Commission">
+			update commission set commission_payable=#commissionPayable#, invoice_total=#invoiceTotal#,cost_total=#costTotal#,total_spd=#totalSPD#,total_ltl=#totalLTL#,total_chb=#totalCHB# where invoice_id = #invoiceId# and user_id=#userId#
+	</update>
+
+	<select id="getCommissionsByInvoiceId" resultMap="commissionMap">
+            select * from commission where invoice_id = #invoiceId# 
+	</select>
+ 	
+	<select id="searchCommissions" parameterClass="com.meritconinc.shiplinx.model.Commission" resultMap="commissionMap">
+	select c.* from commission c left join invoice_charges i on (i.invoice_id=c.invoice_id) where  c.rep_paid=#repPaid#  and c.commission_payable != 0 and i.cancelled_invoice='No'
+		<isNotNull prepend="AND" property="fromDate">
+		 	<![CDATA[c.date_created >= #fromDate#]]>
+		</isNotNull>
+		<isNotNull prepend="AND" property="toDate">
+	 		<![CDATA[c.date_created <= #toDate#]]>
+		</isNotNull>
+		 <isNotNull prepend="and" property="salesUser">
+      		c.sales_user=#salesUser#
+     	</isNotNull>
+     	group by c.invoice_id
+	</select>
+	<delete id = "deleteCommission">
+		    delete from commission where invoice_id=#invoiceId#
+	    </delete>
 </sqlMap>
-

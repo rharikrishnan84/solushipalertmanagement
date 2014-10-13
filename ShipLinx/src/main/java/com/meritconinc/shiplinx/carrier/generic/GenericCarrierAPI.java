@@ -316,6 +316,8 @@ public class GenericCarrierAPI implements CarrierService {
     Zone fromZone = getZone(s.getZoneStructureId(), shippingOrder.getFromAddress());
     Zone toZone = getZone(s.getZoneStructureId(), shippingOrder.getToAddress());
     Rating rate = null;
+		carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance()
+				.findBean("carrierServiceDAO");
     if (fromZone != null && toZone != null) {
       log.debug("From ZONE" + fromZone.getZoneName() + "::::::::" + "Tozone" + toZone.getZoneName());
       log.debug("Service ID:::::" + s.getId());

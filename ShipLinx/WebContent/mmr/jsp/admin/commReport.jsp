@@ -7,8 +7,9 @@
 <%@ taglib prefix="sj" uri="/struts-jquery-tags"%> 
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
-
-
+<%@ page import="com.meritconinc.mmr.utilities.security.UserUtil" %>
+<%@ page import="com.meritconinc.mmr.model.security.User" %>
+<%@ page import="com.meritconinc.shiplinx.model.Commission" %>
 <html> 
 <head> 
     <sj:head jqueryui="true" />
@@ -53,9 +54,10 @@
 	 //return false;
 	}
 	function pdf(){
-	var editUserId = document.getElementsByName("report");
+	var editUserId = document.getElementsByClassName("check_uncheck_row");
 			
 			var i1,txt1 = 0;
+			var salesUser = document.getElementById("salesAgent").value;
 		   for (i1=0;i1<editUserId.length;i1++){
 			if (editUserId[i1].checked){
 			 txt1 += 1;      
@@ -73,14 +75,15 @@
 			var i,txt;
 			for (i=0;i<editUserId.length;i++){
 				if (editUserId[i].checked){
-					txt = editUserId[i].getAttribute("invoiceId") ;					
+					txt = editUserId[i].value ;	
+					
 				}
 			}
 			var invoiceId=txt;
 			
 			//document.getElementById("addresslist").action = "edit.address.action?addressid="+addressid;
 			//document.getElementById("addresslist").submit();
-			window.location.href="print.invoice.action?invoiceId="+invoiceId;
+			window.location.href="print.invoice.action?invoiceId="+invoiceId+"&salesUser="+salesUser;
 			}
 	
 	}
@@ -164,33 +167,37 @@
  }
  function updateInvoiceStatus()
 	{	
-	var editUserId = document.getElementsByName("report");
+	 var uploadMarkupId = document.getElementsByClassName("check_uncheck_row");
 			
-			var i1,txt1 = 0;
-		   for (i1=0;i1<editUserId.length;i1++){
-			if (editUserId[i1].checked){
-			 txt1 += 1;      
-			}
-		   }
+	 var i1,txt1 = 0;
+	  	   for (i1=0;i1<uploadMarkupId.length;i1++){
+	 	 		if (uploadMarkupId[i1].checked){
+	 	 		 txt1 += 1;      
+	 	 	}
+	 	 	   }
 		   if(txt1 < 1){
 			alert('Please select at least one');
 		   }
-		  else  if(txt1 > 1){
-			alert('Please check atmost one');
-		   }
-		   else{
+		   else if(txt1>0){
+			   			   			   var i1,shipmentid,value_checked,stored_value="";
 	 var paymentStatus=document.getElementById("paymentStatus").value;
 	 if(paymentStatus==50){
 	 var salesRep = document.getElementById("salesAgent").value;
-	 document.searchInvoiceForm.action = "updateInvoiceStatus.action?salesRep="+salesRep;
-	 document.searchInvoiceForm.submit();
+	 for (i1=0;i1<uploadMarkupId.length;i1++){
+		 		 	 if (uploadMarkupId[i1].checked){
+		 		 			shipmentid = uploadMarkupId[i1].value ;
+		 		 			value_checked = document.getElementsByName("shipmentcheckbox"+shipmentid)[0].value;
+		 		 			stored_value = stored_value  + value_checked+ "," ;
 	 }
-	 else{
-		alert("you can't update report");
-	}	
-	}	
+	 }
+	 	 	 document.searchInvoiceForm.action = "commReport.action?salesRep="+salesRep+"&invoiceIdlist="+stored_value;
+	 	 	 	document.searchInvoiceForm.submit();	
 }
-	
+		   }
+		   		   		   else{
+		   		   				alert("you can't update report");
+		   		   			}	
+		   		    }
 	</script>
 	
 <script>
@@ -222,14 +229,14 @@
 									<div class="fields_topdown">
 										<label><mmr:message messageId="label.from.date" /></label>
 										<div class="controls">
-											<s:textfield name="invoice.fromInvoiceDate_web" id="f_date_c" onClick="selectDate('f_date_c','f_trigger_c');" 
+											<s:textfield name="commission.fromDate_web" id="f_date_c" onClick="selectDate('f_date_c','f_trigger_c');"  
 											 readonly="readonly"/>
 										</div>
 									</div>
 									<div class="fields_topdown">
 										<label>To Date</label>
 										<div class="controls">
-											<s:textfield name="invoice.toInvoiceDate_web" id="t_date_c" onClick="selectDate('t_date_c','t_trigger_c');" 
+											<s:textfield name="commission.toDate_web" id="t_date_c" onClick="selectDate('t_date_c','t_trigger_c');"  
 											 readonly="readonly"/>
 										</div>
 									</div>
@@ -238,7 +245,7 @@
 										<label><mmr:message messageId="label.salesAgent" /></label>
 										<div class="controls">
 											<s:select  listKey="username" listValue="fullName" 
-							name="invoice.salesUsername" list="salesUsers" 
+							name="commission.salesUser" list="salesUsers" 
 								id="salesAgent" theme="simple" />
 										</div>
 									</div>
@@ -247,7 +254,10 @@
 									<div class="fields_topdown">
 										<label><mmr:message messageId="label.salesAgent" /></label>
 										<div class="controls">
-											<s:property value="%{#session.username}"/>
+									<% String loginUser = UserUtil.getMmrUser().getUsername(); %>
+										<s:set var="loginUser"><%=loginUser%></s:set>
+										<s:hidden name="commission.salesUser" id="commission.salesUser" value="%{#loginUser}"/>
+											<s:property  value="%{#session.username}"/>
 										</div>
 									</div>
 										
@@ -255,7 +265,7 @@
 									<div class="fields_topdown">
 										<label>Invoice Status</label>
 										<div class="controls">
-											<s:select list="#{'30':'Paid (by Customer)', '10':'Unpaid (by Customer)','50':'Paid to Rep'}" name="invoice.paymentStatusList" 
+											<s:select list="#{'30':'Paid (by Customer)', '10':'Unpaid (by Customer)','50':'Paid to Rep'}" name="commission.repPaid"  
 								 id="paymentStatus" value="statusId"/>								
 										</div>
 									</div>
@@ -282,7 +292,7 @@
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
 	<tr height="25px">
-			<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" /></th>
+			<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
 			<th>Inv#</th>
 			<th style="width: 175px !important;">Company</strong></th>
 			<th>Date Created</th>
@@ -302,34 +312,40 @@
 				<s:set var="totals" value="0" />
 				<s:set var="totalAmt" value="0" />
 				<s:set var="count" value="0" />
-            <s:iterator id="invoicetable" value="invoices" status="rowstatus">
-			<s:if test="commissionAmount!=0">
+				<s:set var="totalSpd" value="0" />
+				<s:set var="totalLtl" value="0" />
+				<s:set var="totalChb" value="0" />
+           <s:iterator id="invoicetable" value="commissions" status="rowstatus">
+			<s:if test="commissionPayable!=0">
              <tr>
-			 <s:set name="invoiceId" value="invoices[#index].getInvoiceId()" />
-	           
-			   <td style="width:30px; text-align:center;"><input  class="dataTable-checkbox" invoiceId="<s:property value='%{#invoiceId}' />" name="report" type="checkbox" /></td>
-				 <td><s:property value="invoiceNum"/></td>
-				 	 <td style="text-align: left;" <span title="<s:property value="customer.name"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
+			 <td> <input type="checkbox"  Class="check_uncheck_row" name="shipmentcheckbox<s:property value='invoiceId'/>"  value="<s:property value='invoiceId'/>" /> </td>
+			 <td><s:property value="invoiceNum"/></td>
+				 	 <td style="text-align: left;" <span title="<s:property value="customerName"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customerName"/></div></td>
 	            <td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
 				<!-- this is for test 
 				this block of code is to suppress the commission if its values is 0.00
 				-->
 				
 				
-					<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="commissionAmount" /></s:text></td>
+					<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="commissionPayable" /></s:text></td>
 				
-				<td style="text-align:right;">$<s:property value="invoiceAmount" />
+				<td style="text-align:right;">$<s:property value="invoiceTotal" />
 				<s:if test="%{#session.ROLE.contains('busadmin')}">
-				<td style="text-align:right;padding-right:20px">$<s:property value="invoiceCost" /></td>
+				<td style="text-align:right;padding-right:20px">$<s:property value="costTotal" /></td>
 				</s:if>
 				</td>
-				<td><s:property value="paymentStatusString" /></td>
+				<td><s:property value="paymentStatus" /></td>
 				
 						</tr>	
 				<s:set var="index" value="#index+1" />	
-				 <s:set var="total" value="%{#total+commissionAmount}"/> 
-				 <s:set var="totals" value="%{#totals+invoiceAmount}"/> 
-				 <s:set var="totalAmt" value="%{#totalAmt+invoiceCost}"/> 
+				  <s:set var="total" value="%{#total+commissionPayable}"/> 
+				 <s:set var="totals" value="%{#totals+invoiceTotal}"/> 
+				 <s:set var="totalAmt" value="%{#totalAmt+costTotal}"/> 
+				 
+				 <s:set var="totalLtl" value="%{#totalLtl+totalLTL}"/>
+				 <s:set var="totalSpd" value="%{#totalSpd+totalSPD}"/>
+				 <s:set var="totalChb" value="%{#totalChb+totalCHB}"/> 
+				 
 				 </s:if>
 			</s:iterator>
 
@@ -343,6 +359,16 @@
 	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#total}" /></s:text></td>
 	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totals}" /></s:text></td>
      <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalAmt}" /></s:text></td>
+    </tr>
+     <tr>
+    <td></td>
+    <td>Total SPD</td>
+      <td><s:text name="format.money" ><s:param name="value" value="%{#totalSpd}" /></s:text></td>
+	  <td>Total LTL </td>
+      <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalLtl}" /></s:text></td>
+	  <td style="text-align:right;">Total CHB</td>
+	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalChb}" /></s:text></td>
+     
     </tr>
   </tfoot>
 </table>

@@ -855,11 +855,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			if (this.shippingService != null) {
 				List<ShippingOrder> order =  this.shippingService.getShipments(so);
 				if("xml".equalsIgnoreCase(type)){
-					String shippingLabelFileName = getUniqueTempxmlFileName("shippment");
+					String shippingLabelFileName = getUniqueTempxmlFileName("shipment");
 					write_XML_File(order,shippingLabelFileName);
 					response.setContentType("application/xml");
 					response.setHeader("Content-Disposition",
-							"attachment;filename=shippment.xml");
+							"attachment;filename=shipment.xml");
 					File xmlFile = new File(shippingLabelFileName);
 					FileInputStream fileInputStream = new FileInputStream(xmlFile);
 					/*ServletContext ctx =ServletActionContext.getServletContext();
@@ -875,13 +875,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					os.close();	
 					
 					}else if("csv".equalsIgnoreCase(type)){
-						String shippingLabelFileName = getUniqueTempcsvFileName("shippment");
+						String shippingLabelFileName = getUniqueTempcsvFileName("shipment");
 						
 						FileWriter writer = new FileWriter(shippingLabelFileName);
 						generateCsvFile(order,writer);
 						response.setContentType("application/csv");
 						response.setHeader("Content-Disposition",
-								"attachment;filename=shippment.csv");
+								"attachment;filename=shipment.csv");
 						File csvFile = new File(shippingLabelFileName);
 						FileInputStream fileInputStream = new FileInputStream(csvFile);
 						/*ServletContext ctx =ServletActionContext.getServletContext();
@@ -897,12 +897,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						os.close();	
 						
 					}else if("xl".equalsIgnoreCase(type)){
-						String shippingLabelFileName = getUniqueTempxlFileName("shippment");
+						String shippingLabelFileName = getUniqueTempxlFileName("shipment");
 						
 						createxlfile(order,shippingLabelFileName);
 						response.setContentType("application/msexcel");
 						response.setHeader("Content-Disposition",
-								"attachment;filename=shippment.xls");
+								"attachment;filename=shipment.xls");
 						File xlFile = new File(shippingLabelFileName);
 						FileInputStream fileInputStream = new FileInputStream(xlFile);
 						/*ServletContext ctx =ServletActionContext.getServletContext();
@@ -996,14 +996,18 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		         		       		 												         Element BilledCharge = doc.createElement("BilledCharge");
 		         		       		 												         BilledCharge.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge()))));
 		         		       		 												         log1.appendChild(BilledCharge);
-		         		       		 												         		      		         
+		         		       		 												         		 
+		         		       		 												         if(sOrder.getFromAddress() != null){
 		         		       		 												          Element fromAddress = doc.createElement("FromAddress");
-		         		       		 												          fromAddress.appendChild(doc.createTextNode(removeNullComma(String.valueOf(sOrder.getFromAddress().getAbbreviationName()))+" "+removeNullComma(String.valueOf(sOrder.getFromAddress().getAddress1()))+" "+removeNullComma(String.valueOf(sOrder.getFromAddress().getAddress2()))+" "+removeNullComma(String.valueOf(sOrder.getFromAddress().getCity()))+" "+removeNullComma(String.valueOf(sOrder.getFromAddress().getPostalCode()))+" "+removeNullComma(String.valueOf(sOrder.getFromAddress().getProvinceCode()))+" "+removeNull(String.valueOf(sOrder.getFromAddress().getCountryName()))+"."));
+		         		       		 												          fromAddress.appendChild(doc.createTextNode(removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sOrder.getFromAddress().getCountryName())))+"."));
 		         		       		 												          log1.appendChild(fromAddress);
-		         		       		 												         		      		       
+		         		       		 												         }
+		         		       		 												         	
+		         		       		 												         if(sOrder.getToAddress() != null){
 		         		       		 												         Element toAddress = doc.createElement("ToAddress");
-		         		       		 												         toAddress.appendChild(doc.createTextNode(removeNullComma(String.valueOf(sOrder.getToAddress().getAbbreviationName()))+" "+removeNullComma(String.valueOf(sOrder.getToAddress().getAddress1()))+" "+removeNullComma(String.valueOf(sOrder.getToAddress().getAddress2()))+" "+removeNullComma(String.valueOf(sOrder.getToAddress().getCity()))+" "+removeNullComma(String.valueOf(sOrder.getToAddress().getPostalCode()))+" "+removeNullComma(String.valueOf(sOrder.getToAddress().getProvinceCode()))+" "+removeNull(String.valueOf(sOrder.getToAddress().getCountryName()))+"."));
-		         log1.appendChild(toAddress);
+		         		       		 												         toAddress.appendChild(doc.createTextNode(removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sOrder.getToAddress().getCountryName())))+"."));
+		         		       		 												         log1.appendChild(toAddress);
+		         		       		 												         }
 		         
 		         Element Status = doc.createElement("Status");
 		         		         Status.appendChild(doc.createTextNode(removeNull(sOrder.getStatusName())));
@@ -2316,80 +2320,80 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      
 	      
      ////Markup Minimum Calculation
-	      if(shippingOrder.getPackageTypeId().getName()
-	    	        .equalsIgnoreCase(ShiplinxConstants.PACKAGE_PALLET_STRING.trim())){
-	      if(ratingList != null && ratingList.size() > 0){
-	    	  
-	      for(Rating rating: ratingList){
-	    	  double total=0.0;
-	    	  double freightCharge=0.0;
-	    	  boolean baseMarkupFlat=false;
-	    	  boolean baseMarkupCharge=false;
-	    	  long serviceId = rating.getServiceId();
-	          Service service = carrierServiceManager.getService(serviceId);
-	          if (service != null && service.getServiceType() ==ShiplinxConstants.SERVICE_TYPE_LTL_POUND) {
-	        	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
-	        	  Markup searchMarkup = markupManagerService.getMarkupObj(shippingOrder);
-	        	  if(searchMarkup!=null){
-	        		  Markup baseMarkup=markupManagerService.findBaseMarkup(searchMarkup);
-	        		  double baseAmount=0;
-	        		    if(baseMarkup==null){
-	        		            Markup mark=searchMarkup;
-	        		            mark.setCustomerId(0l);
-	        		            baseMarkup=markupManagerService.findBaseMarkup(mark);
-	        		   }
-	        		    if (baseMarkup!=null){
-	        		    	if(baseMarkup.getMarkupPercentage() == 0
-	        		    		                                  && baseMarkup.getMarkupFlat() != 0) {        		    		                        	  
-	        		    		                        	  baseAmount=baseMarkup.getMarkupFlat()+rating.getTotalCost();
-	        		    		                        	  baseMarkupFlat=true;	        		    		                        	  
-	        		    		                              }else{	        		    		                            	  
-	        		    		                            	  baseAmount = rating.getTotalCost()+(rating.getTotalCost()*baseMarkup.getMarkupPercentage());
-	        		    		                            	  }
-	        		    		                              }
-	        		    if(baseMarkup!=null && rating.getTotal()<baseAmount){
-	        		    	baseMarkupCharge=true;
-	        		    	if(baseMarkupFlat){
-	        		    		rating.setMarkupFlat(baseMarkup.getMarkupFlat());
-	                        	  rating.setMarkupTypeText("Flat");
-	        		    	for(Charge charge:rating.getCharges()){	        		    		
-	        		    		 if(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("FRT")){
-	        		    			 
-	        		    			 if(rating.getFuel_perc()!=0){
-	        		    				 freightCharge = charge.getCost()+((100-rating.getFuel_perc())*rating.getMarkupFlat()/100);
-	        		    			 }else{
-	        		    				 freightCharge = charge.getCost()+rating.getMarkupFlat();
-	        		    			 }
-	        		    			 if(freightCharge>0){
-	        		    				 charge.setCharge(freightCharge);
-	        		    			 }
-	        		    		 }else if(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("FUE"))
-	        		    		{
-	        		    			if(rating.getFuel_perc()!=0 && freightCharge>0){
-	        		    				double fuelCharge=freightCharge*rating.getFuel_perc()/100;
-	        		    				charge.setCharge(fuelCharge);
-	        		    			}	        		    			
-	        		    		}
-	        		    		 total+=charge.getCharge();
-	        		    	}
-	        		    	}else{
-	        		    		rating.setMarkupPercentage(baseMarkup.getMarkupPercentage());
-                          	  rating.setMarkupTypeText(baseMarkup.getTypeText());
-	        		    		for(Charge charge:rating.getCharges()){
-	        		    			if(charge.getChargeCode()!=null&&(charge.getChargeCode().equalsIgnoreCase("FRT")||charge.getChargeCode().equalsIgnoreCase("FUE")))
-		        		    		charge.setCharge(charge.getCost()+(charge.getCost()*rating.getMarkupPercentage()/100));
-	        		    			total+=charge.getCharge();
-		        		    	}
-	        		    	}
-	        		    }
-	        	  }
-           }
-	          if(baseMarkupCharge){
-	          rating.setTotal(total);
-	          }
-	      }
-	      }
-	      }
+	      	      if(shippingOrder.getPackageTypeId().getName()
+	    		  	    	        .equalsIgnoreCase(ShiplinxConstants.PACKAGE_PALLET_STRING.trim())){
+	    		        if(ratingList != null && ratingList.size() > 0){
+	    		  	    	  
+	    		  	      for(Rating rating: ratingList){
+	    		      	  double total=0.0;
+	    		  	    	  double freightCharge=0.0;
+	    		  	    	  boolean baseMarkupFlat=false;
+	    		  	    	  boolean baseMarkupCharge=false;
+	    		  	    	  long serviceId = rating.getServiceId();
+	    		  	          Service service = carrierServiceManager.getService(serviceId);
+	    		            if (service != null && service.getServiceType() ==ShiplinxConstants.SERVICE_TYPE_LTL_POUND) {
+	    		  	        	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
+	    		  	        	  Markup searchMarkup = markupManagerService.getMarkupObj(shippingOrder);
+	    		  	        	  if(searchMarkup!=null){
+	    		  	        		  Markup baseMarkup=markupManagerService.findBaseMarkup(searchMarkup);
+	    		  	        		  double baseAmount=0;
+	    		  	        		    if(baseMarkup==null){
+	    		          		            Markup mark=searchMarkup;
+	    		  	        		            mark.setCustomerId(0l);
+	    		  	        		            baseMarkup=markupManagerService.findBaseMarkup(mark);
+	    		  	        		   }
+	    		  	        		    if (baseMarkup!=null){
+	    		  	        		    	if(baseMarkup.getMarkupPercentage() == 0
+	    		  	        		    		                                  && baseMarkup.getMarkupFlat() != 0) {        		    		                        	  
+	    		  	        		    		                        	  baseAmount=baseMarkup.getMarkupFlat()+rating.getTotalCost();
+	    		          		    		                        	  baseMarkupFlat=true;	        		    		                        	  
+	    		  	        		    		                              }else{	        		    		                            	  
+	    		  	        		    		                            	  baseAmount = rating.getTotalCost()+(rating.getTotalCost()*baseMarkup.getMarkupPercentage());
+	    		  	        		    		                            	  }
+	    		  	        		    		                              }
+	    		  	        		    if(baseMarkup!=null && rating.getTotal()<baseAmount){
+	    		  	        		    	baseMarkupCharge=true;
+	    		          		    	if(baseMarkupFlat){
+	    		  	        		    		rating.setMarkupFlat(baseMarkup.getMarkupFlat());
+	    		  	                        	  rating.setMarkupTypeText("Flat");
+	    		  	        		    	for(Charge charge:rating.getCharges()){	        		    		
+	    		  	        		    		 if(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("FRT")){
+	    		  	        		    			 
+	    		  	        		    			 if(rating.getFuel_perc()!=0){
+	    		          		    				 freightCharge = charge.getCost()+((100-rating.getFuel_perc())*rating.getMarkupFlat()/100);
+	    		  	        		    			 }else{
+	    		  	        		    				 freightCharge = charge.getCost()+rating.getMarkupFlat();
+	    		  	        		    			 }
+	    		  	        		    			 if(freightCharge>0){
+	    		  	        		    				 charge.setCharge(freightCharge);
+	    		          		    			 }
+	    		  	        		    		 }else if(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("FUE"))
+	    		  	        		    		{
+	    		  	        		    			if(rating.getFuel_perc()!=0 && freightCharge>0){
+	    		  	        		    				double fuelCharge=freightCharge*rating.getFuel_perc()/100;
+	    		  	        		    				charge.setCharge(fuelCharge);
+	    		  	        		    			}	        		    			
+	    		  	        		    		}
+	    		  	        		    		 total+=charge.getCharge();
+	    		  	        		    	}
+	    		  	        		    	}else{
+	    		  	        		    		rating.setMarkupPercentage(baseMarkup.getMarkupPercentage());
+	    		                            	  rating.setMarkupTypeText(baseMarkup.getTypeText());
+	    		  	        		    		for(Charge charge:rating.getCharges()){
+	    		  	        		    			if(charge.getChargeCode()!=null&&(charge.getChargeCode().equalsIgnoreCase("FRT")||charge.getChargeCode().equalsIgnoreCase("FUE")))
+	    		  		        		    		charge.setCharge(charge.getCost()+(charge.getCost()*rating.getMarkupPercentage()/100));
+	    		  	        		    			total+=charge.getCharge();
+	    		  		        		    	}
+	    		  	        		    	}
+	    		  	        		    }
+	    		  	        	  }
+	    		             }
+	    		  	          if(baseMarkupCharge){
+	    		  	          rating.setTotal(total);
+	    		  	          }
+	    		  	      }
+	    		  	      }
+	    		  	      }
 	      ////End Markup Minimum Calculation
 	      
 	      
@@ -5534,7 +5538,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			if (so != null && this.shippingService != null) {
 				// Check if Customer needs to be reassigned
 				if (so.getWebCustomerId() != null && so.getWebCustomerId().longValue() > 0 && 
-						so.getCustomerId().longValue() != so.getWebCustomerId().longValue()) {
+						so.getCustomerId() !=null && so.getCustomerId().longValue() != so.getWebCustomerId().longValue()) {
 					// Check if charges are not invoiced yet, customer can only be changed if charges are not invoiced yet
 					for (Charge c:so.getCharges()) {
 						if (c.getStatus().intValue() == ShiplinxConstants.CHARGE_INVOICED) {
@@ -5543,7 +5547,16 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 							return INPUT;
 						}
 					}
-				} else if (so.getWebCustomerId() != null && so.getWebCustomerId().longValue() == 0L) {
+				} else if (so.getCustomerId() ==null && so.getWebCustomerId() != null && so.getWebCustomerId().longValue() > 0) {
+					// Check if charges are not invoiced yet, customer can only be changed if charges are not invoiced yet
+					for (Charge c:so.getCharges()) {
+						if (c.getStatus().intValue() == ShiplinxConstants.CHARGE_INVOICED) {
+							addActionError(getText("failed.to.reassign.shipment.to.another.customer"));
+							so.setWebCustomerId(so.getCustomerId());
+							return INPUT;
+						}
+					}
+				}else if (so.getWebCustomerId() != null && so.getWebCustomerId().longValue() == 0L) {
 					// User want to make it to orphan shipment
 					so.setCustomer(null);
 					so.setCustomerId(0L);
@@ -5781,7 +5794,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				shippingService.updateOrderStatus(Long.valueOf(strOrderId), lstatusId, strComment, boolPrivate);
 			}
 			//populate warehouse products for the orders if they are warehouse orders
-			if(shippingOrder.getCustomer().isWarehouseCustomer())
+			if(shippingOrder.getCustomer()!=null && shippingOrder.getCustomer().isWarehouseCustomer())
 			{
 				List<Products> listproducts = populateOrderWarehouseProducts(shippingOrder.getId(), shippingOrder.getCustomerId());
 				if(listproducts.size()>0)
@@ -6164,29 +6177,46 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        	        writer.append(',');
 	        	        writer.append("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge())));
 	        	        writer.append(',');
-	        	        String abbrevfrom,add1from,add2from,cityfrom,poscodefrom,procodefrom,counnamefrom,addrfrom,addressfrom,abbrev,add1,add2,city,poscode,procode,counname,toaddr,toaddress;
-	        	        abbrevfrom=removeNullComma(String.valueOf(sOrder.getFromAddress().getAbbreviationName()));
-	        	        add1from=removeNullComma(String.valueOf(sOrder.getFromAddress().getAddress1()));
-	        	        add2from=removeNullComma(String.valueOf(sOrder.getFromAddress().getAddress2()));
-	        	        cityfrom=removeNullComma(String.valueOf(sOrder.getFromAddress().getCity()));
-	        	        poscodefrom=removeNullComma(String.valueOf(sOrder.getFromAddress().getPostalCode()));
-	        	        procodefrom=removeNullComma(String.valueOf(sOrder.getFromAddress().getProvinceCode()));
-	        	        counnamefrom=removeNull(String.valueOf(sOrder.getFromAddress().getCountryName()));
-	        	        addrfrom=abbrevfrom+add1from+add2from+cityfrom+poscodefrom+procodefrom+counnamefrom+".";
-	        	        addressfrom="\""+addrfrom+"\"";
+	        	        String abbrevfrom,add1from,add2from,cityfrom,poscodefrom,procodefrom,counnamefrom,addrfrom,addressfrom="",abbrev,add1,add2,city,poscode,procode,counname,toaddr,toaddress="";
+ 	        	        if(sOrder.getFromAddress()!=null){
+	        	        abbrevfrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAbbreviationName())));
+	        	        add1from=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress1())));
+	        	        add2from=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress2())));
+	        	        cityfrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getCity())));
+	        	        poscodefrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getPostalCode())));
+	        	        procodefrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getProvinceCode())));
+	        	        counnamefrom=removeNull(removeNull(String.valueOf(sOrder.getFromAddress().getCountryName())));
+					addrfrom = abbrevfrom + add1from + add2from + cityfrom
+							+ poscodefrom + procodefrom + counnamefrom;
+					if (addrfrom != null && !addrfrom.isEmpty()) {
+						addrfrom = addrfrom + ".";
+						addressfrom = "\"" + addrfrom + "\"";
+					}	        	        
 	        	        writer.append(addressfrom);
 	        	        writer.append(',');
-	        	        abbrev=removeNullComma(String.valueOf(sOrder.getToAddress().getAbbreviationName()));
-	        	        add1=removeNullComma(String.valueOf(sOrder.getToAddress().getAddress1()));
-	        	        add2=removeNullComma(String.valueOf(sOrder.getToAddress().getAddress2()));
-	        	        city=removeNullComma(String.valueOf(sOrder.getToAddress().getCity()));
-	        	        poscode=removeNullComma(String.valueOf(sOrder.getToAddress().getPostalCode()));
-	        	        procode=removeNullComma(String.valueOf(sOrder.getToAddress().getProvinceCode()));
+				} else {
+					writer.append("");
+					writer.append(',');
+				}if(sOrder.getToAddress()!=null){
+	        	        abbrev=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAbbreviationName())));
+	        	        add1=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress1())));
+	        	        add2=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress2())));
+	        	        city=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getCity())));
+	        	        poscode=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getPostalCode())));
+	        	        procode=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getProvinceCode())));
 	        	        counname=removeNull(String.valueOf(sOrder.getToAddress().getCountryName()));
-	        	        toaddr=abbrev+add1+add2+city+poscode+procode+counname+".";
-	        	        toaddress="\""+toaddr+"\"";
+					toaddr = abbrev + add1 + add2 + city + poscode + procode
+							+ counname;
+					if (toaddr != null && !toaddr.isEmpty()) {
+						toaddr = toaddr + ".";
+						toaddress = "\"" + toaddr + "\"";
+					}
 	        	        writer.append(toaddress);
 	        	        writer.append(',');
+				} else {
+					writer.append("");
+					writer.append(',');
+				}
 	        	        				        writer.append(removeNull(sOrder.getStatusName()));
 	        	        				        writer.append(',');
 	        	        				        writer.append(removeNull(String.valueOf(sOrder.getBillingStatusText())));
@@ -6218,7 +6248,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	 private String removeNullComma(String text)
 	 	 	 	 {
-	 	 	 		 if(text.equalsIgnoreCase("null")|| text.equalsIgnoreCase("")){
+		 if(null==text||text.equalsIgnoreCase("null")|| text.equalsIgnoreCase("")){
 	 	 	 			 
 	 	 	 			 return "";
 	 	 	 		 }
@@ -6261,8 +6291,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        	        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(sorder.getBilledWeight())));
 	        	        row.createCell((short) 7).setCellValue("$"+removeNull(String.valueOf(sorder.getQuoteTotalCharge())));
 	        	        row.createCell((short) 8).setCellValue("$"+removeNull(String.valueOf(sorder.getActualTotalCharge())));
-	        	        row.createCell((short) 9).setCellValue(removeNullComma(String.valueOf(sorder.getFromAddress().getAbbreviationName()))+" "+removeNullComma(String.valueOf(sorder.getFromAddress().getAddress1()))+" "+removeNullComma(String.valueOf(sorder.getFromAddress().getAddress2()))+" "+removeNullComma(String.valueOf(sorder.getFromAddress().getCity()))+" "+removeNullComma(String.valueOf(sorder.getFromAddress().getPostalCode()))+" "+removeNullComma(String.valueOf(sorder.getFromAddress().getProvinceCode()))+" "+removeNull(String.valueOf(sorder.getFromAddress().getCountryName()))+".");
-	        	        row.createCell((short) 10).setCellValue(removeNullComma(String.valueOf(sorder.getToAddress().getAbbreviationName()))+" "+removeNullComma(String.valueOf(sorder.getToAddress().getAddress1()))+" "+removeNullComma(String.valueOf(sorder.getToAddress().getAddress2()))+" "+removeNullComma(String.valueOf(sorder.getToAddress().getCity()))+" "+removeNullComma(String.valueOf(sorder.getToAddress().getPostalCode()))+" "+removeNullComma(String.valueOf(sorder.getToAddress().getProvinceCode()))+" "+removeNull(String.valueOf(sorder.getToAddress().getCountryName()))+".");
+	        	        if(sorder.getFromAddress() != null){
+	        	        row.createCell((short) 9).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getFromAddress().getCountryName())))+".");
+	        	        }
+	        	        if(sorder.getToAddress() != null){
+	        	        row.createCell((short) 10).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getToAddress().getCountryName())))+".");
+	        	        }
 	        	        row.createCell((short) 11).setCellValue(removeNull(sorder.getStatusName()));
 	        	        row.createCell((short) 12).setCellValue(removeNull(String.valueOf(sorder.getBillingStatusText())));
 	        	        	        	        row.createCell((short) 13).setCellValue(removeNull(String.valueOf(sorder.getReferenceCode())));

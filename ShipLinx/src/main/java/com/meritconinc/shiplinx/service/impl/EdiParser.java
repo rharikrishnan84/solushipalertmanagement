@@ -16,6 +16,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
+import com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI;
 import com.meritconinc.shiplinx.carrier.ups.dao.UPSCanadaTariffDAO;
 import com.meritconinc.shiplinx.dao.AddressDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
@@ -60,7 +61,7 @@ public abstract class EdiParser {
 	protected ShippingOrder currentDBShipment = null;
 	private List<EdiItem> ediItems = null;
 	private static Boolean isApplyEdiExceptions = null;
-
+	private List<String>pins=new ArrayList<String>();
 	public EdiParser(EdiInfo ediInfo, EdiDAO ediDAO, ShippingService shippingService,
 			CustomerDAO customerDAO, AddressDAO addressDAO, MarkupManager markupService, 
 			LoggedEventService loggedService) {
@@ -207,6 +208,11 @@ public abstract class EdiParser {
 							updateEdiItems(ediInvoiceStatus);
 							
 							moveFileToOutFolder(f, ShiplinxConstants.OUT_FOLDER);
+							if(ediInfo.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR && pins.size()>0){
+															//track the shipment using master tacking number
+																PurolatorAPI purolatorAPI= new PurolatorAPI();
+																purolatorAPI.trackShipmentByPins(pins);
+															}
 						} catch (Exception e) {
 							ediInvoiceStatus = ShiplinxConstants.STATUS_FAILED;
 							updateEdiItems(ediInvoiceStatus);
@@ -358,8 +364,12 @@ public abstract class EdiParser {
 			ShippingOrder dbShipment = findShipment(ediShipment);			
 			if (dbShipment == null) {
 				addShipment(ediShipment, item);
+				if(ediShipment.getMasterTrackingNum() !=null && ediShipment.getCarrierId()!=null && ediShipment.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR)
+					pins.add(ediShipment.getMasterTrackingNum());
 			} else {
 				updateShipment(ediShipment, dbShipment);
+				if(ediShipment.getMasterTrackingNum() !=null && ediShipment.getCarrierId()!=null && ediShipment.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR)
+					pins.add(ediShipment.getMasterTrackingNum());
 			}
 			return ediShipment;
 		}

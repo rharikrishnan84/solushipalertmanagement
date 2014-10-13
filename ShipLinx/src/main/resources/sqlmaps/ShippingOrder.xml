@@ -900,7 +900,7 @@
 		where package_id=#packageId#
 	</update>
 
-	<select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+	<select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" resultMap="SearchOrderResult">
 		select distinct o.* 
 			from shipping_order o
 			left join package p on (o.order_id=p.order_id) 
@@ -1232,6 +1232,35 @@
 		<isGreaterThan  property="chargeGroupId" compareValue="0">
 		 	and ccc.charge_group_id=#chargeGroupId#
 		</isGreaterThan>	
+	</select>
+	
+	<update id="updateBillingStatus">
+	       update shipping_order set pod_receiver=#podReceiver# , pod_datetime=#podDate# , signature_image=#signatureImage# 
+	       <isNotNull prepend="," property="billStatus">
+	       billing_status=#billStatus#
+	       </isNotNull> 
+	        <isNotNull prepend="," property="statusId">
+               status_id=#statusId#
+               </isNotNull>
+	       where order_id=#orderId#	  
+	       
+	</update>
+	<select id="selectOrderId" resultMap="SearchOrderResult">
+		select * from shipping_order o where o.master_tracking_num=#trackingNo#
+	</select>
+	<insert id="updateLoggedEvent">
+		insert into logged_event (entity_type,entity_id,username,date_time,message,private,delete_flag) values(#entityType#,#orderId#,#userName#,#podDate#,#message#,#isPrivate#,#deleteFlag#);
+	</insert>
+	<select id="getCustomerNameByCustomerId" resultClass="java.lang.String">
+	     select name from customer where customer_id=#customerId#
+	</select>
+<select id="getTrackingNumberFromPackage" resultClass="java.lang.String">
+	    select tracking_number from package 
+		where order_id=(select order_id from shipping_order where master_tracking_num=#trackingNumber# order by order_id desc limit 1) 
+		and (length is null or weight is null or height is null or width is null) order by order_id,tracking_number desc limit 1
+	</select>
+	<select id="getOrderFromPackageUsingPin" resultClass="long">
+	    select distinct p.order_id from package p left join shipping_order s on(p.order_id=s.order_id) where p.tracking_number=#trackingNo# order by order_id desc limit 1
 	</select>
 </sqlMap>
 

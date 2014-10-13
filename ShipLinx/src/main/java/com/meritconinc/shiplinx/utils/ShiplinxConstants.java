@@ -51,7 +51,7 @@ public class ShiplinxConstants {
 
 	public static final String FUEL_SURCHARGE = "Fuel";
 	public static final String OTHER_SURCHARGE = "Other";
-
+	public static  final int PAYMENT_EXCEPTION=50;
 	//package types
 	public static final int PACKAGE_TYPE_ENVELOPE = 1;
 	public static final int PACKAGE_TYPE_PAK = 2;
@@ -290,6 +290,7 @@ public class ShiplinxConstants {
 	public static final Integer BILLING_STATUS_INVOICED = 50;//4;
 	public static final Integer BILLING_STATUS_THIRD_PARTY = 60;//4;
 	public static final Integer BILLING_STATUS_COLLECT = 70;//4;
+	public static final Integer PAYMENT_BILLING_EXCEPTION = 80;
 	public static final String BILLING_STATUS_AWAITING_CONFIRMATION_TEXT = "Awaiting Confirm.";
 	public static final String BILLING_STATUS_CUSTOMER_CONFIRMATION_TEXT = "Customer Confirm.";
 	public static final String BILLING_STATUS_ORPHAN_TEXT = "Orphan";
@@ -298,13 +299,14 @@ public class ShiplinxConstants {
 	public static final String BILLING_STATUS_INVOICED_TEXT = "Invoiced";
 	public static final String BILL_TO_THIRD_PARTY = "Third Party";
 	public static final String BILL_TO_COLLECT = "Collect";
+	public static final String BILLING_STATUS_EXCEPTION = "Exception";
 	public static final String [] BILLING_STATUS_LIST = {	BILLING_STATUS_NOT_INVOICED_TEXT, 
 															BILLING_STATUS_AWAITING_CONFIRMATION_TEXT, 
 															BILLING_STATUS_CUSTOMER_CONFIRMATION_TEXT,
 															BILLING_STATUS_ORPHAN_TEXT, 
 															BILLING_STATUS_READY_TO_INVOICE_TEXT,
 															BILLING_STATUS_INVOICED_TEXT,
-															BILL_TO_THIRD_PARTY, BILL_TO_COLLECT};
+															BILL_TO_THIRD_PARTY, BILL_TO_COLLECT,BILLING_STATUS_EXCEPTION};
 	
 	
 	// EDI Item Status 
@@ -402,7 +404,9 @@ public class ShiplinxConstants {
 			if (s.intValue()==ShiplinxConstants.CARRIER_LOOMIS) 
 				return ShiplinxConstants.CARRIER_LOOMIS_STRING;
 			if(s.intValue()==ShiplinxConstants.CARRIER_GENERIC)
-				return ShiplinxConstants.CARRIER_GENERIC_STRING;			
+				return ShiplinxConstants.CARRIER_GENERIC_STRING;
+			if(s.intValue()==ShiplinxConstants.CARRIER_PUROLATOR)
+				return ShiplinxConstants.CARRIER_PUROLATOR_STRING;
 		}	
 		return "";
 	}

@@ -11,6 +11,7 @@
 			<result property="logoHiResFileName" column="logohires_file_name"/>
 			<result property="logoURL" column="logo_url"/>
 			<result property="addressId" />
+			<result property="usAddressId" />
 			<result property="dateCreated" />
 			<result property="active" />
 			<result property="headerKey" column="header_key"/>
@@ -29,6 +30,7 @@
 			<result property="emailHeaderImage" column="email_header_image"/>
 			<result property="taxInfo" column="tax_info"/>
 			<result property="address" column="address_id" select="selectAddress"/>
+			<result property="usAddress" column="US_address_id" select="selectAddress"/>
 			<result property="financeEmail" column="finance_email"/>
 			<result property="warehouseEmail" column="warehouse_email"/>
 			<result property="invoiceNotificationBody" column="invoice_notification_body"/>

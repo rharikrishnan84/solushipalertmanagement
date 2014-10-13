@@ -788,8 +788,14 @@ public String execute() throws Exception {
       Customer customer = this.getCustomer();
       log.debug(customer);
       log.debug(UserUtil.getMmrUser());
-      emailSent = getService().sendAddCustomerMailNotification(customer, UserUtil.getMmrUser());
-
+			if (UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")) {
+				emailSent = getService()
+						.sendSalesRepAddCustomerMailNotification(customer,
+								UserUtil.getMmrUser());
+			} else {
+				emailSent = getService().sendAddCustomerMailNotification(
+						customer, UserUtil.getMmrUser());
+			}
       if (emailSent)
         this.addActionMessage(getText("email.customer.notification.sent"));
       else

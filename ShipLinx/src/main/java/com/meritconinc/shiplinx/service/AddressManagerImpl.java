@@ -31,12 +31,16 @@ import com.meritconinc.shiplinx.model.Province;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 
-public class AddressManagerImpl implements AddressManager { 
+public class AddressManagerImpl implements AddressManager,Runnable  { 
 
 	private static final Logger log = LogManager
 			.getLogger(AddressManagerImpl.class);
 	AddressDAO addressDAO;
-
+	private String customerId; 
+		private InputStream data;
+		private String name;
+		private boolean deleteExistingAddressess;
+		private Thread t;
 	public void setAddressDAO(AddressDAO addressBookDAO) {
 		this.addressDAO = addressBookDAO;
 	}
@@ -91,8 +95,7 @@ public class AddressManagerImpl implements AddressManager {
 		addressDAO.deleteDistributionList(id, customerId);
 	}
 
-	public void parseFile(String customerId, InputStream data, String name,
-			boolean deleteExistingAddressess) throws ShiplinxException {
+	public void run(){
 		try {
 			long customer_id = Long.valueOf(customerId).longValue();
 			BufferedReader br = new BufferedReader(new InputStreamReader(data));
@@ -176,6 +179,19 @@ public class AddressManagerImpl implements AddressManager {
 		}
 	}
 
+	public void parseFile(String customerId, InputStream data, String name,
+						boolean deleteExistingAddressess) throws ShiplinxException {
+				this.customerId=customerId;
+					this.data=data;
+					this.name=name;
+					this.deleteExistingAddressess=deleteExistingAddressess;
+					if (t == null)
+				    {
+				         t = new Thread(this);
+				         t.start ();
+				         t=null;
+				    }
+				}
 	public List<Province> getProvinces(String country) {
 		return addressDAO.getProvinces(country);
 	}

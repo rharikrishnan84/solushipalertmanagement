@@ -88,8 +88,13 @@ public class UPSRequestBuilder {
 //			if(!(from.getCountryCode().equalsIgnoreCase(ShiplinxConstants.US) || from.getCountryCode().equalsIgnoreCase(ShiplinxConstants.CANADA))){
 //				shipment.addNewReturnService().setCode("9");
 //			}
+			com.meritconinc.shiplinx.model.Address shipper_address = new com.meritconinc.shiplinx.model.Address();
+			if(customerCarrier.getCountry().equals(ShiplinxConstants.US)){
+				shipper_address = shippingOrder.getBusiness().getUsAddress();
+			}else{
+				shipper_address = shippingOrder.getBusiness().getAddress();
+			}
 			
-			com.meritconinc.shiplinx.model.Address shipper_address = shippingOrder.getBusiness().getAddress();
 
 			logger.debug("-------------------shipper_address.getProvince()-----------------------------------");
 			Address address = shipper.addNewAddress();

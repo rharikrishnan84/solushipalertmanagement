@@ -12,6 +12,7 @@ import com.meritconinc.mmr.utilities.MmrBeanLocator;
 
 public class RequestTrackingDAOImpl extends SqlMapClientDaoSupport implements RequestTrackingDAO {
 
+  private static final long serialVersionUID = 1L;
   private PropertyDAO propertyDAO;
 
   public RequestTrackingDAOImpl() {

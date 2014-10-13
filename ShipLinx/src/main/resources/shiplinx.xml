@@ -792,10 +792,12 @@
         <action name="list.shipment" method="listShipment" class="shipmentAction">
            <!--  <result name="success">/mmr/jsp/shipping/list_shipment.jsp</result>--> 
            <result type="tiles" name="success">searchShipment</result>
+            <result type="tiles" name="input">searchShipment</result>
         </action>       
         
 		<action name="shipment.download" method="printShipment" class="shipmentAction">
 		    <result type="redirectAction" name="success">list.shipment</result>
+		    <result type="tiles" name="input">searchShipment</result>
 		</action>
 		
         <action name="product.download" method="printproducts" class="productManagerAction">
@@ -1130,6 +1132,7 @@
     	</action>
         <action name="addcustomer" method="init" class="CustomerManagerAction">
             <result type="tiles" name="success">customer</result>
+            <result type="tiles" name="input">customer</result>
        	</action>
        	<action name="createCustomer" method="save" class="CustomerManagerAction">
        		<result type="tiles" name="input">customer</result>
@@ -1694,6 +1697,7 @@
        	<!--  Reports Management  -->
         <action name="commReport" class="invoiceManagerAction" method="commReport">
             <result type="tiles" name="success">commReport</result>
+            <result type="tiles" name="input">commReport</result>
        	</action> 
        <action name="salesReport" class="invoiceManagerAction" method="salesReport">
             <result type="tiles" name="success">salesReport</result>

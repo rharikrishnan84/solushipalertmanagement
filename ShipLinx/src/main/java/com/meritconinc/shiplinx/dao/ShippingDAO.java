@@ -1,6 +1,7 @@
 package com.meritconinc.shiplinx.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.model.BillingStatus;
@@ -189,4 +190,7 @@ public interface ShippingDAO {
 		  		        String chargeCodeLevel2, int chargeGroupId);
   public CarrierChargeCode getChargeByCarrierAndCodesGroup(long carrierId, String chargeCode,
 		  		      String chargeCodeLevel2, int chargeGroupId);
+  public void updateShippingOrderBillingStatus(Map<String,Object> details);
+  public void updateLoggedEvent(Map<String,Object> details);
+  public String getTrackingNumberFromPackage(String trackingNumber);
 }

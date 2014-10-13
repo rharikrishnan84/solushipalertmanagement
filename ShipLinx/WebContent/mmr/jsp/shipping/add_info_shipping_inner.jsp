@@ -142,7 +142,9 @@
 					<s:if test="entityType==26">
 					<mmr:message messageId="label.shipping.status.name.terminal"/>
 					</s:if>
-				
+				<s:if test="entityType==50">
+					<mmr:message messageId="label.shipping.status.exception"/>
+					</s:if>
 				 
 				</td>
 				   <td style="text-align: left;"><s:property value="message"/></td>

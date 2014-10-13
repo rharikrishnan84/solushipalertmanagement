@@ -39,5 +39,5 @@ public interface CustomerManager{
 	public boolean isWarehouseCustomer(long customerId);
 	
 	public List<CustomerSalesUser> getCustomerSalesInformation(long customerId);
-	
+	public boolean sendSalesRepAddCustomerMailNotification(Customer customer, User user);	
 }

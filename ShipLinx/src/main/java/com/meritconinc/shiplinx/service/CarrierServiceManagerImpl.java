@@ -324,6 +324,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                 	}
                 	
                 	upsShippingOrderThread = shippingorderThread;
+                	 if(shippingorderThread.getFromRatingList()!=null && shippingorderThread.getToRatingList()!=null){
+    		        	 findCheapestRate(ratingList, shippingorderThread);	         	
+    		          }
                 }
                 
                 ///////End UPS Issue
@@ -2382,9 +2385,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         	        	            }
         	        	  		orderThread.setToRatingList(toRatingList);
         	        	  	}
-        	            if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
+        	           /* if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
         		        	 findCheapestRate(rateListThread, orderThread);	         	
-        		          }
+        		          }*/
         	            
         	        }else{
         for (int x = 0; x < ratesThread.size(); x++) {
@@ -3796,7 +3799,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		      }
 		      return carrierServicesList;
 		 }
-		  public void findCheapestRate(List<Rating> ratesThread,ShippingOrder orderThread){
+		  public void findCheapestRate(List<Rating> ratingList,ShippingOrder orderThread){
 			  if(orderThread.getFromRatingList().size()<orderThread.getToRatingList().size()){
 					List<Rating>tempRatingList = new ArrayList<Rating>();
 					tempRatingList = orderThread.getFromRatingList();
@@ -3811,9 +3814,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 						double fromTotalCharge=orderThread.getFromRatingList().get(from).getBaseCharge();
 							double toTotalCharge=orderThread.getToRatingList().get(to).getBaseCharge();
 							if(fromTotalCharge<toTotalCharge){
-								rateListThread.add(orderThread.getFromRatingList().get(from));
+								ratingList.add(orderThread.getFromRatingList().get(from));
 							}else{
-								rateListThread.add(orderThread.getToRatingList().get(to));
+								ratingList.add(orderThread.getToRatingList().get(to));
 							}
 							break;
 						}else{
@@ -3822,7 +3825,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 						
 					}
 					if(countFlag>0 && orderThread.getToRatingList().size()>0&& countFlag==orderThread.getToRatingList().size()){
-						rateListThread.add(orderThread.getFromRatingList().get(from));
+						ratingList.add(orderThread.getFromRatingList().get(from));
 					}
 				}	
 		  }

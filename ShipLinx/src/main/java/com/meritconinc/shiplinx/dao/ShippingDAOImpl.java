@@ -690,8 +690,11 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       log.info("User " + username + " performing search from / to: " + so.getFromDate() + " / "
           + so.getToDate());
 
-      List<ShippingOrder> list = getSqlMapClientTemplate().queryForList("findShipments", so);
+      List<ShippingOrder> list = new ArrayList<ShippingOrder>();
       List<ShippingOrder> list_match = new ArrayList<ShippingOrder>();
+    		 if(!role.equalsIgnoreCase("busadmin")){ 
+    			 list = getSqlMapClientTemplate().queryForList("findShipments", so);
+    		 }
       if (role.equalsIgnoreCase("busadmin")) {
         List<ShippingOrder> list2 = getSqlMapClientTemplate()
             .queryForList("findShipmentsAdmin", so);
@@ -1251,4 +1254,46 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 		  		  	      return null;
 		  		  	    return searchResult.get(0);
 		  		     }
+		        
+		        public void updateLoggedEvent(Map<String,Object> details) {
+		        						// TODO Auto-generated method stub
+		        						ShippingOrder shippingOrder=new ShippingOrder(); 		        						
+		        						details.put("entityType", ShiplinxConstants.PAYMENT_EXCEPTION);
+		        						details.put("deleteFlag", false);
+		        						// shippingOrder=(ShippingOrder)getSqlMapClientTemplate().queryForObject("selectOrderId",
+		        						// details);
+		        						long orderId = (Long) getSqlMapClientTemplate().queryForObject(
+		        								"getOrderFromPackageUsingPin", details.get("trackingNo"));
+		        						shippingOrder = (ShippingOrder) getSqlMapClientTemplate()
+		        								.queryForObject("getShippingOrderById", orderId);
+		        						details.put("orderId", orderId);
+		        						if( details.get("podDate") == null){
+		        							details.put("podDate", shippingOrder.getScheduledShipDate());
+		        						}
+		        						if(shippingOrder.getCustomerId() != null && shippingOrder.getCustomerId() !=0){
+		        							details.put("customerId", shippingOrder.getCustomerId());
+		        							String customerName=(String)getSqlMapClientTemplate().queryForObject("getCustomerNameByCustomerId",details);
+		        							details.put("userName", customerName);
+		        						}
+		        						else{
+		        							details.put("userName", "admin");
+		        						}
+		        							
+		        						getSqlMapClientTemplate().insert("updateLoggedEvent", details);
+		        					}
+
+				@Override
+				public void updateShippingOrderBillingStatus(
+						Map<String, Object> details) {
+					// TODO Auto-generated method stub
+					long orderId = (Long)getSqlMapClientTemplate().queryForObject("getOrderFromPackageUsingPin",details.get("trackingNo"));
+										if(orderId>0){
+											details.put("orderId",orderId);
+											getSqlMapClientTemplate().update("updateBillingStatus",details);
+										}
+					
+				}
+				public String getTrackingNumberFromPackage(String trackingNumber){ 
+										return (String)getSqlMapClientTemplate().queryForObject("getTrackingNumberFromPackage",trackingNumber);
+									}
 }

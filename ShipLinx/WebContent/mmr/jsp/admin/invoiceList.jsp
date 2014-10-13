@@ -24,14 +24,23 @@
 		$(document).ready(function() {
 		 
 			$("#check_all").click(function(){
-			alert('sdf');
+				if(this.checked){
+					$(".check_uncheck_row").each(function(){
+						this.checked=true;		
+					});
+				}else{
+					$(".check_uncheck_row").each(function(){
+						this.checked=false;		
+					});
+				}
+			/* alert('sdf');
 				var temp=$(this).attr("checked");
 				if(temp){
-			    $("#dataTable-checkbox").attr("checked","checked");
+			    $(".check_uncheck_row").attr("checked","checked");
 				}
 				else{
-				$("#dataTable-checkbox").removeAttr("checked");
-				}
+				$(".check_uncheck_row").removeAttr("checked");
+				} */
 			});
 			
 			/*$('.gridedit').click(function(){
@@ -68,7 +77,6 @@
 					     //confirm("this is value is value checked variable "+value_checked+"  this is value is from shipmentid "+shipmentid);
 					     //stored_value = stored_value + value_checked + ",";
 					     stored_value=stored_value+invoiceId+",";
-					     alert("The Invoice Number: "+invoiceId+" send");
 					    }
 					   }
 					   window.location.href = "sendNotification.email.action?stored_value="+ stored_value;
@@ -81,7 +89,16 @@
 	
 	$(window).load(function() {
 	
-	$('#sample1').dataTable(); 
+	$('#sample1').dataTable({
+		
+		aoColumnDefs: [
+	                   {
+	                      bSortable: false,
+	                      "bSearchable": false,
+	                      aTargets: [ 0 ]
+	                   }
+	                 ]
+	}); 
 	
 	
  });
@@ -381,7 +398,7 @@
 			<table cellpadding="0" cellspacing="0"   border="0px" class="display" id="sample1" width="100%">
 				<thead>
 					<tr style="height:25px">
-						<th style="width:30px !important; text-align:center;"><input type="checkbox"  name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
+						<th style="width:30px !important; text-align:center;"><input type="checkbox" id="check_all"  name="check_uncheck" style="margin: 0 0 0 4px" /></th>
 						<th>Inv #</th>
 						<th>Company</th>
 						<th>Date Created</th>

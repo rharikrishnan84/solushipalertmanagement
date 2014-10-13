@@ -197,7 +197,7 @@ public class EdiPurolatorParser extends EdiParser {
 					// New record
 					item = new EdiItem();
 					item.setBusinessId(ediInfo.getBusinessId());
-					item.setCarrierId(ediInfo.getCarrierId());
+					item.setCarrierId((long)ShiplinxConstants.CARRIER_PUROLATOR);
 					item.setEdiFileName(fileName);
 					item.setMessage("text.message.status.process.inprogress");
 					item.setStatus(ShiplinxConstants.STATUS_INPROGRESS);
@@ -274,7 +274,7 @@ public class EdiPurolatorParser extends EdiParser {
 			shipment.setFromZone(getEdiField(ORIGIN_ZONE_ID)); 
 			
 			//first try and set service id from dbShipment
-			if(shipment.getDbShipment()!=null && shipment.getDbShipment().getServiceId() > 0)
+			if(shipment.getDbShipment()!=null && shipment.getDbShipment().getServiceId()!=null && shipment.getDbShipment().getServiceId() > 0)
 				shipment.setServiceId(shipment.getDbShipment().getServiceId());
 			else {
 				if (service != null)

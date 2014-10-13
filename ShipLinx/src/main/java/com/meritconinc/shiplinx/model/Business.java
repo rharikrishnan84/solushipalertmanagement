@@ -15,6 +15,7 @@ public class Business {
 	private String logoHiResFileName;
 	private String logoURL;
 	private long addressId;
+	private long usAddressId;
 	private boolean active;
 	private Date dateCreated;
 	private String subdomain;
@@ -22,7 +23,7 @@ public class Business {
 	private String supportURL;
 	
 	private Address address;
-	
+	private Address usAddress;
 	private String headerKey;
 	
 	private String smtpHost;
@@ -359,6 +360,18 @@ public class Business {
 	}
 	public void setLogoURL(String logoURL) {
 		this.logoURL = logoURL;
+	}
+	public long getUsAddressId() {
+		return usAddressId;
+	}
+	public void setUsAddressId(long usAddressId) {
+		this.usAddressId = usAddressId;
+	}
+	public Address getUsAddress() {
+		return usAddress;
+	}
+	public void setUsAddress(Address usAddress) {
+		this.usAddress = usAddress;
 	}
 	
 	

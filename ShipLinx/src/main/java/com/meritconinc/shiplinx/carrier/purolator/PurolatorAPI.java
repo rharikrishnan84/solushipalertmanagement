@@ -6,16 +6,24 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.shiplinx.carrier.CarrierService;
 import com.meritconinc.shiplinx.carrier.purolator.stub.EstimatingServiceClient;
 import com.meritconinc.shiplinx.carrier.purolator.stub.PickUpServiceClient;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ShippingDocumentsServiceClient;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ShippingServiceClient;
+import com.meritconinc.shiplinx.carrier.purolator.stub.TrackingPackageClient;
+import com.meritconinc.shiplinx.carrier.purolator.ws.tracking.proxy.DeliveryScan;
+import com.meritconinc.shiplinx.carrier.purolator.ws.tracking.proxy.DeliveryScanDetails;
+import com.meritconinc.shiplinx.carrier.purolator.ws.tracking.proxy.GetDeliveryDetailsRequestContainer;
+import com.meritconinc.shiplinx.carrier.purolator.ws.tracking.proxy.TrackingInformation;
 import com.meritconinc.shiplinx.carrier.utils.PurolatorException;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
@@ -338,6 +346,13 @@ public class PurolatorAPI implements CarrierService{
 	}
 
 	
-
+	public void trackShipmentByPins(List<String> pins){
+				try{
+				TrackingPackageClient trackingPackageClient=new TrackingPackageClient();
+				trackingPackageClient.getdeliveryDetails(pins);
+				}catch(Exception e){
+				e.printStackTrace();
+				}
+			}
 
 }

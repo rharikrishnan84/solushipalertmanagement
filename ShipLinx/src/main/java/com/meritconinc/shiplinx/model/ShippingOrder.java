@@ -248,6 +248,14 @@ public class ShippingOrder implements Serializable {
   private String toProvinceName; 
   private List<Rating> fromRatingList;
   private List<Rating> toRatingList;
+  private boolean addChargeFromAdmin = false;
+  public boolean isAddChargeFromAdmin() {
+  	return addChargeFromAdmin;
+  }
+  
+  public void setAddChargeFromAdmin(boolean addChargeFromAdmin) {
+  	this.addChargeFromAdmin = addChargeFromAdmin;
+  }
   public String getFromProvinceName() {
 	return fromProvinceName;
 }
@@ -1113,6 +1121,9 @@ public void setToProvinceName(String toProvinceName) {
     else if (billingStatus != null
         && billingStatus.intValue() == ShiplinxConstants.BILLING_STATUS_COLLECT)
       return ShiplinxConstants.BILL_TO_COLLECT;
+    else if (billingStatus != null
+            && billingStatus.intValue() == ShiplinxConstants.PAYMENT_BILLING_EXCEPTION)
+          return ShiplinxConstants.BILLING_STATUS_EXCEPTION;
 
     return "";
   }

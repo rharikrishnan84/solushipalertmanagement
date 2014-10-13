@@ -200,7 +200,7 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 				item = init();
 			
 			if (this.ediManagerService != null && method==null) {
-				ediItemList = this.ediManagerService.findEdiItems(item);
+				ediItemList = this.ediManagerService.findEdiItems(item);		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -802,4 +802,54 @@ public class CustomerManagerImpl implements CustomerManager {
 	public boolean isWarehouseCustomer(long customerId) {
 		return customerDAO.isWarehouseCustomer(customerId);
 	}
+	public boolean sendSalesRepAddCustomerMailNotification(Customer customer, User user) {
+						boolean boolret = true;
+						try {
+							String locale = user.getLocale();
+							String subject = MessageUtil.getMessage(user.getBusiness()
+									.getAddCustomerNotificationSubject());
+							 String body = MessageUtil.getMessage("message.send.salesrep.addcustomer.notification.body", locale);
+							if (body == null || body.length() == 0) {
+								log.error("Cannot find template to send customer notification for business "
+										+ user.getBusiness().getName());
+								return false;
+							}
+				            
+						body = new String(body.replaceAll("%CUSTOMERNAME",
+									customer.getName()));
+							body = new String(body.replaceAll("%ACCOUNT",
+									customer.getAccountNumber()));
+							body = new String(body.replaceAll("%CONTACTNAME", customer
+									.getAddress().getContactName()));
+							body = new String(body.replaceAll("%SALESREP",
+									user.getFirstName()+" "+user.getLastName()));
+							body = new String(body.replaceAll("%ADDRESS1", customer
+									.getAddress().getAddress1()));
+							body = new String(body.replaceAll("%CITY", customer.getAddress()
+									.getCity()));
+							body = new String(body.replaceAll("%ZIP", customer.getAddress()
+									.getPostalCode()));
+							body = new String(body.replaceAll("%PROVINCE", customer
+									.getAddress().getProvinceCode()));
+							body = new String(body.replaceAll("%COUNTRY", customer.getAddress()
+									.getCountryCode()));
+				            
+							String emailAddress = user.getBusiness().getAddress()
+									.getEmailAddress();
+							String emails[] = emailAddress.split(";");
+							
+							MailHelper.sendEmailNow2(user.getBusiness().getSmtpHost(), user
+									.getBusiness().getSmtpUsername(), user.getBusiness()
+									.getSmtpPassword(), user.getBusiness().getName(), user
+									.getBusiness().getSmtpPort(), emails[0], user.getBusiness().getAddress()
+									.getEmailAddress(), null, subject, body, null, true);
+						} catch (MessagingException e) {
+							log.error("Error sending email: ", e);
+							boolret = false;
+						} catch (Exception e) {
+							log.error("Error sending email: ", e);
+							boolret = false;
+						}
+						return boolret;
+					}
 }

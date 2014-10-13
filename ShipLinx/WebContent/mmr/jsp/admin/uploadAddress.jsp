@@ -10,6 +10,10 @@
 <SCRIPT language="JavaScript">
 	function processNow() 
 	{	
+		<% 
+			    HttpSession httpSession = request.getSession();
+			    httpSession.setAttribute("FirstTime",null);
+			%>
 		if(document.getElementById("erase_add_cb_id").checked)
 		{
 			document.uploadAddform.action= "uploadaddressbook.action?delete=true";
@@ -54,7 +58,7 @@
 				<div class="cont_hdr_title" id="srch_crtra"><mmr:message messageId="menu.upload.addressbook"/></div>
 				<div class="form_buttons">
 					<s:a href="address_book_template.zip" cssStyle="text-decoration: none;">DOWNLOAD</s:a>	
-					<a id="upload_icon"  border="0" onclick="processNow();">UPLOAD</a>		
+					<a href="#" id="upload_icon"  border="0" onclick="processNow();">UPLOAD</a>		
 				</div>
 			</div>
 			<div class="cont_data_body" id="addupld_srch_table">

@@ -314,7 +314,7 @@ function manifestEOD(){
              <tr>
 				<td>
 				<s:hidden name="selectedShipments[%{#index}].id" value="%{id}"/>
-					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" name="check_uncheck" />
+					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" />
 					  <s:hidden name="selectedShipments[%{#index}].statusId" id="selectedShipments[%{#index}].statusId" value="%{statusId}"/>
 					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoice.id"/>" />
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />

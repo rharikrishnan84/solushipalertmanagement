@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
@@ -25,7 +26,7 @@ public interface InvoiceManager {
 	public void processAR(List<Invoice> invoicesToUpdate);
 	public List<ARTransaction> searchARTransaction(ARTransaction arTransaction);
 	public void getInvoicePdf(Long id, String url, OutputStream outStream, boolean detailed) throws Exception;
-
+	public void getSalesInvoicePdf(Long id, String url, OutputStream outStream, boolean detailed,String salesUser) throws Exception;
 	public boolean cancelInvoice(long invoiceId);
 	 
 	public List<Invoice> generateCommReport(Invoice invoice);
@@ -44,4 +45,10 @@ public interface InvoiceManager {
 	public void updateInvoiceStatus(List<Invoice> invoicesToUpdate);
 	
 	public ARTransaction getinvoicebyinvoiceid(long invoiceid);
+	public void updateInvoiceStatusCommission(List<Invoice> invoicesToUpdate);
+			
+			public List<Invoice> searchInvoicesAr(Invoice invoice);
+				public List<Invoice> searchInvoicesArSearch1(Invoice invoice);
+			public List<Commission> searchCommissions(Commission commission);
+			public void deleteCommission(long invoiceId);	
 }

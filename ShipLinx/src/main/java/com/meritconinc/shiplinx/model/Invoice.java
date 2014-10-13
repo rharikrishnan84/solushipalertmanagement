@@ -56,6 +56,24 @@ public class Invoice {
 
 	private int[] paymentStatusList = new int[10];
 	private String salesRep;
+	private int repPaid;
+	private int[] repPaidList = new int[10];
+	
+	public int getRepPaid() {
+		return repPaid;
+	}
+
+	public void setRepPaid(int repPaid) {
+		this.repPaid = repPaid;
+	}
+
+	public int[] getRepPaidList() {
+		return repPaidList;
+	}
+
+	public void setRepPaidList(int[] repPaidList) {
+		this.repPaidList = repPaidList;
+	}
 
 	public String getSalesRep() {
 		return salesRep;

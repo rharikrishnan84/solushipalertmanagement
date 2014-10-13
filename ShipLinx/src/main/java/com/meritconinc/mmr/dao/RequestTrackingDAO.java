@@ -5,7 +5,7 @@ import java.util.List;
 import com.meritconinc.mmr.model.common.RequestDetailsVO;
 
 public interface RequestTrackingDAO {
-
+	static final long serialVersionUID = 1L;
   /**
    * insertRequestTracking(), inserts request tracking details and request parameters in
    * fmk_navigation_log and fmk_navigation_param_log table respectively.

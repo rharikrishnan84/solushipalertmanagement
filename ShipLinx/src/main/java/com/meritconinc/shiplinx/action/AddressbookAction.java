@@ -230,6 +230,18 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 	
 	
 	public String upload(){
+		try{
+							if(null == (Boolean) getSession().get("FirstTime")){
+								getSession().put("FirstTime", true);
+								
+							}else if(null != (Boolean) getSession().get("FirstTime") && (Boolean) getSession().get("FirstTime")==true){
+								addActionMessage((String)getSession().get("AddressUploadActionMessage"));
+								getSession().put("FirstTime", null);
+								return SUCCESS;
+							}
+					}catch(Exception e){
+					e.printStackTrace();
+					}
 		
 		try{
 			String strmethod = request.getParameter("method");
@@ -247,14 +259,16 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 				else
 					addressService.parseFile(getLoginUser().getCustomerId()+"", dis,name, false);					
 				
-				addActionMessage(getText("upload.address.book.successfully"));
+				addActionMessage("Address Book Uploading");
+				getSession().put("AddressUploadActionMessage", "Address Book Uploading");
 			}
 		}
 		catch (ShiplinxException e) {
-				addActionError(getText("error.upload.distribution.format") + " " + e.getMessage());
+			getSession().put("AddressUploadActionMessage", getText("error.upload.distribution.format") + " " + e.getMessage());
 				return INPUT;
 			}catch (Exception e) {
 				addActionError(getText("error.upload.distribution"));
+				getSession().put("AddressUploadActionMessage", getText("error.upload.distribution"));
 				return INPUT;
 			}
 			

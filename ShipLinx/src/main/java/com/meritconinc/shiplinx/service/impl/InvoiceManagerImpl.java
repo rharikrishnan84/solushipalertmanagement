@@ -47,6 +47,7 @@ import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
+import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
@@ -54,6 +55,7 @@ import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
 import com.meritconinc.shiplinx.model.Package;
 import com.meritconinc.shiplinx.model.SalesRecord;
+import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.CreditCardTransactionManager;
 import com.meritconinc.shiplinx.service.InvoiceManager;
@@ -354,7 +356,73 @@ public class InvoiceManagerImpl implements InvoiceManager {
 
         shippingDAO.updateShippingOrder(order);
       }
-      // Determine the payment status of the invoice
+      
+ //// Calculate Commission Written By Mohan R on 18-09-2014
+      /*List<CustomerSalesUser> customerSalesUserList = new ArrayList<CustomerSalesUser>();
+            customerSalesUserList = customerDAO.getCustomerSalesInformation(customerId);
+            for(CustomerSalesUser customerSalesUser:customerSalesUserList){
+          	  double totalCommissionAmount = 0.0;
+          	  double totalCHB=0.0;
+          	  double totalLTL=0.0;
+          	  double totalSPD=0.0;
+          	  Commission commission = new Commission();
+          	  for (ShippingOrder order : ordersInInvoice) {
+          		  Service service=shippingDAO.getServiceById(order.getServiceId());
+          		  for (Charge charge : allChargesForInvoice) {
+            Long carrier_id=((charge.getCarrierId()!=null && charge.getCarrierId()>0)?charge.getCarrierId():order.getCarrierId());
+            CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id,
+      	              charge.getChargeCode(), charge.getChargeCodeLevel2(), charge.getChargeGroupId());
+            double totalCostForOrder = 0, totalChargeForOrder = 0;
+            if (ccc == null || ccc.isTax())
+                continue;
+            if(charge!=null && charge.getCost()!=null){
+                totalCostForOrder = FormattingUtil.add(charge.getCost().doubleValue(), totalCostForOrder)
+                    .doubleValue();
+                totalChargeForOrder = FormattingUtil
+                    .add(charge.getCharge().doubleValue(), totalChargeForOrder).doubleValue();
+                }
+            
+            double commissionPerc = 0; // to be determined based on the
+            if (service.getEmailType().equalsIgnoreCase(ShiplinxConstants.LTL_EMAIL_TYPE)){
+          	  commissionPerc = customerSalesUser.getCommissionPercentagePerPalletService();
+          	  totalLTL +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+            }
+        else if (service.getEmailType().equalsIgnoreCase(ShiplinxConstants.SPS_EMAIL_TYPE)){
+          commissionPerc = customerSalesUser.getCommissionPercentagePerSkidService();
+          totalSPD +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+        }
+        else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE)){
+      	  commissionPerc=customerSalesUser.getCommisionPercentagePerCHB();// default
+            totalCHB +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+        }
+           double commissionAmount = (totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+           
+           totalCommissionAmount+=commissionAmount;
+          		  }
+          	  }
+          	  commission.setCommissionPayable(totalCommissionAmount);
+          	  commission.setInvoiceId(invoiceId);
+          	  commission.setUserId(Long.valueOf(customerSalesUser.getId()));
+          	  commission.setCustomerName(customer.getName());
+          	  invoiceDAO.updateInvoiceCommissionAmount(commission);
+          	  commission.setSalesUser(customerSalesUser.getSalesAgent());
+          	  commission.setUserId(new Long(customerSalesUser.getId()));
+                commission.setCustomerId(i.getCustomerId());
+                commission.setInvoiceNum(i.getInvoiceNum());
+                commission.setRepPaid(i.getPaymentStatus());
+                commission.setCustomerPaid(i.getPaymentStatus());
+                commission.setCostTotal(i.getInvoiceCost());
+                commission.setInvoiceTotal(i.getInvoiceAmount());
+                commission.setInvoiceId(invoiceId);
+                commission.setDateCreated(new Timestamp(new Date().getTime()));
+                commission.setTotalCHB(totalCHB);
+            	  commission.setTotalLTL(totalLTL);
+            	  commission.setTotalSPD(totalSPD);
+                if(commission.getCommissionPayable()>0)
+                invoiceDAO.createcommission(commission);
+            }     */      
+            ///End Of Commission Calculation
+            // Determine the payment status of the invoice
       if (i.getBalanceDue() == 0)
         i.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);
       else if (i.getBalanceDue() > 0 && i.getBalanceDue() < i.getTotalInvoiceCharge()) {
@@ -483,7 +551,65 @@ public class InvoiceManagerImpl implements InvoiceManager {
     }
 
     invoiceDAO.updateInvoice(i);
-
+////Calculate Commission Written By Mohan R on 18-09-2014
+    List<Commission> commissions = invoiceDAO.getCommissionsByInvoiceId(i.getInvoiceId());
+        if(commissions!=null && commissions.size()>0){
+    List<CustomerSalesUser> customerSalesUserList = new ArrayList<CustomerSalesUser>();
+    customerSalesUserList = customerDAO.getCustomerSalesInformation(i.getCustomerId());
+    for(CustomerSalesUser customerSalesUser:customerSalesUserList){
+  	  double totalCommissionAmount = 0.0;
+  	  double totalCHB=0.0;
+	  double totalLTL=0.0;
+	  double totalSPD=0.0;
+  	  Commission commission = new Commission();
+  	  for (ShippingOrder order : i.getOrders()) {
+  		  Service service=shippingDAO.getServiceById(order.getServiceId());
+  		  List<Charge> charges=shippingDAO.getShippingOrderChargesByInvoice(order.getId(), i.getInvoiceId());
+  		  for (Charge charge : charges) {
+    Long carrier_id=((charge.getCarrierId()!=null && charge.getCarrierId()>0)?charge.getCarrierId():order.getCarrierId());
+    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id,
+              charge.getChargeCode(), charge.getChargeCodeLevel2(), charge.getChargeGroupId());
+    double totalCostForOrder = 0, totalChargeForOrder = 0;
+    if (ccc == null || ccc.isTax())
+        continue;
+    if(charge!=null && charge.getCost()!=null){
+        totalCostForOrder = FormattingUtil.add(charge.getCost().doubleValue(), totalCostForOrder)
+            .doubleValue();
+        totalChargeForOrder = FormattingUtil
+            .add(charge.getCharge().doubleValue(), totalChargeForOrder).doubleValue();
+        }
+    
+    double commissionPerc = 0; // to be determined based on the
+    if (service.getEmailType().equalsIgnoreCase(ShiplinxConstants.LTL_EMAIL_TYPE)){
+  	  commissionPerc = customerSalesUser.getCommissionPercentagePerPalletService();
+  	  totalLTL +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+    }
+else if (service.getEmailType().equalsIgnoreCase(ShiplinxConstants.SPS_EMAIL_TYPE)){
+  commissionPerc = customerSalesUser.getCommissionPercentagePerSkidService();
+  totalSPD +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+}
+else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE)){
+	  commissionPerc=customerSalesUser.getCommisionPercentagePerCHB();// default
+    totalCHB +=(totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+}
+   double commissionAmount = (totalChargeForOrder - totalCostForOrder) * commissionPerc / 100;
+   
+   totalCommissionAmount+=commissionAmount;
+  		  }
+  	  }
+  	  commission.setCostTotal(i.getInvoiceCost());
+  	  commission.setInvoiceTotal(i.getInvoiceAmount());
+  	  commission.setCommissionPayable(totalCommissionAmount);
+  	  commission.setInvoiceId(i.getInvoiceId());
+  	  commission.setUserId(Long.valueOf(customerSalesUser.getId()));
+  	  commission.setTotalCHB(totalCHB);
+ 	  commission.setTotalLTL(totalLTL);
+ 	  commission.setTotalSPD(totalSPD);
+  	  if(commission.getCommissionPayable()>0)
+  	  invoiceDAO.updateInvoiceCommissionAmount(commission);
+    }  
+        }
+    ///End Of Commission Calculation
   }
 
   public boolean cancelInvoice(long invoiceId) {
@@ -686,6 +812,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
             FormattingUtil.DATE_FORMAT_WEB);
         transaction.setPaymentDate(new Timestamp(paymentDate.getTime()));
       }
+      addARTransactionCommission(transaction);
       addARTransaction(transaction);
 
     }
@@ -774,12 +901,36 @@ public class InvoiceManagerImpl implements InvoiceManager {
       throw e;
     }
   }
+  
+  public void getSalesInvoicePdf(Long id, String url, OutputStream outStream, boolean detailed,String salesUser)
+	      throws Exception {
+	    try {
+	      Invoice invoice = getInvoiceById(id);
+
+	      PDFRenderer pdfRenderer = new PDFRenderer();
+
+	      String mainPDFFileName = pdfRenderer.getUniqueTempPDFFileName("invoice"
+	          + invoice.getInvoiceNum());
+	      generateSalesInvoiceMainPage(url, invoice, mainPDFFileName,salesUser);
+	      ArrayList<String> srcList = new ArrayList<String>();
+	      srcList.add(mainPDFFileName);
+	      pdfRenderer.concatPDF(srcList, outStream);
+
+	      // delete temp files
+	      pdfRenderer.deleteFiles(srcList);
+
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	      throw e;
+	    }
+	  }
 
   @SuppressWarnings("unchecked")
-  private boolean generateInvoiceMainPage(String url, Invoice invoice, String fileName)
+  private boolean generateSalesInvoiceMainPage(String url, Invoice invoice, String fileName, String salesUser)
       throws Exception {
     // String fileName = getUniqueTempPDFFileName("mainInvoice");
-
+  Commission commission = invoiceDAO.getcommissionbyId(invoice.getInvoiceId(), salesUser);
+  boolean flag = true;  // flag for showing totalSPD,totalLTL,totalCHB
     long start = System.currentTimeMillis();
     if (invoice != null && invoice.getCustomer() != null && invoice.getBusinessId() != null
         && invoice.getOrders() != null) {
@@ -859,6 +1010,10 @@ public class InvoiceManagerImpl implements InvoiceManager {
           parameters.put("Status", statusId);
           parameters.put("PackageWeight", packageWeight);
           parameters.put("PackageBilledWeight", packageBilledWeight);
+          parameters.put("SalesUserFlag", flag);
+          parameters.put("totalSPD", String.valueOf(commission.getTotalSPD()));
+          parameters.put("totalLTL", String.valueOf(commission.getTotalLTL()));
+          parameters.put("totalCHB", String.valueOf(commission.getTotalCHB()));
           String logoPath = "/images/" + business.getLogoFileName();
           String logo2Path = "/images/" + business.getLogoHiResFileName();
           URL logo = (InvoiceManagerImpl.class.getResource(logoPath));
@@ -884,6 +1039,119 @@ public class InvoiceManagerImpl implements InvoiceManager {
     log.debug("Time to generate Shipment Invoice Main Page : " + (end - start) + " ms");
     return false;
   }
+  
+  private boolean generateInvoiceMainPage(String url, Invoice invoice, String fileName)
+	      throws Exception {
+	    // String fileName = getUniqueTempPDFFileName("mainInvoice");
+
+	    long start = System.currentTimeMillis();
+	    if (invoice != null && invoice.getCustomer() != null && invoice.getBusinessId() != null
+	        && invoice.getOrders() != null) {
+	      Customer customer = invoice.getCustomer();
+	      Business business = this.businessDAO.getBusiessById(invoice.getBusinessId());
+	      if (business != null) {
+	        try {
+	          InputStream stream = null;
+
+	          if (StringUtil.isEmpty(business.getInvoicingTemplate()))
+	            stream = this
+	                .getClass()
+	                .getClassLoader()
+	                .getResourceAsStream(
+	                    "./jasperreports/src/main/java/com/meritconinc/shiplinx/service/impl/jasperreports/InvoiceMain.jasper");
+	          else
+	            stream = this
+	                .getClass()
+	                .getClassLoader()
+	                .getResourceAsStream(
+	                    "./jasperreports/src/main/java/com/meritconinc/shiplinx/service/impl/jasperreports/"
+	                        + business.getInvoicingTemplate() + ".jasper");
+
+	          JasperReport jasperReport = (JasperReport) JRLoader.loadObject(stream);
+	          log.debug("Package");
+	          List<ShippingOrder> shippingOrder = invoice.getOrders();
+	          List<Package> pack = null;
+	          List<String> statusId = new ArrayList<String>();
+	          List<String> packageHeight = new ArrayList<String>();
+	          List<String> packageWidth = new ArrayList<String>();
+	          List<String> packageLength = new ArrayList<String>();
+	          List<String> packageDimmedString = new ArrayList<String>();
+	          List<String> packageWeight = new ArrayList<String>();
+	          List<String> packageBilledWeight = new ArrayList<String>();
+	          for (ShippingOrder so : shippingOrder) {
+	            long orderId = so.getId();
+	            if (so.getStatusId() != null) {
+	              statusId.add(so.getStatusId().toString());
+	            } else {
+	              statusId.add("0");
+	            }
+	            pack = shippingDAO.getShippingPackages(orderId);
+	            if (pack != null) {
+	              for (Package p : pack) {
+	                if (p.getHeight() != null && p.getWeight() != null && p.getLength() != null) {
+	                  packageHeight.add(p.getHeight().toString());
+	                  packageWidth.add(p.getWidth().toString());
+	                  packageLength.add(p.getLength().toString());
+	                } else {
+	                  packageHeight.add("");
+	                  packageWidth.add("");
+	                  packageLength.add("");
+	                }
+	                if (p.getDimmedString() != null) {
+	                  packageDimmedString.add(p.getDimmedString());
+	                } else {
+	                  packageDimmedString.add("");
+	                }
+	                if (p.getWeight() != null && p.getBilledWeight() != null) {
+	                  packageWeight.add(p.getWeight().toString());
+	                  packageBilledWeight.add(p.getBilledWeight().toString());
+	                } else {
+	                  packageWeight.add("");
+	                  packageBilledWeight.add("");
+	                }
+	              }
+	            }
+	          }
+	          Map parameters = new HashMap();
+	          parameters.put("Business", business);
+	          parameters.put("Invoice", invoice);
+	          parameters.put("Customer", customer);
+	          parameters.put("PackageHeight", packageHeight);
+	          parameters.put("PackageWidth", packageWidth);
+	          parameters.put("PackageLength", packageLength);
+	          parameters.put("PackageDimmedString", packageDimmedString);
+	          parameters.put("Status", statusId);
+	          parameters.put("PackageWeight", packageWeight);
+	          parameters.put("PackageBilledWeight", packageBilledWeight);
+	          parameters.put("totalSPD","");
+	          parameters.put("totalLTL", "");
+	          parameters.put("totalCHB", "");
+	          String logoPath = "/images/" + business.getLogoFileName();
+	          String logo2Path = "/images/" + business.getLogoHiResFileName();
+	          URL logo = (InvoiceManagerImpl.class.getResource(logoPath));
+	          URL logo2 = (InvoiceManagerImpl.class.getResource(logo2Path));
+	          parameters.put("logo", logo);
+	          parameters.put("logo2", logo2);
+
+	          JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(invoice.getOrders());
+
+	          JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, ds);
+
+	          JasperExportManager.exportReportToPdfFile(jasperPrint, fileName);
+	          return true;
+
+	        } catch (Exception e) {
+	          log.error("Could not generate Shiplinx Invoice Main !!");
+	          e.printStackTrace();
+	          throw e;
+	        }
+	      }
+	    }
+	    long end = System.currentTimeMillis();
+	    log.debug("Time to generate Shipment Invoice Main Page : " + (end - start) + " ms");
+	    return false;
+	  }
+  
 
   // Comm report generation
   // Total charge minus total cost gives the commissionable amount. Taxes not
@@ -910,8 +1178,10 @@ public class InvoiceManagerImpl implements InvoiceManager {
     }
     List<Invoice> invoices;
     if (invoice.getPaymentStatusList()[0] != 50) {
-      invoices = invoiceDAO.searchInvoices(invoice);
+    	invoice.setRepPaid(invoice.getPaymentStatusList()[0]);
+    	invoices = invoiceDAO.searchInvoicesCommission(invoice);
     } else {
+    	invoice.setRepPaid(50);
       invoices = invoiceDAO.searchPaidToRepInvoices(invoice);
     }
     // sort the list of invoices by customer
@@ -970,7 +1240,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
         i.setCommissionAmount(FormattingUtil.add(commissionAmount, i.getCommissionAmount())
             .doubleValue());
       }
-
+      i.setPaymentStatusString(invoiceDAO.getinvoicestatusbyId(invoice.getRepPaid()));
     }
 
     return invoices;
@@ -1083,7 +1353,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
 	      flageMail = false;
 
 	      if (invoice.getCustomer().getInvoicingEmail() != null
-	          && invoice.getCustomer().getInvoicingEmail() != ""
+	    		  && !invoice.getCustomer().getInvoicingEmail().equals("")
 	          && !invoice.getCustomer().getInvoicingEmail().isEmpty()) {
 
 	        for (i = 0; i < invoiceMail.size(); i++) {
@@ -1099,7 +1369,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
 	        }
 	      }
 	      if (invoice.getCustomer().getInvoicingEmail() != null
-	          && invoice.getCustomer().getInvoicingEmail() != ""
+	    		  && !invoice.getCustomer().getInvoicingEmail().equals("")
 	          && !invoice.getCustomer().getInvoicingEmail().isEmpty()) {
 	        if (flag == false && flagInvoiceMail == false) {
 	          invoiceMail.add(invoice.getCustomer().getInvoicingEmail());
@@ -1111,7 +1381,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
 	      }
 	      if (flag == true) {
 	        if (invoice.getCustomer().getInvoicingEmail() != null
-	            && invoice.getCustomer().getInvoicingEmail() != ""
+	        		&& !invoice.getCustomer().getInvoicingEmail().equals("")
 	            && !invoice.getCustomer().getInvoicingEmail().isEmpty()) {
 	          invoiceMail.add(invoice.getCustomer().getInvoicingEmail());
 	        } else {
@@ -1752,5 +2022,114 @@ public class InvoiceManagerImpl implements InvoiceManager {
 	  return invoiceDAO.getinvoicebyinvoiceid(invoiceid);
 	   
 	 }
-
+  public void updateInvoiceStatusCommission(List<Invoice> invoicesToUpdate) {
+	  	  	    for (Invoice invoice : invoicesToUpdate) {
+	  	  	      invoice.setPaymentStatus(invoice.INVOICE_STATUS_PAID_TO_REP);
+	  	  	      invoiceDAO.updateInvoiceStatusCommission(invoice);
+	  	  	    }
+	    
+	  	  	  }
+	  	    
+	  	    public void addARTransactionCommission(ARTransaction transaction) {
+	  	  	    Invoice invoice = invoiceDAO.getInvoiceById(transaction.getInvoiceId());
+	  	  	    transaction.setBusinessId(invoice.getBusinessId());
+	  	  	    transaction.setCustomerId(invoice.getCustomerId());
+	  	  	    if(transaction.getAmount()!=null){
+	  	  	    invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
+	  	  	        transaction.getAmount().doubleValue()).doubleValue());
+	  	  	    }
+	  	  	    if (invoice.getBalanceDue() == 0)
+	  	  	      invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);
+	  	  	    else if (invoice.getBalanceDue() > 0
+	  	  	        && invoice.getBalanceDue() < invoice.getTotalInvoiceCharge()) {
+	  	  	      log.info("Invoice id: " + invoice.getInvoiceId() + " . Total Charge / Balance Due : "
+	  	  	          + invoice.getTotalInvoiceCharge() + " / " + invoice.getBalanceDue());
+	  	  	      invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PARTIAL_PAID);
+	  	  	    }
+	  	  
+	  	  	    invoiceDAO.updateInvoiceCommission(invoice);
+	  	  
+	  	  
+	  	  	  }
+	  	   
+	  	    public List<Invoice> searchInvoicesAr(Invoice invoice) {
+	  	  
+	  	  	    if (invoice.getFromInvoiceDate_web() != null && invoice.getFromInvoiceDate_web().length() > 0) {
+	  	  	      Date from = FormattingUtil.getDate(invoice.getFromInvoiceDate_web(),
+	  	  	          FormattingUtil.DATE_FORMAT_WEB);
+	  	  	      invoice.setFromInvoiceDate(from);
+	  	      }
+	  	  	    if (invoice.getToInvoiceDate_web() != null && invoice.getToInvoiceDate_web().length() > 0) {
+	  	  	      Date to = FormattingUtil.getDateEndOfDay(invoice.getToInvoiceDate_web(),
+	  	  	          FormattingUtil.DATE_FORMAT_WEB_ENDOFDAY);
+	  	  	      invoice.setToInvoiceDate(to);
+	  	  	    }
+	  	  
+	  	  	    boolean statusSelected = false;
+	  	  	    for (int i : invoice.getPaymentStatusList()) {
+	  	  	      if (i > 0)
+	  	  	        statusSelected = true;
+	  	  	      break;
+	  	  	    }
+	  	  	    if (!statusSelected)
+	  	  	      invoice.setPaymentStatusList(new int[0]);
+	  	  
+	  	  	    return invoiceDAO.searchInvoicesAr(invoice);
+	  	  	  }
+	  	  	    public List<Invoice> searchInvoicesArSearch(Invoice invoice) {
+	  	  	  	  
+	  	  	  	    if (invoice.getFromInvoiceDate_web() != null && invoice.getFromInvoiceDate_web().length() > 0) {
+	  	  	  	      Date from = FormattingUtil.getDate(invoice.getFromInvoiceDate_web(),
+	  	  	  	          FormattingUtil.DATE_FORMAT_WEB);
+	  	  	  	      invoice.setFromInvoiceDate(from);
+	  	  	  	    }
+	  	  	  	    if (invoice.getToInvoiceDate_web() != null && invoice.getToInvoiceDate_web().length() > 0) {
+	  	  	  	      Date to = FormattingUtil.getDateEndOfDay(invoice.getToInvoiceDate_web(),
+	  	  	  	          FormattingUtil.DATE_FORMAT_WEB_ENDOFDAY);
+	  	  	  	      invoice.setToInvoiceDate(to);
+	  	  	  	    }
+	  	  	  
+	  	  	  	    boolean statusSelected = false;
+	  	  	  	    for (int i : invoice.getPaymentStatusList()) {
+	  	  	  	      if (i > 0)
+	  	  	  	        statusSelected = true;
+	  	  	  	      break;
+	  	  	  	    }
+	  	  	  	    if (!statusSelected)
+	  	  	  	      invoice.setPaymentStatusList(new int[0]);
+	  	  	  	    invoice.setRepPaidList(invoice.getPaymentStatusList());
+	  	  	  	    return invoiceDAO.searchInvoicesArSearch(invoice);
+	  	  	  	  }
+	  	  	    
+	  	  	    public List<Invoice> searchInvoicesArSearch1(Invoice invoice) {
+	  	  
+	  	  	        if (invoice.getFromInvoiceDate_web() != null && invoice.getFromInvoiceDate_web().length() > 0) {
+	  	  	          Date from = FormattingUtil.getDate(invoice.getFromInvoiceDate_web(),
+	  	  	              FormattingUtil.DATE_FORMAT_WEB);
+	  	  	          invoice.setFromInvoiceDate(from);
+	  	  	        }
+	  	  	        if (invoice.getToInvoiceDate_web() != null && invoice.getToInvoiceDate_web().length() > 0) {
+	  	  	          Date to = FormattingUtil.getDateEndOfDay(invoice.getToInvoiceDate_web(),
+	  	  	              FormattingUtil.DATE_FORMAT_WEB_ENDOFDAY);
+	  	  	          invoice.setToInvoiceDate(to);
+	  	          }
+	  	  
+	  	          boolean statusSelected = false;
+	  	  	        for (int i : invoice.getPaymentStatusList()) {
+	  	  	          if (i > 0)
+	  	  	            statusSelected = true;
+	  	  	          break;
+	  	  	        }
+	  	  	        if (!statusSelected)
+	  	  	          invoice.setPaymentStatusList(new int[0]);
+	  	  
+	  	  	        return invoiceDAO.searchInvoices(invoice);
+	  	  	      }
+	  	  	  public List<Commission> searchCommissions(Commission commission){
+	    		  return invoiceDAO.searchCommissions(commission);
+	    	  }
+	  	  	public void deleteCommission(long invoiceId){
+	  	  		  	  		invoiceDAO.deleteCommission(invoiceId);
+	  	  	  	  	}
+	  	  	 
 }
