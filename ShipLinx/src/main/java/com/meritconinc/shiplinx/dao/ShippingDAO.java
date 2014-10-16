@@ -193,4 +193,5 @@ public interface ShippingDAO {
   public void updateShippingOrderBillingStatus(Map<String,Object> details);
   public void updateLoggedEvent(Map<String,Object> details);
   public String getTrackingNumberFromPackage(String trackingNumber);
+  public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so);
 }

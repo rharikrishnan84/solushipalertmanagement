@@ -2094,4 +2094,10 @@ public class ShippingServiceImpl implements ShippingService {
 	    return this.shippingDAO.getChargeByChargeGroupId(carrierId, chargeGroupId);
 	  }
   //End
+
+@Override
+public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so) {
+	
+	return this.shippingDAO.findShipmentsAdminById(so);
+}
 }

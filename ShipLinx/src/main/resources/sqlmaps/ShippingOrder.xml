@@ -1262,5 +1262,8 @@
 	<select id="getOrderFromPackageUsingPin" resultClass="long">
 	    select distinct p.order_id from package p left join shipping_order s on(p.order_id=s.order_id) where p.tracking_number=#trackingNo# order by order_id desc limit 1
 	</select>
+	<select id="findShipmentsAdminById" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+	select * from shipping_order where order_id=#id#
+	</select>
 </sqlMap>
 

@@ -853,7 +853,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				so.setBranch(UserUtil.getMmrUser().getBranch());
 			
 			if (this.shippingService != null) {
-				List<ShippingOrder> order =  this.shippingService.getShipments(so);
+				String orderIds[]=request.getParameter("orderList").split(",");
+				List<ShippingOrder> order = new ArrayList<ShippingOrder>();
+				
+				for(int i=0;i<orderIds.length;i++){
+					ShippingOrder or=this.shippingService.getShippingOrder(Long.parseLong(orderIds[i]));
+					order.add(or);
+				}
+				
 				if("xml".equalsIgnoreCase(type)){
 					String shippingLabelFileName = getUniqueTempxmlFileName("shipment");
 					write_XML_File(order,shippingLabelFileName);
@@ -975,11 +982,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		         		       		 		         log1.appendChild(ShipDate);
 	
 		         		       		 		    Element Carrier = doc.createElement("Carrier");
+		         		       		 		    			if(sOrder.getCarrier()!=null){
 		         		       		 				         Carrier.appendChild(doc.createTextNode(removeNull(sOrder.getCarrier().getName())));
+		         		       		 		    			}else{
+		         		       		 		    			Carrier.appendChild(doc.createTextNode(""));
+		         		       		 		    			}
 		         		       		 				         log1.appendChild(Carrier);
 		         
 		         		       		 				    Element Service = doc.createElement("Service");
+		         		       		 				    			if(sOrder.getService()!=null){
 		         		       		 						         Service.appendChild(doc.createTextNode(removeNull(sOrder.getService().getName())));
+		 		 														}else{
+		 		 															Service.appendChild(doc.createTextNode(""));
+		 		 														}
 		         		       		 						         log1.appendChild(Service);
 		         
 		         		       		 						    Element qb = doc.createElement("QB");
@@ -992,7 +1007,53 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		         		       		 										    Element QuotedCharge = doc.createElement("QuotedCharge");
 		         		       		 												         QuotedCharge.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getQuoteTotalCharge()))));
 		         		       		 												         log1.appendChild(QuotedCharge);
+		         		       		 												         
+		         		       		 												    if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("busadmin")){
+		         		       		 												   Element QuotedCost = doc.createElement("QuotedCost");
+	         		       		 												         QuotedCost.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getQuoteTotalCost()))));
+	         		       		 												         log1.appendChild(QuotedCost);
 		         		       		 										
+		         		       		 												         Element BilledCharge = doc.createElement("BilledCharge");
+		         		       		 												         BilledCharge.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge()))));
+		         		       		 												         log1.appendChild(BilledCharge);
+		         		       		 												         
+		         		       		 												    Element BilledCost = doc.createElement("BilledCost");
+	         		       		 												         BilledCost.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getActualTotalCost()))));
+	         		       		 												         log1.appendChild(BilledCost);
+		         		       		 												         		 
+		         		       		 												         if(sOrder.getFromAddress() != null){
+		         		       		 												          Element fromAddress = doc.createElement("FromAddress");
+		         		       		 												          fromAddress.appendChild(doc.createTextNode(removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sOrder.getFromAddress().getCountryName())))+"."));
+		         		       		 												          log1.appendChild(fromAddress);
+		         		       		 												         }
+		         		       		 												         	
+		         		       		 												         if(sOrder.getToAddress() != null){
+		         		       		 												         Element toAddress = doc.createElement("ToAddress");
+		         		       		 												         toAddress.appendChild(doc.createTextNode(removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sOrder.getToAddress().getCountryName())))+"."));
+		         		       		 												         log1.appendChild(toAddress);
+		         		       		 												         }
+		         
+		         Element Status = doc.createElement("Status");
+		         		         Status.appendChild(doc.createTextNode(removeNull(sOrder.getStatusName())));
+		         		         log1.appendChild(Status);
+		         		         
+		         
+		         		         Element billingstatus = doc.createElement("BillingStatus");
+		         		         billingstatus.appendChild(doc.createTextNode(removeNull(String.valueOf(sOrder.getBillingStatusText()))));
+		         		         log1.appendChild(billingstatus);
+		         		        Element Referencecode  = doc.createElement("ReferenceOne");
+		         		       		         		         Referencecode.appendChild(doc.createTextNode(removeNull(String.valueOf(sOrder.getReferenceCode()))));
+		         		       		         		         log1.appendChild(Referencecode);
+		         		       		         		         Element Reference2 = doc.createElement("ReferenceTwo");
+		         		       		         		         if(sOrder.getReferenceOne() != null && sOrder.getReferenceOne() != ""){
+		         		       	         		        	 referenceone = String.valueOf(sOrder.getReferenceOne());
+		         		       		         		         }
+		         		       		         		         if(sOrder.getReferenceTwo() != null && sOrder.getReferenceTwo() != ""){
+		         		       		         		        	 referencetwo = String.valueOf(sOrder.getReferenceTwo());
+		         		       		         		         }
+		         		       		         		         Reference2.appendChild(doc.createTextNode(removeNull(referenceone+" "+referencetwo)));
+		         		       		         		         log1.appendChild(Reference2);
+		         		       		 												    }else{
 		         		       		 												         Element BilledCharge = doc.createElement("BilledCharge");
 		         		       		 												         BilledCharge.appendChild(doc.createTextNode("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge()))));
 		         		       		 												         log1.appendChild(BilledCharge);
@@ -1029,6 +1090,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		         		       		         		         }
 		         		       		         		         Reference2.appendChild(doc.createTextNode(removeNull(referenceone+" "+referencetwo)));
 		         		       		         		         log1.appendChild(Reference2);
+		         		       		 												    }
+		         		       		 												    
 		        /* if(sOrder.getCarrierName()!=null){
 		         Carrier findCarrier = carrierServiceManager.getCarrier(sOrder.getCarrierId());
 		         Element carrier = doc.createElement("carrier");
@@ -2633,6 +2696,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				            actualTotalCost += r.getCharges().get(i).getCost();
 				            actualTotalCharge += r.getCharges().get(i).getCharge();
 				          }
+				          if(r.getCharges().get(i).getStatus()==null){
+				        	  r.getCharges().get(i).setStatus(0);
+				          }
 				        }
 
 				        shippingOrder.setQuoteTotalCost(quoteTotalCost);
@@ -3706,7 +3772,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			String fromDate=this.request.getParameter("shippingOrder.fromDate");
 			String toDate=this.request.getParameter("shippingOrder.toDate");
 			String carrierId=this.request.getParameter("shippingOrder.carrierId");
-			
 			String clickableButtonId=this.request.getParameter("d-16544-e");
 			if("5".equals(clickableButtonId) && "80".equals(carrierId)){
 				//new EODManifestCreator(fromDate,toDate);				
@@ -6138,19 +6203,40 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		    		    writer.append(',');		    
 		    		    writer.append("Quoted Charge");		    
 		    		    writer.append(',');
-		    		    writer.append("Billed Charge");		    
-		    		    writer.append(',');
-		    		    writer.append("From Address");		    
-		    		    writer.append(',');
-		    		    writer.append("To Address");		    
-		    		    writer.append(',');
-		    		    writer.append("Status");		    
-		    		    writer.append(',');
-		    		    writer.append("Billing Status");
-		    		    writer.append(',');
-		    		    		    		    writer.append("Reference 1");
-		    		    		    		    writer.append(',');
-		    		    		    		    writer.append("Reference 2");
+		    		    if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("busadmin")){
+		    		    	writer.append("Quoted Cost");		    
+			    		    writer.append(',');
+			    		    writer.append("Billed Charge");		    
+			    		    writer.append(',');
+			    		    writer.append("Billed Cost");		    
+			    		    writer.append(',');
+			    		    writer.append("From Address");		    
+			    		    writer.append(',');
+			    		    writer.append("To Address");		    
+			    		    writer.append(',');
+			    		    writer.append("Status");		    
+			    		    writer.append(',');
+			    		    writer.append("Billing Status");
+			    		    writer.append(',');
+			    		    		    		    writer.append("Reference 1");
+			    		    		    		    writer.append(',');
+			    		    		    		    writer.append("Reference 2");
+		    		    }else{
+			    		    writer.append("Billed Charge");		    
+			    		    writer.append(',');
+			    		    writer.append("From Address");		    
+			    		    writer.append(',');
+			    		    writer.append("To Address");		    
+			    		    writer.append(',');
+			    		    writer.append("Status");		    
+			    		    writer.append(',');
+			    		    writer.append("Billing Status");
+			    		    writer.append(',');
+			    		    		    		    writer.append("Reference 1");
+			    		    		    		    writer.append(',');
+			    		    		    		    writer.append("Reference 2");
+		    		    }
+		    		    
 		    writer.append('\n');
 		   /* writer.append("carrier");
 		    writer.append(',');*/
@@ -6165,17 +6251,32 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		    writer.append(',');
 		    writer.append(formatDateJava.format(sOrder.getScheduledShipDate()));
 		    		    writer.append(',');
+		    		    if(sOrder.getCarrier()!=null){
 		    		    writer.append(removeNull(sOrder.getCarrier().getName()));
 		    		    writer.append(',');
+		    		    }else{
+		    		    	writer.append("");
+			    		    writer.append(',');
+		    		    }
+		    		    if(sOrder.getService()!=null){
 		    		    writer.append(removeNull(sOrder.getService().getName()));
 		    		    writer.append(',');
+		    		    }else{
+		    		    	writer.append("");
+			    		    writer.append(',');
+		    		    }
 		    	        writer.append(removeNull(String.valueOf(sOrder.getQuotedWeight())));
 	        writer.append(',');
 	        writer.append(removeNull(String.valueOf(sOrder.getBilledWeight())));
 	        writer.append(',');
 	        writer.append("$"+removeNull(String.valueOf(sOrder.getQuoteTotalCharge())));
 	        	        writer.append(',');
+	        	        if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("busadmin")){
+	        	        writer.append("$"+removeNull(String.valueOf(sOrder.getQuoteTotalCost())));
+	        	        writer.append(',');
 	        	        writer.append("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge())));
+	        	        writer.append(',');
+	        	        writer.append("$"+removeNull(String.valueOf(sOrder.getActualTotalCost())));
 	        	        writer.append(',');
 	        	        String abbrevfrom,add1from,add2from,cityfrom,poscodefrom,procodefrom,counnamefrom,addrfrom,addressfrom="",abbrev,add1,add2,city,poscode,procode,counname,toaddr,toaddress="";
  	        	        if(sOrder.getFromAddress()!=null){
@@ -6230,6 +6331,64 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        	                		        	 referencetwo = String.valueOf(sOrder.getReferenceTwo());
 	        	                		         }
 	        	        				        writer.append(removeNull(referenceone+" "+referencetwo));
+	        	        }else{
+	        	        	writer.append("$"+removeNull(String.valueOf(sOrder.getActualTotalCharge())));
+		        	        writer.append(',');
+		        	        String abbrevfrom,add1from,add2from,cityfrom,poscodefrom,procodefrom,counnamefrom,addrfrom,addressfrom="",abbrev,add1,add2,city,poscode,procode,counname,toaddr,toaddress="";
+	 	        	        if(sOrder.getFromAddress()!=null){
+		        	        abbrevfrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAbbreviationName())));
+		        	        add1from=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress1())));
+		        	        add2from=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getAddress2())));
+		        	        cityfrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getCity())));
+		        	        poscodefrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getPostalCode())));
+		        	        procodefrom=removeNullComma(removeNull(String.valueOf(sOrder.getFromAddress().getProvinceCode())));
+		        	        counnamefrom=removeNull(removeNull(String.valueOf(sOrder.getFromAddress().getCountryName())));
+						addrfrom = abbrevfrom + add1from + add2from + cityfrom
+								+ poscodefrom + procodefrom + counnamefrom;
+						if (addrfrom != null && !addrfrom.isEmpty()) {
+							addrfrom = addrfrom + ".";
+							addressfrom = "\"" + addrfrom + "\"";
+						}	        	        
+		        	        writer.append(addressfrom);
+		        	        writer.append(',');
+					} else {
+						writer.append("");
+						writer.append(',');
+					}if(sOrder.getToAddress()!=null){
+		        	        abbrev=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAbbreviationName())));
+		        	        add1=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress1())));
+		        	        add2=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getAddress2())));
+		        	        city=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getCity())));
+		        	        poscode=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getPostalCode())));
+		        	        procode=removeNullComma(removeNull(String.valueOf(sOrder.getToAddress().getProvinceCode())));
+		        	        counname=removeNull(String.valueOf(sOrder.getToAddress().getCountryName()));
+						toaddr = abbrev + add1 + add2 + city + poscode + procode
+								+ counname;
+						if (toaddr != null && !toaddr.isEmpty()) {
+							toaddr = toaddr + ".";
+							toaddress = "\"" + toaddr + "\"";
+						}
+		        	        writer.append(toaddress);
+		        	        writer.append(',');
+					} else {
+						writer.append("");
+						writer.append(',');
+					}
+		        	        				        writer.append(removeNull(sOrder.getStatusName()));
+		        	        				        writer.append(',');
+		        	        				        writer.append(removeNull(String.valueOf(sOrder.getBillingStatusText())));
+		        	        				        writer.append(',');
+		        	        				        writer.append(removeNull(String.valueOf(sOrder.getReferenceCode())));
+		        	        				        writer.append(',');
+		        	        				        if(sOrder.getReferenceOne() != null && sOrder.getReferenceOne() != ""){
+		        	                		        	 referenceone = String.valueOf(sOrder.getReferenceOne());
+		        	                		         }
+		        	                		         if(sOrder.getReferenceTwo() != null && sOrder.getReferenceTwo() != ""){
+		        	                		        	 referencetwo = String.valueOf(sOrder.getReferenceTwo());
+		        	                		         }
+		        	        				        writer.append(removeNull(referenceone+" "+referencetwo));
+	        	        }
+	        	        
 	        	        				        writer.append('\n');
 		    //generate whatever data you want
 	 
@@ -6269,13 +6428,26 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        	        rowhead.createCell((short) 5).setCellValue("Q/B");
 	        	        rowhead.createCell((short) 6).setCellValue("Weight");
 	        	        rowhead.createCell((short) 7).setCellValue("Quoted Charge");
-	        	        rowhead.createCell((short) 8).setCellValue("Billed Charge");
-	        	        rowhead.createCell((short) 9).setCellValue("From Address");
-	        	        rowhead.createCell((short) 10).setCellValue("To Address");
-	        	        rowhead.createCell((short) 11).setCellValue("Status");
-	        	        rowhead.createCell((short) 12).setCellValue("Billing Status");
-	        	        rowhead.createCell((short) 13).setCellValue("Reference 1");
-	        	        	        	        rowhead.createCell((short) 14).setCellValue("Reference 2");
+	        	        if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("busadmin")){
+	        	        	rowhead.createCell((short) 8).setCellValue("Quoted Cost");
+		        	        rowhead.createCell((short) 9).setCellValue("Billed Charge");
+		        	        rowhead.createCell((short) 10).setCellValue("Billed Cost");
+		        	        rowhead.createCell((short) 11).setCellValue("From Address");
+		        	        rowhead.createCell((short) 12).setCellValue("To Address");
+		        	        rowhead.createCell((short) 13).setCellValue("Status");
+		        	        rowhead.createCell((short) 14).setCellValue("Billing Status");
+		        	        rowhead.createCell((short) 15).setCellValue("Reference 1");
+		        	        rowhead.createCell((short) 16).setCellValue("Reference 2");
+	        	        }else{
+	        	        	 rowhead.createCell((short) 8).setCellValue("Billed Charge");
+			        	        rowhead.createCell((short) 9).setCellValue("From Address");
+			        	        rowhead.createCell((short) 10).setCellValue("To Address");
+			        	        rowhead.createCell((short) 11).setCellValue("Status");
+			        	        rowhead.createCell((short) 12).setCellValue("Billing Status");
+			        	        rowhead.createCell((short) 13).setCellValue("Reference 1");
+			        	        rowhead.createCell((short) 14).setCellValue("Reference 2");
+	        	        }
+	        	        
 	        	        SimpleDateFormat formatDateJava = new SimpleDateFormat("dd/MM/yyyy");
 	       
 	        int i=1;
@@ -6285,28 +6457,59 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        row.createCell((short) 0).setCellValue(removeNull(String.valueOf(sorder.getId())));
 	        row.createCell((short) 1).setCellValue(removeNull(sorder.getMasterTrackingNum()));
 	        	        row.createCell((short) 2).setCellValue(formatDateJava.format(sorder.getScheduledShipDate()));
+	        	        if(sorder.getCarrier()!=null){
 	        	        row.createCell((short) 3).setCellValue(removeNull(sorder.getCarrier().getName()));
+	        	        }else{
+	        	        	row.createCell((short) 3).setCellValue("");
+	        	        }
+	        	        if(sorder.getService()!=null){
 	        	        row.createCell((short) 4).setCellValue(removeNull(sorder.getService().getName()));
+	        	        }else{
+	        	        	row.createCell((short) 4).setCellValue("");
+	        	        }
 	        	        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(sorder.getQuotedWeight())));
 	        	        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(sorder.getBilledWeight())));
 	        	        row.createCell((short) 7).setCellValue("$"+removeNull(String.valueOf(sorder.getQuoteTotalCharge())));
-	        	        row.createCell((short) 8).setCellValue("$"+removeNull(String.valueOf(sorder.getActualTotalCharge())));
-	        	        if(sorder.getFromAddress() != null){
-	        	        row.createCell((short) 9).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getFromAddress().getCountryName())))+".");
+	        	        if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("busadmin")){
+	        	        	  row.createCell((short) 8).setCellValue("$"+removeNull(String.valueOf(sorder.getQuoteTotalCost())));
+	  	        	        row.createCell((short) 9).setCellValue("$"+removeNull(String.valueOf(sorder.getActualTotalCharge())));
+	  	        	        row.createCell((short) 10).setCellValue("$"+removeNull(String.valueOf(sorder.getActualTotalCost())));
+	  	        	        if(sorder.getFromAddress() != null){
+	  	        	        row.createCell((short) 11).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getFromAddress().getCountryName())))+".");
+	  	        	        }
+	  	        	        if(sorder.getToAddress() != null){
+	  	        	        row.createCell((short) 12).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getToAddress().getCountryName())))+".");
+	  	        	        }
+	  	        	        row.createCell((short) 13).setCellValue(removeNull(sorder.getStatusName()));
+	  	        	        row.createCell((short) 14).setCellValue(removeNull(String.valueOf(sorder.getBillingStatusText())));
+	  	        	        row.createCell((short) 15).setCellValue(removeNull(String.valueOf(sorder.getReferenceCode())));
+	  	        	        if(sorder.getReferenceOne() != null && sorder.getReferenceOne() != ""){
+	  	        	         	 referenceone = String.valueOf(sorder.getReferenceOne());
+	  	        	             	}
+	  	        	         if(sorder.getReferenceTwo() != null && sorder.getReferenceTwo() != ""){
+	  	        	               referencetwo = String.valueOf(sorder.getReferenceTwo());
+	  	        	               	}
+	  	        	         row.createCell((short) 16).setCellValue(removeNull(referenceone+" "+ referencetwo));
+	        	        }else{
+		  	        	        row.createCell((short) 8).setCellValue("$"+removeNull(String.valueOf(sorder.getActualTotalCharge())));
+		  	        	        if(sorder.getFromAddress() != null){
+		  	        	        row.createCell((short) 9).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getFromAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getFromAddress().getCountryName())))+".");
+		  	        	        }
+		  	        	        if(sorder.getToAddress() != null){
+		  	        	        row.createCell((short) 10).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getToAddress().getCountryName())))+".");
+		  	        	        }
+		  	        	        row.createCell((short) 11).setCellValue(removeNull(sorder.getStatusName()));
+		  	        	        row.createCell((short) 12).setCellValue(removeNull(String.valueOf(sorder.getBillingStatusText())));
+		  	        	        row.createCell((short) 13).setCellValue(removeNull(String.valueOf(sorder.getReferenceCode())));
+		  	        	        if(sorder.getReferenceOne() != null && sorder.getReferenceOne() != ""){
+		  	        	         	 referenceone = String.valueOf(sorder.getReferenceOne());
+		  	        	             	}
+		  	        	         if(sorder.getReferenceTwo() != null && sorder.getReferenceTwo() != ""){
+		  	        	               referencetwo = String.valueOf(sorder.getReferenceTwo());
+		  	        	               	}
+		  	        	         row.createCell((short) 14).setCellValue(removeNull(referenceone+" "+ referencetwo));
 	        	        }
-	        	        if(sorder.getToAddress() != null){
-	        	        row.createCell((short) 10).setCellValue(removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAbbreviationName())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress1())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getAddress2())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getCity())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getPostalCode())))+" "+removeNullComma(removeNull(String.valueOf(sorder.getToAddress().getProvinceCode())))+" "+removeNull(removeNull(String.valueOf(sorder.getToAddress().getCountryName())))+".");
-	        	        }
-	        	        row.createCell((short) 11).setCellValue(removeNull(sorder.getStatusName()));
-	        	        row.createCell((short) 12).setCellValue(removeNull(String.valueOf(sorder.getBillingStatusText())));
-	        	        	        	        row.createCell((short) 13).setCellValue(removeNull(String.valueOf(sorder.getReferenceCode())));
-	        	        	        	        if(sorder.getReferenceOne() != null && sorder.getReferenceOne() != ""){
-	        	               		        	 referenceone = String.valueOf(sorder.getReferenceOne());
-	        	               		         	}
-	        	                	        if(sorder.getReferenceTwo() != null && sorder.getReferenceTwo() != ""){
-	        	               		        	 referencetwo = String.valueOf(sorder.getReferenceTwo());
-	        	              		         	}
-	        	        	        	        row.createCell((short) 14).setCellValue(removeNull(referenceone+" "+ referencetwo));
+	        	      
 	        /*if(sorder.getCarrierId()!=null){
 	        Carrier findCarrier = carrierServiceManager.getCarrier(sorder.getCarrierId());
 	        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(findCarrier.getName())));

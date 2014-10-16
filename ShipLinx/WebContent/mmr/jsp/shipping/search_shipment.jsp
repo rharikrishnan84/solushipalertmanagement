@@ -74,7 +74,8 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 		
 		{
 
-			var editUserId = document.getElementsByName("check_uncheck");
+			//var editUserId = document.getElementsByName("check_uncheck");
+			var editUserId = document.getElementsByClassName("check_uncheck_row");
 			var i1,txt1 = 0;
 			for (i1=0;i1<editUserId.length;i1++){
 				if (editUserId[i1].checked){

@@ -22,7 +22,15 @@
 		
 	<script type="text/javascript">
  $(document).ready(function() {
-  $('#sample1').dataTable(); 
+  $('#sample1').dataTable({
+		  aoColumnDefs: [
+		                   {
+		                      bSortable: false,
+		                      "bSearchable": false,
+		                      aTargets: [ 0 ]
+		                   }
+		                 ]
+  }); 
  });
 </script>
 <script> 
@@ -196,6 +204,39 @@ function manifestEOD(){
 		var carrierId = document.getElementById("firstBox").value;
 		window.location.href="list.shipment.action?shippingOrder.toDate="+toDate+"&shippingOrder.fromDate="+fromDate+"&d-16544-e=5&shippingOrder.carrierId="+carrierId;	
 	}
+	
+	
+function download_files(type) {
+	  var orderIdList = document.getElementsByClassName("check_uncheck_row");
+	  var i, txt = 0;
+	  for (i = 0; i < orderIdList.length; i++) {
+	   if (orderIdList[i].checked) {
+	    txt += 1;
+	   }
+	  }
+	  if (txt < 1) {
+	   alert('Please select at least one');
+	  }
+	  else if(txt>50){
+		  alert('Please select atmost 50');
+	  }
+	  else {
+	   var i1, shipmentid, value_checked, stored_value = "";
+	   for (i1 = 0; i1 < orderIdList.length; i1++) {
+	    if (orderIdList[i1].checked) {
+	     shipmentid = orderIdList[i1].value;
+		 //orderId = document.getElementById("searchform_selectedShipments_"+shipmentid+"__id").value;
+	     //value_checked = document.getElementById("shipmentcheckbox"+shipmentid).value;
+	     //confirm("this is value is value checked variable "+value_checked+"  this is value is from shipmentid "+shipmentid);
+	     //stored_value = stored_value + value_checked + ",";
+	     stored_value=stored_value+shipmentid+",";
+	    }
+	   }
+	   window.location.href = "shipment.download.action?type="+type+"&orderList="+ stored_value;
+
+	  }
+	 }
+	
 </script>	
 <style>
 	.width150{ width:150px !important; }
@@ -402,9 +443,9 @@ function manifestEOD(){
 
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
 	Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="shipment.download.action?type=csv"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
- 	<a href="shipment.download.action?type=xl"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
- 	<a href="shipment.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
+	<a href=" javascript: download_files('csv');"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
+ 	<a href="javascript: download_files('xl');"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
+ 	<a href="javascript: download_files('xml');"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
  	<s:if test="%{#request.shippingOrder.carrierId == 80}" >
  	&nbsp;<a href="javascript:midlandEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>

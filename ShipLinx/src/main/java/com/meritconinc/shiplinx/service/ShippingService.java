@@ -183,5 +183,6 @@ public interface ShippingService {
   //Written By Mohan R
   public CarrierChargeCode getChargeByChargeGroupId(long carrierId, int chargeGroupId);
   //End
-
+  public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so);
+  
 }

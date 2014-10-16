@@ -85,7 +85,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
   }
 
   public void save(ShippingOrder shippingOrder) throws Exception {
-    Map<String, Object> paramObj = new HashMap<String, Object>(1);
+    //Map<String, Object> paramObj = new HashMap<String, Object>(1);
     User user = UserUtil.getMmrUser();
     if (user != null && user.getTimeZone() != null && !user.getTimeZone().isEmpty()) {
       Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(user.getTimeZone()));
@@ -690,14 +690,16 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       log.info("User " + username + " performing search from / to: " + so.getFromDate() + " / "
           + so.getToDate());
 
-      List<ShippingOrder> list = new ArrayList<ShippingOrder>();
       List<ShippingOrder> list_match = new ArrayList<ShippingOrder>();
-    		 if(!role.equalsIgnoreCase("busadmin")){ 
-    			 list = getSqlMapClientTemplate().queryForList("findShipments", so);
-    		 }
+    		 
+      List<ShippingOrder> list = getSqlMapClientTemplate().queryForList("findShipments", so);
+    		
       if (role.equalsIgnoreCase("busadmin")) {
-        List<ShippingOrder> list2 = getSqlMapClientTemplate()
-            .queryForList("findShipmentsAdmin", so);
+        List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
+        list2 = getSqlMapClientTemplate().queryForList("findShipmentsAdmin", so);
+        if(list.size()==0 && so.getId()!=null && so.getId()>0){
+        	list2 = getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
+        }
         if (list.size() == 0) {
           list.addAll(list2);
         } else {
@@ -715,7 +717,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
           list.addAll(list_match);
         }
       }
-
+   
       return list;
     } catch (Exception e) {
       e.printStackTrace();
@@ -1296,4 +1298,11 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 				public String getTrackingNumberFromPackage(String trackingNumber){ 
 										return (String)getSqlMapClientTemplate().queryForObject("getTrackingNumberFromPackage",trackingNumber);
 									}
+
+				@Override
+				public List<ShippingOrder> findShipmentsAdminById(
+						ShippingOrder so) {
+					
+					return (List)getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
+				}
 }
