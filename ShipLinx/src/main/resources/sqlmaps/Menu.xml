@@ -13,7 +13,11 @@
 		<result property="helptag" column="help_tag"/>
 		<result property="supporttag" column="support_tag"/>
 	</resultMap>
-
+	
+	<resultMap class="com.meritconinc.mmr.model.common.MenuItemVO" id="welcomeResultMap">
+	 <result property="msgContent" column="msg_content"/> 
+	</resultMap>
+	
 	<cacheModel id="menu-cache" type ="LRU" readOnly="false">
 	  <flushInterval hours="24"/>
 	  <property name="cache-size" value="1000" />
@@ -92,4 +96,8 @@
 		</dynamic>
    		order by display_order
 	</select>
+	
+	<select id="getWelcomeMenuBylocale" resultMap="welcomeResultMap">
+	   select msg_content from resourcebundle where msg_id='menu.welcome' and locale=#locale#
+    </select>
 </sqlMap>

@@ -758,6 +758,7 @@
           <action name="cancelShipment" method="cancelShipment" class="shipmentAction">
             <result name="success" type="tiles">viewShipment</result>
             <result type="redirectAction" name="input">new.shipment</result>
+            <result name="error" type="tiles">viewShipment</result> 
         </action>
         
         <action name="backToShipment" method="backToShipment" class="shipmentAction">

@@ -302,4 +302,8 @@
  <select id="getServicesForCarrieradmin" resultMap="CarrierServicesResultNew">
    select  s.service_id,s.name,s.description,s.code, s.transit_code,s.service_time_mins,s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id, s.master_service_id from service s where s.carrier_id = #carrierId#  
  	</select>
+ 	
+ 	<select id="getAllServices" resultMap="CarrierServicesResultNew">
+   		select  s.service_id,s.name,s.description,s.code, s.transit_code,s.service_time_mins,s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id, s.master_service_id from service s 
+ 	</select>
 </sqlMap>

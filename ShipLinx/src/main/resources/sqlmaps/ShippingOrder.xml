@@ -59,7 +59,7 @@
 			<result property="trackingURL" column="tracking_url" />
 			<result property="ratedAsWeight" column="rated_as_weight" />
 			<result property="billToType" column="billing_type" />
-			<result property="billToAccountNum" column="billing_account" />			
+			<result property="billToAccountNum" column="billing_account" />	
 	</resultMap>
 	
 	<resultMap id="ShippingOrdersAllStatus" class="com.meritconinc.shiplinx.model.OrderStatus">
@@ -1265,5 +1265,6 @@
 	<select id="findShipmentsAdminById" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
 	select * from shipping_order where order_id=#id#
 	</select>
+	
 </sqlMap>
 

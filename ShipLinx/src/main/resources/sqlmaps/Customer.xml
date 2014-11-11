@@ -68,6 +68,13 @@
 			<result property="toSpend" column="to_spend"/>
 	</resultMap>
 	
+	<resultMap id="billdutyResult" class="com.meritconinc.shiplinx.model.Billduty">
+	  <result property="id" column="id"/>
+	   <result property="code" column="code"/>
+	   <result property="name" column="name"/>
+	    <result property="locale" column="locale"/>
+	</resultMap>
+	
 	<select id="isCustomerRegistered" resultClass="int">
 			select count(1) as count from customer where name = #customername# and business_id=#businessId# and customer_id!=#customerId#
 	</select>
@@ -169,5 +176,8 @@
 		
 		<select id="getCustomerReference" resultMap="CustomerReferenceMap">
 		select * from customer c where c.customer_id = #id# 
+	</select>
+	<select id="getBilldutyList" resultMap="billdutyResult">
+		select * from bill_duty where locale=#locale#;
 	</select>
 </sqlMap>
