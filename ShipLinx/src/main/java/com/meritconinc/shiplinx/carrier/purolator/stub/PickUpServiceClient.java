@@ -17,6 +17,7 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
+import org.springframework.core.annotation.Order;
 
 import com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI;
 import com.meritconinc.shiplinx.carrier.purolator.ws.pickup.proxy.Address;
@@ -105,7 +106,7 @@ public class PickUpServiceClient{
 			
 	    
 			Weight totalWeight = new Weight();
-			java.math.BigDecimal w = new java.math.BigDecimal(pickup.getTotalWeight());
+			java.math.BigDecimal w = new java.math.BigDecimal(pickup.getTotalActualWeight());
 			totalWeight.setValue(w);
 			totalWeight.setWeightUnit(WeightUnit.LB);
 			
@@ -189,7 +190,7 @@ public class PickUpServiceClient{
 			ssd[0].setTotalPieces((int) pickup.getQuantity());
 			
 			Weight ssdWeight = new Weight();
-			java.math.BigDecimal ssdw = new java.math.BigDecimal(pickup.getTotalWeight());			
+			java.math.BigDecimal ssdw = new java.math.BigDecimal(pickup.getTotalActualWeight());			
 			ssdWeight.setValue(ssdw);
 			ssdWeight.setWeightUnit(WeightUnit.LB);			
 			ssd[0].setTotalWeight(ssdWeight);

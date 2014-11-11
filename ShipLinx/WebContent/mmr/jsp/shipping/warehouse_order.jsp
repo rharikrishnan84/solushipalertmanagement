@@ -388,7 +388,7 @@ var prodkey = "";
 	&nbsp;&nbsp;  
 	<a href="new.shipment.action?shipment=true"><mmr:message messageId="label.regular.shipment"/></a>
 	</div>
-	<s:include value="order_SearchQuickAddress.jsp"/>
+	<jsp:include page="order_SearchQuickAddress.jsp"/>
 	
 	<div id="fromAdd_header">		
 		<table cellpadding="0" cellspacing="0" width="1050px" id="fromaddtab">
@@ -403,7 +403,7 @@ var prodkey = "";
 			</tr>
 		</table>	
 	</div>	
-	<s:include value="order_SelectedFromAddress.jsp"/>	
+	<jsp:include page="order_SelectedFromAddress.jsp"/>	
 	<div id="toAdd_header">		
 		<table cellpadding="0" cellspacing="0" width="1050px" id="toaddtab">
 			<tr>
@@ -419,13 +419,13 @@ var prodkey = "";
 	</div>	
 	
 		
-	<s:include value="order_SelectedToAddress.jsp"/>
-	<s:include value="add_products_shipment.jsp"/>
+	<jsp:include page="order_SelectedToAddress.jsp"/>
+	<jsp:include page="add_products_shipment.jsp"/>
 	<div id="Product_summary_div">
-		<s:include value="product_summary.jsp"/>
+		<jsp:include page="product_summary.jsp"/>
 	</div>
 	<div id="addedProducts">
-		<s:include value="added_products_shipment.jsp"/>
+		<jsp:include page="added_products_shipment.jsp"/>
 	</div>
 	
 	<div id="pckg_panel_add_info">	
@@ -449,10 +449,10 @@ var prodkey = "";
 		</table>
 	</div>
 	<s:if test="%{#session.ROLE.contains('busadmin') && !shippingOrder.isAdditionalFieldsEditable() == true}">
-		<s:include value="shipping_additional_fields.jsp"/>
+		<jsp:include page="shipping_additional_fields.jsp"/>
 		<div id="img_save_shipment">
 			<a href="javascript:updateShipment()">
-				<img src="<s:url value="/mmr/images/save_shipment.png" includeContext="true" />" alt="Save Shipment" border="0">
+				<img src="<s:url value="/mmr/images/save_shipment.png" includeContext="true" />" alt="<mmr:message messageId="btn.save.shipment"/>" border="0">
 			</a>
 		</div>	
 	</s:if>

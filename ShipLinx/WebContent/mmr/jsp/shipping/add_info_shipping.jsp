@@ -148,7 +148,7 @@
 	</div>
 </s:if>
 </div>
-	<s:include value="add_info_shipping_inner.jsp"></s:include>
+	<jsp:include page="add_info_shipping_inner.jsp"/>
    
 </body>
 </html>

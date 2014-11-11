@@ -1,7 +1,8 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags"%> 
-
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 
 <SCRIPT type="text/javascript">
 
@@ -87,7 +88,7 @@
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls" id="billToProvince"><span>:</span>
-												<s:include value="customsInvoiceBillToProvince.jsp"/>
+												<jsp:include page="customsInvoiceBillToProvince.jsp"/>
 											</div>
 										</div>
 										<div class="fields">

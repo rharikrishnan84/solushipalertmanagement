@@ -178,22 +178,22 @@ display:none;
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="menu.admin.searchedi"/></div>
 								<div class="form_buttons" >	
-									<a href="javascript: searchEdi()">Search</a>
-									<a href="javascript: releaseAll()">Release All</a>
-									<a href="searchedi.action?method=reset">Reset</a>
-								</div>
+									<a href="javascript: searchEdi()"><mmr:message messageId="label.searchedi.search"></mmr:message></a>
+									<a href="javascript: releaseAll()"><mmr:message messageId="label.searchedi.releaseall"/> </a>
+									<a href="searchedi.action?method=reset"><mmr:message messageId="label.searchedi.reset"/></a>
+							</div>
 							</div>		
 							<div class="cont_data_body">
 								<div class="rows">
 									<div class="fields_topdown" style="width:133px !important">
-										<label>From Date</label>
+										<label><mmr:message messageId="label.searchedi.fromdate"/> </label>
 										<div class="controls">
 											<s:textfield name="ediItem.fromDate" id="f_date_c" onClick="selectDate('f_date_c','f_trigger_c');" 
 											 readonly="readonly"/>
 										</div>
 									</div>
 									<div class="fields_topdown" style="width:133px !important">
-										<label>To Date</label>
+										<label><mmr:message messageId="label.searchedi.todate"/> </label>
 										<div class="controls">
 										<s:textfield name="ediItem.toDate" onClick="selectDate('t_date_c','t_trigger_c');" id="t_date_c" 
 											 readonly="readonly"/>
@@ -201,14 +201,14 @@ display:none;
 										</div>
 									</div>
 									<div class="fields_topdown" style="width:133px !important">
-										<label>Invoice #</label>
+										<label><mmr:message messageId="label.searchedi.invoice"/> </label>
 										<div class="controls">
 											<input id="custId" type="hidden" value="" name="id">
 <input id="auto" type="text" value="" name="inovice"  autocomplete="off">
 										</div>
 									</div>
 									<div class="fields_topdown" style="width:200px !important">
-										<label>File Name</label>
+										<label><mmr:message messageId="label.searchedi.filename"/> </label>
 										<div class="controls">
 										<s:url id="fileNameList" action="listEdiFileName" />
 		               <input id="auto" type="hidden" value="" name="id">
@@ -216,7 +216,7 @@ display:none;
 										</div>
 									</div>
 									<div class="fields_topdown">
-										<label>Carrier</label>
+										<label><mmr:message messageId="label.searchedi.carrier"/></label>
 										<div class="controls">
 											<s:select cssClass="text_01_combo_big" cssStyle="width:128px;" listKey="id" listValue="name" 
 											name="ediItem.carrierId" headerKey="-1"  list="#session.CARRIERS" 
@@ -224,7 +224,7 @@ display:none;
 										</div>
 									</div>
 									<div class="fields_topdown">
-										<label>Status</label>
+										<label><mmr:message messageId="label.searchedi.status"/></label>
 										<div class="controls">
 											<s:select value="%{ediItem.statusText}" id="statusText"  
 											name="ediItem.statusText" list="#session.EDI_STATUS_LIST" theme="simple" />
@@ -249,11 +249,12 @@ display:none;
 		<div id="srchusr_res"><span>EDI Invoice List</span></div>
 		<!--<div id="edi_results" style="float:left; width:200px; margin-left:50px; font-size:14px; padding:20px 0px 0px 0px;"><span id="edi_res"><mmr:message messageId="label.search.results"/></span></div>-->
 		<div class="form_buttons" style="float:right;">
-		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+        <a href="#" id="actiondown" ><mmr:message messageId="label.searchedi.action"/> <span style="font-size:14px;">&#9660;</span></a>
+		<a href="#" id="actionup" ><mmr:message messageId="label.searchedi.action"/> <span style="font-size:14px;">&#9650;</span></a>			
 			<ul id="actionmenu">
-			<li><a href="javascript:autoLink();">AUTOLINK</a></li>
-			<li><a href="javascript:unlink();">UNLINK</a></li>
+            <li><a href="javascript:autoLink();"><mmr:message messageId="label.searchedi.autolink"/></a></li>
+			<li><a href="javascript:unlink();"><mmr:message messageId="label.searchedi.unlink"/></a></li>
+			
 			</ul>
 		</div>	
 	</div>
@@ -275,17 +276,17 @@ display:none;
 			<thead>
 			<tr>
 				<th><input id="check_all" type="checkbox" /></th>
-				<th>Id</th>
-				<th>Carrier</th>
-				<th>Account</th>
-				<th>Invoice</th>
-				<th style="width:130px !important;">Invoice Date</th>
-				<th style="width:130px !important;">Processed</th>
-				<th style="width:100px !important; text-align:right; padding-right:10px;">Amount</th>
+				<th><mmr:message messageId="label.ediinvoice.id"/></th>
+				<th><mmr:message messageId="label.ediinvoice.carrier"/></th>
+				<th><mmr:message messageId="label.edinvoice.account"/></th>
+				<th><mmr:message messageId="label.edinvoice.invoice"/></th>
+				<th style="width:130px !important;"><mmr:message messageId="label.ediinvoice.invoicedate"/> </th>
+				<th style="width:130px !important;"><mmr:message messageId="label.ediinvoice.processed"/></th>
 				<!--<th style="width:150px !important;">Detail Seq. #</th>-->
-				<th>File Name</th>
-				<th>Status</th>
-				<th>Message</th>
+				<th><mmr:message messageId="label.invoices.amount" /></th>
+				<th><mmr:message messageId="label.ediinvoice.filename"/></th>
+				<th><mmr:message messageId="label.ediinvoice.status"/></th>
+				<th><mmr:message messageId="label.ediinvoice.message"/></th>
 				</tr>
 			</thead>
 		<tbody>	

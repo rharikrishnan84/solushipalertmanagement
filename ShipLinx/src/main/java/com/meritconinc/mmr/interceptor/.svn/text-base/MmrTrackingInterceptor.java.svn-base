@@ -1,0 +1,221 @@
+package com.meritconinc.mmr.interceptor;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger; 
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.RequestTrackingDAO;
+import com.meritconinc.mmr.model.common.RequestDetailsVO;
+import com.meritconinc.mmr.model.common.RequestTrackMetadataVO;
+import com.meritconinc.mmr.model.common.RequestTrackParamVO;
+import com.meritconinc.mmr.utilities.UserTrackingSessionListener;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.mmr.utilities.WebUtil;
+
+/** 
+ * MMRTrackingInterceptor class is an interceptor class to 
+ * to track and persists httpServletRequest related parameters and details
+ * in the database.
+ * <p/>
+ * Created: December 11, 2007 09:31:28 AM 
+ * <p/>
+ * @author Sapient Corporation
+ */
+public class MmrTrackingInterceptor extends ExceptionMappingInterceptor {
+
+	/**
+	 * bean name for request tracking dao
+	 */
+	private static String REQUEST_TRACKING_DAO = "requestTrackingDAO";
+	protected Logger log = LogManager.getLogger(this.getClass());
+	
+	/* 
+	 * @see com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor
+	 * 	#intercept(com.opensymphony.xwork2.ActionInvocation)
+	 */
+	public final String intercept(ActionInvocation invocation) throws Exception {
+		// get tracking on flag from properties
+		int trackingOn = Integer.parseInt(WebUtil.getProperty(Constants.SYSTEM_SCOPE, Constants.TRACKING_ON));
+		
+		// if tracking is off, exit
+		if(trackingOn != 1)
+			return invocation.invoke();
+		
+		// fetching request related detail from trackRequestURL
+		RequestDetailsVO l_requestDetailVo = trackRequestURL(invocation);
+		
+		// fetching request parameter from trackRequest method and setting it in
+		// requestDetailVo if present
+		List<RequestTrackParamVO> l_requestParamList = trackRequestParams(invocation);
+		if (l_requestParamList != null && !l_requestParamList.isEmpty()) {
+			l_requestDetailVo.getRequestParameterList().addAll(l_requestParamList);
+		}
+
+		// fetching application specific parameter from processApplicationParams method 
+		//	and setting it in requestDetailVo if present
+		List<RequestTrackParamVO> l_applicationParamList = processApplicationParams(invocation);
+		if (l_applicationParamList != null && !l_applicationParamList.isEmpty()) {
+			l_requestDetailVo.getRequestParameterList().addAll(l_applicationParamList);
+		}
+		
+		// getting userSessionListener		
+		UserTrackingSessionListener userSessionListener = 
+					(UserTrackingSessionListener) ActionContext
+								.getContext().getSession().get(Constants.USER_TRACKING_SESSION_LISTENER);
+		
+		// instantiating userSessionListener if its null
+		if (userSessionListener == null) {
+
+			// instantiating and setting user session listener
+			userSessionListener = new UserTrackingSessionListener();
+			ActionContext.getContext().getSession().put(
+					Constants.USER_TRACKING_SESSION_LISTENER, userSessionListener);
+		}			
+		
+		// setting requestDetailVo in userSessionListener, which
+		// will persist it on session time out
+		userSessionListener.addRequest(l_requestDetailVo);
+
+		return invocation.invoke();
+	}
+
+	/**
+	 * trackRequestURL method, tracks and persists httpServletRequest details
+	 * in the database
+	 * @param p_invocation
+	 * @return l_requestDetailVo
+	 */
+	private RequestDetailsVO trackRequestURL(ActionInvocation p_invocation) {
+		
+		// instantiating httpServletRequst to fetch request parameters
+		HttpServletRequest httpServletRequest = 
+							(HttpServletRequest)p_invocation.getInvocationContext()
+							.get(ServletActionContext.HTTP_REQUEST);
+		
+		// declaring and instantiating requestDetailVo to set request details
+		RequestDetailsVO l_requestDetailVo = new RequestDetailsVO();
+		try {
+			// setting request details in l_requestDetailVo
+			
+			l_requestDetailVo.setUri(httpServletRequest.getQueryString());
+			l_requestDetailVo.setActionName(p_invocation.getInvocationContext()
+					.getName());
+			l_requestDetailVo.setRemoteAddr(httpServletRequest.getRemoteAddr());
+			l_requestDetailVo.setRemoteHost(InetAddress.getByName(
+					httpServletRequest.getRemoteAddr()).getHostName());
+			l_requestDetailVo.setSessionId(httpServletRequest.getSession().getId());
+			l_requestDetailVo.setRequestDate(Calendar.getInstance().getTime());
+			String userName = UserUtil.getSignedInUserName();
+			l_requestDetailVo.setUserName(userName);
+			l_requestDetailVo.setUserAgent(httpServletRequest.getHeader("user-agent"));
+			
+		} catch (Exception ex) {
+			log.debug((new StringBuilder(
+					"Exception while saving httpServletRequest Info: ")).append(ex)
+					.toString(), ex);
+		}
+		return l_requestDetailVo;
+	}
+
+	/**
+	 * trackRequestParams method, tracks and persists request parameter
+	 *  according to request track metadata info
+	 * @param invocation
+	 * @return requestTrackParamVOList
+	 */
+	private List<RequestTrackParamVO> trackRequestParams(ActionInvocation p_invocation) {	
+
+		// instantiating httpServletRequst to fetch request parameters
+		HttpServletRequest httpServletRequest = 
+							(HttpServletRequest)p_invocation.getInvocationContext()
+							.get(ServletActionContext.HTTP_REQUEST);
+		
+		// instantiating webApplicationContext to fetch meta data DAO and session listener
+		WebApplicationContext webApplicationContext = 
+							WebApplicationContextUtils.getWebApplicationContext
+							((ServletContext) p_invocation.getInvocationContext()
+							.get(ServletActionContext.SERVLET_CONTEXT));
+		
+		// instantiating requestTrackingDao
+		RequestTrackingDAO l_requestTrackingDao = 
+						(RequestTrackingDAO)webApplicationContext.getBean(REQUEST_TRACKING_DAO);
+		// list of parameters that are supposed to be tracked 
+		List<RequestTrackMetadataVO> l_trackingMetaDataList = 
+								l_requestTrackingDao.getRequestParamMetadata();
+
+		// instantiating l_requestParamVo to set request parameters
+		RequestTrackParamVO l_requestParamVo = null;
+		List<RequestTrackParamVO> l_requestParamVOList = new ArrayList<RequestTrackParamVO>();
+
+			
+		// iterating requestTrackMetadataVO to persists request details if 
+		// current action and parameter exist in requestTrackMetadataVO
+		for (RequestTrackMetadataVO requestTrackMetadataVO : l_trackingMetaDataList) {	
+			// checking if current action is required to track
+			if(p_invocation.getInvocationContext().getName()
+						.equalsIgnoreCase(requestTrackMetadataVO.getActionName())){
+				// fetching request parameter names
+				Enumeration<String> requestParameters = httpServletRequest.getParameterNames();
+				// iterating request parameters
+				while (requestParameters.hasMoreElements()) {
+					String paramName = (String) requestParameters.nextElement();
+					// checking if current request require to persist
+					if (requestTrackMetadataVO.getParamName() != null
+							&& requestTrackMetadataVO.getParamName().equals(paramName)) {
+
+						// fetching parameter value from request
+						String[] paramValueArray = httpServletRequest.getParameterValues(paramName);
+						
+						if(paramValueArray == null || paramValueArray.length == 0){
+							l_requestParamVo = new RequestTrackParamVO();
+							// setting request parameter null 
+							l_requestParamVo.setParamName(paramName);
+							l_requestParamVo.setParamValue(null);
+
+							// adding request parameters in l_requestParamVOList
+							l_requestParamVOList.add(l_requestParamVo);
+						}else{
+							for(int i = 0; i < paramValueArray.length; i++){
+								l_requestParamVo = new RequestTrackParamVO();
+								// setting request parameters in l_requestParamVo
+								l_requestParamVo.setParamName(paramName);
+								l_requestParamVo.setParamValue(paramValueArray[i]);
+
+								// adding request parameters in l_requestParamVOList
+								l_requestParamVOList.add(l_requestParamVo);
+							}
+						}			
+					}
+				}				
+			}
+
+		}
+		return l_requestParamVOList;
+	}
+
+
+	/**
+	 * processApplicationParams method, tracks and persists
+	 *  application specific parameters
+	 * @param invocation
+	 * @return requestTrackParamVOList
+	 */
+	protected List<RequestTrackParamVO> processApplicationParams(ActionInvocation invocation) {
+		return new ArrayList(0);
+	}
+}

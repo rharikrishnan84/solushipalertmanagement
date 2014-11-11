@@ -1,0 +1,76 @@
+/**
+ * 
+ */
+package com.meritconinc.mmr.model.common;
+
+import java.util.Date;
+
+/**
+ * @author brinzf2
+ *
+ */
+public class ExceptionInfoVO {
+	private int id;
+	private String exceptionId;
+	private String details;
+	private Date updateDate;
+	private String username;
+	
+	/**
+	 * @return the details
+	 */
+	public String getDetails() {
+		return details;
+	}
+	/**
+	 * @param details the details to set
+	 */
+	public void setDetails(String details) {
+		this.details = details;
+	}
+	/**
+	 * @return the exceptionId
+	 */
+	public String getExceptionId() {
+		return exceptionId;
+	}
+	/**
+	 * @param exceptionId the exceptionId to set
+	 */
+	public void setExceptionId(String exceptionId) {
+		this.exceptionId = exceptionId;
+	}
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	/**
+	 * @return the updateDate
+	 */
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	/**
+	 * @param updateDate the updateDate to set
+	 */
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
+
+}

@@ -381,16 +381,16 @@
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;">
 		<div id="srchinv_results">
-				<div id="srchusr_res"><span>Customer Invoice List</span></div>
+				<div id="srchusr_res"><span><mmr:message messageId="label.customer.invoice.list"/></span></div>
 			<div class="form_buttons">
-			<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+			<a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
 				<li><a href="javascript: submitform_email();"><mmr:message messageId="label.send.notification"/></a></li>
-				<li><a href="javascript:csv();"  >Download CSV</a></li>
-				<li><a href="javascript:pdf2();"  >PDF</a></li>
-				<li><a href="javascript:editpayment();">EDIT</a></li>
-				<li><a href="javascript:delete1();">DELETE</a></li>	
+				<li><a href="javascript:csv();"  ><mmr:message messageId="label.download.csv"/></a></li>
+				<li><a href="javascript:pdf2();"  ><mmr:message messageId="label.pdf"/></a></li>
+				<li><a href="javascript:editpayment();"><mmr:message messageId="label.list.edit"/></a></li>
+				<li><a href="javascript:delete1();"><mmr:message messageId="label.delete"/></a></li>
 				</ul>
 			</div>
 		</div>
@@ -399,15 +399,15 @@
 				<thead>
 					<tr style="height:25px">
 						<th style="width:30px !important; text-align:center;"><input type="checkbox" id="check_all"  name="check_uncheck" style="margin: 0 0 0 4px" /></th>
-						<th>Inv #</th>
-						<th>Company</th>
-						<th>Date Created</th>
-						<th style="text-align:right;padding-right:10px">Amount</th>
+						<th><mmr:message messageId="label.invoices.inv"/></th>
+						<th><mmr:message messageId="label.invoices.company"/></th>
+						<th><mmr:message messageId="label.invoices.datecreated"/></th>
+						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.amount"/></th>
 						<s:if test="%{#session.ROLE.contains('busadmin')}">
-						<th style="text-align:right;padding-right:10px">Cost</th>
+						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.cost"/></th>
 						</s:if>
-						<th style="text-align:right;padding-right:10px">Tax</th>
-						<th>Status</th>		
+						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.tax"/></th>
+						<th><mmr:message messageId="label.invoices.status"/></th>
 					</tr>
 				</thead>
 				<tbody>

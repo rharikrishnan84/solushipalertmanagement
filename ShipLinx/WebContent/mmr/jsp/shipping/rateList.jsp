@@ -116,7 +116,7 @@ function removeCustomAlert1(v) {
 				//alert($(this).attr("index"));
 				$('.popup_text').css('display','none');
 				var indexval = $(this).attr("index");
-				if(indexval > 4){
+				if(indexval >=0){
 					$(this).next().css({
 						'display':'block',
 						'top':'-50px',
@@ -375,15 +375,15 @@ var radioselected = 0;
 			var check = checkelement.checked;
 			if(check)
 			{
-				shipper=document.getElementById("radio_address1").checked;
+				shipper=document.getElementById("radio_addressShipper").checked;
 				if(shipper){
 				     billTo=1;
 				}else {
-				     shipper=document.getElementById("radio_address2").checked;
+				     shipper=document.getElementById("radio_addressConsignee").checked;
 					 if(shipper){
 					    billTo=2;
 					 }else{
-					    shipper=document.getElementById("radio_address3").checked;
+					    shipper=document.getElementById("radio_addressThird Party").checked;
 						if(shipper){
 						  billTo=3;
 						}
@@ -826,10 +826,10 @@ var radioselected = 0;
 <div class="content_table" style=" background-color:#FFF; ">
 							
 	<div id="rate_res">
-	<div id="srchusr_res"><span>Estimated Rates and Transit Times</span></div>
+	<div id="srchusr_res"><span><mmr:message messageId="label.heading.estimatedratelist"/></span></div>
 		<div class="form_buttons" >
-			<a href="javascript: sendCustomerEmail()" title="Email Quote" >EMAIL</a>
-			<a href="javascript:submitShipment()">  SHIP NOW </a>
+			<a href="javascript: sendCustomerEmail()" title="Email Quote" ><mmr:message messageId="btn.email"/></a>
+			<a href="javascript:submitShipment()"><mmr:message messageId="btn.shipnow"/></a>
 		</div>
 	</div>
 	<div id="rate_results">	
@@ -881,21 +881,21 @@ var radioselected = 0;
 				
 					<th><input id="check_all" type="checkbox"/></th>
 					<th style="width:34px">#</th>
-					<th>Carrier</th>
-					<th>Service</th>
-					<th>Transit Days</th>
-					<th style="width:75px">Bill Wt(LBS)</th>
+					<th><mmr:message messageId="label.ghead.carrier"/></th>
+					<th><mmr:message messageId="label.ghead.service"/></th>
+					<th><mmr:message messageId="label.ghead.transitdays"/></th>
+					<th style="width:100px"><mmr:message messageId="label.ghead.billwt"/>(LBS)</th>
 					<s:if test="%{#request.BillToType!=null}">
-					<th>Bill To</th>
+					<th><mmr:message messageId="label.ghead.billto"/></th>
 					<th style="display:none">BT</th>
 					</s:if>
 					<s:else>
 						<s:if test="%{#session.ADMIN_USER != null}"> 
-						<th>Total Cost</th>
+						<th><mmr:message messageId="label.ghead.totalcost"/></th>
 						<th style="display:none">TC</th>
 						</s:if>
 						<s:else>
-						<th>Total Price</th>
+						<th><mmr:message messageId="label.ghead.totalprice"/></th>
 						<th style="display:none">TP</th>
 						</s:else>
 					</s:else>
@@ -940,39 +940,42 @@ var radioselected = 0;
 				<s:if test="%{#session.ADMIN_USER != null}"> 
 					<td style="position:relative;"> 
 					<div style="position:relative;" class="popup_div">
-						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label>Total :</label> 
+						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label><mmr:message messageId="label.ratelist.total"/> :</label> 
 						<s:text name="format.money" ><s:param name="value" value="%{totalCost}" /></s:text> :  <s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text></b></div>
-						<div class="popup_text" id="popup_<s:property value="%{#index}"/>">
-							<s:iterator  value="charges">
-							<s:property value="%{name}"/> :<s:text name="format.money" ><br/>
+													<div class="popup_text"
+														id="popup_<s:property value="%{#index}"/>">
+														<s:iterator value="charges">
+															<s:property value="%{name}"/> :<s:text name="format.money" ><br/>
 							<s:param name="value" value="%{tariffRate}" /></s:text> :<s:text name="format.money" ><br/>
 							<s:param name="value" value="%{cost}" /></s:text> :<s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
-							</s:iterator>
-							
-							<s:set var="markupTypeText" value="%{shippingOrder.rateList[#rowstatus.index].markupTypeText}"/>
-							<s:if test="#markupTypeText.equals('Flat')">
-								<s:property value="%{markupTypeText}"/> :<s:text name="format.money" ><s:param name="value" value="%{markupFlat}" /></s:text>
-								
-                        	</s:if>
+														</s:iterator>
 
-                        <s:else>				
+														<s:set var="markupTypeText"
+															value="%{shippingOrder.rateList[#rowstatus.index].markupTypeText}" />
+														<s:if test="#markupTypeText.equals('Flat')">
+															<s:property value="%{markupTypeText}"/> :<s:text name="format.money" ><s:param name="value" value="%{markupFlat}" /></s:text>
 
-						  <s:property value="%{markupTypeText}"/> : <s:property value="%{markupPercentage}"/>%					
+														</s:if>
+
+														<s:else>
+
+															<s:property value="%{markupTypeText}" /> : <s:property
+																value="%{markupPercentage}" />%					
 
 				        </s:else>
-						
-						<div class="closebtn"></div>
-						</div>
-						
-						
-					</div>	
+
+														<div class="closebtn"></div>
+													</div>
+
+
+												</div>	
 					</td>
 					<td style="display:none"> <s:property value="%{totalCost}"/>:<s:property value="%{total}"/></td> 
 				</s:if>
 				<s:else>
 				    <td style="position:relative;"> 
 					<div style="position:relative;" class="popup_div">
-						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label>Total :</label> 
+						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label><mmr:message messageId="label.ratelist.total" /> :</label> 
 						<s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text></b></div>
 						<div class="popup_text" id="popup_<s:property value="%{#index}"/>">
 							<s:iterator  value="charges">
@@ -1001,7 +1004,7 @@ var radioselected = 0;
 	</div>
 	</div>
 
-	<div id="rates_res_tbl_end"></div>
+	<div id="rates_res_tbl_end"></div>	
 </s:form>
 </div>
 </div>

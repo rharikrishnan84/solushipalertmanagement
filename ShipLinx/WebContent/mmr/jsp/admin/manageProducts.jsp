@@ -103,7 +103,7 @@
 </table>
 </div>
 </s:if>
-<s:include value="manageProductsList.jsp"></s:include>
+<jsp:include page="manageProductsList.jsp"/>
 
 
 

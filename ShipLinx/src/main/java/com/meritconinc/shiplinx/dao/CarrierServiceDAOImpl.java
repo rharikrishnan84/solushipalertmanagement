@@ -237,4 +237,14 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
 	  	    }
 	  	    return carrierServicesList;
 	  	  }
+  
+  @SuppressWarnings("unchecked")
+    public List<Service> getAllServices() {
+  	  try {
+  		  return (List<Service>) getSqlMapClientTemplate().queryForList("getAllServices");
+  	  } catch (Exception e) {
+  		  e.printStackTrace();
+  	  }
+  	  return null;
+    }
 }

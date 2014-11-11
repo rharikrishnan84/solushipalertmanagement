@@ -403,4 +403,20 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 		  		    }
 		  		    return null;
 		    }
+
+	@Override
+	public boolean isCustomerMarkupByDisabled(long customerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	    paramObj.put("customerId", customerId);
+	    Integer count = (Integer) getSqlMapClientTemplate().queryForObject("isCustomerMarkupByDisabled",
+	        paramObj);
+	    return (count > 0);
+	}
+	
+	@SuppressWarnings("unchecked")
+			public List<Markup> getAllMarkupsForCustomer(Long customerId){
+				Map<String, Object> paramObj = new HashMap<String, Object>(1);
+			paramObj.put("customerId", customerId);
+				return (List<Markup>)getSqlMapClientTemplate().queryForList("getMarkupListForCustomerAndCarrier1", paramObj);
+			}
 }

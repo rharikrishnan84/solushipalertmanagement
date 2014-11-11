@@ -1,0 +1,142 @@
+/**
+ * 
+ */
+package com.meritconinc.mmr.action.aboutus;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.interceptor.ServletRequestAware;
+
+import com.meritconinc.mmr.action.BaseAction;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.model.aboutus.FeedbackVO;
+import com.meritconinc.mmr.model.common.KeyValueVO;
+import com.meritconinc.mmr.service.FeedbackService;
+
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.Preparable;
+
+/**
+ * @author Dawn Liu
+ * 
+ */
+public class FeedbackAction extends BaseAction implements ServletRequestAware, Preparable {
+	private static final long serialVersionUID	= 23062007;
+	private static final Logger log = Logger.getLogger(FeedbackAction.class);
+
+	private static final String CONTACT_US = "contactUs";
+	
+	private FeedbackService service;
+
+	private FeedbackVO feedbackVO;
+
+	private HttpServletRequest request;
+
+	private List<KeyValueVO> feedbackTypes; 
+	
+	public FeedbackAction(FeedbackService service) {
+		this.service = service;
+	}
+
+	/**
+  	 * Saves the user feedbackVO
+  	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String execute() throws Exception {
+
+		if (feedbackVO.getComment() == null
+				|| "".equals(feedbackVO.getComment().trim())) {
+			if (log.isDebugEnabled()) {
+				log.debug("Comment is empty. Feedback cannot be saved.");
+			}
+			this.addActionError(getText("msg.feedback.notsave"));
+			
+		} else {
+			feedbackVO.setIp(request.getRemoteAddr());
+			feedbackVO.setHost(request.getRemoteHost());
+			feedbackVO.setCreateDate(new Date());
+			
+			String userName;
+			if(getLoginUser()!=null)
+				userName = getLoginUser().getUsername();
+			else
+				userName = Constants.ANONYMOUS_USER;
+			feedbackVO.setUsername(userName);
+
+			service.insertFeedback(feedbackVO);
+
+			// reset feedbackVO fields
+			String typeKey = "feedback.option." + feedbackVO.getType().toLowerCase();
+			//List<String> args = new ArrayList<String>();
+			String [] args={getText(typeKey)};
+			//args.add(getText(typeKey));
+			this.addActionMessage(getText("msg.feedback.save.success", args));
+			feedbackVO = new FeedbackVO();
+		}
+
+		return Action.SUCCESS;
+	}
+
+	public String contactUs() throws Exception {
+		return CONTACT_US;
+	}
+
+	
+	/**
+	 * 
+	 */
+	public FeedbackVO getFeedbackVO() {
+		return feedbackVO;
+	}
+
+	/**
+	 * 
+	 * @param feedbackVO
+	 */
+	public void setFeedbackVO(FeedbackVO feedbackVO) {
+		this.feedbackVO = feedbackVO;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public FeedbackService getService() {
+		return service;
+	}
+
+	/**
+	 * 
+	 * @param service
+	 */
+	public void setService(FeedbackService service) {
+		this.service = service;
+	}
+
+	/**
+	 * 
+	 * @param httpRequest
+	 */
+	public void setServletRequest(HttpServletRequest httpRequest) {
+		this.request = httpRequest;
+	}
+	
+	public void prepare() throws Exception {
+		setFeedbackTypes(service.getFeedbackTypes(getCurrentLocale()));
+	}
+
+	public List<KeyValueVO> getFeedbackTypes() {
+		return feedbackTypes;
+	}
+
+	public void setFeedbackTypes(List<KeyValueVO> feedbackTypes) {
+		this.feedbackTypes = feedbackTypes;
+	}
+}

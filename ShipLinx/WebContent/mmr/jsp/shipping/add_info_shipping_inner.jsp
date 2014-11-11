@@ -64,7 +64,7 @@
 <s:form id="searchUserFormId" cssClass="form" >
 
 	<div id="srchusr_results">
-		<div id="srchusr_res"><span>Status Updates </span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.heading.statusupdates"/> </span></div>
 	</div>
 			<s:if test="%{selectedOrder.customer.paymentType==2}">
 			<div id="sample1_wrapper" class="dataTables_wrapper" role="grid">
@@ -75,14 +75,14 @@
     <thead>
 		<tr>
 			<th><span style="width:50px !important; float:left;"><input id="check_all" type="checkbox" /></span></th>
-			<th><span style="width:180px !important; float:left;">Date Time</span></th>
-			<th><span style="width:250px !important; float:left;">Status</span></th>
-			<th><span style="width:200px !important; float:left;">Message</span></th>
-			<th><span style="width:300px !important; float:left;">Log</span></th>
+			<th><span style="width:180px !important; float:left;"><mmr:message messageId="label.ghead.datetime"/> </span></th>
+			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.ghead.status"/> </span></th>
+			<th><span style="width:200px !important; float:left;"><mmr:message messageId="label.ghead.message"/> </span></th>
+			<th><span style="width:300px !important; float:left;"><mmr:message messageId="label.ghead.log"/> </span></th>
 				<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-			<th><span style="width:150px !important; float:left;">UpdatedBy</span></th>
-			<th><span style="width:110px !important; float:left;">Private</span></th>
-			<th><span style="width:110px !important; float:left;">Delete</span></th>
+			<th><span style="width:150px !important; float:left;"><mmr:message messageId="label.ghead.updatedby"/> </span></th>
+			<th><span style="width:110px !important; float:left;"><mmr:message messageId="label.ghead.private"/> </span></th>
+			<th><span style="width:110px !important; float:left;"><mmr:message messageId="label.ghead.delete"/> </span></th>
 			</s:if>
 		</tr>
 	</thead>
@@ -176,7 +176,7 @@
 </div>
 </div>
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
- Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ <mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  <a href="download.viewshipment.action?type=csv&viewShipmentId=<s:property value='%{selectedOrder.id}'/>"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
   <a href="download.viewshipment.action?type=xl&viewShipmentId=<s:property value='%{selectedOrder.id}'/>"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
   <a href="download.viewshipment.action?type=xml&viewShipmentId=<s:property value='%{selectedOrder.id}'/>"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>

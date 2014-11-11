@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package com.meritconinc.mmr.action;
+
+import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationTrustResolver;
+import org.acegisecurity.AuthenticationTrustResolverImpl;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import com.meritconinc.shiplinx.carrier.fedex.*;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.meritconinc.mmr.action.BaseAction;
+
+
+/**
+ * @author 
+ *
+ */
+public class LogoutAction extends BaseAction {
+	private static final long serialVersionUID	= 18052007;
+
+	/**
+	 * Custom implementation to handle business logic
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String execute() throws Exception {
+		
+		//remove the highLighted menu from the session.
+		getSession().remove("HighLightMenu");
+		return SUCCESS;
+	}
+}
+
+
+

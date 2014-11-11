@@ -3,6 +3,7 @@ package com.meritconinc.shiplinx.service;
 import java.util.List;
 
 import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.CreditUsageReport;
 import com.meritconinc.shiplinx.model.Customer;
@@ -40,4 +41,5 @@ public interface CustomerManager{
 	
 	public List<CustomerSalesUser> getCustomerSalesInformation(long customerId);
 	public boolean sendSalesRepAddCustomerMailNotification(Customer customer, User user);	
+	public List<Billduty> getBilldutyList(String locale);
 }

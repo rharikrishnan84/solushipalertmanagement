@@ -52,7 +52,7 @@
 			</table>
 		</div>
 		<div id="${divid}" style="display: none;">
-			<s:include value="view_shipment_products_summary_inner.jsp"></s:include>
+			<jsp:include page="view_shipment_products_summary_inner.jsp"/>
 		</div>
 		</s:iterator>
 	</div>

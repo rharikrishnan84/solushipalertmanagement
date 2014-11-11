@@ -155,6 +155,6 @@
 						</div>
 </s:form>
 <div id="formResult">
- <s:include value="list_shipment.jsp"></s:include>
+ <jsp:include page="list_shipment.jsp"/>
 </div>
 

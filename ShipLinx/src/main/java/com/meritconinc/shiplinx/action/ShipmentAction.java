@@ -83,6 +83,7 @@ import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
+import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.BillingStatus;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
@@ -161,6 +162,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private String uploadFileName;
 //	private List<OrderStatus> orderStatusList;
 	private MarkupManager markupManagerService;
+	
 	public MarkupManager getMarkupManagerService() {
 		return markupManagerService;
 	}
@@ -218,6 +220,16 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private Map<String, Long> carrierChargesSearchResult = new HashMap<String, Long>();
 	private Map<String, String> carrierChargeCodeSearchResult = new HashMap<String, String>();
 	private Map<String, String> carrierChargeNameSearchResult = new HashMap<String, String>();
+    private List<Billduty> billduty;
+    
+	public List<Billduty> getBillduty() {
+		return billduty;
+	}
+
+
+	public void setBillduty(List<Billduty> billduty) {
+		this.billduty = billduty;
+	}
 
 	private static List<CarrierChargeCode> carrierChargesList = null;
 	private List<CarrierChargeCode> ajaxCarreierChargeList;
@@ -2153,6 +2165,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	public String stageThree() throws Exception {
 	    log.debug("-----------stageThree-------------");
 	    String customs = request.getParameter("customs");
+	    String stagethree = request.getParameter("getrates");
 	    ShippingOrder shippingOrder = getShippingOrder();
 	    if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 			shippingOrder.setCurrency("USD");
@@ -2175,7 +2188,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        pack.setHeight(height.setScale(2, BigDecimal.ROUND_HALF_UP));
 	      }
 	    }
-
+	   
+        billduty = customerService.getBilldutyList(UserUtil.getMmrUser().getLocale());
 	    Package packageArray[] = shippingOrder.getPackageArray();
 	    log.debug("packageArray.length::::" + packageArray.length);
 	    if (shippingOrder.getCustomsInvoice() == null)
@@ -2321,7 +2335,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    try {
 	      // clear the previous errors
 	      clearActionErrors();
-
 	      List<Rating> ratingList = carrierServiceManager.rateShipment(shippingOrder);
 
 	      Boolean isTransitDaysZero = false;
@@ -2485,7 +2498,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        }
 	        return INPUT;
 	      }
-
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	      for (CarrierErrorMessage carrierErrorMessage : carrierServiceManager.getErrorMessages()) {
@@ -2505,8 +2517,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	     * pack.setHeight(height.setScale(2, BigDecimal.ROUND_HALF_UP)); } }
 	     */
 	    // if quick ship option is chosen, then redirect to ship
-	    if ((shippingOrder.getServiceId_web() != null && shippingOrder.getServiceId_web() > 0)
-	        || shippingOrder.isCheapestMethod() || shippingOrder.isFastestMethod())
+	    if (((shippingOrder.getServiceId_web() != null && shippingOrder.getServiceId_web() > 0)
+	    	|| shippingOrder.isCheapestMethod() || shippingOrder.isFastestMethod())&&(stagethree!=null && stagethree.equalsIgnoreCase("false")))
 	      if (shippingOrder.getRateList().size() == 1) {
 	        return "ship";
 	      }
@@ -2523,7 +2535,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 	  }
 
-	
 	public String performRating(){
 		
 		return SUCCESS;
@@ -2589,6 +2600,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		  String brokerName = request.getParameter("broker");
 		  if(brokerName!=null){
 		  shippingOrder.getCustomsInvoice().getBrokerAddress().setAbbreviationName(brokerName);
+		  }
+		  if (shippingOrder.isSaveFromAddress()){
+		      shippingOrder.getFromAddress().setCustomerId(shippingOrder.getCustomerId());
+		  }
+		  if (shippingOrder.isSaveToAddress()){
+		      shippingOrder.getToAddress().setCustomerId(shippingOrder.getCustomerId());
 		  }
 		// shippingOrder.setBillToAccountNum(null);
 		//shippingOrder.getCustomsInvoice().setBillTo("1");
@@ -3327,7 +3344,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return SUCCESS;
 	}
 	
-	 public String cancelShipment() {
+	public String cancelShipment() throws Exception {
+		if(UserUtil.getMmrUser()!=null){
+				 Customer customer = customerService.getCustomerInfoByCustomerId(UserUtil.getMmrUser().getCustomerId());
+				 if(customer!=null && customer.getPaymentType() == 2 && UserUtil.getMmrUser().getUserRole().equals("customer_admin")){
+					  addActionError("This shipment was paid with a credit card, Please email save@integratedcarriers.com to cancel this shipment");
+					 return ERROR;
+				 }
+		}
 		    String orderId = request.getParameter("orderId");
 		    if (orderId != null && orderId.length() > 0) {
 		      long order_id = Long.parseLong(orderId);
@@ -3408,6 +3432,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      log.error("Error occured in cancelling a pickup", e);
 		      addActionError(getText("error.cancel.pickup.fail"));
 		    }
+		    
 		    return SUCCESS;
 		  }
 
@@ -4446,7 +4471,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      request.setAttribute("no_of_lbls", user.getPrintNoOfLabels());
 	      request.setAttribute("no_of_ci", user.getPrintNoOfCI());
 	      request.setAttribute("autoprint", user.isAutoPrint());
-
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	      addActionError(getText("content.error.unexpected"));
@@ -4506,7 +4530,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			      long carrierChargeCodeId=Long.valueOf(request.getParameter("carrierChargeCodeId").toString());
 			      Charge newCharge = this.getNewActualCharge();
 			      CarrierChargeCode carrierChargeCode = shippingDAO.getChargeCodeById(carrierChargeCodeId);
-			      
 			      if (newCharge != null) {
 			        carrierChargesList = this.getShippingService().getChargeListByCarrierAndCodes(
 			            newCharge.getCarrierId(), null, null);
@@ -4601,6 +4624,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			            newCharge.setName(c.getName());
 			            newCharge.setCurrency(this.getSelectedOrder().getCurrency());
 			            newCharge.setOrderId(this.getSelectedOrder().getId());
+			           
 			            // set the status to "Ready to Invoice" if the selected status is "Quick Invoice"
 			            if (chargeStatusText.equalsIgnoreCase(ShiplinxConstants.CHARGE_QUICK_INVOICE))
 			              newCharge.setStatusText(ShiplinxConstants.CHARGE_STATUS_TEXT[2]);
@@ -4614,9 +4638,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			            newCharge.setCarrierId(c.getCarrierId());
 			            newCharge.setTariffRate(c.getTariffRate());
 			            newCharge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
-			            newCharge.setCostcurrency(c.getCostcurrency());
-			            newCharge.setChargecurrency(c.getChargecurrency());
-			            newCharge.setExchangerate(c.getExchangerate());
 			            newCharge.setChargeGroupId(c.getChargeGroupId());
 			            newCharge.setId(this.getShippingService().saveCharge(newCharge));
 			            // this.getShippingService().saveCharge(newCharge);
@@ -4702,6 +4723,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			            newCharge.setName(quotedCharge.getName());
 			            newCharge.setCurrency(this.getSelectedOrder().getCurrency());
 			            newCharge.setOrderId(this.getSelectedOrder().getId());
+			            
 			            // set the status to "Ready to Invoice" if the selected status is "Quick Invoice"
 			            newCharge.setQuoteChargeId(quotedCharge.getId());
 			            newCharge.setStatusText(actualStatusText);
@@ -5306,13 +5328,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		String prod_quantity = request.getParameter("quantity");
 		String prod_unit_price = request.getParameter("unit_price");
 		//String prod_weight = request.getParameter("weight");
-		
+		String decode = new String(prod_desc.getBytes("UTF-8"), "ISO-8859-1");
 		CustomsInvoice customsInvoice = shippingOrder.getCustomsInvoice();
 		CustomsInvoiceProduct customsInvoiceProduct = new CustomsInvoiceProduct();		
 		
 		try{
 			customsInvoiceProduct.setCustomsInvoiceId(customsInvoice.getId());
-			customsInvoiceProduct.setProductDesc(prod_desc);
+			customsInvoiceProduct.setProductDesc(decode);
 			customsInvoiceProduct.setProductHC(prod_hcode);
 			customsInvoiceProduct.setProductOrigin(prod_origin);
 			customsInvoiceProduct.setProductQuantity(Integer.parseInt(prod_quantity));
@@ -5420,12 +5442,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		String selected = request.getParameter("selected");
 		ShippingOrder shippingOrder = getShippingOrder();
 		
-		if(selected.equals("1"))
+		if(selected.equals("Shipper"))
 		{
 			shippingOrder.getCustomsInvoice().getBillToAddress().copyAddress(shippingOrder.getFromAddress());
 			request.setAttribute("address", "From");
 		}
-		else if(selected.equals("2"))
+		else if(selected.equals("Consignee"))
 		{
 			shippingOrder.getCustomsInvoice().getBillToAddress().copyAddress(shippingOrder.getToAddress());
 			request.setAttribute("address", "To");

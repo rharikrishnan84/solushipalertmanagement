@@ -40,7 +40,7 @@ function searchar(){
 						<div class="content_table" > 
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="menu.admin.updateAR"/></div>
-								<div class="cont_hdrtitle_w">Select the invoices to update and fill in the appropriate details, then click "Process A/R"</div>
+								<div class="cont_hdrtitle_w"><mmr:message messageId="label.updatear.processar"> </mmr:message></div>
 								<div class="form_buttons" >	
 									
 									<a href="javascript:searchar()"><mmr:message messageId="label.search.btn.search"/></a> 									
@@ -73,7 +73,7 @@ function searchar(){
 
         
 	<div id="formResult">
-	   <s:include value="updateARInvoiceList.jsp"></s:include>
+	  <jsp:include page="updateARInvoiceList.jsp"/>
 	</div>
 	
 </s:form>

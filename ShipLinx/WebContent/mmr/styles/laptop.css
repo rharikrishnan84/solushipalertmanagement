@@ -7,10 +7,9 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .top_line                              { height:5px; background-color:#990000; float:left; width:100%;margin-top:0px; }
 .header-top,.wrapper_btm{ height:auto; width:100%; float:left;}
 .top_header_inner              { height:auto; width:1024px; margin:0px auto; }
-.logo                                      { height:67px; width:200px; float:left; padding-top:10px;}
-.top_navi                              { height:auto; width:440px; float:left; margin:40px 0px 0px 236px;}
-.top_navi ul                          { list-style-type:none; font-size:10px; }
-.top_navi ul li                        { display:inline;}
+.logo                                      { height:67px; /*width:200px;*/ width:0px; float:left; padding-top:10px;}
+.top_navi                              { height:auto; /*width:453px;*/ width:569px; float:right; margin:40px 23px 0px 236px;}
+.top_navi ul                          { list-style-type:none; font-size:10px; text-align:right;}.top_navi ul li                        { display:inline;}
 .top_navi ul li:nth-child(1),.top_navi ul li:nth-child(2),.top_navi ul li:nth-child(3),.top_navi ul li:nth-child(4){ border-right:1px solid #999;}
 .top_navi ul li a                     { text-decoration:none; color:#555555; padding:0px 8px;}
 .live_chat                            { height:auto; width:116px; float:left; margin-top:27px;}
@@ -41,12 +40,12 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .wrapper_body			{ height: auto; width:100%; float:left; background-color:#E7E7E7;  }
 .wrapper_navi			{ height: 37px;  float:left; width:100%; background-color:#555555;  }
 .wrapper_navi p			{ color:#FFF;  padding:0px; margin:11px 20px 11px 5px; font-size:12px; float:right; }
-.wrapper_navi ul			{ list-style-type:none; text-transform:uppercase; font-size:10px; margin:0px; padding:0px;  float:left; width:81%;font-size:12px;}
+.wrapper_navi ul			{ list-style-type:none; text-transform:uppercase;  margin:0px 0px 0px 8px; padding:0px;  float:left; width:810px;font-size:12px;}
 .wrapper_navi ul li		{ display:inline; text-transform:uppercase; float:left;	}
-.wrapper_navi ul li a		{ text-decoration:none; text-transform:uppercase; color:#ffffff ; padding:11px 5px; font-weight:600; float:left;}
+.wrapper_navi ul li a		{ text-decoration:none; text-transform:uppercase; color:#ffffff ; padding:11px 17px 11px 5px; font-weight:600; float:left;}
 .wrapper_navi ul li a:hover { color:#CCC;}
-.nextlevelmenu			{ height:28px; width:960px;   margin:0px 32px 5px 32px; float:left; }
-.nextlevelmenu ul		{ list-style-type:none; background-color:#f7f7f7 ;  float:left;  width:958px; font-size:11px; margin:0px; padding:0px; border:1px solid #C4C2C2;}
+.nextlevelmenu			{ height:26px; width:960px;background-color:#f7f7f7 ;   margin:0px 32px 5px 32px; float:left; border:1px solid #C4C2C2;}
+.nextlevelmenu ul		{ list-style-type:none; background-color:#f7f7f7 ;  float:left;  width:958px; font-size:11px; margin:0px; padding:0px; }
 .nextlevelmenu ul li		{ display:inline; height:28px;}
 .nextlevelmenu ul li a		{ text-decoration:none; color:#555555 ; padding:6px 10px; float:left;}
 .nextlevelmenu ul li a:hover{ color:#000 ;}
@@ -57,11 +56,11 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .content_body_index		{ width:1024px; padding:0px 0px 0px 0px;overflow:hidden;  margin:0px auto; height:auto; overflow:none; background-color:#E7E7E7; }
 .content_table			{ height:auto;  margin:0px auto; width:960px;  background-color:#e5e5e5;  }
 .content_header			{ height:25px; width:960px; float:left; background-color:#000; overflow:hidden; }
-.cont_hdr_title			{ height:15px; font-weight:bold; width:200px; float:left; background-color:#990000; color:#FFF; padding:6px 0px 5px 5px; font-size:12px;
+.cont_hdr_title			{ height:15px; font-weight:bold; width:285px; float:left; background-color:#990000; color:#FFF; padding:6px 0px 5px 5px; font-size:12px;
 	text-transform:uppercase;
  }
 .cont_hdrtitle_w		{ height:15px; font-weight:bold; float:left;  color:#FFF; padding:5px; font-size:12px;}
-.cont_data_body			{ height:auto; width:960px; float:left; background-color:#E7E7E7; border:0px solid #C4C2C2; }
+.cont_data_body			{height:auto; width:958px; float:left; background-color:#E7E7E7; border:1px solid #C4C2C2; }
 .cont_data_body p{ padding:5px 0px 5px 5px; margin:0px; float:left; width:100%; font-size:14px;} 
 .rows					{ width:100%; height:auto; float:left; padding:3px 0px; font-size:12px;}
 .fields					{ width:314px; margin-left:5px; float:left; padding:3px 0px; height:25px;font-size:12px;}
@@ -119,7 +118,10 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 
 
 .fieldsl				{ width:400px; height:25px; float:left; margin-left:5px; padding:3px 0px;}
-.fieldsl label			{ width:180px; float:left; padding-top:3px;}
+.fieldsl label			{ width:200px; float:left; padding-top:3px;}
+.fieldsl .controls select{ width:160px; height:22px; float:left;}
+.fieldsvl .controls select{ width:160px; height:22px; float:left; }
+
 .fieldsl .controls		{ width:174px; float:left;}
 .fieldsl .controls input[type="checkbox"]		{ width:15px; text-align:left;  float:left; margin:4px 0px 0px 0px; }
 .fieldsl .check span{ float:left; padding-top:3px;}
@@ -563,7 +565,7 @@ navi4{ width:100%; height:auto; float:left;}
 #pckg_results{margin-top: 9px	;margin-left: 43;color: 990000;font-size: 13;font-weight: bold; width:200px; float:left;}
 .domention{ width:300px; float:left; height:auto; margin-top:0px;}
 .domention .fields{ width:300px; floaat:left; height:left;}
-.domention .fields label{ width:130px; float:left; font-size:12px; font-weight:600; margin-top:3px; }
+.domention .fields label{ width:auto; float:left; font-size:12px; font-weight:600; margin-top:3px; }
 .domention .fields .controls{ width:80px; float:left;}
 .domention .fields .controls  span{ width:5px; float:left; padding-right:5px; }
 .domention .fields .controls select{ width:50px; float:left; margin-top:3px;}
@@ -573,7 +575,7 @@ navi4{ width:100%; height:auto; float:left;}
 .fieldsvvs label{ width:80px; float:left;   padding-top:3px; }
 .fieldsvvs .controls{ width:127px; float:left;}
 .fieldsvvs .controls  span{ padding-top:3px; padding-right:10px; float:left; }
-.fieldsvvs .controls input{ height:22px; width:114px; padding-left:5px; float:left;}
+.fieldsvvs .controls input{ height:22px; width:113px; padding-left:5px; float:left;}
 
 
 /*
@@ -590,7 +592,7 @@ navi4{ width:100%; height:auto; float:left;}
 /* for action button */
 
 	#actionmenu{position:absolute; float:left; display:none; background-color:#000; list-style-type:none; padding:5px; margin-top:30px;   z-index:1000; }
-	#actionmenu li{  height:26px; margin:2px 0px; background:#990000; text-align:center !important; width:125px;}
+	#actionmenu li{  height:26px; margin:2px 0px; background:#990000; text-align:left !important; width:auto; min-width:100px;}
 	#actionmenu li a{ float:left; padding:5px;}
 	#actionup {display:none;}
 
@@ -633,9 +635,9 @@ cursor:pointer;
 	text-overflow: ellipsis;
 }
 
-#customersautocomplete,#auto,#customerautocomplete{ background-image:url("../images/arrow_bottom.png");padding:0px 16px 0px 5px; background-repeat: no-repeat;
+#customersautocomplete,#auto,#customerautocomplete,.text_01_combo_big_customer{ background-image:url("../images/arrow_bottom.png");padding:0px 16px 0px 5px; background-repeat: no-repeat;
  font-size:12px; border:1px solid #c7c6c6; }
- 
+ .text_01_combo_big_customer option{ width:92px !important;}
 
  
  
@@ -843,6 +845,7 @@ code span {
 }
 
 .borderLeftRight{ border-left:1px solid #c4c2c2;  border-right:1px solid #c4c2c2; width:958px !important;}
+.borderLeftRightTopDown{ border-left:1px solid #c4c2c2;  border:1px solid #c4c2c2; width:958px !important;}
 .borderOnlyBottom{ border-bottom:1px solid #c4c2c2;}
 .borderOnlyBottom{ border-bottom:1px solid #c4c2c2;}
 .ac_results{ background-color:#FFF; border:1px solid #999; width:158px !important;}

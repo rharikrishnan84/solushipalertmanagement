@@ -316,16 +316,15 @@ var vkey = "";
 	
 	<div id="results" >
 		<div id="res">
-			<span>Product Lists for Customer</span>
+			<span><mmr:message messageId="label.heading.customerproductlist" /> </span>
 		</div>
 		<div id="rslt_stmnt">
 			<div class="form_buttons" style="float:right;">
-			<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
-			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
-			<ul id="actionmenu">
-				<li><a href="<%=request.getContextPath()%>/admin/addnewproduct.action" >ADD PRODUCT</a></li>
-				<li><s:a onclick="editProduct();" href="#" cssClass="gridedit" >EDIT</s:a></li>
-				<li><s:a onclick="deleteProduct()" href="#" cssClass="griddelete">DELETE</s:a></li>
+			<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
+			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a><ul id="actionmenu">
+				<li><a href="<%=request.getContextPath()%>/admin/addnewproduct.action" ><mmr:message messageId="label.list.addproduct"/></a></li>
+				<li><s:a onclick="editProduct();" href="#" cssClass="gridedit" ><mmr:message messageId="label.list.edit"/> </s:a></li>
+				<li><s:a onclick="deleteProduct()" href="#" cssClass="griddelete"><mmr:message messageId="label.list.delete"/> </s:a></li>
 			</ul>
 			</div>		
 		</div>
@@ -340,9 +339,8 @@ var vkey = "";
 			<th><mmr:message messageId="label.product.name"/></th>
 			<th style="width: 400;!important"><mmr:message messageId="label.product.description"/></th>
 			<th><mmr:message messageId="label.product.hcode"/></th>
-			<th>ORIGIN COUNTRY</th>
-			<th style="width: 95px;!important">UNIT PRICE</th>
-			
+			<th style="width: 160px;!important"><mmr:message messageId="label.product.origincountry"/> </th>
+			<th style="width: 115px;!important"><mmr:message messageId="label.product.unitprice"/> </th>
 		</tr>
     </thead>
 <tbody>	
@@ -370,7 +368,7 @@ var vkey = "";
 </div>
 
 <div class="exportlinks">    
-	Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="product.download.action?type=csv"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  <a href="product.download.action?type=xl"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
  <a href="product.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>

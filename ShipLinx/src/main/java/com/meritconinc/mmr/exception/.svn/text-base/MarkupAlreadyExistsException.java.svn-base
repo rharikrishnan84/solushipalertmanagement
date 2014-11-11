@@ -1,0 +1,11 @@
+package com.meritconinc.mmr.exception;
+
+public class MarkupAlreadyExistsException extends Exception {
+	public MarkupAlreadyExistsException(String string) {
+		 super(string);
+	}
+	
+	public MarkupAlreadyExistsException() {
+		 super();
+	}
+}

@@ -837,7 +837,7 @@ var count=parseInt(prevQuantity);
 							<div class="content_table" id="contenttbl">
 								<div class="content_header" style="margin-top:1px; margin-bottom:1px;">
 									<div class="cont_hdr_title"><mmr:message messageId="label.search.reference"/></div>
-									<div class="cont_hdrtitle_l" style="width:650px">( REFERENCE AVAILABLE ONLY FROM PAST SHIPMENTS OR IMPORTED SHIMPMENTS WITHIN THIS SYSTEM )</div>
+									<div class="cont_hdrtitle_l" style="width:650px"><mmr:message messageId="label.search.referenceheading"/></div>
 									<div class="form_buttons">
 										<a class="referenceOpen" onclick="javascript:return false;" style="padding:0px; background-color:transparent;" href="">
 											<img src="/shiplinx/mmr/images/hide.png">
@@ -964,7 +964,7 @@ var count=parseInt(prevQuantity);
 <div class="content_table" style="margin-top:1px;">
 			<div class="content_header">
 				<div class="cont_hdr_title"><mmr:message messageId="label.quick.ship"/>?</div>
-				<div class="cont_hdrtitle_l" style="width:514px">(PLEASE SELECT A METHOD TO CREATE A SHIPMENT WITHOUT FIRST GETTING RATES)</div>
+				<div class="cont_hdrtitle_l" style="width:514px"><mmr:message messageId="label.rateheading"/></div>
 		</div>
 		</div>
 	</div>
@@ -1052,7 +1052,7 @@ var count=parseInt(prevQuantity);
 		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<s:include value="shipping_additional_fields.jsp"/>
 		<div class="form_buttons id="img_save_shipment">
-			<a href="javascript:updateShipment()"> Save Shipment</a>
+			<a href="javascript:updateShipment()"> <mmr:message messageId="label.btn.save.shipment"/></a>
 		</div>
 	</s:if>
 	<s:else>
@@ -1060,8 +1060,8 @@ var count=parseInt(prevQuantity);
 	<div class="content_body">	
 		<div class="content_table borderLeftRight borderOnlyBottom" style=" overflow:auto; width:955px !important; padding:0px 3px 10px 0px; margin-bottom:20px;">
 			<div class="form_buttons id="img_get_rates" style=" width:206px; float:right !important;">
-				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">Save Shipment</a></div>
-				<div align="left" style="float:left !important;" id="get_rates_td"><a href="javascript:getRates()" onclick="return (validateOrder(3,1))">Get Rates</a></div>
+				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div>
+				<div align="left" style="float:left !important;" id="get_rates_td"><a href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>
 			</div>
 		</div>
 	</div>	

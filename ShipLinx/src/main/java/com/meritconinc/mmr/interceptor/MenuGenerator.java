@@ -62,6 +62,8 @@ public class MenuGenerator {
 		{
 			ActionContext.getContext().getSession().remove("LEVEL_TWO_MENUS");			
 		}
+		MenuItemVO menuItem = menusDAO.getWelcomeMenuBylocale(locale);
+		ActionContext.getContext().getSession().put("getWelcomeMenu", menuItem.getMsgContent());
 	}
 
 	private List<MenuItemVO> getLevelTwoMenus(MenuItemVO selectedMenu, 	List<MenuItemVO> levelOneMenus, Collection<String> roles,

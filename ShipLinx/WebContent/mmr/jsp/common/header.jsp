@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="mmr" uri="/mmr-tags"%>
 <!DOCTYPE html>
@@ -217,11 +219,11 @@ function removeCustomAlert() {
 					<div class="logo"><img src="<%=request.getContextPath()%>/mmr/images/logo.png"></div>
 					<div class="top_navi">
 						<ul>
-							<li><a href="">CONTACT US</a></li>
-							<li><a href="">WEBSITE FEEDBACK</a></li>
-							<li><a href="">FRANCAIS</a></li>
-							<li><a href="javascript:helpFile();">HELP</a></li>
-							<li id="logout"><a href="<%=request.getContextPath()%>/logout.action">LOG OUT</a></li>
+							<li><a href=""><mmr:message messageId="menu.contactus"/></a></li>
+							<li><a href=""><mmr:message messageId="menu.websitefeedback"/></a></li>
+							<li><a href=""><mmr:message messageId="menu.francais"/></a></li>
+							<li><a href="javascript:helpFile();"><mmr:message messageId="menu.help"/></a></li>
+							<li id="logout"><a href="<%=request.getContextPath()%>/logout.action"><mmr:message messageId="menu.logout"/></a></li>
 						</ul>
 						
 					</div>
@@ -254,7 +256,7 @@ function removeCustomAlert() {
 					</ul>
 					<div class="search_body">
 						<form method="post" action="">
-							<input type="text" placeholder="Enter search keyword here">
+							<input type="text" placeholder="<mmr:message messageId="placehold.entersearchkey"/>">
 							<input type="submit" value=" ">
 						</form>
 						<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -281,9 +283,9 @@ function removeCustomAlert() {
 						<ul>
 							<li><s:iterator value="#session.LEVEL_ONE_MENUS" id="menu"
 					status="lvl_one_menus">
-					&nbsp;&nbsp;&nbsp;&nbsp;<li> <a
+					<li> <a
 						href="<s:url value="%{url}" includeContext="true" includeParams="none" />">
-					<s:property value="name" /> </a> &nbsp;&nbsp;&nbsp;&nbsp; <s:if
+					<s:property value="name" /> </a>  <s:if
 						test="%{#lvl_one_menus.last != true}">
 						</li>
 					</s:if>
@@ -291,9 +293,8 @@ function removeCustomAlert() {
 							
 						</ul>
 						<s:if test="%{!#session.ROLE.contains('sales')}">
-						<p>WELCOME&nbsp;&nbsp;&nbsp;&nbsp;<s:property value="#session['username']" />
-						</s:if>
-		</p>
+						<p><s:label value="%{#session.getWelcomeMenu}"/> &nbsp;&nbsp;&nbsp;&nbsp;<s:property value="#session['username']" />
+					    </s:if>
 					</div>
 				
 					<div class="nextlevelmenu">

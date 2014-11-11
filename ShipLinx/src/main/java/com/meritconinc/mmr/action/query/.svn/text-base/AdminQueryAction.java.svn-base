@@ -1,0 +1,152 @@
+package com.meritconinc.mmr.action.query;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.opensymphony.xwork2.Preparable;
+import com.meritconinc.mmr.action.BaseAction;
+import com.meritconinc.mmr.exception.DAOException;
+import com.meritconinc.mmr.model.common.RoleVO;
+import com.meritconinc.mmr.model.query.QueryParameterVO;
+import com.meritconinc.mmr.model.query.QueryVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.QueryService;
+
+public class AdminQueryAction extends BaseAction implements Preparable {
+	private QueryService queryService;
+	private List<QueryVO> queries;
+	private int selectedQueryId = -1;
+		
+	private QueryVO query;
+	private List<User> selectedUsers;	
+	private List<User> availableUsers;
+	private String[] updatedSelectedUsers;
+	
+	private List<RoleVO> selectedRoles;
+	private List<RoleVO> availableRoles;
+	private String[] updatedSelectedRoles;
+		
+	private static final String QUERY_DETAIL = "queryDetail";
+	private static final int QUERY_PARAM_MAX_COUNT = 5;
+		
+	public void prepare() throws Exception {		
+		loadQueryDetail();
+	}
+	
+	private void loadQueryDetail() throws Exception {
+		if ( selectedQueryId >= 0 ) {
+			query = queryService.getQuery(selectedQueryId);			
+		}		
+		if ( query == null ) {
+			query = new QueryVO();
+		}
+		// fill query parameters
+		for (int i = query.getParameters().size(); i < QUERY_PARAM_MAX_COUNT; i++) {
+			query.getParameters().add(new QueryParameterVO());
+		}		
+		// fill query permissions
+		int queryId = query.getId();
+		availableUsers = queryService.getUnauthorizedUsersForQuery(queryId);
+		availableRoles = queryService.getUnauthorizedRolesForQuery(queryId);
+		if ( updatedSelectedUsers != null ) {
+			selectedUsers = new ArrayList<User>(updatedSelectedUsers.length);
+			for (int i = 0; i < updatedSelectedUsers.length; i++) {
+				User u = new User();
+				u.setUsername(updatedSelectedUsers[i]);
+				selectedUsers.add(u);
+			}
+		} else {
+			selectedUsers = queryService.getAuthorizedUsersForQuery(queryId);
+		}
+		if ( updatedSelectedRoles != null ) {
+			selectedRoles = new ArrayList<RoleVO>(updatedSelectedRoles.length);
+			for (int i = 0; i < updatedSelectedRoles.length; i++) {
+				RoleVO r = new RoleVO();
+				r.setRole(updatedSelectedRoles[i]);
+				selectedRoles.add(r);
+			}
+		} else {
+			selectedRoles = queryService.getAuthorizedRolesForQuery(queryId);	
+		}			
+	}
+	
+	
+	public String init() { return SUCCESS; }
+	
+	public String editQuery() throws DAOException{ return QUERY_DETAIL;	}
+
+	
+	public String saveQuery() throws Exception{
+		User user = getLoginUser();
+		if ( query.getId() == -1 ) {
+			query.setCreatedBy(user.getUsername());
+		}		
+		query.setUpdatedBy(user.getUsername());
+		queryService.saveQuery(query, updatedSelectedRoles, updatedSelectedUsers);
+		//queryDAO.saveQueryPermission(query.getId());
+		return SUCCESS;
+	}
+	
+	public String deleteQuery() throws Exception {
+		queryService.deleteQuery(query.getId());
+		return SUCCESS;
+	}
+	
+	public List<User> getSelectedUsers() {
+		return selectedUsers;
+	}
+
+	public List<User> getAvailableUsers() {
+		return availableUsers;
+	}
+
+	public List<RoleVO> getSelectedRoles() {
+		return selectedRoles;
+	}
+
+	public List<RoleVO> getAvailableRoles() {
+		return availableRoles;
+	}
+
+	public String[] getUpdatedSelectedUsers() {
+		return updatedSelectedUsers;
+	}
+
+	public void setUpdatedSelectedUsers(String[] updatedSelectedUsers) {
+		this.updatedSelectedUsers = updatedSelectedUsers;
+	}
+
+	public String[] getUpdatedSelectedRoles() {
+		return updatedSelectedRoles;
+	}
+
+	public void setUpdatedSelectedRoles(String[] updatedSelectedRoles) {
+		this.updatedSelectedRoles = updatedSelectedRoles;
+	}
+	
+	public List<QueryVO> getQueries() throws DAOException{
+		if ( queries == null ) {
+			queries = queryService.getAllQueries();
+		}
+		return queries;
+	}
+	
+	public QueryVO getQuery() { return query; }
+	
+	public void setQueryService(QueryService queryService) {
+		this.queryService = queryService;
+	}
+
+	public int getSelectedQueryId() {
+		return selectedQueryId;
+	}
+
+	public void setSelectedQueryId(int selectedQueryId) {
+		this.selectedQueryId = selectedQueryId;
+	}
+
+	public void setQuery(QueryVO query) {
+		this.query = query;
+	}
+		
+}

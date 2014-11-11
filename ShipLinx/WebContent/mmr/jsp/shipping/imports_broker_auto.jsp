@@ -37,7 +37,7 @@
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls"><span>:</span>
-												<s:include value="customsInvoiceBrokerProvince.jsp"/>
+												<jsp:include page="customsInvoiceBrokerProvince.jsp"/>
 											</div>
 										</div>
 										

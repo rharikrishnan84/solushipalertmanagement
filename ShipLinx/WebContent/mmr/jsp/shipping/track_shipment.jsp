@@ -4,6 +4,7 @@
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
 <html> 
 <head> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
     <title><s:text name="track.shipment.title"/></title> 
 </head> 
 <body> 
@@ -78,10 +79,10 @@
                </tr>
                
                <tr>
-                  <td class="text_03">From Date:</td>
+                  <td class="text_03"><mmr:message messageId="label.track.fromdate"/>:</td>
                   <td><sx:datetimepicker displayFormat="yyyy-MM-dd" name="shippingOrder.fromDate"  cssClass="text_02"/></td>
 
-				  <td class="text_03">To Date:</td>
+				  <td class="text_03"><mmr:message messageId="label.track.todate"/>:</td>
                   <td><sx:datetimepicker displayFormat="yyyy-MM-dd" name="shippingOrder.toDate"  cssClass="text_02"/></td>
                </tr>
               

@@ -1,0 +1,95 @@
+package com.meritconinc.mmr.utilities;
+
+import java.beans.XMLEncoder;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.servlet.http.Cookie;
+
+import org.apache.struts2.ServletActionContext;
+
+public class Common {
+	private static final int BIG_DECIMAL_SCALE = 2;
+
+	public static void setCookie(String key, String value, int expTime) {
+		Cookie cookie = new Cookie(key, value);
+		cookie.setMaxAge(expTime); 
+		ServletActionContext.getResponse().addCookie(cookie);
+	}
+	
+	public static String getCookie(String key) {
+		String value = null;
+		Cookie[] cookies = ServletActionContext.getRequest().getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				if (cookies[i].getName().equals(key)) {
+					value = cookies[i].getValue();
+					return value;
+				}
+			}
+		}
+		return value;
+	}
+	
+	public static List removeDuplicate(List withDups, Comparator comparator,
+			boolean presorted) {
+		if (!presorted) {
+			Collections.sort(withDups, comparator);
+		}
+		int size = withDups.size();
+
+		List result = new ArrayList(size);
+		if (size <= 1) {
+			if (size == 1) {
+				result.add(withDups.get(0));
+			}
+			return result;
+		}
+		Object prev = withDups.get(0);
+		result.add(prev);
+
+		for (int i = 1; i < size; i++) {
+			Object o = withDups.get(i);
+			if (comparator.compare(o, prev) != 0) {
+				result.add(o);
+				prev = o;
+			} 
+		}
+		return result;
+	}
+
+	public static BigDecimal fixPrecision(BigDecimal bd) {
+		// TODO Auto-generated method stub
+		if (bd != null) {
+			return bd.setScale(BIG_DECIMAL_SCALE, BigDecimal.ROUND_UNNECESSARY);
+		}
+		return null;
+	}
+	
+	public static String getXMLOfObject(Object object) {
+		StringBuilder sb = new StringBuilder();
+		ByteArrayOutputStream b = null;
+		try {
+
+			Long longTime = Calendar.getInstance().getTimeInMillis();
+
+			b = new ByteArrayOutputStream();
+
+			XMLEncoder encoder = new XMLEncoder(b);
+			encoder.writeObject(object);
+			encoder.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return b.toString();
+	}
+
+
+}

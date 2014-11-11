@@ -35,7 +35,7 @@
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls" id="stateid2">
-												<s:include value="../admin/shippingToProvienceList.jsp"/>
+												<jsp:include page="../admin/shippingToProvienceList.jsp"/>
 												
 											</div>
 										</div>
@@ -66,7 +66,7 @@
 										</div>
 										
 										<div class="fields">
-											<label>Instructions</label>
+											<label><mmr:message messageId="label.shippingOrder.Instructions"/></label>
 											<div class="controls"><span>:</span>
 												<s:textarea  key="shippingOrder.toAddress.instruction" name="shippingOrder.toInstructions" />
 											</div>

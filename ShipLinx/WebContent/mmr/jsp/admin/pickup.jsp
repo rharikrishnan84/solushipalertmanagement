@@ -13,7 +13,7 @@
 										</div>
 					<s:if test="%{!#session.ROLE.contains('busadmin')}">					
 					<div id="pickup_inner">
-						<s:include value="pickupAddress_inner.jsp"/>
+						<jsp:include page="pickupAddress_inner.jsp"/>
 					</div>
 					</s:if>
 

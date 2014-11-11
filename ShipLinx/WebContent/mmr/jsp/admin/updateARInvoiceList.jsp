@@ -132,7 +132,7 @@ function submitform()
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;">
 		<div id="srchinv_results">	
-		<div id="srchusr_res"><span>Unpaid Invoice List</span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.updatear.unpaidlist" /></span></div>
 		<div class="form_buttons" >	
 			<a href="javascript:submitform()"><mmr:message messageId="menu.admin.processAR"/></a>
 		</div>	
@@ -144,17 +144,17 @@ function submitform()
     <thead>
 	<tr height="25px">
 			<th><input type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<th> Invoice#</th>
-			<th style="width:80px;">Company</th>
-			<th> Amount</th>
-			<th>Tax</th>
-			<th>Total</th>
-			<th><span style="float:left;text-align:right;padding-right:5px;">Paid</span></th>
-			<th><span style="float:left;text-align:right;padding-right:5px;width:75px">Balance Due</span></th>
-			<th><span style="float:left;padding-right:5px">Amount</span></th>
-			<th>Date Remitted</th>
-			<th>Mode of Payment</th>
-			<th><span style="width:80px !important; float:left;">Payment Ref#</span></th>
+			<th><mmr:message messageId="label.updatear.invoice" /> </th>
+			<th style="width:82px;"><mmr:message messageId="label.updatear.company" /></th>
+			<th><mmr:message messageId="label.updatear.amount" /> </th>
+			<th><mmr:message messageId="label.updatear.tax" /></th>
+			<th><mmr:message messageId="label.updatear.total" /></th>
+			<th><span style="float:left;text-align:right;padding-right:5px;"><mmr:message messageId="label.updatear.paid" /></span></th>
+			<th><span style="float:left;text-align:right;padding-right:5px;width:100px"><mmr:message messageId="label.updatear.balancedue" /></span></th>
+			<th><span style="float:left;padding-right:5px"><mmr:message messageId="label.updatear.amount" /></span></th>
+			<th><mmr:message messageId="label.updatear.dateremitted" /> </th>
+			<th><mmr:message messageId="label.updatear.mode" />  </th>
+			<th><span style="width:105px !important; float:left;"><mmr:message messageId="label.updatear.paymentref" /></span></th>
 	</tr>
 	</thead>
 	<tbody>
@@ -163,7 +163,7 @@ function submitform()
              <tr>
 	           <td>  <input type="checkbox"  Class="check_uncheck_row" name="shipmentcheckbox<s:property value='invoiceId'/>"  value="<s:property value='invoiceId'/>" /></td>
 			    <td><s:property value="invoiceNum" /></td>
-				 <td style="text-align: left;"<span title="<s:property value="customer.name"/>"></span><div style="width:80px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
+				 <td style="text-align:left;"><span title="<s:property value="customer.name"/>"></span><div style="width:80px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
 				 <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="invoiceAmount" /></s:text></td>
 				 <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="invoiceTax" /></s:text></td>
 				 <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="totalInvoiceCharge" /></s:text></td>

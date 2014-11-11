@@ -19,6 +19,7 @@ import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
@@ -360,5 +361,14 @@ public CustomerSalesUser getCustomerSalesUserById(long id) {
 	     }
 	return null;
 }
+
+@Override
+public List<Billduty> getBilldutyList(String locale) {
+	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+    paramObj.put("locale", locale);
+	return getSqlMapClientTemplate().queryForList("getBilldutyList",locale);
+}
+
+
 
 }

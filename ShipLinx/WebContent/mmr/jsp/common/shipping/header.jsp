@@ -94,7 +94,7 @@ function highLightMenu(url,menu) {
 
 	
 	<td>
-	<div style="width:100px;height:5px;float:left;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;font-weight:bold;color:#9e2725;text-align:center;padding-bottom:2px;padding-left:5px;padding-top:2px;">Welcome </div><br/>
+	<div style="width:100px;height:5px;float:left;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:11px;font-weight:bold;color:#9e2725;text-align:center;padding-bottom:2px;padding-left:5px;padding-top:2px;"><mmr:message messageId="menu.welcome"/> </div><br/>
 	<div style="width:100px;height:5px;float:left;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;font-weight:bold;color:#9e2725;text-align:center;padding-bottom:2px;padding-left:5px;padding-top:3px;"><s:property value="%{session.ACEGI_SECURITY_LAST_USERNAME}" /></div>
 	</td>
 	</tr>

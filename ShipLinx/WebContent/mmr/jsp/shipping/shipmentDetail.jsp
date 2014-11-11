@@ -35,7 +35,7 @@
 <tr>
 <td align="left"  valign="top"  colspan="4"  class="text_01">
 <fieldset>
-        <legend  class="text_03"><strong>Pick Up From </strong></legend>
+        <legend  class="text_03"><strong><mmr:message messageId="label.heading.pickupfrom"/> </strong></legend>
         <table border="0" cellspacing="0" cellpadding="3"  class="text_01">
           <tr>
             <td class="text_03">Company:</td>

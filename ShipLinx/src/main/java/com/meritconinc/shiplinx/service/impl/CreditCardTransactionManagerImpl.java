@@ -79,10 +79,10 @@ public class CreditCardTransactionManagerImpl implements CreditCardTransactionMa
 		if(!cardVerified)
 			return cardVerified;
 		
-		boolean cardAddedToProc = processor.addCard(cc, customer);
+		/*boolean cardAddedToProc = processor.addCard(cc, customer);
 		
 		if(!cardAddedToProc)
-			return cardAddedToProc;
+			return cardAddedToProc;*/
 		
 		int len = cc.getCcNumber().length();
 		String last4 = cc.getCcNumber().substring(len-4, len);

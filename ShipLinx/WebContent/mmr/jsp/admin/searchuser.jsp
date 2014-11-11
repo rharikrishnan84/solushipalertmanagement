@@ -198,15 +198,15 @@
 <div class="form-container">
 <s:form id="searchUserFormId" cssClass="form" >
 	<div id="srchusr_results">	
-		<div id="srchusr_res"><span>User List </span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.heading.userlist"/></span></div>
 		<div class="form_buttons" style="float:right;">
-		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+		<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
-			<li><a href="javascript: editSearchUser();" >EDIT</a></li>
+			<li><a href="javascript: editSearchUser();" ><mmr:message messageId="label.list.edit"/></a></li>
 			<!--<s:submit value="DELETE" onclick="deleteSearchUser();" /> -->
-			<li><a href="#" onclick="deleteSearchUser();"> DELETE </a></li>
-			<li><a href="adduser.action">ADD USER </a></li>
+			<li><a href="#" onclick="deleteSearchUser();"><mmr:message messageId="label.list.delete"/></a></li>
+			<li><a href="adduser.action"><mmr:message messageId="menu.admin.adduser"/></a></li>
 			</ul>
 		</div>	
 	</div>
@@ -218,11 +218,11 @@
 		<tr>
 			<th><input id="check_all" type="checkbox" /></th>
 			<th></th>
-			<th><span style="width:250px !important; float:left;">USER NAME</span></th>
-			<th><span style="width:250px !important; float:left;">EMAIL</span></th>
-			<th><span style="width:110px !important; float:left;">DATE CREATED</span></th>
-			<th><span style="width:80px !important; float:left;">ENABLED</span></th>
-			<th style="width:70px !important;"><span style="width:70px !important; float:left;">USER ROLE</span></th>
+			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.ghead.username"/></span></th>
+			<th><span style="width:250px !important; float:left;"><mmr:message messageId="btn.email"/></span></th>
+			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.list.datecreated"/></span></th>
+			<th><span style="width:90px !important; float:left;"><mmr:message messageId="label.list.enabled"/></span></th>
+			<th style="width:80px !important;"><span style="width:115px !important; float:left;"><mmr:message messageId="label.list.userrole"/></span></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -241,7 +241,7 @@
 				<td><span title="<s:property value="email"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="email"/></div></td>
 	            <td><s:date name="createdAt" format="dd/MM/yyyy" /></td>
 	            <td><s:property value="enabled"/></td>
-				<td><span title="<s:property value="userRole"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="userRole"/></div></td></s:if>
+				<td><span title="<s:property value="userRole"/>"></span><div style="width:120px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="userRole"/></div></td></s:if>
 			<s:else>
 		        <td class="odd1" width="2%">
 		        <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/>  
@@ -251,11 +251,11 @@
 					<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0">
 					</s:a>
 	   			</td>
-				<td style="text-align: left;"<span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td>
-	            <td style="text-align: left;" <span title="<s:property value="email"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="email"/></div></td>
-	            <td style="text-align: left;"><s:date name="createdAt" format="dd/MM/yyyy" /></td>
+				<td style="text-align: left;"><span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td>
+	            <td style="text-align: left;"> <span title="<s:property value="email"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="email"/></div></td>
+				<td style="text-align: left;"><s:date name="createdAt" format="dd/MM/yyyy" /></td>
 	            <td style="text-align: left;"><s:property value="enabled"/></td>
-				<td style="text-align: left;" <span title="<s:property value="userRole"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="userRole"/></div></td>
+				<td style="text-align: left;"> <span title="<s:property value="userRole"/>"></span><div style="width:120px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="userRole"/></div></td>
 			</s:else>
             </tr>			
             </s:iterator>

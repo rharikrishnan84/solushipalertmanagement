@@ -43,7 +43,7 @@
 									
 									<div class="rows">
 										<div class="fields">
-											<label>Service Type </label>
+											<label><mmr:message messageId="label.package.servicetype"/></label>
 											<div class="controls"><span>:</span>
 												<s:select cssClass="text_01_combo_big"listKey="type" listValue="name" id="packType" name="shippingOrder.packageTypeId.type" 
 			list="#session.listPackages" onchange="javascript:modifyQuantity();" headerKey="-1" theme="simple"/>
@@ -57,7 +57,7 @@
 										</div>-->
 										
 										<div class="fields">
-										<label>Unit Of Measure</label>
+										<label><mmr:message messageId="label.package.unitmeasure"/></label>
           								 <div class="controls"><span>:</span>
           								 <s:select id="measure" name="shippingOrder.unitmeasure"  list="#session.UOM" listKey="unitOfMeasureId" listValue="unitOfMeasure" disabled="false"/></td>
           								 </div>

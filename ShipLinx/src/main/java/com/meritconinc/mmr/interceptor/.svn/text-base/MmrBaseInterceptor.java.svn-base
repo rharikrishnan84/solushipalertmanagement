@@ -1,0 +1,287 @@
+package com.meritconinc.mmr.interceptor;
+
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.acegisecurity.Authentication;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.meritconinc.mmr.action.BaseAction;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.constants.NavConsts;
+import com.meritconinc.mmr.dao.ActionsDAO;
+import com.meritconinc.mmr.dao.ExceptionInfoDAO;
+import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.model.common.AuthorizedActionVO;
+import com.meritconinc.mmr.model.common.ExceptionInfoVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.acegi.CustomUser;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.mmr.utilities.StringUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.ExceptionHolder;
+import com.opensymphony.xwork2.interceptor.ExceptionMappingInterceptor;
+
+public abstract class MmrBaseInterceptor extends ExceptionMappingInterceptor {
+	private static final long serialVersionUID	= 18052007;
+	private static final Logger log = Logger.getLogger(MmrBaseInterceptor.class);
+	
+	protected Collection<String> publicRoles = null;
+	//protected Collection<String> publicTopRoles = null;
+	private int refreshInterval;
+	private boolean checkTermsOfUse;
+	
+	/**
+	 * constructor
+	 *
+	 */
+	public MmrBaseInterceptor(){
+		// roles assigned to anonymous user
+		publicRoles = new ArrayList<String>();
+		publicRoles.add(Constants.BASE_USER_ROLE);
+		publicRoles.add(Constants.PUBLIC_ROLE_CODE);
+
+		// roles to render the top menu for anonymous user
+		PropertyDAO propertyDAO = (PropertyDAO)MmrBeanLocator.getInstance().findBean("propertyDAO");
+		refreshInterval = Integer.parseInt(propertyDAO.readProperty(Constants.SYSTEM_SCOPE, "CREDENTIALS_REFRESH_INTERVAL") );
+		checkTermsOfUse = Boolean.valueOf( propertyDAO.readProperty(Constants.SYSTEM_SCOPE, "CHECK_TERMS_OF_USE") ).booleanValue();
+	}
+
+	
+	/**
+	 * Override to handle interception 
+	 * 
+	 * @param invocation
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract String intercept(ActionInvocation invocation) throws Exception;
+
+	
+	/**
+	 * Custom implementation to handle ExceptionHolder publishing.
+	 * 
+	 * @param invocation
+	 * @param exceptionHolder
+	 */
+	protected void publishException(ActionInvocation invocation, ExceptionHolder exceptionHolder){
+    	BaseAction baseAction = (BaseAction)invocation.getAction();
+    	ArrayList errorsList = (ArrayList)baseAction.getFieldErrors().get("errorID");
+    	String exceptionID = ((String)errorsList.get(0)).substring(10);
+    	
+		log.error("Exception ID: "+exceptionID+": ", exceptionHolder.getException());
+
+		try {
+			// get the spring applicaiton context
+			WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext((ServletContext)invocation.getInvocationContext().get(ServletActionContext.SERVLET_CONTEXT));
+			// look up the defined bean we're looking for
+			ExceptionInfoDAO exInfoDAO = (ExceptionInfoDAO) context.getBean("exceptionInfoDAO");
+			ExceptionInfoVO exceptionInfoVO = new ExceptionInfoVO();
+			exceptionInfoVO.setExceptionId( exceptionID );
+			StringWriter sWriter = new StringWriter();
+			exceptionHolder.getException().printStackTrace(new PrintWriter(sWriter));
+			exceptionInfoVO.setDetails( sWriter.toString() );
+			exceptionInfoVO.setUsername( UserUtil.getSignedInUserName() );
+			exInfoDAO.insertExceptionInfo(exceptionInfoVO);
+		}
+		catch(Exception ex){
+			log.error("Exception while publishing the Exception: "+ex, ex);
+		}
+	}
+
+	
+	/**
+	 * Checks if the user is logged in and the authorization.
+	 * 
+	 * @param invocation
+	 * @return
+	 */
+	protected String checkAccess(ActionInvocation invocation){
+		String nextPage = null;
+		String nameSpace = invocation.getProxy().getNamespace();
+		String actionRequest = invocation.getInvocationContext().getName();
+		
+		determineCSS(invocation);
+		
+		if(!nameSpace.equals("/")){
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			//if(auth==null || auth.getName().equals("anonymousUser")){
+			if(auth==null || 
+					auth.getName().equals("anonymousUser")){
+				// user not logged in
+				nextPage = NavConsts.LOGIN;
+				String requestedPage = null;
+				ActionsDAO actionDAO = (ActionsDAO)MmrBeanLocator.getInstance().findBean("actionsDAO");
+				AuthorizedActionVO actionVO = actionDAO.readAction(invocation.getInvocationContext().getName());
+				
+				if( isAjaxCall() ){
+					
+					if(actionVO==null || actionVO.getParentAction()==null){
+						requestedPage = NavConsts.WELCOME_ACTION;
+					}
+					else{
+						//We are trying to invoke the parent action. If namespace of parent action is known we can use it..
+						//..else assume namespace of parent is the same as that of child
+						if(actionVO.getParentNamespace()!=null)
+							requestedPage = actionVO.getParentNamespace() + "/" + actionVO.getParentAction() + ".action";
+						else
+							requestedPage = invocation.getProxy().getNamespace() + "/" + actionVO.getParentAction() + ".action";
+					}
+				}
+				else{
+					// Added that so when "Save" action being clicked on after session timeout
+					if(actionVO==null || actionVO.getParentAction()==null){
+						requestedPage = setRequestedPage(invocation);
+					} 
+					else {
+						//We are trying to invoke the parent action. If namespace of parent action is known we can use it..
+						//..else assume namespace of parent is the same as that of child
+						if(actionVO.getParentNamespace()!=null)
+							requestedPage = actionVO.getParentNamespace() + "/" + actionVO.getParentAction() + ".action";
+						else
+							requestedPage = invocation.getProxy().getNamespace() + "/" + actionVO.getParentAction() + ".action";
+					}
+					//requestedPage = setRequestedPage(invocation);
+				}
+	        	ActionContext.getContext().getSession().put(Constants.CURRENT_PAGE, requestedPage);
+			}
+			else{
+				CustomUser customUser = (CustomUser)auth.getPrincipal();
+				User user = (User)customUser.getUserInfo();
+				ActionContext.getContext().getSession().put(ShiplinxConstants.BUSINESS, user.getBusiness());
+				ActionContext.getContext().getSession().put(ShiplinxConstants.USERNAME, user.getFullName());
+
+				// check if we need to refresh the user credentials
+				long rightNow = Calendar.getInstance().getTimeInMillis();
+				if(rightNow - user.getLastRefreshTime() > 1000*60*refreshInterval){
+					log.debug("refresh user credential - "  + user.getUsername());
+					boolean atou = user.isAcceptedTermsOfUse();
+					UserDetails userDetails = UserUtil.reloadUserContext(user.getUsername());		
+					user = (User)((CustomUser)userDetails).getUserInfo();
+					if (user.isPasswordExpired()) {
+						log.debug("password expired.");
+					}
+
+					if (user == null || user.isUserLocked() || user.isInactiveUser() || user.isUserRejected() || user.isUnapprovedUser() ||
+						user.isAccessExpired()){
+						nextPage = NavConsts.ACCESS_DENIED;
+						SecurityContextHolder.clearContext();
+					}
+					else{
+						user.setAcceptedTermsOfUse(atou);
+					}
+				}
+				/** Redirect to Password Expired Page if password is expired **/
+				if (user != null && user.isActiveUser() && !user.isAccessExpired() && user.isPasswordExpired() && 
+					!invocation.getInvocationContext().getName().equals(NavConsts.CHANGE_PASSWORD) &&
+					!invocation.getInvocationContext().getName().equals(NavConsts.VIEW_CHANGE_PASSWORD) && nextPage == null) {
+					log.debug("invocation.getInvocationContext().getName(): " + invocation.getInvocationContext().getName());
+					ActionContext.getContext().getSession().put(Constants.CURRENT_PAGE, setRequestedPage(invocation));
+					nextPage = NavConsts.PASSWORD_EXPIRED;
+				}
+				
+				if (log.isDebugEnabled()) {
+					log.debug("user.tou: " + user.isAcceptedTermsOfUse());
+					log.debug("check tou: " + checkTermsOfUse);
+					log.debug("next page: " + nextPage);
+				}
+				
+				if(nextPage==null && checkTermsOfUse){
+					// check if the user has accepted the Terms Of Use Agreement
+					// Do not check Terms Of Use if it is a ajax call otherwise, the terms of use page will appear in the window of window
+					if( !isAjaxCall() ){	
+						if(!user.isAcceptedTermsOfUse()){
+							nextPage = NavConsts.TERMS_OF_USE;
+							ActionContext.getContext().getSession().put(Constants.CURRENT_PAGE, setRequestedPage(invocation));
+						}
+					}
+				}
+				
+				if(nextPage == null){
+					// check the authorization
+					Collection<AuthorizedActionVO> authorizedActions = user.getAuthorizedActions();
+					if(authorizedActions==null || 
+							   !authorizedActions.contains(new AuthorizedActionVO(invocation.getInvocationContext().getName())) ) {
+						nextPage = NavConsts.ACCESS_DENIED;
+						log.info("Request for unauthorized action: " + invocation.getInvocationContext().getName() + " in namespace " + nameSpace);
+					}
+				}
+			}
+		}
+
+		return nextPage;
+	}	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected abstract boolean isAjaxCall();
+
+	private String setRequestedPage(ActionInvocation invocation) {
+		String requestedPage = invocation.getProxy().getNamespace() + "/" + invocation.getInvocationContext().getName() + ".action";
+        HttpServletRequest request = (HttpServletRequest) invocation.getInvocationContext().get(ServletActionContext.HTTP_REQUEST);
+    	if (!StringUtil.isEmpty(request.getQueryString())) {
+    		requestedPage += "?" + request.getQueryString().trim(); 
+    	}
+		return requestedPage;
+		
+	}
+	
+	private void determineCSS(ActionInvocation invocation) {
+		
+		String currentCSSToLoad = (String)ActionContext.getContext().getSession().get("cssToLoad");
+		if(currentCSSToLoad!=null)
+			return;
+		
+		HttpServletRequest httpServletRequest = 
+			(HttpServletRequest)invocation.getInvocationContext().get(ServletActionContext.HTTP_REQUEST);
+		String userAgent = httpServletRequest.getHeader("user-agent");
+		Business b = (Business) ActionContext.getContext().getSession().get(ShiplinxConstants.BUSINESS);
+		if(userAgent.contains("Firefox"))
+		{
+			if(!StringUtil.isEmpty(b.getBusinessCSS()))
+				ActionContext.getContext().getSession().put("cssToLoad", b.getBusinessCSS()+ShiplinxConstants.FF_CSS+ShiplinxConstants.CSS_EXTENSION);
+			else
+				ActionContext.getContext().getSession().put("cssToLoad", "/mmr/styles/shiplinx_closeWindow_styles_FF.css");
+		}
+		else if(userAgent.contains("MSIE"))
+		{
+			if(!StringUtil.isEmpty(b.getBusinessCSS()))
+				ActionContext.getContext().getSession().put("cssToLoad",  b.getBusinessCSS()+ShiplinxConstants.IE_CSS+ShiplinxConstants.CSS_EXTENSION);
+			else
+				ActionContext.getContext().getSession().put("cssToLoad", "/mmr/styles/shiplinx_closeWindow_styles_IE.css");
+		}
+		else if(userAgent.contains("Chrome"))
+		{
+			if(!StringUtil.isEmpty(b.getBusinessCSS()))
+				ActionContext.getContext().getSession().put("cssToLoad",  b.getBusinessCSS()+ShiplinxConstants.Chrome_CSS+ShiplinxConstants.CSS_EXTENSION);
+			else
+				ActionContext.getContext().getSession().put("cssToLoad", "/mmr/styles/shiplinx_closeWindow_styles_Chrome.css");
+		}
+		else //default to Chrome CSS
+		{
+			if(b.getBusinessCSS()!=null)
+				ActionContext.getContext().getSession().put("cssToLoad",  b.getBusinessCSS()+ShiplinxConstants.Chrome_CSS+ShiplinxConstants.CSS_EXTENSION);
+			else
+				ActionContext.getContext().getSession().put("cssToLoad", "/mmr/styles/shiplinx_closeWindow_styles_Chrome.css");
+		}
+
+	}
+}

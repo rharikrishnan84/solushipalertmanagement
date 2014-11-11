@@ -36,12 +36,15 @@ import org.w3c.dom.Element;
 
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.mmr.model.security.User;
-import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.mmr.service.UserService;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
+import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Customer;
@@ -74,15 +77,8 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private CustomerManager customerService;
   private List<Invoice> invoices;
   private List<SalesRecord> salesRecords;
-  public List<Invoice> getInvoicesNew() {
-	  	return invoicesNew;
-	  }
-	  
-	  public void setInvoicesNew(List<Invoice> invoicesNew) {
-	  	this.invoicesNew = invoicesNew;
-	  }
-	  
-	  private List<InvoiceStatus> statusList;
+  private ShippingDAO shippingDAO;
+  private List<InvoiceStatus> statusList;
   private Customer customer;
   private List<ShippingOrder> selectedOrders;
   private List<Invoice> selectedInvoices;
@@ -108,7 +104,22 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<String> InvoiceIdList = new ArrayList<String>();
   private List<Commission> commissions;
   private String paymentStatus;
-  public List<Commission> getCommissions() {
+  public List<Invoice> getInvoicesNew() {
+	  	return invoicesNew;
+	  }
+	  
+	  public void setInvoicesNew(List<Invoice> invoicesNew) {
+	  	this.invoicesNew = invoicesNew;
+	  }
+  public ShippingDAO getShippingDAO() {
+		return shippingDAO;
+	}
+
+	public void setShippingDAO(ShippingDAO shippingDAO) {
+		this.shippingDAO = shippingDAO;
+	}
+
+public List<Commission> getCommissions() {
 	return commissions;
 }
 
@@ -269,7 +280,7 @@ public String getSalesRep() {
 	  			      i = new Invoice();
 	  			      i.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
 	  			          Invoice.INVOICE_STATUS_PARTIAL_PAID });
-		} else {
+		} /*else {
 			int a[] = new int[this.statusList.size()]; // statusList does'nt go
 														// as null back // to
 														// the form.
@@ -277,7 +288,7 @@ public String getSalesRep() {
 				a[j] = this.statusList.get(j).getId().intValue();
 			}
 			i.setPaymentStatusList(a);
-	  			    }
+	  			    }*/
 
 	  	i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 	  		    if (UserUtil.getMmrUser().getCustomerId() > 0)
@@ -286,7 +297,7 @@ public String getSalesRep() {
 	  		      i.setBranch(UserUtil.getMmrUser().getBranch());
 	  		     
 	  		      
-	  		  if(i.getPaymentStatusList()[0]==50){ 
+	  		  if(i.getPaymentStatusList() !=null && i.getPaymentStatusList().length>0 && i.getPaymentStatusList()[0]==50){ 
 	  				  				  		  invoices = invoiceManager.searchInvoicesAr(i);
 	  				  				  		     }else{
 	  				  			  		    	 invoices = invoiceManager.searchInvoicesArSearch1(i);
@@ -809,6 +820,26 @@ public String getSalesRep() {
     if (invoiceId != null) {
       long l = Long.parseLong(invoiceId);
       Invoice invoice = invoiceManager.getInvoiceById(l);
+      for(ShippingOrder order:invoice.getOrders()){
+    	  			for(Charge charge:order.getChargesForInvoice()){
+    	  				shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
+    	  				Charge chargeTemp = shippingDAO.getChargeById(charge.getId());
+    	  				if(chargeTemp!=null){
+    	  					ChargeGroup chargeGroup=shippingDAO.getChargeGroup(chargeTemp.getChargeGroupId());
+    	  					int chargeGroupId = 0;
+    	  					if(chargeGroup!=null){
+    	  						chargeGroupId = (int)chargeGroup.getGroupId();
+    	  					}
+    	  					CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(charge.getCarrierId(),
+    	  							charge.getChargeCode(), charge.getChargeCodeLevel2(), chargeGroupId);
+    	  					if((ccc!=null && ccc.isTax())||(charge.getChargeCode()!= null &&charge.getChargeCode().equalsIgnoreCase("TAX"))){
+    	  						charge.setTax(true);
+    	  					}else{
+    	  						charge.setTax(false);
+    	  					}
+    	  				}
+    	  			}
+    	  		}
       this.setInvoice(invoice);
       return SUCCESS;
     }

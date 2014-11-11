@@ -1462,6 +1462,9 @@ public void setToProvinceName(String toProvinceName) {
     double weight = 0;
     if (this.getPackages() != null) {
       for (Package p : this.getPackages()) {
+    	  if(p.getWeight().intValue()<1){
+    		  p.setWeight(new BigDecimal(1));
+    	  }
         if (p.getWeight() != null)
           weight += p.getWeight().floatValue();
       }

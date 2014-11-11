@@ -255,28 +255,28 @@ window.onload = doOnload;
 								<div class="content_header">
 									<div class="cont_hdr_title">
 									<s:if test="#session.edit == 'true'">
-										Edit Customer: 
+										<mmr:message messageId="label.heading.editcustomer"/> : 
 										<s:hidden name="method" value="edit"/>
 										<s:hidden name="customer.businessId" />
 									</s:if> 
 									<s:else>
-										Add Customer
+										<mmr:message messageId="label.heading.addcustomer"/> 
 										<s:hidden name="method" value="add"/>
 									</s:else>
 									</div>
 									<div class="cont_hdrtitle_w"><s:property value="customer.name"/></div>
 									<div class="form_buttons">
-									<a href="#" onclick="submitform();" >SAVE</a>
+									<a href="#" onclick="submitform();" ><mmr:message messageId="label.btn.save"/></a>
 									<!--<s:submit onclick="submitform();" value="SAVE"/>-->
 									<s:if test="#session.edit != 'true'">
-									<a href="#" onclick="resetform();" >RESET</a>
+									<a href="#" onclick="resetform();" ><mmr:message messageId="label.btn.reset"/></a>
 									<!--<s:submit onclick="resetform();" value="RESET"/>-->
 									</s:if>										
 									
 									<s:else>
 									
 									
-										<a href="#" onclick="cancelform();" >CANCEL</a>
+										<a href="#" onclick="cancelform();" ><mmr:message messageId="label.btn.cancel"/></a>
 										<!--<s:submit onclick="cancelform();" value="CANCEL"/>-->
 									</s:else>
 									<s:if test="#session.edit == 'true'">
@@ -418,7 +418,7 @@ window.onload = doOnload;
 										</div>	
 										<!-- this code in under test -->
 										<div class="fields">
-           										<label>Show Ref. Sec.</label>
+           										<label><mmr:message messageId="label.customer.showref"/></label>
            										<div class="controls"><span>:</span>
             									<s:checkbox name="customer.reference" value="%{customer.reference}" key="customer.reference" id="showref"/>             
             									</div>
@@ -429,12 +429,12 @@ window.onload = doOnload;
 								</div>
 								
 								<div class="content_header">
-									<div class="cont_hdr_title">ACCOUNTING</div>								
+									<div class="cont_hdr_title"><mmr:message messageId="label.heading.accounting"/></div>								
 								</div>
 								<div class="cont_data_body">
 									<div class="rows">
 										<div class="fields">
-											<label>AP Contact</label>
+											<label><mmr:message messageId="label.customer.apcontact"/></label>
 											<div class="controls"><span>:</span><s:textfield  key="customer.apcontactName" name="customer.apcontactName"  /></div>
 										</div>
 										<div class="fields">
@@ -442,7 +442,7 @@ window.onload = doOnload;
 											<div class="controls"><span>:</span><s:textfield key="customer.invoicingemail" name="customer.invoicingEmail"   /></div>
 										</div>
 										<div class="fields">
-											<label>AP Phone</label>
+											<label><mmr:message messageId="label.customer.new.apphone"/></label>
 											<div class="controls"><span>:</span><s:textfield  key="customer.apPhone" name="customer.apPhone"  /></div>
 										</div>
 									</div>
@@ -455,7 +455,7 @@ window.onload = doOnload;
 								<div class="cont_data_body" style="padding-bottom:10px; font-size:12px;" >
 									<div class="rows">
 										<div class="fields">
-											<label><mmr:message messageId="label.monthly.spend"/> </label>
+											<label><mmr:message messageId="label.monthly.spend"/></label>
 											<div class="controls"><span>:</span><s:textfield size="24" key="customer.monthlySpend" name="customer.monthlySpend" cssStyle="text-align:right;padding-right:5px;"  /></div>
 										</div>
 										

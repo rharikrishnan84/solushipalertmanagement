@@ -1,0 +1,33 @@
+package com.meritconinc.mmr.dao.ibatis;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+
+import com.meritconinc.mmr.dao.FeedbackDAO;
+import com.meritconinc.mmr.model.aboutus.FeedbackVO;
+import com.meritconinc.mmr.model.common.KeyValueVO;
+
+public class FeedbackDAOImpl extends SqlMapClientDaoSupport implements FeedbackDAO {
+	
+	/**
+	 * Saves the user feedback
+	 * 
+	 * @param feedbackVO
+	 * @return
+	 * @throws Exception
+	 */
+	public void insertFeedback(FeedbackVO feedbackVO){
+		if(feedbackVO != null)
+			getSqlMapClientTemplate().insert("insertFeedback", feedbackVO);
+	}
+
+	public List<KeyValueVO> getFeedbackTypes(String locale) {
+		Map map = new HashMap(1);
+		map.put("locale", locale);		
+		return getSqlMapClientTemplate().queryForList("getFeedbackTypes", map);		
+	}
+
+}

@@ -1,0 +1,243 @@
+package com.meritconinc.mmr.model.admin;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.utilities.DateUtil;
+import com.meritconinc.mmr.utilities.StringUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+
+public class UserSearchCriteria implements Serializable {
+
+	private static final Logger log = Logger.getLogger(UserSearchCriteria.class);
+	private String username;
+
+	private String firstName;
+
+	private String lastName;
+
+	private String email;
+
+	private String status;
+
+	private String sortBy = "username";
+
+	private String order = "asc";
+
+	private String roleCode;
+	
+	private String lastLoginDateRange; // 7, 14, 30 - Days
+	
+	private Long customerId;
+	
+	private String orderedBy;
+	
+	private Long businessId;
+	
+	private String branch;
+	
+	private String  userCode;
+	public static final String SORT_BY_USERNAME = "username";
+	public static final String SORT_BY_FIRSTNAME = "firstname";
+	
+	public UserSearchCriteria() {
+		if (UserUtil.getMmrUser() != null)
+			setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	}
+
+	public String getSortBy() {
+		if (StringUtil.isEmpty(sortBy)) {
+			sortBy = "username";
+		}
+		return sortBy;
+	}
+
+	public void setSortBy(String sortBy) {
+		this.sortBy = sortBy;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public boolean hasCriteria() {
+		if (StringUtil.isEmpty(getUsername())
+				&& StringUtil.isEmpty(getFirstName())
+				&& StringUtil.isEmpty(getLastName())
+				&& StringUtil.isEmpty(getEmail())
+				&& StringUtil.isEmpty(getStatus())
+				&& StringUtil.isEmpty(getRoleCode())
+				&& StringUtil.isEmpty(getLastLoginDateRange())) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public String getOrderBy() {
+		String orderBy = "username";
+		if (getSortBy().equals("firstname")) {
+			orderBy = "first_name";
+		} else if (getSortBy().equals("lastname")) {
+			orderBy = "last_name";
+		} else if (getSortBy().equals("accountstatus")) {
+			orderBy = "account_status";
+		} else if (getSortBy().equals("lastlogin")) {
+			orderBy = "last_login";
+		} else if (getSortBy().equals("accesstimes")) {
+			orderBy = "access_times";
+		} else if (getSortBy().equals("comments")) {
+			orderBy = "user_comments";
+		} else if ( getSortBy() != null ) {
+			orderBy =  getSortBy();
+		}
+		return orderBy;
+	}
+
+	public String getOrder() {
+		return order;
+	}
+
+	public void setOrder(String order) {
+		this.order = order;
+	}
+
+	public String getRoleCode() {
+		return roleCode;
+	}
+
+	public void setRoleCode(String roleCode) {
+		this.roleCode = roleCode;
+	}
+
+	public String getLastLoginDateRange() {
+		return lastLoginDateRange;
+	}
+
+	public void setLastLoginDateRange(String lastLogin) {
+		this.lastLoginDateRange = lastLogin;
+	}
+	
+	public Date getLastLoginBeginDate() {
+		Date ret = null;
+		try {
+			ret = DateUtil.getDate(Integer.valueOf(this.getLastLoginDateRange()).intValue() * -1);
+		}
+		catch (Exception e) {}
+		return ret;
+	}
+
+	public boolean getShowCreated() {
+		log.debug("Status: " + status);
+		if (StringUtil.isEmpty(status)) {
+			return false;
+		} else {
+			if (status.equals(Constants.STATUS_UNAPPROVED)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	
+	public boolean getShowLastLogin() {
+		if (StringUtil.isEmpty(status)) {
+			return false;
+		} else {
+			if (status.equals(Constants.STATUS_ACTIVE)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	public String getReverseOrder() {
+		if (order.equals("asc")) {
+			return "desc";
+		} else {
+			return "asc";
+		}
+	}
+	
+/**
+ * Added by Ruchita
+ * Right now customer Id is hardcoded.
+ */	
+	public Long getCustomerId(){
+		return customerId;
+	}
+	public void setCustomerId(Long customerId){
+		this.customerId=customerId;
+	}
+
+	public Long getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(Long businessId) {
+		this.businessId = businessId;
+	}
+	public void setOrderedBy(String orderedBy) {
+		this.orderedBy = orderedBy;
+	}
+	public String getOrderedBy() {
+		return orderedBy;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+	
+
+}

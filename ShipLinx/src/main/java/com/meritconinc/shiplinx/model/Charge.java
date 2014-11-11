@@ -32,8 +32,18 @@ public class Charge implements Serializable {
 //Written By Mohan R
   private int chargeGroupId;
   private long slaveServiceId;
-    private String slaveCarrierName;
-  public long getQuoteChargeId() {
+  private String slaveCarrierName;
+  private boolean isTax;
+  
+  public boolean getIsTax() {
+	return isTax;
+}
+
+public void setTax(boolean isTax) {
+	this.isTax = isTax;
+}
+
+public long getQuoteChargeId() {
 	    return quoteChargeId;
 	 }
 	
@@ -368,5 +378,5 @@ public void setChargeGroupId(int chargeGroupId) {
 	  public void setExchangerate(BigDecimal exchangerate) {
 	    this.exchangerate = exchangerate;
 	  }
-
+	  
 }

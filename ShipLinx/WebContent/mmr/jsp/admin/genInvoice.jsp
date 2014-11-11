@@ -59,7 +59,7 @@ background-position: 145px 4px; background-size:8px 8px; }
 						</div>
 					</div>
 	   <div id="formResult">
-	  	 <s:include value="unbilledShipments.jsp"></s:include>
+	  	 <jsp:include page="unbilledShipments.jsp"/>
 	   </div>
 </s:form>
 

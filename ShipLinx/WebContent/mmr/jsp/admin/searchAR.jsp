@@ -32,7 +32,7 @@
 <div class="content_body" >	
 						<div class="content_table" > 
 							<div class="content_header">
-								<div class="cont_hdr_title"><mmr:message messageId="menu.admin.searchAR"/></div>
+								<div class="cont_hdr_title" style="width:275px !important"><mmr:message messageId="menu.admin.searchAR"/></div>
 								<div class="form_buttons" >	
 									<a href="javascript: submitform()"><mmr:message messageId="label.search.btn.search"/></a>
 								</div>
@@ -60,7 +60,7 @@
 					</div>
 
  	<div id="formResult">
-	   <s:include value="arList.jsp"></s:include>
+	   <jsp:include page="arList.jsp"/>
 	</div>
 </s:form>
 

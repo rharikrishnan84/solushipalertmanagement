@@ -147,25 +147,25 @@
 	<div class="content">
 
 	<div class="content_table" style="background-color:#fff;">
-<div id="srchusr_res"><span>List of Pickups </span></div>
+<div id="srchusr_res"><span><mmr:message messageId="label.searchpickup.list"/> </span></div>
 <div id="rate_results">
 <div class="form_buttons">
-<a href="javascript: cancelPickup();">CANCEL</a>
+<a href="javascript: cancelPickup();"><mmr:message messageId="label.searchpickup.cancel"/></a>
 </div>
 	</div>
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
 		<tr style="height:35px">
 			<th style="width:30px; text-align:center;"><input id="check_all" onclick="checkUncheck('check_uncheck_row')" type="checkbox" /></th>
-			<th>Customer</th>
-			<th>Pickup Date</th>
-			<th>Pickup Time</th>
-			<th style="width:100px !important;float:right;margin-top:12px">Pickup Location</th>
-			<th>Carrier</th>
-			<th>Confirmation No</th>
-			<th>Pickup Address</th>
+			<th><span style=" width:auto; float:left;"><mmr:message messageId="label.searchpickup.customer"/></span></th>
+			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.pickupdate"/></span> </th>
+			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.pickuptime"/> </span></th>
+			<th style="width:135px !important;float:right;margin-top:10px"><mmr:message messageId="label.searchpickup.pickuplocation"/> </th>
+			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.carrier"/></span></th>
+			<th><span style=" width:125px; float:left;"><mmr:message messageId="label.searchpickup.confirmationnum"/></span> </th>
+			<th><span style=" width:125px; float:left;"><mmr:message messageId="label.searchpickup.pickupaddress"/> </span></th>
 			
-			<th>Status</th>
+			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.status"/></span></th>
 		
 		</tr>
 	</thead>

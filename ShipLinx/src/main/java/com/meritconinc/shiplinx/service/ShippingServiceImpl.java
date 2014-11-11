@@ -36,6 +36,7 @@ import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
 import com.meritconinc.shiplinx.model.BillingStatus;
+
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
@@ -155,11 +156,15 @@ public class ShippingServiceImpl implements ShippingService {
           ShiplinxConstants.PIN_TYPE_ORDER_NUMBERS, 1, shippingOrder.getBusinessId());
       shippingOrder.setOrderNum(pins[0]);
     }
-
     shippingOrder.getFromAddress().setDefaultFromAddress(false);
     shippingOrder.getFromAddress().setDefaultToAddress(false);
     shippingOrder.getToAddress().setDefaultFromAddress(false);
     shippingOrder.getToAddress().setDefaultToAddress(false);
+    if(shippingOrder.getCODValue()!=null && shippingOrder.getCODValue()>0 && shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_PUROLATOR){
+    	    	if(shippingOrder.getCODPin()==null || shippingOrder.getCODPin().isEmpty()){
+    	    		shippingOrder.setCODPin(ShiplinxConstants.DEFAULT_COD_PIN);
+    	    	}
+    	    }
     // save the address to address book if requested on page. This is done
     // by simply adding the customer_id to the address object
     if (shippingOrder.isSaveFromAddress())
@@ -2100,4 +2105,5 @@ public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so) {
 	
 	return this.shippingDAO.findShipmentsAdminById(so);
 }
+
 }

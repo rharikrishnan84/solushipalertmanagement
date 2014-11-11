@@ -664,4 +664,10 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
 	  	  	}
 	  	  	return user;
 	  	  }
+  
+  @Override
+    public User getUserByUsercode(String userCode) {
+  
+  	return (User)getSqlMapClientTemplate().queryForObject("getUserByUsercode",userCode);
+    }
 }

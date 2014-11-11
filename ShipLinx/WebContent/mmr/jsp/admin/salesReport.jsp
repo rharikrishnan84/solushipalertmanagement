@@ -131,7 +131,7 @@ display:none;
 				</div>
 
 						<div class="fields_topdown">
-										<label>Customer Name</label>
+										<label><mmr:message messageId="label.commission.customername"/> </label>
 										<s:url id="customerList" action="listCustomers" />
 										<div class="controls">
 											<input id="custId" type="hidden" value="" name="salesRecord.customerId">
@@ -149,18 +149,18 @@ display:none;
 				
 <div class="content_body">
 <div class="content_table" style="background-color:#fff">
-<div id="srchusr_res"><span>Sales Results</span></div>	
+<div id="srchusr_res"><span><mmr:message messageId="label.commission.salesresults"/> </span></div>	
 	<div id="srchinv_results">	</div>	
 <div id="srchinv_result_tbl">
 	<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
 	<tr height="25px">
 	<th style="width:20px; text-align:center;"><input id="check_all" type="checkbox" /></th>
-	<th style="width: 175px !important;">Year</strong></th>
-	<th style="width: 220px ;">Month</th>
-	<th>Currency</th>
-	<th style="text-align:right;padding-right:10px">Total Cost</th>
-	<th style="width: 175px !important;text-align:right;padding-right:10px">Total Revenue</th>
+	<th style="width: 175px !important;"><mmr:message messageId="label.commission.year"/></strong></th>
+	<th style="width: 220px ;"><mmr:message messageId="label.commission.month"/></th>
+	<th><mmr:message messageId="label.commission.currency"/></th>
+	<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.commission.totalcost"/> </th>
+	<th style="width: 175px !important;text-align:right;padding-right:10px"><mmr:message messageId="label.commission.totalrevenue"/> </th>
 	</tr>
 	</thead>
 	<tbody>
@@ -181,7 +181,7 @@ display:none;
 			</tbody>
 			<tfoot>
     <tr>
-      <td>Total:</td>
+      <td><span style="float:left; width:65px;"><mmr:message messageId="label.commission.total"/>:</span></td>
       <td></td>
 	  <td></td>
       <td></td>
@@ -199,7 +199,7 @@ display:none;
 
 <div class="exportlinks"> 
        
-		Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="sales.download.action?type=csv"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
 <a href="sales.download.action?type=xl"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
 <a href="sales.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>

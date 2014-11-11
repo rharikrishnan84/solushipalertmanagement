@@ -1,9 +1,11 @@
 
 <%@ taglib prefix="s" uri="/struts-tags" %> 
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html> 
 	<head> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	    <title><s:text name="search.shipment.title"/></title> 
 	    <sj:head jqueryui="true" />
 	    <sx:head />
@@ -193,7 +195,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 	$(window).load(function() {
   var wndo = $(window).height();
   wndo -=46;
-  $('#wrapper_new').css('min-height',wndo);
+  $('#wrapper_new').css({'min-height':wndo,'width':'100%'});
   });
 	</script>
 
@@ -211,15 +213,15 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 								<div class="content_header">
 									<div class="cont_hdr_title"><mmr:message messageId="label.search.shipments"/></div>
 									<div class="form_buttons">
-										<a href="search.shipment.action" >RESET</a>
-										<a href="javascript: saveShipmentList()" >SAVE LIST</a>
-										<a href="javascript: searchShipment()" >SEARCH</a>
+										<a href="search.shipment.action" ><mmr:message messageId="label.btn.reset"/></a>
+										<a href="javascript: saveShipmentList()" ><mmr:message messageId="btn.savelist"/></a>
+										<a href="javascript: searchShipment()" ><mmr:message messageId="btn.search"/></a>
 									</div>	
 								</div>
 								<div class="cont_data_body borderLeftRight">
 									<div class="rows">
 										<div class="fields">
-											<label>From Date </label>
+											<label><mmr:message messageId="label.track.fromdate"/></label>
 											<div class="controls"><span>:</span>
 											
 												<s:textfield name="shippingOrder.fromDate" onClick="selectDate('f_date_c','f_trigger_c');" id="f_date_c" 
@@ -227,7 +229,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 											</div>
 										</div>
 										<div class="fields">
-											<label>To Date </label>
+											<label><mmr:message messageId="label.track.todate"/></label>
 											<div class="controls"><span>:</span>
 											
 												<s:textfield name="shippingOrder.toDate" onClick="selectDate('t_date_c','t_trigger_c');" id="t_date_c" 
@@ -235,7 +237,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 											</div>
 										</div>
 										<div class="fields">
-											<label>Shipment Order # </label>
+											<label><mmr:message messageId="label.track.shiporder"/> #</label>
 											<div class="controls"><span>:</span>
 												<s:textfield  key="shippingOrder.id" name="shippingOrder.id" />
 											</div>
@@ -257,13 +259,13 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 											</div>
 										</div>
 										<div class="fields">
-											<label>Tracking # </label>
+											<label><mmr:message messageId="label.track.tracking"/> #</label>
 											<div class="controls"><span>:</span>
 												<s:textfield key="shippingOrder.masterTrackingNum" name="shippingOrder.masterTrackingNum" 
 												 />
 											</div>
 										</div>
-										 <s:if test="%{#session.ROLE.contains('busadmin')}">
+										 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 										 <div class="fields">
 											<label><mmr:message messageId="label.edi.invoiceNumber"/></label>
 											<div class="controls"><span>:</span>
@@ -275,7 +277,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 									<s:else>
 									</s:else>
 										<div class="fields">
-											<label>Batch ID</label>
+											<label><mmr:message messageId="label.edi.batchid"/></label>
 											<div class="controls"><span>:</span>
 												<s:textfield  key="shippingOrder.batchId" name="shippingOrder.batchId"   />
 											</div>
@@ -303,7 +305,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 												 />
 											</div>
 										</div>
-										<s:if test="%{#session.ROLE.contains('busadmin')}">
+										<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager') }">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.name" /></label>
 											<s:url id="customerList" action="listCustomers" />
@@ -357,7 +359,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 					
 		
 		<div id="formResult">
-		   <s:include value="list_shipment.jsp"></s:include>
+		   <jsp:include page="list_shipment.jsp"/>
 		</div>
 			
 			
@@ -371,6 +373,7 @@ var customers = {
 		<s:iterator value='#session.customersList'>
 		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
+		
  };
 
 	delete customers["0"];

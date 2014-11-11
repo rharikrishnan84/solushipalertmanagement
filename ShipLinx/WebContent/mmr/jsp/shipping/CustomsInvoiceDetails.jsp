@@ -216,25 +216,25 @@ function toShoworHide(checked)
 	
 	function changeBillTo(sel)
 	{
-		if(sel == '2')
+		if(sel == 'Consignee')
 		{			
 			document.getElementById("accnt_number_lbl").style.display= 'none';
 			document.getElementById("accnt_number_txt").style.display= 'none';	
-			radioselected=2;	
+			radioselected='Consignee';	
 		}
-		else if(sel == '1')
+		else if(sel == 'Shipper')
 		{			
 			document.getElementById("accnt_number_lbl").style.display= 'none';
 			document.getElementById("accnt_number_txt").style.display= 'none';
-			radioselected=1;
+			radioselected='Shipper';
 		}
-		else if(sel == '3')
+		else if(sel == 'Third Party')
 		{			
 			document.getElementById("accnt_number_lbl").style.display= 'block';
 			document.getElementById("accnt_number_txt").style.display= 'block';		
-			radioselected=3;	
+			radioselected='Third Party';	
 		}
-		if(sel!= '3')
+		if(sel!= 'Third Party')
 		{
 			document.getElementById("loading-img-billto").style.display = 'block';
 			ajax_Country=ajaxFunction();
@@ -390,7 +390,8 @@ function toShoworHide(checked)
 			resetProductFields();
 			}
 	  }
-		url="addProductInformation.action?desc="+p_desc+"&hcode="+p_hcode+"&origin_country="+p_country+"&quantity="+p_quantity+"&unit_price="+p_uprice+"&weight="+p_weight;
+	 var encode = encodeURIComponent(p_desc);
+	 		url="addProductInformation.action?desc="+encode+"&hcode="+p_hcode+"&origin_country="+p_country+"&quantity="+p_quantity+"&unit_price="+p_uprice+"&weight="+p_weight;
 		ajax_Country.open("GET",url,true);
 		ajax_Country.send(this);
 	
@@ -411,13 +412,7 @@ function toShoworHide(checked)
 		document.getElementById('new_prod_uprice').value='';
 		document.getElementById('new_prod_quantity').value='';
 		document.getElementById('new_prod_tprice').value='';
-		document.getElementById('desc_id').value='';
-		//alert(dojos[0].value);
-		//alert(dojos[1]);
-		//alert(dojos[2].value);
-		//dojo.widget.byId("autoproductdesc").setValue("");
-		dojos[6].value="";
-		//dojo.widget.byId("autoproductdesc").setValue("test");
+		dojos[2].value="";
 	}
 	
 	function deleteProduct(index)
@@ -527,7 +522,7 @@ function toShoworHide(checked)
 								</div>
 				
 		</div>
-		<s:include value="buyer_if_not_consignee.jsp"/> 
+		<jsp:include page="buyer_if_not_consignee.jsp"/> 
 	
 		<div id="radio_table_div">
 			<div class="content_body" >	
@@ -539,14 +534,14 @@ function toShoworHide(checked)
 								<div id="loading-billto"><img id="loading-img-billto" style="display:none;" src="<s:url value="/mmr/images/loading.gif" includeContext="true" />" border="0"></div>
 				
 									<div class="form_buttons_radio">
-										<s:radio id="radio_address" list="#{'1':'Shipper','2':'Consignee','3':'Third Party'}" value="2" onclick="changeBillTo(this.value);" name="shippingOrder.customsInvoice.billTo"  />				
+										<s:radio id="radio_address" list="billduty" listKey="code" listValue="name" value="%{shippingOrder.customsInvoice.billTo}" onclick="changeBillTo(this.value);"  name="shippingOrder.customsInvoice.billTo"  />				
 									</div>
 							</div>
 					</div>
 				</div>
 			</div>				
 		</div>
-		<s:include value="CustomsInvoice_BillToAddress.jsp"/> 
+		<jsp:include page="CustomsInvoice_BillToAddress.jsp"/> 
 		
 		<div class="content_body" >	
 							<div class="content_table"> 
@@ -619,7 +614,7 @@ function toShoworHide(checked)
 								<div class="content_header">
 									<div class="cont_hdr_title"><mmr:message messageId="label.broker.info"/></div>
 									<div class="form_buttons">
-										<a href="javascript:clearBrokerInformation();" >CLEAR</a>
+										<a href="javascript:clearBrokerInformation();" ><mmr:message messageId="btn.clear"/></a>
 									</div>
 								</div>		
 								<div class="cont_data_body borderLeftRight">
@@ -674,7 +669,7 @@ function toShoworHide(checked)
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls"><span>:</span>
-												<s:include value="customsInvoiceBrokerProvince.jsp"/>
+												<jsp:include page="customsInvoiceBrokerProvince.jsp"/>
 											</div>
 										</div>
 										<div class="fields">
@@ -707,7 +702,7 @@ function toShoworHide(checked)
 								</div>
 							</div>
 							<div id="hide_broker_address" style="display: none;">
-								<s:include value="customsBrokerInformations.jsp"/>
+								<jsp:include page="customsBrokerInformations.jsp"/>
 							</div>
 			</div>
 			
@@ -773,10 +768,10 @@ function toShoworHide(checked)
 			<div class="content_body" >	
 							<div class="content_table" > 
 								<div class="content_header">
-									<div class="cont_hdr_title">Product Information</div>
+									<div class="cont_hdr_title"><mmr:message messageId="label.header.productinfo"/></div>
 									<div class="form_buttons" >
-										<a href="javascript:assignTotal();" >ADD</a>
-										<s:a href="javascript: callfun(%{#counterIndex.index})">DELETE</s:a>
+										<a href="javascript:assignTotal();" ><mmr:message messageId="btn.add"/></a>
+										<s:a href="javascript: callfun(%{#counterIndex.index})"><mmr:message messageId="btn.delete"/></s:a>
 									</div>
 								</div>	
 								
@@ -788,12 +783,12 @@ function toShoworHide(checked)
 			</div>				
 	</div>
 	
-	<s:include value="populateProducts.jsp"/> 
-  	<s:include value="ProductDetails.jsp"/> 
+	<jsp:include page="populateProducts.jsp"/> 
+  	<jsp:include page="ProductDetails.jsp"/> 
 	
 	</div>
 	
-	<s:include value="hidden.jsp"/> 
+	<jsp:include page="hidden.jsp"/> 
 
 
 </body>

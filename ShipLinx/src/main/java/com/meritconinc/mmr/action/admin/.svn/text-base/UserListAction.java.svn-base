@@ -1,0 +1,344 @@
+package com.meritconinc.mmr.action.admin;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.meritconinc.mmr.action.common.DataGridAction;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.RolesDAO;
+import com.meritconinc.mmr.exception.UsernameAlreadyTakenException;
+import com.meritconinc.mmr.model.admin.UserSearchCriteria;
+import com.meritconinc.mmr.model.common.RoleVO;
+import com.meritconinc.mmr.model.datagrid.DataGrid;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.UserService;
+import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.mmr.utilities.StringUtil;
+import com.meritconinc.mmr.utilities.WebUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.service.AddressManager;
+import com.meritconinc.shiplinx.service.CustomerManager;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.ValidationAware;
+
+/**
+ * <code>Set welcome message.</code>
+ */
+public class UserListAction extends DataGridAction implements Preparable,ServletRequestAware,ValidationAware {
+	private static final long serialVersionUID	= 25092007;
+
+	private static final Logger log = LogManager.getLogger(UserListAction.class);
+	private List<User> userList;
+	private User user;
+	private String edit;
+	private UserService service;
+	private CustomerManager customerService;
+	private AddressManager addressService;
+	private String selectedRoles[] = new String[0];
+	public HttpServletRequest request;
+	private UserSearchCriteria criteria;
+	private boolean resetCurrPage = false;
+	private int noOfRowsPerPage;
+
+
+	private Collection<RoleVO> availableRoles = new ArrayList<RoleVO>();
+		
+	
+	public void setDataGridPages() {
+		this.setNoOfRowsPerPage(10);
+		setDataGrid(new DataGrid(noOfRowsPerPage));
+	}
+
+	public UserSearchCriteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(UserSearchCriteria criteria) {
+		this.criteria = criteria;
+	}
+
+	public String execute() throws Exception {
+		return SUCCESS;
+	}
+
+	public UserService getService() {
+		return service;
+	}
+	
+	public void setService(UserService service) {
+		this.service = service;
+	}
+	
+	public List<User> getUserList(){
+		return userList;
+	}
+		
+	public void setServletRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+
+	public String list() throws Exception {
+		Long lCustomerId = 0L;
+		
+		String cidAttribute = (String)request.getAttribute("cid");
+		
+		if(request.getParameter("cid")!=null)
+		{
+			lCustomerId = Long.valueOf(request.getParameter("cid"));
+			Customer c = customerService.getCustomerInfoByCustomerId(lCustomerId);
+			getSession().put("customerName", c.getName());
+			this.getUser().setCustomerId(lCustomerId);
+		}
+		else{
+			lCustomerId =getLoginUser().getCustomerId();
+			getUser().setCustomerId(lCustomerId);
+		}
+		criteria.setCustomerId(lCustomerId);
+		//if current user belongs to a branch, then show only those users within the branch
+		if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
+			criteria.setBranch(UserUtil.getMmrUser().getBranch());
+		getSession().remove("edit");
+		userList = service.findUserByCustomer(criteria);
+		if(!(userList.size()!=0))
+		addActionError(getText("error.no.user.found"));
+		return SUCCESS;
+	}
+	
+	public String checkRegiteredUser() throws Exception {
+		User u = service.findUserByUsername(request.getParameter("username"));
+		if(u!=null)
+			addActionError(getText("error.user.found"));
+		return SUCCESS;
+	}
+	
+	
+	/**
+	 * creates a new user
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String save() throws Exception {
+		user=getUser();
+		setAvailableRoles(user.getCustomerId());
+		log.debug(" CHECK METHOD IN SAVE ***********   "+request.getParameter("method"));
+		
+		User loggedInUser = UserUtil.getMmrUser();
+		if(loggedInUser.getCustomerId() > 0) //this is a customer creating a user under his/her own profile
+			user.setCustomerId(loggedInUser.getCustomerId());
+		//else either admin is creating business user, or admin is creating a user for a customer, both cases are taken care of in the new method
+		
+		user.setStatus(user.getEnabled()?Constants.STATUS_ACTIVE:Constants.STATUS_INACTIVE);
+		user.setLocale("en_CA");
+		user.setPasswordChangedAt( new Timestamp(new Date().getTime()));
+		if(request.getParameter("method").equals("update")){
+			String username=request.getParameter("username");
+			
+			service.save(user, UserUtil.getSignedInUser().getUsername());
+			log.debug("EDITTED SUCCESSFULLY ");
+			addActionMessage(getText("user.info.update.successfully"));
+			//session.remove("method");
+		}
+		else{ //add user
+		try {
+			if(user.getPassword()==null || user.getPassword().length()<6){
+				addActionError(getText("error.password.length"));
+				return INPUT;
+			}
+			User u = service.findUserByUsername(user.getUsername());
+			if(u!=null){
+				addActionError(getText("error.username.taken"));
+				addActionMessage(getText("error.username.taken"));
+				return INPUT;
+			}
+			service.create(user, UserUtil.getSignedInUser().getUsername());
+			
+		} catch(UsernameAlreadyTakenException ue){
+			addActionMessage(getText("error.username.taken"));
+			addActionError(getText("error.username.taken"));
+			return INPUT;
+		}
+		addActionMessage(getText("user.info.save.successfully"));
+		}
+		getSession().remove("user");
+		return SUCCESS;
+	}
+	
+	public String delete() throws Exception{
+		
+		String username=request.getParameter("name");
+		log.debug("CHECK NAME "+username);
+		service.delete(username);
+		addActionMessage(getText("user.info.delete.successfully"));
+		return SUCCESS;
+	}
+	
+	public String edit() throws Exception{
+		
+		String username=request.getParameter("name");
+		log.debug("CHECK EIDT NAME "+username);
+		user = service.findUserByUsername(request.getParameter("name"));
+		log.debug("User phone "+user.getPhoneNumber());
+		getSession().put("user", user);
+		getSession().put("edit", "true");
+		//request.setAttribute("edit", "true");
+		//setEdit("true");
+		//getSession().put("username", username);
+		if(user.getDefaultFromAddressId()>0)
+		{
+			//request.setAttribute("f_add_id", user.getDefaultFromAddressId());
+			//request.setAttribute("long_f_add", addressService.findAddressById(user.getDefaultFromAddressId()+"").getLongAddress());
+			user.setDefaultFromAddressText(addressService.findAddressById(user.getDefaultFromAddressId()+"").getLongAddress());
+		}
+		if(user.getDefaultToAddressId()>0)
+		{
+			//request.setAttribute("t_add_id", user.getDefaultToAddressId());
+			//request.setAttribute("long_t_add", addressService.findAddressById(user.getDefaultToAddressId()+"").getLongAddress());
+			user.setDefaultToAddressText(addressService.findAddressById(user.getDefaultToAddressId()+"").getLongAddress());
+		}
+		//set the available roles here based on admin/customer user
+		setAvailableRoles(user.getCustomerId());
+		
+		return SUCCESS;
+	}
+	
+	
+	
+	
+	/**
+	 * Prepares the data for the New User page
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String newUser() throws Exception {
+		
+		//check if customer id is set, it means admin user is creating customer user
+		long customerId = 0;
+		if(getUser()!=null)
+			customerId = getUser().getCustomerId();
+		setAvailableRoles(customerId);
+		getSession().remove("user");
+		getSession().remove("edit");
+		user = new User();
+		user.setCustomerId(customerId);
+		user.setStatus("A");
+		user.setLocale("en_CA");
+		selectedRoles = new String[1];
+		selectedRoles[0] = Constants.PUBLIC_ROLE_CODE;
+		user.setSessionTimeout(Integer.parseInt(WebUtil.getProperty(Constants.SYSTEM_SCOPE, Constants.TIMEOUT)));
+		getSession().put("user", user);
+		//setEdit("false");
+		return SUCCESS;
+	}
+
+	public String back() throws Exception {
+		//addActionMessage(getText("user.info.save.successfully"));
+				//addActionMessage(getActionMessages());
+		
+		return SUCCESS;
+	}
+
+	public List refreshDataRows() throws Exception {
+		List userList = null;
+		userList = service.findUsers(criteria, getDataGrid()
+				.getCurPageRowStartIndex(), getDataGrid().getCurPageRowEndIndex());
+		if (userList.size() <= 0) {
+			addActionError(getText("error.no.user.found"));
+		}
+		return userList;
+	}
+
+	public int getNoOfRowsPerPage() {
+		return noOfRowsPerPage;
+	}
+
+	public void setNoOfRowsPerPage(int noOfRowsPerPage) {
+		this.noOfRowsPerPage = noOfRowsPerPage;
+	}
+
+	public boolean isResetCurrPage() {
+		return resetCurrPage;
+	}
+
+	public void setResetCurrPage(boolean resetCurrPage) {
+		this.resetCurrPage = resetCurrPage;
+	}
+
+	public String goToSearch() throws Exception {
+		if (resetCurrPage) {
+			getDataGrid().resetCurrentPage();
+		}
+		return INPUT;
+	}	
+
+	/**
+	 * Sets the available roles
+	 *
+	 */
+	public void setAvailableRoles(long customerId) {
+		WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext((ServletContext)ActionContext.getContext().get(ServletActionContext.SERVLET_CONTEXT));
+		RolesDAO rolesDAO = (RolesDAO)context.getBean("rolesDAO");
+		String locale = MessageUtil.getLocale();
+		if(customerId > 0) //this is a customer admin updating/creating user
+			availableRoles = rolesDAO.getRolesByType(locale, ShiplinxConstants.ROLE_TYPE_CUSTOMER);
+		else //business admin
+			availableRoles = rolesDAO.getRolesByType(locale, ShiplinxConstants.ROLE_TYPE_BUSINESS);
+		getSession().put("availableRoles", availableRoles);
+	}
+
+	/**
+	 * @return the availableRoles
+	 */
+	public Collection<RoleVO> getAvailableRoles() {
+		return availableRoles;
+	}
+
+	/**
+	 * @param availableRoles the availableRoles to set
+	 */
+	public void setAvailableRoles(Collection<RoleVO> availableRoles) {
+		this.availableRoles = availableRoles;
+	}
+
+	public void prepare() throws Exception {
+		if(user!=null)
+			setAvailableRoles(user.getCustomerId());
+		else{
+			
+		}
+	}
+
+	public CustomerManager getCustomerService() {
+		return customerService;
+	}
+
+	public void setCustomerService(CustomerManager customerService) {
+		this.customerService = customerService;
+	}
+
+	public AddressManager getAddressService() {
+		return addressService;
+	}
+
+	public void setAddressService(AddressManager addressService) {
+		this.addressService = addressService;
+	}
+	
+}

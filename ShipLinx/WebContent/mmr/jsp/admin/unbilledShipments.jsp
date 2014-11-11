@@ -154,10 +154,11 @@
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;">
 		<div id="srchinv_results">	
-		<div id="srchusr_res"><span>Shipments to be Invoiced </span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.generateInvoice.shipments"/>  </span></div>
 		<div class="form_buttons">
-			<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+        <a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
+		<a href="#" id="actionup" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9650;</span></a>
+			
 			<ul id="actionmenu">
 				<li><a href="javascript:autoGen()"><mmr:message messageId="label.invoice.auto.generate"/></a></li>
 				<li><a href="javascript:submitform()"><mmr:message messageId="label.invoice.bill.selected"/></a></li>
@@ -172,11 +173,11 @@
 		<thead>
 		<tr height="25px">
 		<th style="width: 30px !important;"> <input type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-		<th style="width: 250px !important;"> Company</strong></th>
-		<th style="width: 120px ;">Order #</th>
-		<th style="width: 120px ;">Date Created</th>
-		<th style="width: 120px ;">Cost / Charge</th>
-		<th style="width: 60px !important;">Billed</th>
+		<th style="width: 250px !important;"><mmr:message messageId="label.generateInvoice.company"/></strong></th>
+		<th style="width: 120px ;"><mmr:message messageId="label.generateInvoice.order"/></th>
+		<th style="width: 120px ;"><mmr:message messageId="label.generateInvoice.datecreated"/></th>
+		<th style="width: 120px ;"><mmr:message messageId="label.generateInvoice.costcharge"/></th>
+		<th style="width: 60px !important;"><mmr:message messageId="label.generateInvoice.billed"/></th>
 		</tr>
 		</thead>
 		<tbody>

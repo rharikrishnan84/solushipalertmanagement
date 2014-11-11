@@ -76,7 +76,7 @@ public class Rating implements Serializable {
 
   private long slaveServiceId;
   private long slaveCarrierId;
-    
+   
   
   private int variable;    
       public int getVariable() {

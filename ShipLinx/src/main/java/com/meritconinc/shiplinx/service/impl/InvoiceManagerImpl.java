@@ -509,34 +509,36 @@ public class InvoiceManagerImpl implements InvoiceManager {
     	      	  	              c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
         boolean taxFlag=true;
         if (ccc!=null && ccc.isTax()) {
-          double tax = taxableAmount * ccc.getTaxRate() / 100;
-          c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
+         /* double tax = taxableAmount * ccc.getTaxRate() / 100;
+          c.setCharge(FormattingUtil.roundFigureRates(tax, 2));*/
           try {
         	  			shippingDAO.updateCharge(c);
         	  		} catch (Exception e) {
         	  			// TODO Auto-generated catch block
         	  			e.printStackTrace();
         	  		}
-        	            totalTax+=tax;
+        	            //totalTax+=tax;
         	            //double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
-          i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+         // i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+          i.setInvoiceTax(FormattingUtil.roundFigureRates(i.getInvoiceTax(), 2));
           taxFlag=false;
         }
         Charge charges = shippingDAO.getChargeById(c.getId());
                 if(charges!=null && charges.getChargeGroupId()>0){
             	ChargeGroup chargeGroups=shippingDAO.getChargeGroup(charges.getChargeGroupId());
                     	if(chargeGroups!=null&& chargeGroups.isTax() && taxFlag){
-            		double tax = taxableAmount * chargeGroup.getTaxRate() / 100;
-                    c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
+            		/*double tax = taxableAmount * chargeGroup.getTaxRate() / 100;
+                    c.setCharge(FormattingUtil.roundFigureRates(tax, 2));*/
                     try {
                   	  			shippingDAO.updateCharge(c);
                   	  		} catch (Exception e) {
                   	  			// TODO Auto-generated catch block
                   	  			e.printStackTrace();
                   	  		}
-                  	            totalTax+=tax;
+                  	            //totalTax+=tax;
                   	            //double totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
-                    i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+                    //i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
+                    i.setInvoiceTax(FormattingUtil.roundFigureRates(i.getInvoiceTax(), 2));
             	}
                 }
     	      	            }

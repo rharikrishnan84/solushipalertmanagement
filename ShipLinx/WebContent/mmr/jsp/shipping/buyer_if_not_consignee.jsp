@@ -144,7 +144,7 @@ img.dojoComboBox{display:none}
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls" id="buyerProvince">
-												<s:include value="customsInvoiceBuyerProvince.jsp"/>
+												<jsp:include page="customsInvoiceBuyerProvince.jsp"/>
 											</div>
 										</div>
 										<div class="fields" >
@@ -159,7 +159,7 @@ img.dojoComboBox{display:none}
 							</div>
 						</div>
 			<div id="hide_buyer_address" style="display: none;">
-				<s:include value="customsBrokerInformations.jsp"/>
+				<jsp:include page="customsBrokerInformations.jsp"/>
 			</div>
 		
 		

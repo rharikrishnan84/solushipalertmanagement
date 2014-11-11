@@ -1,0 +1,90 @@
+package com.meritconinc.mmr.utilities;
+
+import java.io.Serializable;
+import java.util.ListIterator;
+import java.util.Vector;
+
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+
+import org.apache.log4j.Logger;
+
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.RequestTrackingDAO;
+import com.meritconinc.mmr.model.common.RequestDetailsVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.UserService;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+
+public class UserTrackingSessionListener implements HttpSessionBindingListener, Serializable {
+	private static final long serialVersionUID = 3022007;
+	private static Logger _logger = Logger.getLogger(UserTrackingSessionListener.class);	
+	
+	private UserService userService;
+	private RequestTrackingDAO reqTrackingDAO;
+	protected Vector<RequestDetailsVO> requestsList = new Vector<RequestDetailsVO>();
+
+	/**
+	 * 
+	 * @param userName
+	 */
+	public UserTrackingSessionListener() {
+		super();
+		MmrBeanLocator beanLocator = MmrBeanLocator.getInstance();
+		userService = (UserService)beanLocator.findBean("userService");
+		reqTrackingDAO = (RequestTrackingDAO)beanLocator.findBean("requestTrackingDAO");		
+	}
+
+	/**
+	 * adds a RequestDetailsVO to the list
+	 * 
+	 * @param reqDetailsVO
+	 */
+	public void addRequest(RequestDetailsVO reqDetailsVO) {
+		// get tracking stack size from properties
+		int trackStackSize = Integer.parseInt(WebUtil.getProperty(Constants.SYSTEM_SCOPE, Constants.TRACKING_STACK_SIZE));
+		
+		// synchronize the Vector itself so no other threads can use it while we are in the block
+		synchronized(requestsList) {
+			// check if requestsList exceeds specified size and save it
+			if(requestsList.size() >= trackStackSize) {
+				saveRequestTracking();
+			}
+			
+			// add request details to the stack
+			requestsList.add(reqDetailsVO);
+		}
+	}
+
+	/**
+	 * Notifies the object that it is being bound to a session and identifies
+	 * the session
+	 * 
+	 * @param e
+	 */
+	public void valueBound(HttpSessionBindingEvent e) {	
+	}
+
+	/**
+	 * Notifies the object that it is being unbound from a session and
+	 * identifies the session.
+	 * 
+	 * @param e
+	 */
+	public void valueUnbound(HttpSessionBindingEvent e) {
+		_logger.info("Session [" + e.getSession().getId() + "] unbound ");		
+		saveRequestTracking();
+	}
+	
+	private void saveRequestTracking() {	
+		ListIterator it = requestsList.listIterator();
+		while (it.hasNext()) {
+			reqTrackingDAO.insertRequestTracking((RequestDetailsVO) it.next());
+		}
+		
+		// flush the tracking stack
+		requestsList.clear();				
+	}
+
+}

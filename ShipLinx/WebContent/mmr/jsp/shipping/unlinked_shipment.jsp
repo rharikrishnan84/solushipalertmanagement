@@ -218,10 +218,10 @@
 	<div class="form-container">		
 
 		<div id="srchusr_results">
-		<div id="srchusr_res"><span>Unlinked Shipments</span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.unlinked.shipments"/></span></div>
 		<div class="form_buttons">
 		
-          <a href="javascript: assignCustomer()" title="<mmr:message messageId="label.assign.customer"/>">ASSIGN</a>     
+          <a href="javascript: assignCustomer()" title="<mmr:message messageId="label.assign.customer"/>"><mmr:message messageId="label.unlinked.assign"/></a>     
          </div>
 		
 		</div>
@@ -229,14 +229,14 @@
     <thead>
 		<tr>
 			<th style="width:30px; text-align:center;"><input type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<th>Order #</th>
-			<th>Tracking #</th>
-			<th>Ref #</th>
-			<th ><span style="width:120px !important; float:left;">Date Created</span></th>
-			<th>Service</th>
-			<th>Total</th>
-			<th>Addresses</th>
-			<th><span style="width:120px !important; float:left;">Billing Status</span></th>
+			<th><span style="width:75px; float:left;"><mmr:message messageId="label.unlinked.order"/></span></th>
+			<th><mmr:message messageId="label.unlinked.tracking"/></th>
+			<th><mmr:message messageId="label.unlinked.ref"/></th>
+			<th ><span style="width:120px !important; float:left;"><mmr:message messageId="label.unlinked.datecreated"/></span></th>
+			<th><mmr:message messageId="label.unlinked.service"/></th>
+			<th><mmr:message messageId="label.unlinked.total"/></th>
+			<th><mmr:message messageId="label.unlinked.addresses"/></th>
+			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.unlinked.billingstatus"/></span></th>
 	</tr>
 	</thead>
 	<tbody>

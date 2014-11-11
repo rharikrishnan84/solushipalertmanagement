@@ -1,0 +1,15 @@
+package com.meritconinc.mmr.dao;
+
+import com.meritconinc.mmr.model.common.LoginStatusVO;
+
+public interface LoginTrackingDAO {
+
+	/**
+	 * Saves the Login status / attempt
+	 * 
+	 * @param loginStatusVO
+	 * @throws Exception
+	 */
+	public void saveLoginAttempt(LoginStatusVO loginStatusVO);
+
+}

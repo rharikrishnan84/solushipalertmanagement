@@ -225,16 +225,16 @@
 	
 	
 	<div id="srchusr_results"> 	
-		<div id="srchusr_res"><span > Package List for Customer</span></div>
+		<div id="srchusr_res"><span ><mmr:message messageId="label.heading.customerpackagelist" /></span></div>
 		<div class="form_buttons" style="float:right;">
-		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+		<a href="#" id="actiondown" ><mmr:message messageId="label.action" /> <span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action" /> <span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
 			<!--<input type=submit value="EDIT" onclick="editPackages();" />
 			<input type=submit value="DELETE" onclick="deletePackages();" />-->
-			<li><a href="#" onclick="editPackages()" > EDIT </a></li>
-			<li><a href="#" onclick="deletePackages()" > DELETE </a></li>
-			<li><a href="goToAddNewPackage.action" >ADD PACKAGE</a></li>
+			<li><a href="#" onclick="editPackages()" ><mmr:message messageId="label.list.edit" /> </a></li>
+			<li><a href="#" onclick="deletePackages()" ><mmr:message messageId="label.list.delete" /> </a></li>
+			<li><a href="goToAddNewPackage.action" ><mmr:message messageId="menu.add.package" /></a></li>
 			</ul>
 			
 		</div>
@@ -247,13 +247,13 @@
 	<tr>
 	<th ><input id="check_all" type="checkbox"/></th>
 	
-	<th style="width: 341px;!important">PACKAGE NAME</th>
+	<th style="width: 341px;!important"><mmr:message messageId="label.ghead.packagename" /> </th>
 	
-	<th style="width: 250px;!important" >PACKAGE DESCRIPTION</th>
-	<th style="width: 100px;!important; text-align:right; padding-right:10px;">LENGTH</th>
-	<th style="width: 100px;!important; text-align:right; padding-right:10px;">WIDTH</th>
-	<th style="width: 100px;!important; text-align:right; padding-right:10px;">HEIGHT</th>
-	<th style="width: 110px;!important; text-align:right; padding-right:10px;" >WEIGHT(INT)</strong></th>
+	<th style="width: 250px;!important" ><mmr:message messageId="label.ghead.packagedesc" /> </th>
+	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.length" /> </th>
+	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.width" /> </th>
+	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.height" /> </th>
+	<th style="width: 110px;!important; text-align:right; padding-right:10px;" ><mmr:message messageId="label.ghead.weight" /> (INT)</strong></th>
 	
 	</tr>
 	</thead>

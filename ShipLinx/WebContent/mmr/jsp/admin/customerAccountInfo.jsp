@@ -264,20 +264,19 @@
 
 							<div class="content_table">
 								<div class="content_header">
-									<div class="cont_hdr_title">Customer</div>
+									<div class="cont_hdr_title"><mmr:message messageId="label.heading.customer"/></div>
 									<div class="cont_hdrtitle_w"><s:property value="customer.name"/></div>
 									<div class="form_buttons">
-										<a href="javascript: findAll()">List All</a>
-										<a href="javascript: resetform()">RESET</a>
-										<a href="javascript: submitform()">SAVE</a>
+										<a href="javascript: findAll()"><mmr:message messageId="btn.listall"/></a>
+										<a href="javascript: resetform()"><mmr:message messageId="label.btn.reset"/></a>
+										<a href="javascript: submitform()"><mmr:message messageId="label.btn.save"/></a>
 										
 									</div>
 								</div>
 								<div class="cont_data_body">
 									<div class="rows">
 										<div class="fields">
-											<label><s:label key="customerCarrier.carrierName"/>
-											</label>
+											<label><mmr:message messageId="label.customerCarrier.carrierName"/></label>
 											<div class="controls"><span>:</span>
 												<s:select   cssStyle="width:140px;" listKey="id" disabled="#session.edit"
 												listValue="name" name="customer.customerCarrier.carrierId" list="#session.CARRIERS" 
@@ -288,7 +287,7 @@
 					<s:hidden value="%{customer.customerCarrier.carrierName}" name="customer.customerCarrier.carrierName" />
 				</s:if>
 										<div class="fields">
-											<label>Country </label>
+											<label><mmr:message messageId="label.customerCarrier.countryName"/></label>
 											<div class="controls"><span>:</span>
 												<s:if test="#session.edit">
 			<s:select    value="%{customer.customerCarrier.country}" id="countryName"
@@ -303,7 +302,7 @@
 									</div>
 								</div>
 								<div class="content_header">
-									<div class="cont_hdr_title"><!--<mmr:message messageId="label.account.details"/>-->			Account Details
+									<div class="cont_hdr_title"><!--<mmr:message messageId="label.account.details"/>-->	<mmr:message messageId="label.heading.accountdetails"/>
 									</div>
 									<div class="cont_hdrtitle_l">
 										Live Credentials 
@@ -318,43 +317,43 @@
 									
 									<div class="rows">
 										<div class="fields">
-											<s:label key="customerCarrier.accountNumber1" /> 
+											<label><mmr:message messageId="label.customerCarrier.accountNumber1"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20" key="customer.customerCarrier.accountNumber1"
 					name="customer.customerCarrier.accountNumber1" value="%{customer.customerCarrier.accountNumber1}"   /></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.accountNumber2" />
+										<label><mmr:message messageId="label.customerCarrier.accountNumber2"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20" key="customer.customerCarrier.accountNumber2"
 					name="customer.customerCarrier.accountNumber2" value="%{customer.customerCarrier.accountNumber2}"   /></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.property1" />
+										<label><mmr:message messageId="label.customerCarrier.property1"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20"  id="FEDEXBlock" key="customerCarrier.property1"
 					name="customer.customerCarrier.property1" value="%{customer.customerCarrier.property1}" cssClass="contorls" disabled="false"/></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.property2" />
+											<label><mmr:message messageId="label.customerCarrier.property2"/></label>
 											<div class="controls"><span>:</span>
 											<s:textfield size="20" key="customer.customerCarrier.property2"
 					name="customer.customerCarrier.property2" value="%{customer.customerCarrier.property2}"/>
 										</div></div>
 										<div class="fields">
-											<s:label key="customerCarrier.property3" />
+											<label><mmr:message messageId="label.customerCarrier.property3"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20" key="customer.customerCarrier.property3" 
 					name="customer.customerCarrier.property3" value="%{customer.customerCarrier.property3}"   /></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.property4" />
+											<label><mmr:message messageId="label.customerCarrier.property4"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20" key="customer.customerCarrier.property4" 
 					name="customer.customerCarrier.property4" value="%{customer.customerCarrier.property4}"   /></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.property5" />
+											<label><mmr:message messageId="label.customerCarrier.property5"/></label>
 											<div class="controls"><span>:</span><s:textfield size="20" key="customer.customerCarrier.property5" 
 					name="customer.customerCarrier.property5" value="%{customer.customerCarrier.property5}"   /></div>
 										</div>
 										<div class="fields">
-											<s:label key="customerCarrier.defaultaccount" />
+										<label><mmr:message messageId="label.customerCarrier.defaultaccount"/></label>
 											<div class="controls"><span>:</span><s:checkbox key="customerCarrier.defaultaccount"
 						name="customer.customerCarrier.defaultAccount" value="%{customer.customerCarrier.defaultAccount}" cssClass="check"/></div>
 										</div>
@@ -379,18 +378,18 @@
 <div id="srchusr_results" >
 
 <div id="srchusr_res">
-<span>Active Carriers</span>
+<span><mmr:message messageId="label.heading.activecarriers"/></span>
 </div>
 
 
 	<div class="form_buttons" id="button_account" >
-	<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+	<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
 		<!--<s:submit onclick="editCustomerAccount();" value="EDIT"/>
 		<s:submit onclick="deleteCustomerAccount();" value="DELETE"/>-->
-		<li><a href="#" onclick="editCustomerAccount();">EDIT</a></li>
-		<li><a href="#" onclick="deleteCustomerAccount();">DELETE</a></li>
+		<li><a href="#" onclick="editCustomerAccount();"><mmr:message messageId="label.list.edit"/></a></li>
+		<li><a href="#" onclick="deleteCustomerAccount();"><mmr:message messageId="label.list.delete"/></a></li>
 		</ul>
 	</div>
 	<!--<img src="<s:url value="/mmr/images/panelResults_top.png" includeContext="true" />" style="height:35px;width:848px;margin-top:-24px;" alt="logo"> 	-->
@@ -401,12 +400,12 @@
 				<thead>
 					<tr>
 						<th style="width:10px"><input id="check_all" type="checkbox" /></th>
-						<th>CARRIER</th>
-						<th>COUNTRY</th>
-						<th>ACCOUNT#1</th>
-						<th>ACCOUNT#2</th>
-						<th>DEFAULT</th>
-						<th>HOUSE ACOUNT</th>
+						<th><mmr:message messageId="label.ghead.carrier"/></th>
+						<th><mmr:message messageId="label.ghead.country"/></th>
+						<th><mmr:message messageId="label.ghead.account1"/></th>
+						<th><mmr:message messageId="label.ghead.account2"/></th>
+						<th><mmr:message messageId="label.ghead.default"/></th>
+						<th><mmr:message messageId="label.ghead.houseaccount"/></th>
 					</tr>
 				</thead>	
 				<tbody>

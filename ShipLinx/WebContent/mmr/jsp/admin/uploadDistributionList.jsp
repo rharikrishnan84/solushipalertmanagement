@@ -44,14 +44,14 @@
 		<div class="cont_data_body">
 			<div class="rows" id="dlupload_panel">
 				<div class="fields_topdown">
-					<label><s:label key="Name"/></label>
+					<label><mmr:message messageId="label.uploadDistribution.name" /></label>
 					<div class="controls">
 						<s:textfield size="24" id="address_name" cssClass="text_02_tf" key="name" name="name" theme="simple" />
 					</div>
 				</div>
 
 				<div class="fields_topdown">
-					<label><s:label key="File"/></label>
+					<label><mmr:message messageId="label.uploadDistribution.file" /></label>
 					<div class="controls" style="width:250px;">
 						<s:file name="upload" id="uploadBox" label="File" key="upload" cssStyle="width:200px;"  theme="simple" cssClass="edi_text_03"/>
 					</div>

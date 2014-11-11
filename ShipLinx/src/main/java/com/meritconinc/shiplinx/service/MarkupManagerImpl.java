@@ -101,6 +101,11 @@ public class MarkupManagerImpl implements MarkupManager {
           }
           custMarkupList.clear();
           markup.setCustomerId(orgCustId);
+          boolean flag = markupDAO.isCustomerMarkupByDisabled(orgCustId);  
+          for(Markup m : defMarkupList){                                   
+        	  if(!flag && m.getDisabled()==0)       
+        		  m.setDisabled(1);            
+          }                                                                
           return defMarkupList;
         }
       }
@@ -693,4 +698,12 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
     public Markup findBaseMarkup(Markup markup){
     		  return markupDAO.findBaseMarkup(markup);
     	  }
+
+	@Override
+	public boolean isCustomerMarkupByDisabled(long customerId) {
+		return markupDAO.isCustomerMarkupByDisabled(customerId);
+	}
+	public List<Markup> getAllMarkupsForCustomer(Long customerId){
+						return markupDAO.getAllMarkupsForCustomer(customerId);
+					}
 }

@@ -241,6 +241,9 @@ public class EstimatingServiceClient {
 
 			List<com.meritconinc.shiplinx.model.Package> packages = order.getPackages();
 			for(com.meritconinc.shiplinx.model.Package p:packages){
+				if(p.getWeight().intValue()<1){
+					p.setWeight(new BigDecimal(1));
+				}
 				float actualWeight = p.getWeight().floatValue();
 				double ground = PurolatorAPI.getCubedWeight(p.getLength().floatValue(), p.getHeight().floatValue(), p.getWidth().floatValue(), PurolatorAPI.GROUND_CUBING_FACTOR);
 				double air = PurolatorAPI.getCubedWeight(p.getLength().floatValue(), p.getHeight().floatValue(), p.getWidth().floatValue(), PurolatorAPI.AIR_CUBING_FACTOR);

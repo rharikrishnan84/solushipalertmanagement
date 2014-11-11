@@ -361,4 +361,10 @@ public class UserServiceImpl implements UserService {
   public Customer getCustomerReference(long id){
 	  	  return (Customer)siteUserDAO.getCustomerReference(id);
 	    }
+  
+  @Override
+    public User getUserByUsercode(String userCode) {
+  	
+  	return (User)siteUserDAO.getUserByUsercode(userCode);
+    }
 }

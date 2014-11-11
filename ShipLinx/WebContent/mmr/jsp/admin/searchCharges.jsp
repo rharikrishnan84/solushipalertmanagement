@@ -214,13 +214,13 @@ function editCharge(){
 <div class="form-container">
 <div id="tab"></div>
 	<div id="results">
-	<div id="srchusr_res"><span>Accessorial Charges</span></div>
+	<div id="srchusr_res"><span><mmr:message messageId="label.heading.accessorialcharge"/></span></div>
 		<div id="rslt_stmnt" class="form_buttons">
-		<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
-			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:50px; height:15px; padding:0px;">ACTION</p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
-			<ul id="actionmenu">
-			<li><a href="#" onclick="editCharge();" href="#" >EDIT</a></li>
-			<li><a href="#" onclick="deleteCharge()" href="#">DELETE</a></li>
+		<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
+			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
+		<ul id="actionmenu">
+			<li><a href="#" onclick="editCharge();" href="#" ><mmr:message messageId="label.list.edit"/></a></li>
+			<li><a href="#" onclick="deleteCharge()" href="#"><mmr:message messageId="label.list.delete"/></a></li>
 			</ul>			
 		</div>
 	</div>
@@ -234,8 +234,8 @@ function editCharge(){
 			<th style="width:150px"><mmr:message messageId="label.track.carrier"/></th>
 			<th style="width:150px"><mmr:message messageId="label.charge.code"/></th>
 			<th style="width:100px !important;"><mmr:message messageId="label.charge.name"/></th>
-			<th style="width:150px !important;text-align:right;padding-right:10px;">Charge</th>
-			<th style="width:150px !important;text-align:right;padding-right:20px;">Cost</th>
+			<th style="width:150px !important;text-align:right;padding-right:10px;"><mmr:message messageId="label.ghead.charge"/></th>
+			<th style="width:150px !important;text-align:right;padding-right:20px;"><mmr:message messageId="label.ghead.cost"/></th>
 			
 		</tr>
     </thead>

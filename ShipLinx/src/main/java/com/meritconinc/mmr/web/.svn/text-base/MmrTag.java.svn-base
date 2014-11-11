@@ -1,0 +1,80 @@
+package com.meritconinc.mmr.web;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.tagext.Tag;
+import javax.servlet.jsp.tagext.BodyTag;
+
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.ArrayUtil;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+
+public class MmrTag extends BodyTagSupport {
+	public MmrTag() {
+		
+	}
+	private String section;
+	
+	public void setSection (String section) {
+		this.section = section;
+	}
+	
+	
+	public String getSection() {
+		return section;
+	}
+	
+	// return false if section doesn't match roles
+	private boolean evaluate () throws Exception{
+		//'public' role is default;
+		RolesAccessor rolesAccessor = RolesAccessorFactory.getRolesAccessorImplementation();
+		Collection<String> sectionRoles = rolesAccessor.getRoles(section);
+		User user = UserUtil.getMmrUser();
+		Collection<String> userRoles = null;
+		if (user == null){
+			userRoles = new ArrayList<String>();
+			userRoles.add(Constants.PUBLIC_ROLE_CODE);
+		}
+		else {
+			userRoles = user.getRoles();
+			if (userRoles.size() == 0) {
+				userRoles.add(Constants.PUBLIC_ROLE_CODE);
+			}
+		}
+		// if one of roles matching, then return true
+		return ArrayUtil.isMatchAny(userRoles, sectionRoles);
+	}
+
+	public int doStartTag() throws JspException{
+		try {
+		if (evaluate()) {
+			return BodyTag.EVAL_BODY_BUFFERED;
+		} else {
+			return Tag.SKIP_BODY;
+		}
+		}
+		catch (Exception e){
+			throw new JspTagException(e.toString());
+		}
+	}
+
+	public int doAfterBody() throws JspException {
+		BodyContent bodyContent = null;
+		try {
+			bodyContent = getBodyContent();
+			bodyContent.writeOut(bodyContent.getEnclosingWriter());
+			return Tag.SKIP_BODY;
+		} catch (IOException ex) {
+			throw new JspTagException(ex.toString());
+		}
+		finally {
+			bodyContent.clearBody();
+		}
+	}
+}

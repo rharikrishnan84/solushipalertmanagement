@@ -5,7 +5,7 @@
 <div class="fields">
 											<label><mmr:message messageId="label.address.button.save"/></label>
 											<div class="controls"><span>:</span>
-												<s:checkbox cssClass="text_01" value="%{shippingOrder.saveFromAddress}"  name="shippingOrder.saveFromAddress"/>
+												<s:checkbox cssClass="text_01" value="%{shippingOrder.saveToAddress}"  name="shippingOrder.saveToAddress"/>
 											</div>
 					</div>
 						<div class="fields">
@@ -13,5 +13,5 @@
 						</div>						
 				
 					<div id="toAdd_inner">
-						<s:include value="toAddress_inner.jsp"/>
+						<jsp:include page="toAddress_inner.jsp"/>
 					</div>

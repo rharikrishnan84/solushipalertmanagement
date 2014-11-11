@@ -233,19 +233,19 @@ F
 <div class="content">
 <div id="dimensions">
 <div id="pckg_result_tbl">
-	<s:include value="hidden_packageTypes.jsp"/>		 
+	<jsp:include page="hidden_packageTypes.jsp"/>		 
 
 
                  <div class="content_body">	
 							<div class="content_table">
 								<div class="cont_data_body borderLeftRight">
 									<div class="logo_mini"><div id="pckg_results" style="">
-										<span style="font-size:12px;font-size:bold;color:#990000;margin-left:40px">Package Details: </span>	
+										<span style="font-size:12px;font-size:bold;color:#990000;margin-left:40px"><mmr:message messageId="label.package.packagedetails"/>:</span>	
 									</div>
 									
 									<div class="domention">
 										<div class="fields" id="qty_pckg">
-											<label>Number of Packages</label> 
+											<label><mmr:message messageId="label.package.numofpackages"/></label> 
 											<div class="controls"><span>:</span>
 												<s:select cssClass="text_01_combo_big" name="shippingOrder.quantity" id="quantity" onchange="modifyQuantity()" list="{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35}"  cssClass="text_01_combo_big"></s:select>
 											</div>
@@ -380,19 +380,19 @@ F
 						<tr>
 							<th>#</th>
 							<s:if test="%{#session.PackageTypes.size > 0}">
-							<th style="width:150px !important;">Choose a package type </th>
+							<th style="width:150px !important;"><mmr:message messageId="label.ghead.choosepackage"/></th>
 							</s:if>
-							<th>Length </th>
-							<th>Width </th>
-							<th>Height</th>
-							<th>Weight</th>
-							<th>COD ($)</th>
-							<th style="width:85px !important;">Insurance ($)</th>
+							<th><mmr:message messageId="label.ghead.length"/></th>
+							<th><mmr:message messageId="label.ghead.width"/></th>
+							<th><mmr:message messageId="label.ghead.height"/></th>
+							<th><mmr:message messageId="label.ghead.weight"/></th>
+							<th><mmr:message messageId="label.ghead.cod"/> ($)</th>
+							<th style="width:100px !important;margin-left: 20px;"><mmr:message messageId="label.ghead.insurance"/> ($)</th>
 							<s:if test='%{shippingOrder.packageTypeId.type == "type_pallet"}'>
-							<th style="width:70px !important;">Freight Class</th>
-							<th style="width:70px !important;">Type</th>
+							<th ><span style="width:100px !important;"><mmr:message messageId="label.ghead.freightclass"/></span></th>
+							<th style="width:70px !important;"><mmr:message messageId="label.ghead.type"/></th>
 							</s:if>
-							<th style="width:150px !important;">Description</th>
+							<th style="width:150px !important;"><mmr:message messageId="label.ghead.description"/></th>
 							<th style="width:100px !important;">&nbsp;</th>
 						</tr>
 					</thead>
@@ -442,12 +442,12 @@ F
 								</td>	
 								<s:if test="%{#counterIndex.index == 0}">
 								<td>
-									<a href="javascript:void(0)" style=" width:100px; float:right; height:auto; color:#FFF;  background-color:#990000;font-size:12px; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')"  /> All same  </a>
+									<a href="javascript:void(0)" style=" width:100px; float:right; height:auto; color:#FFF;  background-color:#990000;font-size:12px; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')"  /> <mmr:message messageId="label.package.allsame"/>  </a>
 								</td>	
 								</s:if>								
 								<s:else>
 								<td>
-								<a href="javascript:void(0)" onClick="sameAsAbove2('<s:property value="%{#counterIndex.index}"/>')" style=" width:100px;font-size:12px; float:right; height:auto; color:#FFF;  background-color:#990000; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')" />As above
+								<a href="javascript:void(0)" onClick="sameAsAbove2('<s:property value="%{#counterIndex.index}"/>')" style=" width:100px;font-size:12px; float:right; height:auto; color:#FFF;  background-color:#990000; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')" /><mmr:message messageId="label.package.allabove"/>
 								<s:param name="view" value="<s:property value='%{#counterIndex.index}'/>"  />
 								</a> 
 								</td>

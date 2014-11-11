@@ -49,18 +49,18 @@
 		background-size:900px auto;
 	}
 	.login_box{
-		width:290px; 
+		width:auto; 
 		height:70px;
 		float:right;
 		padding-right:32px;
 	}
 	.login_box ul{ float:left; height:auto; width:auto; list-style-type:none;}
 	.login_box ul li{ height:25px;}
-	.login_box ul li label{ width:70px; padding-top:3px; float:left; font-size:10px; }
+	..login_box ul li label{ width:130px; padding-top:3px; padding-right:5px; float:left; font-size:10px; text-align:right; }
 	.login_box ul li select,.login_box ul li input{ float:left;  padding:0px;}
 	.login_box ul li select{ height:22px; width:122px; }
 	.login_box ul li input{ height:20px; width:120px; }
-	.login_box input[type="submit"]{border:0px; background:transparent; font-size:10px;  float:left; margin-top:52px;}
+	.login_box input[type="submit"]{border:0px; background:transparent; font-size:10px; padding:0px;  float:left; margin-top:52px;}
 </style>
 <link href="<s:url value='/mmr/styles/shiplinx_login01_styles.css' includeContext="true"/>" rel="stylesheet" type="text/css" />
 
@@ -145,7 +145,7 @@ function keyPressSubmitRememberPassword(myfield,e) {
 			onkeypress="return keyPressSubmitRememberPassword(this,event)" />
 							</li>
 						</ul>
-						<input onclick="loginSubmitACEGI()" type="submit" value="LOG IN"/>
+						<input onclick="loginSubmitACEGI()" type="submit" style="cursor: pointer; float:right; padding-left: 5px;position: relative;bottom: 4px;font-size: 11px;" value="<mmr:message messageId="label.login" />"/>
 						</form>
 					</div>
 			</form>		
@@ -153,9 +153,9 @@ function keyPressSubmitRememberPassword(myfield,e) {
 				<div class="navigation2">
 					<div class="naviinner">
 						<ul>	
-							<li><a href="viewLogon.action" style="color: #ffffff; ">HOME</a></li>
-							<li><a href="<%=request.getContextPath()%>/signup.action" style="color: #ffffff; ">SIGN UP</a></li>
-						</ul>
+							<li><a href="viewLogon.action" style="color: #ffffff;background-color:990000; "><mmr:message messageId="menu.home" /> </a></li>
+							<li><a href="<%=request.getContextPath()%>/signup.action" style="color: #ffffff; "><mmr:message messageId="menu.signup" /> </a></li>
+							</ul>
 					<div class="search_body">
 						<form method="post" action="">
 							<input type="text" placeholder="Enter search keyword here">
@@ -203,7 +203,7 @@ function keyPressSubmitRememberPassword(myfield,e) {
 					<div style="width:100%; height:auto; overflow:auto; ">
 						<div style=" margin:0px auto; height:auto; width:960px;">
 							<div class="content_header">
-								<div class="cont_hdrtitle_c2">
+								<div class="cont_hdrtitle_c2" style="width:500px;">
 									<mmr:message messageId="label.forgotPassword.enterDetails"/>
 								</div>
 							</div>

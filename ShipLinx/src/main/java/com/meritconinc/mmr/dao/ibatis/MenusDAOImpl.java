@@ -136,5 +136,10 @@ public LocaleVO getLanguageByUserName(String user) {
 	return localevo;
 }
 
+@Override
+public MenuItemVO getWelcomeMenuBylocale(String locale) {
+	return (MenuItemVO) getSqlMapClientTemplate().queryForObject("getWelcomeMenuBylocale",locale);
+}
+
 
 }

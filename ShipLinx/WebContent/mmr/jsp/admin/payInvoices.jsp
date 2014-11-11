@@ -63,10 +63,10 @@ function submitPay(){
 				</div>		
 				<div class="cont_data_body">
 					<div class="rows">
-						<div class="fields_topdown">
-							<label><mmr:message messageId="label.creditcard.number" /></label>
+						<div class="fields_topdown" style="width:175px !important;">
+							<label style="width:175px !important;"><mmr:message messageId="label.creditcard.number" /></label>
 							<div class="controls">
-								<s:textfield size="24" key="creditCard.ccNumber" name="creditCard.ccNumber" cssClass="text_02_tf"/>
+								<s:textfield size="24" key="creditCard.ccNumber" cssStyle="width:100% !important;;" name="creditCard.ccNumber" cssClass="text_02_tf"/>
 							</div>
 						</div>
 						<div class="fields_topdown">
@@ -99,8 +99,8 @@ function submitPay(){
 						</div>
 						<div class="fields_topdown">
 							<label>&nbsp;</label>
-							<div class="form_buttons" style="margin-right: 75px;position: relative;bottom: 3px; width:84px">
-										<a href="javascript: submitPay()" >Pay Now</a>
+							<div class="form_buttons" style="margin-right: 0px;position: relative;bottom: 3px; width:150px; float:left !important;">
+										<a href="javascript: submitPay()" style="float:left;" ><mmr:message messageId="label.pay.now" /></a>
 							</div>
 						</div>
 					</div>
@@ -116,7 +116,7 @@ function submitPay(){
 
 
 	<div id="formResult">
-	   <s:include value="invoicePayList.jsp"></s:include>
+	   <jsp:include page="invoicePayList.jsp"/>
 	   <div class="content_body">
 		<div class="content_table" >
 		&nbsp;

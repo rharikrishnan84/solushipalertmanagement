@@ -38,7 +38,7 @@
 		</div>
 	</div>
 	
-	<s:include value="/mmr/jsp/shipping/shipmentDetail.jsp"></s:include>
+	<jsp:include page="/mmr/jsp/shipping/shipmentDetail.jsp"/>
 
 </div>
 </s:form> 

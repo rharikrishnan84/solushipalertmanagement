@@ -65,18 +65,18 @@
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;">
 		<div id="srchinv_results">	
-		<div id="srchusr_res"><span>Invoice Payment Details</span></div></div>		
+		<div id="srchusr_res"><span><mmr:message messageId="label.searchar.invoicedetails"/></span></div></div>	
 <div id="srchinv_result_tbl" >
 	<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
 		<thead>
 			<tr height="25px">
 			<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" /></th>
-			<th style="width: 175px !important;"> Company</th>
-			<th style="width: 175px !important;"> Invoice Number</th>
-			<th style="width: 220px ;">Remittance Date</th>
-			<th style="text-align:right;padding-right:10px;">Amount</th>
-			<th>Paid By</th>
-			<th style="width: 175px !important;">Payment Ref#</th>
+		<th style="width: 175px !important;"><mmr:message messageId="label.searchar.company"/> </th>
+			<th style="width: 175px !important;"> <mmr:message messageId="label.searchar.invoicenumber"/></th>
+			<th style="width: 220px ;"><mmr:message messageId="label.searchar.remittancedate"/></th>
+			<th style="text-align:right;padding-right:10px;width: 75px ;"><mmr:message messageId="label.searchar.amount"></mmr:message></th>
+			<th style="width: 75px ;"><mmr:message messageId="label.searchar.paidby"/><mmr:message messageId="Payment Ref#"/></th>	
+			<th style="width: 175px !important;"><mmr:message messageId="label.searchar.paymentref"></mmr:message></th>
 			</tr>
 		</thead>
 		<tbody>

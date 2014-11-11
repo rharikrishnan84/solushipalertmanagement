@@ -16,7 +16,8 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/countryProvince.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.autocomplete.js"></script>
-
+	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.alerts.js"></script>
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/jquery.alerts.css">
 <script type="text/javascript">  
   var contextPath = "<%=request.getContextPath()%>";
   var userrole = "<%=request.getAttribute("USERROLE") %>";
@@ -285,15 +286,58 @@ var count=parseInt(prevQuantity);
 	} 	 
 	function getRates()
 	{
-		var myParam = location.search.split('customsinvoice=')[1];
+		/* var myParam = location.search.split('customsinvoice=')[1];
 				if(myParam=="true"){
 				document.userform.action = "shipment.stageThree.action?customs="+myParam;
 	 	document.userform.submit();
 				}else{
 							document.userform.action = "shipment.stageThree.action?customs="+myParam;
 						 	document.userform.submit();
-						}
-	} 	
+						} */
+						var myParam = location.search.split('customsinvoice=')[1];
+		     			var carrier = document.getElementById("firstBoxCarrier").value;
+						if(carrier != -1){
+								if(myParam=="true"){
+									var wait = false;
+									jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
+										if(confirmationMessage==true){
+											wait = true;
+											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true";
+											document.userform.submit();
+											$('#loader').css('display','block');
+											$('#loaderImg').css('display','block');
+										}else{
+											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";
+											document.userform.submit();
+											$('#loader').css('display','block');
+											$('#loaderImg').css('display','block');
+										}
+									});
+									}else{
+										jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
+											if(confirmationMessage==true){
+												wait = true;
+												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true";	
+												document.userform.submit();
+												$('#loader').css('display','block');
+												$('#loaderImg').css('display','block');
+											}else{
+												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";	
+												document.userform.submit();
+												$('#loader').css('display','block');
+												$('#loaderImg').css('display','block');
+											}
+										});
+						
+									}
+										}
+										else{
+										document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";
+									 	document.userform.submit();
+									 	$('#loader').css('display','block');
+										$('#loaderImg').css('display','block');
+									}
+				}	
 	function quickShip()
 	{   
 	    var toZip=document.getElementById("toPostalCode").value;
@@ -631,16 +675,7 @@ var count=parseInt(prevQuantity);
   $('#wrapper_new').css('min-height',wndo);
   });
 	</script>
-	<script>
-		$(document).ready(function(){
-			
-		$('#get_rates_td').click(function(){
-				$('#loader').css('display','block');
-				$('#loaderImg').css('display','block');
-				
-		});
-		});
-	</script> 
+
 <script>
 
 // Start Autocomplete Script
@@ -884,14 +919,14 @@ var count=parseInt(prevQuantity);
 <s:form action="shipment.stageThree" cssClass="form" name="userform" id="userform" theme="simple" >
 <div class="form-container" >
 	<div class="newshipment" id="contenttbl">
-	<s:include value="order_SearchQuickAddress.jsp"/>
+	<jsp:include page="order_SearchQuickAddress.jsp"/>
 	<div class="content">	
 		<div class="content_body" >
 						<div class="form-container" style="background-color:#E7E7E7;" >
 							<div class="content_table" id="contenttbl">
 								<div class="content_header" style="margin-top:1px; margin-bottom:1px;">
 									<div class="cont_hdr_title"><mmr:message messageId="label.search.reference"/></div>
-									<div class="cont_hdrtitle_l" style="width:650px">( REFERENCE AVAILABLE ONLY FROM PAST SHIPMENTS OR IMPORTED SHIMPMENTS WITHIN THIS SYSTEM )</div>
+									<div class="cont_hdrtitle_l" style="width:630px"><mmr:message messageId="label.search.referenceheading"/></div>
 									<div class="form_buttons">
 										<a class="referenceOpen" onclick="javascript:return false;" style="padding:0px; background-color:transparent;" href="">
 										<img src="<%=request.getContextPath()%>/mmr/images/hide.png"/>
@@ -930,7 +965,7 @@ var count=parseInt(prevQuantity);
 							</div>
 						</div>
 					</div>	
-		<s:include value="order_SelectedFromAddress.jsp"/>	
+		<jsp:include page="order_SelectedFromAddress.jsp"/>
 			<div class="content">
 				<div class="content_body">
 					<div class="content_table">
@@ -946,12 +981,12 @@ var count=parseInt(prevQuantity);
 					</div>
 					</div>
 	</div>					
-	<s:include value="order_SelectedToAddress.jsp"/>
+	<jsp:include page="order_SelectedToAddress.jsp"/>
 		
 	
-	<s:include value="shipping_packages.jsp"/>
+	<jsp:include page="shipping_packages.jsp"/>
 	<div id="pckg_div_quote">
-	<s:include value="packageDimention.jsp"/>
+	<jsp:include page="packageDimention.jsp"/>
 	</div>
 	
 	<div class="content">
@@ -1021,7 +1056,7 @@ var count=parseInt(prevQuantity);
 <div class="content_table" style="margin-top:1px;">
 			<div class="content_header">
 				<div class="cont_hdr_title"><mmr:message messageId="label.quick.ship"/>?</div>
-				<div class="cont_hdrtitle_l" style="width:514px">(PLEASE SELECT A METHOD TO CREATE A SHIPMENT WITHOUT FIRST GETTING RATES)</div>
+				<div class="cont_hdrtitle_l" style="width:514px"><mmr:message messageId="label.rateheading"/></div>
 		</div>
 		</div>
 	</div>
@@ -1103,13 +1138,13 @@ var count=parseInt(prevQuantity);
 	<!-- End: Implementation of Quick Ship UI-->
 	<div class="content">
 		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false || #session.ROLE.contains('solutions_manager') && shippingOrder.isAdditionalFieldsEditable() != false}">
-		<s:include value="shipping_additional_fields.jsp"/>
+		<jsp:include page="shipping_additional_fields.jsp"/>
 	
 		<div class="content_body">	
 			<div class="content_table">
 				<div class="cont_data_body borderLeftRight" style="margin-bottom:10px;  border-bottom:1px solid #c4c4c4;">
 					<div class="form_buttons id="img_save_shipment" style=" padding-right:3px; padding-bottom:5px;">
-						<a href="javascript:updateShipment()"> Save Shipment</a>
+						<a href="javascript:updateShipment()"> <mmr:message messageId="btn.save.shipment"/></a>
 					</div>
 				</div>
 			</div>	
@@ -1130,9 +1165,9 @@ var count=parseInt(prevQuantity);
 		
 		
 		<div class="content_table borderLeftRight borderOnlyBottom" style=" overflow:auto; width:958 px !important; padding:0px 0px 10px 0px; margin-bottom:20px;">
-			<div class="form_buttons" id="img_get_rates" style=" width:210px; float:right !important;">
-				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">Save Shipment</a></div>
-				<div align="left" style="float:left !important;" id="get_rates_td"><a id="getratesBtn" href="javascript:getRates()" onclick="return (validateOrder(3,1))">Get Rates</a></div>
+			<div class="form_buttons" id="img_get_rates" style=" width:auto; margin-right:20px; float:right !important;">
+				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div>
+				<div align="left" style="float:left !important;" id="get_rates_td"><a id="getratesBtn" href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>
 				
 			</div>
 		</div>

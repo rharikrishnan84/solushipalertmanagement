@@ -18,7 +18,7 @@
 									
 								
 						<div id="fromAdd_inner">
-							<s:include value="fromAddress_inner.jsp"/>
+							<jsp:include page="fromAddress_inner.jsp"/>
 						</div>
 		
 			

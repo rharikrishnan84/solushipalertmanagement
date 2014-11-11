@@ -24,7 +24,13 @@ public class MenuItemVO  implements Serializable{
 	
 	private String helptag;
 	private String supporttag;
-	 
+	private String msgContent;
+	public String getMsgContent() {
+		return msgContent;
+	}
+	public void setMsgContent(String msgContent) {
+		this.msgContent = msgContent;
+	}
 	/**
 	 * @return the id
 	 */

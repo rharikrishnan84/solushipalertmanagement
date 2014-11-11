@@ -1,0 +1,173 @@
+package com.meritconinc.mmr.service.impl;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadMXBean;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes.Name;
+
+import javax.servlet.ServletContext;
+
+import org.apache.log4j.Logger;
+
+import com.meritconinc.mmr.dao.UtilDAO;
+import com.meritconinc.mmr.model.system.DatabaseInfoVO;
+import com.meritconinc.mmr.model.system.LibraryInfoVO;
+import com.meritconinc.mmr.service.SystemService;
+import com.meritconinc.mmr.utilities.StringUtil;
+
+public class SystemServiceImpl implements SystemService {
+	private static Logger logger = Logger.getLogger(SystemServiceImpl.class);
+	
+	private static String serverIP = null;
+	private static String serverName = null;
+	private DatabaseInfoVO databaseInfo = null;
+	private ThreadMXBean threadMXBean = null;
+	private RuntimeMXBean runtimeMXBean = null;
+	private MemoryMXBean memoryMXBean = null;
+	private UtilDAO utilDAO = null;
+	private ServletContext servletContext = null;
+	
+	public SystemServiceImpl() {
+        runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        threadMXBean = ManagementFactory.getThreadMXBean();
+        memoryMXBean = ManagementFactory.getMemoryMXBean();
+	}
+
+	static {
+        try {
+            InetAddress host = InetAddress.getLocalHost();
+            serverIP = host.getHostAddress();
+            serverName = host.getHostName();                      
+        } catch (UnknownHostException e) {
+        	logger.warn("UnknownHostException", e);
+        }		
+        
+	}
+		
+	public String getServerIP() {
+		return serverIP;
+	}
+	public String getServerName() {
+		return serverName;
+	}
+	
+	public String getVmName() {
+        return runtimeMXBean.getName();        
+	}
+	
+	public Date getVmStartTime() {
+		return new Date(runtimeMXBean.getStartTime());
+	}
+	
+	public int getThreadCount() {
+		return threadMXBean.getThreadCount();
+	}
+	
+	public int getPeakThreadCount() {
+		return threadMXBean.getPeakThreadCount();
+	}
+	
+	public long getTotalStartedThreadCount() {
+		return threadMXBean.getTotalStartedThreadCount();
+	}
+	
+	public int getDaemonThreadCount() {
+		return threadMXBean.getDaemonThreadCount();
+	}
+	
+	public int getObjectPendingFinalizationCount() {
+		return memoryMXBean.getObjectPendingFinalizationCount();
+	}
+	
+	public MemoryUsage getHeapMemoryUsage() {
+		return memoryMXBean.getHeapMemoryUsage();
+	}
+	
+	public MemoryUsage getNonHeapMemoryUsage() {
+		return memoryMXBean.getNonHeapMemoryUsage();
+	}
+
+	
+	public DatabaseInfoVO getDatabaseInfo() {
+		return databaseInfo;
+	}
+	
+	public void clearCache() {
+		utilDAO.clearCache();		
+	}
+		
+	public void setUtilDAO(UtilDAO utilDAO) {
+		this.utilDAO = utilDAO;
+		this.databaseInfo = utilDAO.getDatabaseInfoVO();		
+	}
+	
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext;
+	}
+	public List<LibraryInfoVO> getLibraryInfos() {
+		if ( this.servletContext == null ) return null;
+		else {
+			Set<String> paths = servletContext.getResourcePaths("/WEB-INF/lib");
+			List<LibraryInfoVO> libraries = new ArrayList<LibraryInfoVO>(paths.size());
+			for (Iterator iterator = paths.iterator(); iterator.hasNext();) {
+				String path = (String) iterator.next();
+				try {					
+					LibraryInfoVO l = new LibraryInfoVO();
+					l.setFilename(path);					
+					JarInputStream jar = new JarInputStream(servletContext.getResourceAsStream(path));
+					Manifest m = jar.getManifest();
+					if ( m != null ) {
+						l.setTitle(getAttribute(m, Attributes.Name.SPECIFICATION_TITLE));
+						if ( StringUtil.isEmpty(l.getTitle()) ) {
+							l.setTitle(getAttribute(m, Attributes.Name.IMPLEMENTATION_TITLE));						
+						}
+						
+						l.setVersion(getAttribute(m, Attributes.Name.SPECIFICATION_VERSION));
+						if ( StringUtil.isEmpty(l.getVersion()) ) {
+							l.setVersion(getAttribute(m, Attributes.Name.IMPLEMENTATION_VERSION));	
+						}
+						
+						l.setVendor(getAttribute(m, Attributes.Name.SPECIFICATION_VENDOR));
+						if ( StringUtil.isEmpty(l.getVendor())  ) {
+							l.setVendor(getAttribute(m, Attributes.Name.IMPLEMENTATION_VENDOR));
+						}						
+					}
+					libraries.add(l);
+				} catch (Exception e) {
+					logger.error("Exception occurred when obtaining library information for " + path, e);
+				}
+			}			
+			return libraries;
+		} 
+	}
+	
+	private String getAttribute(Manifest m, Name attrName) {	
+		Attributes mainAttrs = m.getMainAttributes();
+		String value = mainAttrs.getValue(attrName);
+		if ( StringUtil.isEmpty(value)) {
+			 Map<String, Attributes> entries = m.getEntries();
+			 for (Attributes attrs : entries.values()) {
+				value = attrs.getValue(attrName);
+				if( ! StringUtil.isEmpty(value)) {
+					return value;
+				}
+			}
+		}
+		return value;
+	}
+	
+
+}

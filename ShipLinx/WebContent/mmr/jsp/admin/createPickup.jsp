@@ -40,6 +40,9 @@
 		function searchfrom()
 			{
 				//alert(customerval);
+				var abbreviationName=document.getElementById("customerautocompto").value;
+				abbreviationName=abbreviationName.split(',')[0];
+				document.getElementById("customerautocompto").value=abbreviationName;
 				ajax_ChangeTo=ajaxFunction();
 					ajax_ChangeTo.onreadystatechange=function()
 				  	{
@@ -224,7 +227,7 @@
 										</div>
 					<s:if test="%{!#session.ROLE.contains('busadmin')}">					
 					<div id="pickup_inner">
-						<s:include value="pickupAddress_inner.jsp"/>
+						<jsp:include page="pickupAddress_inner.jsp"/>
 					</div>
 					</s:if>
 		

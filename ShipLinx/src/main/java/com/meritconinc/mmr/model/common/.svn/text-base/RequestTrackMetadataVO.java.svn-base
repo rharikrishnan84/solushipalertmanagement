@@ -1,0 +1,70 @@
+package com.meritconinc.mmr.model.common;
+
+public class RequestTrackMetadataVO {
+
+	/**
+	 * request track metadata id
+	 */
+	private Integer id;
+	/**
+	 * action name
+	 */
+	private String actionName;
+	/**
+	 * parameter name
+	 */
+	private String paramName;
+	
+	/**
+	 * accessor for id
+	 * @return
+	 */
+	public Integer getId() {
+		return id;
+	}
+	/**
+	 * mutator for id
+	 * @param id
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	/**
+	 * accessor for actionName
+	 * @return
+	 */
+	public String getActionName() {
+		return actionName;
+	}
+	/**
+	 * mutator for actionName
+	 * @param actionName
+	 */
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
+	/**
+	 * accessor for paramName
+	 * @return
+	 */
+	public String getParamName() {
+		return paramName;
+	}
+	/**
+	 * mutator for paramName
+	 * @param paramName
+	 */
+	public void setParamName(String paramName) {
+		this.paramName = paramName;
+	}	
+	
+	public String toString(){
+		StringBuilder l_stringBuilder = new StringBuilder();
+		l_stringBuilder.append("\n<< "+this.getClass()+" >> {");
+		l_stringBuilder.append("\nid: "+ this.getId());
+		l_stringBuilder.append("\nactionName: "+ this.getActionName());
+		l_stringBuilder.append("\nparamName: "+ this.getParamName());
+		l_stringBuilder.append(" } ");
+		return l_stringBuilder.toString();
+	}
+}

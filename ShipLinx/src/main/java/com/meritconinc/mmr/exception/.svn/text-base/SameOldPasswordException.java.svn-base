@@ -1,0 +1,12 @@
+package com.meritconinc.mmr.exception;
+
+public class SameOldPasswordException extends Exception {
+
+	public SameOldPasswordException(String string) {
+		 super(string);
+	}
+	
+	public SameOldPasswordException() {
+		 super();
+	}
+}

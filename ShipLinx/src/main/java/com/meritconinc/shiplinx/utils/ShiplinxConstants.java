@@ -442,4 +442,5 @@ public class ShiplinxConstants {
 	public static final String LTL_EMAIL_TYPE="LTL";
 	 public static final String SPS_EMAIL_TYPE="SPD";
 	 public static final String CHB_EMAIL_TYPE="CHB";
+	 public static final String DEFAULT_COD_PIN="0";
 }

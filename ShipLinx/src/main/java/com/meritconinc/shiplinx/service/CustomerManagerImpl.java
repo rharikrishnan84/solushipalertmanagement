@@ -26,6 +26,7 @@ import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.exception.ShiplinxException;
+import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
@@ -620,8 +621,17 @@ public class CustomerManagerImpl implements CustomerManager {
 			String subject = MessageUtil.getMessage(business
 					.getAddCustomerNotificationSubject());
 
-			String body = MessageUtil.getMessage(business
-					.getAddCustomerNotificationBody());
+			/*String body = MessageUtil.getMessage(business
+					.getAddCustomerNotificationBody());*/
+			
+			String body = null;
+						
+						if(customer.getUser() != null){
+							 body = MessageUtil.getMessage("message.send.addcustomersalesrep.notification.body");
+						}else{
+						body = MessageUtil.getMessage(business
+								.getAddCustomerNotificationBody());
+						}
 
 			if (body == null || body.length() == 0) {
 				log.error("Cannot find template to send customer notification for business "
@@ -635,6 +645,10 @@ public class CustomerManagerImpl implements CustomerManager {
 					customer.getAccountNumber()));
 			body = new String(body.replaceAll("%CONTACTNAME",
 					customer.getUsername()));
+			if(customer.getUser() != null){
+							body = new String(body.replaceAll("%SALESREP",
+									(customer.getUser().getFirstName())+" "+customer.getUser().getLastName()));
+							}
 			body = new String(body.replaceAll("%ADDRESS1", customer
 					.getAddress().getAddress1()));
 			body = new String(body.replaceAll(" %CITY", customer.getAddress()
@@ -769,22 +783,30 @@ public class CustomerManagerImpl implements CustomerManager {
 					} catch (Exception e) {
 
 					}
-					if (carrierAccount == null
-							&& customerCarrierAccount == null) {
-						carrierAccount = new CustomerCarrier();
-						carrierAccount.setBusinessId(customer.getBusinessId());
-						carrierAccount.setCustomerId(customer.getId());
-						carrierAccount.setLive(true);
-						carrierAccount.setDefaultAccount(true);
-						carrierAccount.setCountry(business.getAddress()
-								.getCountryCode());
-						carrierAccount.setCarrierId(carrierToEnable.getId());
-						customerDAO.saveCustomerCarrier(carrierAccount);
+//					String code = (String) ActionContext.getContext().getSession().get(ShiplinxConstants.USER_CODE);
+//					if (code != null && carrierAccount == null
+//							&& customerCarrierAccount == null) {
+//						carrierAccount = new CustomerCarrier();
+//						carrierAccount.setBusinessId(customer.getBusinessId());
+//						carrierAccount.setCustomerId(customer.getId());
+//						carrierAccount.setLive(true);
+//						carrierAccount.setDefaultAccount(true);
+//						carrierAccount.setCountry(business.getAddress()
+//								.getCountryCode());
+//						carrierAccount.setCarrierId(carrierToEnable.getId());
+//						customerDAO.saveCustomerCarrier(carrierAccount);
+//					}
+					
+					boolean flag = false;
+					String code = (String) ActionContext.getContext().getSession().get(ShiplinxConstants.USER_CODE);
+					if(code==null){                     
+						flag = true;                         //disabling the services for the direct new customer
 					}
 					// Enable all services for this carrier and customer
 					markupManagerService
 							.disableOrEnableAllServicesForCustomerAndCarrier(
-									customer.getId(), carrier.getId(), false);
+									customer.getId(), carrier.getId(), flag);
+					
 					break;
 				}
 			}
@@ -852,4 +874,9 @@ public class CustomerManagerImpl implements CustomerManager {
 						}
 						return boolret;
 					}
+
+	@Override
+	public List<Billduty> getBilldutyList(String locale) {
+		return customerDAO.getBilldutyList(locale);
+	}
 }

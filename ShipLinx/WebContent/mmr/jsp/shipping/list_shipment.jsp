@@ -19,7 +19,11 @@
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
 	
 	
+	<style>
+		#srchshipmnt_result_tbl_print_label{margin-left: 0px; float: right; width:auto; margin-right:10px;}
+		.form_buttons{ float:right;}
 		
+	</style>	
 	<script type="text/javascript">
  $(document).ready(function() {
   $('#sample1').dataTable({
@@ -168,12 +172,7 @@
      if(uploadMarkupId[i].checked){
     	 statusid = document.getElementById("selectedShipments["+i+"].statusId").value;
       id=uploadMarkupId[i].value;
-      
-      
      }
-     
-     
-     
     }
    
     if(!(userrole == "customer_admin")){
@@ -279,9 +278,23 @@ function download_files(type) {
 	
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;margin-top:1px">
-	<div id="srchusr_res"><span>List of Shipments </span></div>
+	<div id="srchusr_res"><span><mmr:message messageId="label.track.header.listshipment"/></span></div>
 	<div id="rates_result_tbl">
-		<div id="srchshipmnt_result_tbl_print_label">
+		<div id="rate_results" >
+			<div class="form_buttons">
+			<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
+			<ul id="actionmenu">
+				<li><s:a href="Javascript: repeatOrder();"><mmr:message messageId="label.list.repeat"/></s:a></li>
+				<li><s:a href="javascript: editorder();"><mmr:message messageId="label.list.edit"/></s:a></li>
+				<li><a href="javascript: atleastOneShipmentChecked('check_uncheck_row');"><mmr:message messageId="label.print.label"/></a></li>
+				</ul>
+				
+			</div>
+			
+			
+			
+			<div id="srchshipmnt_result_tbl_print_label">
 			<font class="srchshipmnt_text_03"><mmr:message messageId="label.copies.shipping.label"/></font>&nbsp;
 			<s:if test="%{#request.no_of_lbls != null}">
 				<s:select id="label_copies" cssStyle="width:39px;" cssClass="text_01_combo_small" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{#request.no_of_lbls}"/>
@@ -298,17 +311,7 @@ function download_files(type) {
 			</s:else>
 			
 		</div>
-		<div id="rate_results" >
-			<div class="form_buttons">
-			<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
-			<ul id="actionmenu">
-				<li><s:a href="Javascript: repeatOrder();">Repeat</s:a></li>
-				<li><s:a href="javascript: editorder();">EDIT</s:a></li>
-				<li><a href="javascript: atleastOneShipmentChecked('check_uncheck_row');"><mmr:message messageId="label.print.label"/></a></li>
-				</ul>
-				
-			</div>
+
 		</div>
 	</div>	
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
@@ -316,36 +319,36 @@ function download_files(type) {
 		<tr>
 			<th><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
 			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}"> 
-			<th>Company</th>
+			<th><span style="width:90px !important; float:left;"><mmr:message messageId="label.ghead.company"/></th>
 			</s:if>
-			<th><span style="width:60px !important; float:left;">Order #</span></th>
-			<th><span style="width:80px !important; float:left;">Tracking #</span></th>
-			<th><span style="width:70px !important; float:left;">Ship Date</span></th>
+		<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.order"/> #</span></th>
+			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.tracking"/> #</span></th>
+			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.shipdate"/></span></th>
 			<s:if test="%{#request.fromCart != null && #request.fromCart != 'false'}">
 			<s:if test="%{carrierName != null}">
-			<th><span style="width:70px !important; float:left;">Carrier</span></th>
+			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.carrier"/></span></th>
 			</s:if>
 			<s:else>
-				<th><span style="width:70px !important; float:left;">Carrier</span></th>
+				<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.carrier"/></span></th>
 			</s:else>
 			</s:if>
 			<s:else>
-			<th><span style="width:70px !important; float:left;">Carrier</span></th>
+			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.carrier"/></span></th>
 				</s:else>
-			<th><span style="width:80px !important; float:left;">Service</span></th>
-			<th ><span style="width:50px !important; float:left; text-align:right;" title="Quoted/Billed Weight">Q/B</span></th>
-			<th ><span style="width:50px !important; float:left; text-align:left;" title="Quoted/Billed Weight">Weight</span></th>
-			<th><span style="width:100px !important; float:left;">Quoted Charge</span></th>
-			<th ><span style="width:100px !important; float:left;">Billed Charge</span></th>
-			<th><span style="width:100px !important; float:left;">From Address</span></th>
-			<th><span style="width:100px !important; float:left;">To Address</span></th>
+			<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.service"/></span></th>
+			<th ><span style="width:60px !important; float:left; text-align:right;" title="Quoted/Billed Weight"><mmr:message messageId="label.ghead.qb"/></span></th>
+			<th ><span style="width:80px !important; float:left; text-align:left;" title="Quoted/Billed Weight"><mmr:message messageId="label.ghead.weight"/></span></th>
+			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.quotedcharge"/></span></th>
+			<th ><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.billedcharge"/></span></th>
+			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.fromaddress"/></span></th>
+			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.toaddress"/></span></th>
 			<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager')}">
-			<th><span style="width:100px !important; float:left;">Status</span></th>
+			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.status"/></span></th>
 			</s:if>
 			<s:else>
-			<th><span style="width:100px !important; float:left;">Status</span></th>
+			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.status"/></span></th>
 			</s:else>
-			<th><span style="width:100px !important; float:left;">Billing Status</span></th>
+			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.billingstatus"/></span></th>
 			
 		</tr>
 	</thead>
@@ -442,7 +445,7 @@ function download_files(type) {
 </table>	
 
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
-	Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href=" javascript: download_files('csv');"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  	<a href="javascript: download_files('xl');"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
  	<a href="javascript: download_files('xml');"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>

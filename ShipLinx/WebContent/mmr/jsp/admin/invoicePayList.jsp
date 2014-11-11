@@ -79,17 +79,17 @@
 					<s:if test="%{#request.postPayment == true}">
 						<s:if test="%{transaction.status == 30}">
 							<div>
-								PROCESSED
+								<mmr:message messageId="label.processed" /> 
 							</div>
 						</s:if>
 					</s:if>
 					<s:if test="%{#request.postPayment == false}">
 						<div>
-						Select invoices to pay
+						<mmr:message messageId="label.heading.invoicepay" /> 
 						</div>
 					</s:if>	
 					<s:else>
-						<div>Payment Results</div>
+						<div><mmr:message messageId="label.paymentresults" /> </div>
 					</s:else>
 				</span>
 			</div>
@@ -101,14 +101,14 @@
 	<tr style="height:25px">
 
 	<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" /></th>
-	<th >Invoice #</th>
-	<th>Company</th>
-	<th>Date Created</th>
-	<th>Amount</th>
-	<th>Tax</th>
-	<th>Total</th>
-	<th>Paid Amount</th>
-	<th>Balance Due</th>
+	<th ><mmr:message messageId="label.ghead.invoice" /> #</th>
+	<th><mmr:message messageId="label.ghead.company" /> </th>
+	<th><mmr:message messageId="label.ghead.datecreated" /> </th>
+	<th><mmr:message messageId="label.ghead.amount" /> </th>
+	<th><mmr:message messageId="label.ghead.tax" /> </th>
+	<th><mmr:message messageId="label.ghead.total" /> </th>
+	<th><mmr:message messageId="label.ghead.paidamt" /> </th>
+	<th><mmr:message messageId="label.ghead.balancedue" /> </th>
 			
 		
 		

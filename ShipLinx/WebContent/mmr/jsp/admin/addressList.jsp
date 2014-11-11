@@ -9,7 +9,9 @@
 
 <script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
-
+<style>
+	#actionmenu li { width:100px !important;}
+</style>
 <script type="text/javascript">
 	
 		$(document).ready(function() {
@@ -204,12 +206,13 @@
 	<span><mmr:message messageId="label.address"/></span>
 	</div>
 		<div class="form_buttons">
-		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+
+            <a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9650;</span></a>		
 			<ul id="actionmenu">
 			<li><a href="new.address.action"><mmr:message messageId="label.search.addnew"/></a></li>
-			<li><a href="javascript:editAddress()">EDIT</a></li>
-			<li><a href="javascript:deleteAddress()">DELETE</a></li>	
+			<li><a href="javascript:editAddress()"><mmr:message messageId="label.addresslist.edit"/></a></li>
+			<li><a href="javascript:deleteAddress()"><mmr:message messageId="label.addresslist.delete"/></a></li>
 			</ul>
 		</div>	
 	</div>
@@ -218,12 +221,12 @@
 	<thead>
 		<tr height="25px">
 		<th style="text-align:center;"><input id="check_all" type="checkbox" style=""/></th>
-			<th>Company</th>
-			<th>City</th>
-			<th>State/Province</th>
-			<th>Contact Name</th>
-			<th style="width:278px !important">Email</th>
-			<th>Zip Code</th>
+			<th><mmr:message messageId="label.addresslist.company"/></th>
+			<th><mmr:message messageId="label.addresslist.city"/></th>
+			<th><mmr:message messageId="label.addresslist.stateprovince"/></th>
+			<th><mmr:message messageId="label.addresslist.contactname"/> </th>
+			<th style="width:278px !important"><mmr:message messageId="label.addresslist.email"/></th>
+			<th><mmr:message messageId="label.addresslist.zipcode"/></th>
 		</tr>
 	</thead>
 	<tbody>

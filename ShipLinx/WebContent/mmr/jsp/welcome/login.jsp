@@ -1,5 +1,7 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<%@ taglib prefix="mmr" uri="/mmr-tags" %>
+<%@ taglib prefix="mmr" uri="/mmr-tags"  %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head>
@@ -112,14 +114,14 @@ function keyPressSubmit(myfield,e) {
 		background-size:900px auto;
 	}
 	.login_box{
-		width:290px; 
+		width:auto; 
 		height:70px;
 		float:right;
 		padding-right:32px;
 	}
 	.login_box ul{ float:left; height:auto; width:auto; list-style-type:none;}
 	.login_box ul li{ height:25px;}
-	.login_box ul li label{ width:70px; padding-top:3px; float:left; font-size:10px; }
+	.login_box ul li label{ width:130px; padding-top:3px; padding-right:5px; float:left; font-size:10px; text-align:right; }
 	.login_box ul li select,.login_box ul li input{ float:left;  padding:0px;}
 	.login_box ul li select{ height:22px; width:122px; }
 	.login_box ul li input{ height:20px; width:120px; }
@@ -156,7 +158,7 @@ function keyPressSubmit(myfield,e) {
 			onkeypress="return keyPressSubmitRememberPassword(this,event)" />
 							</li>
 						</ul>
-						<input onclick="loginSubmitACEGI()" type="submit" value="LOG IN"/>
+						<input style="cursor: pointer;padding-left: 5px;position: relative;bottom: 4px;font-size: 11px;" onclick="loginSubmitACEGI()" type="submit" value="<mmr:message messageId="label.login" />"/>
 						</form>
 					</div>
 					
@@ -164,13 +166,13 @@ function keyPressSubmit(myfield,e) {
 				<div class="navigation2">
 					<div class="naviinner">
 						<ul>	
-							<li><a href="viewLogon.action" style="color: #ffffff;background-color:990000; ">HOME</a></li>
-							<li><a href="<%=request.getContextPath()%>/signup.action" style="color: #ffffff; ">SIGN UP</a></li>
+							<li><a href="viewLogon.action" style="color: #ffffff;background-color:990000; "><mmr:message messageId="menu.home" /> </a></li>
+							<li><a href="signup.action" style="color: #ffffff; "><mmr:message messageId="menu.signup" /> </a></li>
 							
 						</ul>
 					<div class="search_body">
 						<form method="post" action="">
-							<input type="text" placeholder="Enter search keyword here">
+							<input type="text" placeholder="<mmr:message messageId="placehold.entersearchkey" />">
 							<input type="submit" value=" ">
 						</form>
 						
@@ -197,7 +199,7 @@ function keyPressSubmit(myfield,e) {
 						<ul>
 							<li><a href=""></a> </li>						
 						</ul>
-						<p><a href="forgotPassword.action" class="fgt_password" >FORGET PASSWORD</a></p>
+						<p><a href="forgotPassword.action" class="fgt_password" ><mmr:message messageId="menu.forgetpassword"/> </a></p>
 					</div>
 				
 					<div class="nextlevelmenu">
@@ -218,6 +220,9 @@ function keyPressSubmit(myfield,e) {
 	<div class="content">
 		<div class="content_body_index" >
 			<div id="wrapper_logo" style=" width:100%; float:left; text-align:center" > 
+			<div id="messages">
+    <jsp:include page="../common/action_messages.jsp" /></div>
+    
     <s:if test="%{#session.logoURL!=null}">
        <s:set name="url" value="%{#session.logoURL}" />
        <img src="<s:property value="%{url}"/>" border="0" height="400" includeContext="true"/>
@@ -226,8 +231,8 @@ function keyPressSubmit(myfield,e) {
        <img src="<%=request.getContextPath()%>/mmr/images/ic-logo-helping.png" height="400">
      </s:else> 
      
-    <div id="messages">
-    <jsp:include page="../common/action_messages.jsp" /></div>
+    <%-- <div id="messages">
+    <jsp:include page="../common/action_messages.jsp" /></div> --%>
    </div>
 		</div>
 	</div>

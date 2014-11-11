@@ -69,7 +69,7 @@
 								<div class="cont_hdr_title"><mmr:message messageId="label.invoice.search"/></div>
 								<div class="form_buttons" >		
 									<a href="javascript: submitform()"><mmr:message messageId="label.search.btn.search"/></a>
-									<a href="invoice.action">RESET</a>
+									a href="invoice.action"><mmr:message messageId="label.btn.reset"/></a>
 								</div>
 							</div>		
 							<div class="cont_data_body">
@@ -90,7 +90,7 @@
 									</div>
 									<s:if test="%{#session.ROLE.contains('busadmin')}">
 									<div class="fields_topdown">
-										<label>Customer Name</label>
+										<label><mmr:message messageId="label.customer.name"/></label>
 										<s:url id="customerList" action="listCustomers" />
 										<div class="controls">
 									
@@ -107,12 +107,12 @@
 									</div>	
 									<div class="fields_topdown">
 										<label><mmr:message messageId="label.invoice.paymentStatus"/></label>
-										<div class="controls">
-											<s:select cssClass="text_01_combo_big" cssStyle="width:154px;" listKey="id" listValue="statusName" name="invoice.paymentStatusList" headerKey="0" headerValue="Choose Status" list="statusList" id="secondBox"  theme="simple" />
+										<div class="controls" style="width:130px; overflow:hidden;">
+											<s:select cssClass="text_01_combo_big_customer" cssStyle="width:130px; background-position: 115px 4px; background-size:8px 8px;background-color: #FFFFFF;" listKey="id" listValue="statusName" name="invoice.paymentStatusList" headerKey="0" headerValue="" list="statusList" id="secondBox"  theme="simple"  />
 										</div>
-										</div>
+									</div>
 									<div class="fields_topdown" style=" margin-left:5px;">
-									<label>Display Cancelled</label>
+									<label><mmr:message messageId="label.display.cancelled"/></label>
 									<div class="controls">
 										<s:checkbox name="invoice.cancelled" id="cancelled" cssStyle="width:15px !important; padding:0px; margin:0px;" />
 									</div>
@@ -124,7 +124,7 @@
 
 	
 	<div id="formResult">
-	   <s:include value="invoiceList.jsp"></s:include>
+	   <jsp:include page="invoiceList.jsp"/>
 	</div>	
 	
 	<div class="content_body">

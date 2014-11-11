@@ -1,4 +1,5 @@
-
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
@@ -16,7 +17,7 @@
 <title><s:property value="%{#session.business.systemName}"/></title>
 <link rel="stylesheet" type="text/css"	href="<s:url value='%{#session.cssToLoad}' includeContext="true"/>" /> 
 
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=6,IE=7,IE=8,IE=9,IE=10,IE=11" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta http-equiv="cache-control" content="no-store">

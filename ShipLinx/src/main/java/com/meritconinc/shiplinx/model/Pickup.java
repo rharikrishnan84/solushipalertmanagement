@@ -52,8 +52,14 @@ public class Pickup implements Serializable {
 	private String fromDate;
 	private String toDate;
 	private String pickupDate_web;
+	private double totalActualWeight=1.0;
 	
-	
+	public double getTotalActualWeight() {
+		return totalActualWeight;
+	}
+	public void setTotalActualWeight(double totalActualWeight) {
+		this.totalActualWeight = totalActualWeight;
+	}
 	public long getCarrierId() {
 		return carrierId;
 	}

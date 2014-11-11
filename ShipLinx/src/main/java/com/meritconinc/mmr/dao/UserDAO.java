@@ -65,4 +65,5 @@ public interface UserDAO {
   
   public Customer getCustomerReference(long id);
   public List<User> getUserEmailById(long id,String role,String userName);
+  public User getUserByUsercode(String userCode);
 }

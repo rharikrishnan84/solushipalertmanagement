@@ -38,7 +38,7 @@ function submitForm()
 <div class="content_body" >
 <div class="content_table" style="background-color:#fff">
 <div id="formResult" style="float:left;">
-   <s:include value="addressList.jsp"></s:include>
+   <jsp:include page="addressList.jsp"/>
 </div>
 
 </div>

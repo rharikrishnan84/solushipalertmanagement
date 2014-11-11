@@ -3,7 +3,6 @@
 	response.setHeader("Pragma","no-cache");
 	response.setDateHeader("Expires",0);
 %>
-
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib prefix="sj" uri="/struts-jquery-tags"%> 
@@ -21,7 +20,7 @@
 								<div class="cont_data_body borderLeftRight" >
 									<div class="rows" >
 										<div class="fields">
-											<label><mmr:message messageId="label.shippingOrder.company"/> </label>
+											<label><mmr:message messageId="label.shippingOrder.company"/></label>
 											<div class="controls"><span>:</span>
 										 <s:url id="customerList" action="listCustomersWithOrphan" />
 										 <s:param name="shippingOrder.customerId" value="%{shippingOrder.customerId}"/>
@@ -55,7 +54,7 @@
 									
 								
 						<div id="fromAdd_inner">
-							<s:include value="fromAddress_inner.jsp"/>
+							<jsp:include page="fromAddress_inner.jsp"/>
 						</div>
 		</div>
 					</div>

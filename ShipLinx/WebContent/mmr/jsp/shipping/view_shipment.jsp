@@ -614,14 +614,14 @@ function deletecharge(action){
 						<div class="content_table">
 						<div class="navi4">
 							<ul style="float:left; width:400px; border:0px;">
-								<li>Order Details</li>
-								<li>Package Details</li>
-								<li>Status Update</li>
+								<li><mmr:message messageId="menu.orderdetails"/></li>
+						        <li><mmr:message messageId="menu.packagedetails"/></li>
+        						<li><mmr:message messageId="menu.statusupdate"/></li>
 							</ul>
 							<s:if test="%{selectedOrder.statusId!=40}">
-								<a id="cancel_shipment" href="javascript:cancelShipment()">Cancel Shipment</a>
+								<a id="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a>
 							</s:if>
-							<a id="back_shipment_list" href="javascript:backtoListShipment()">Back</a>
+							<a id="back_shipment_list" href="javascript:backtoListShipment()"><mmr:message messageId="btn.back" /> </a>
 						</div>
 						</div>
 						<div class="content_table" id="box1" > 
@@ -633,7 +633,7 @@ function deletecharge(action){
 										
 										
 				<div class="content_header">
-					<div class="cont_hdrtitle_l" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;">Payment Required:</div>
+					<div class="cont_hdrtitle_l" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;"><mmr:message messageId="label.heading.paymentrequired"/> :</div>
 							<!-- <div id="payment_rqd_top" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:6px 0px 0px 400px;">Payment Required:-->
 								<div id="payment_actions">
 									<div class="form_buttons">
@@ -758,12 +758,12 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<div class="content_table">
 						
 							<div class="content_header">
-								<div class="cont_hdr_title">Pick Up From :</div>
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.pickupfrom"/> :</div>
 								<s:hidden name="onpop" id="hiddenAutoPrint" value="%{#session.AutoPrintAgain}" />
 								<s:hidden name="orderId" value="%{selectedOrder.id}" /> 
 								<s:set name="oid" value="%{selectedOrder.id}" /> 
-								<div class="cont_hdrtitle_l" style="width:300px">Order Details
-			for #&nbsp;<s:property value="%{selectedOrder.id}" /></div>
+								<div class="cont_hdrtitle_l" style="width:300px"><mmr:message messageId="label.heading.orderdetails"/> 
+			 #&nbsp;<s:property value="%{selectedOrder.id}" /></div>
 								<div class="form_buttons" >										
 								 
 								</div>
@@ -771,7 +771,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<div class="cont_data_body borderLeftRight" id="order_detail_from_to_table">
 								<div class="rows">
 									<div class="fields">
-										<label>Company</label>
+										<label><mmr:message messageId="label.viewship.company"/></label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -779,7 +779,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields_long">
-										<label>Address</label>
+										<label><mmr:message messageId="label.viewship.address"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property value="%{selectedOrder.fromAddress.address1}" />:&nbsp; 
@@ -790,10 +790,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<s:if test="%{selectedOrder.fromAddress.residential == 1}">
-									<div class="adddtl_title" width="12%">From Residential</div>
+									<div class="adddtl_title" width="12%"><mmr:message messageId="label.viewship.fromres"/> </div>
 									</s:if>
 									<div class="fields">
-										<label>Phone</label>
+										<label><mmr:message messageId="label.viewship.phone"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -801,7 +801,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields_long">
-										<label>Email</label>
+										<label><mmr:message messageId="label.viewship.email"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -809,7 +809,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Attention</label>
+										<label><mmr:message messageId="label.viewship.attention"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -824,11 +824,11 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							
 							
 			<div class="content_header" id="order_detail_to_table_hdng">
-								<div class="cont_hdr_title">Ship To:</div>
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.shipto"/> :</div>
 											<s:if test="%{selectedOrder.paymentRequired!=true && selectedOrder.statusId!=40}">
 				<!-- Condition to Show or Hide the Generate Label Link, Hides: If Customer has not paid - Shows: If the Customer has made the Payment-->
 				<div class="form_buttons" >	
-									<a href="javascript:generateLabel('<s:property value="%{#oid}" />')">Print Label</a>
+									<a href="javascript:generateLabel('<s:property value="%{#oid}" />')"><mmr:message messageId="label.print.label"/> </a>
 								</div>	
 				<div style="float:right; padding-right:15px;">
 				<font class="srchshipmnt_text_04"><mmr:message messageId="label.copies.shipping.label"/></font>&nbsp;
@@ -858,7 +858,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<div class="cont_data_body borderLeftRight">
 								<div class="rows">
 									<div class="fields">
-										<label>Company</label>
+										<label><mmr:message messageId="label.viewship.company"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -866,7 +866,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields_long">
-										<label>Address</label>
+										<label><mmr:message messageId="label.viewship.address"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property value="%{selectedOrder.toAddress.address1}" />:&nbsp; 
@@ -877,10 +877,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 						<s:if test="%{selectedOrder.toAddress.residential == 1}">
-					<div class="adddtl_title" width="12%">To Residential</div>
+					<div class="adddtl_title" width="12%"><mmr:message messageId="label.viewship.toresidential"/> </div>
 					</s:if>
 									<div class="fields">
-										<label>Phone</label>
+										<label><mmr:message messageId="label.viewship.phone"/></label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -888,7 +888,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields_long">
-										<label>Email</label>
+										<label><mmr:message messageId="label.viewship.email"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -896,7 +896,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Attention</label>
+										<label><mmr:message messageId="label.viewship.attention"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -907,12 +907,12 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</div>
 							
 <div class="content_header">
-								<div class="cont_hdr_title">Order Details:</div>
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.orderdetails"/> :</div>
 							</div>
 							<div class="cont_data_body borderLeftRight" style="border-bottom:1px solid #c4c2c2; margin-bottom:10px;" id="order_detail_table">
 								<div class="rows">
 								<div class="fields">
-										<label>Customer</label>
+										<label><mmr:message messageId="label.viewship.customer"/></label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -920,7 +920,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Zone From / To</label>
+										<label><mmr:message messageId="label.viewship.zonefromto"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -929,7 +929,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Currency</label>
+										<label><mmr:message messageId="label.viewship.email"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -937,7 +937,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Carrier</label>
+										<label><mmr:message messageId="label.viewship.carrier"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -945,7 +945,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Service</label>
+										<label><mmr:message messageId="label.viewship.service"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -953,7 +953,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Pick up Confirmation#</label>
+										<label><mmr:message messageId="label.viewship.pickupconfirm"/> #</label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -961,7 +961,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Carrier Tracking #</label>
+										<label><mmr:message messageId="label.viewship.carriertrack"/> #</label>
 										<div class="controls">
 											<span>:</span>
 											<p><strong><s:property
@@ -969,7 +969,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Reference 1</label>
+										<label><mmr:message messageId="label.viewship.ref1"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -977,7 +977,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 								<div class="fields">
-										<label>Reference 2</label>
+										<label><mmr:message messageId="label.viewship.ref2"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p style="width:160px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property
@@ -986,7 +986,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Weight (Entered / Billed)</label>
+										<label><mmr:message messageId="label.viewship.weight"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p>	<s:property	value="%{selectedOrder.quotedWeight}" /> <s:property value="%{selectedOrder.quotedWeightUOM}"/> 
@@ -999,7 +999,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>	
 						<div class="fields">
-										<label>Shipment Date</label>
+										<label><mmr:message messageId="label.viewship.shipdate"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -1007,7 +1007,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Billing Status</label>
+										<label><mmr:message messageId="label.viewship.billstatus"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -1018,7 +1018,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>
 									<div class="fields">
-										<label>Status</label>
+										<label><mmr:message messageId="label.viewship.status"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -1030,7 +1030,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<div class="fields">
 										<label><s:a 
 									href="javascript: clearExceptionStatus()" 
-									cssStyle="text-decoration: none;">Clear Exception
+									cssStyle="text-decoration: none;"><mmr:message messageId="label.viewship.clearexception"/>
 							</s:a></label>
 										<div class="controls">
 											<span>:</span>
@@ -1042,10 +1042,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								
 										<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 						<s:if test="%{selectedOrder.markType == 1}">
-							<div class="fields">Mark-up Applied</div>
+							<div class="fields"><mmr:message messageId="label.viewship.markup"/> </div>
 						</s:if>
 						<s:if test="%{selectedOrder.markType == 2}">
-							<div class="fields">Mark-down Applied</div>
+							<div class="fields"><mmr:message messageId="label.viewship.markdown"/> </div>
 						</s:if>
 						
 						<div class="fields"><s:property
@@ -1059,7 +1059,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 <s:if test='%{selectedOrder.tradeShowPickup == 1 || selectedOrder.tradeShowDelivery == 1 || selectedOrder.insidePickup == 1 ||
 			selectedOrder.insideDelivery == 1 || selectedOrder.appointmentPickup == 1 || selectedOrder.appointmentDelivery == 1 ||
 			selectedOrder.fromTailgate == 1 || selectedOrder.toTailgate == 1 || selectedOrder.satDelivery == 1 || selectedOrder.holdForPickupRequired == 1 || selectedOrder.CODValue > 0 || selectedOrder.insuranceValue > 0}'>
-			<div id="additional_service_detail_div_start">Additional Services:</div>
+			<div id="additional_service_detail_div_start"><mmr:message messageId="label.heading.additionalservice"/> :</div>
 			
 			
 			
@@ -1067,49 +1067,49 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 			<div>
 				<div>
 					<s:if test='%{selectedOrder.tradeShowPickup == 1}'>
-					<div  class="adddtl_title">Tradeshow Pickup</div>
+					<div  class="adddtl_title"><mmr:message messageId="label.viewship.tradeshowpickup"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.tradeShowDelivery == 1}'>
-					<div class="adddtl_title" >Tradeshow Delivery</div>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.tradeshowdelivery"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.insidePickup == 1}'>
-					<div class="adddtl_title" >Inside Pickup</div>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidepickup"/> </div>
 					</s:if>
 					 <s:if test='%{selectedOrder.insideDelivery == 1}'>
-					<div class="adddtl_title" >Inside Delivery</div>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidedelivery"/> </div>
 					</s:if> 
 				</div>
 				<div>
 					<s:if test='%{selectedOrder.appointmentPickup == 1}'>
-					<div class="adddtl_title">Appointment Pickup</div>
+					<div class="adddtl_title"><mmr:message messageId="label.viewship.appointmentpickup"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.appointmentDelivery == 1}'>
-					<div class="adddtl_title">Appointment Delivery</div>
+					<div class="adddtl_title"><mmr:message messageId="label.viewship.appointmentdelivery"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.fromTailgate == 1}'>
-					<div class="adddtl_title">Tailgate Pickup</div>
+					<div class="adddtl_title"><mmr:message messageId="label.viewship.tailgatepickup"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.toTailgate == 1}'>
-					<div class="adddtl_title" >Tailgate Delivery</div>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.tailgatedelivery"/> </div>
 					</s:if>
 				</tr>
 				<tr>
 				<s:if test='%{selectedOrder.satDelivery == 1}'>
-					<div class="adddtl_title" align="left" valign="middle">Saturday Delivery</div>
+					<div class="adddtl_title" align="left" valign="middle"><mmr:message messageId="label.viewship.saturdaydelivery"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.holdForPickupRequired == 1}'>
-					<div class="adddtl_title">Hold for Pickup</div>
+					<div class="adddtl_title"><mmr:message messageId="label.viewship.holdforpickup"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.CODValue > 0}'>
 					<div class="adddtl_title">
-						<span class="adddtl_title" style=" width:70px; float:left;">COD</span>
+						<span class="adddtl_title" style=" width:70px; float:left;"><mmr:message messageId="label.viewship.cod"/> </span>
 						<span class="ordrdtl_title_val" style=" margin-left:25px; float:left;">$ :<s:property
 							value="%{selectedOrder.CODValue}" /></span>
 					</div>
 					</s:if>
 <s:if test='%{selectedOrder.insuranceValue > 0}'>
 					<div class="adddtl_title">
-						<span class="adddtl_title" style=" width:60px; float:left;">Insurance</span>
+						<span class="adddtl_title" style=" width:60px; float:left;"><mmr:message messageId="label.viewship.insurance"/> </span>
 						<span class="ordrdtl_title_val" style=" margin-left:16px; float:left;">$ :<s:property
 							value="%{selectedOrder.insuranceValue}" /></span>
 					</div>
@@ -1124,8 +1124,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<div class="cont_data_body borderLeftRight">
 									
 									<s:if test="%{selectedOrder.quotedCharges.size > 0}">
-									<div class="content_header">
-								<div class="cont_hdr_title">Quote Charges:</div>
+									<div class="content_header" style="width:958px !important">
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.quotecharges"/> :</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeQuoted}" /></s:text>
@@ -1134,16 +1134,16 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<s:if test="%{selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('busadmin') || selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('solutions_manager')}">
 								
 								
-					<div id="copy2actual" class="" style="float:right; width:305px; margin-top:-2px; ">
+					<div id="copy2actual" class="" style="float:right; width:321px; margin-top:-2px; ">
 						<div class="fields">
-							<label style="padding-left:38px !important; width:100px !important;">
+							<label style="padding-left:28px !important; width:auto !important; margin-right:5px;">
 								<a href="javascript: copyToActual();"  style="text-decoration: none; color:#FFF; font-size:12px; ">
-									Copy to Actual
+									<mmr:message messageId="label.heading.copytoactual"/> 
 								</a>
 							</label>
 							
-								<div class="controls">
-									<s:select id="copy_to_actual"  
+								<div class="controls" style="text-align:right;">
+									<s:select id="copy_to_actual" cssStyle=" float:left; width:176px !important;"  
 													cssClass="text_01_combo_big"
 														name="quotedChargeStatusText"
 															list="{'','Pending Release','Ready to Invoice','Quick Invoice'}" theme="simple" />
@@ -1153,26 +1153,25 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 					</s:if>
 							</div>
 							<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
-						<table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
-							<tr style="background-color:#d1d1d1; width:960px;  font-size:13px;">
-								<td class="ordrdtl_title_hdng" ><strong>Carrier</strong></td>
-							    <td class="ordrdtl_title_hdng" ><strong>Code</strong></td>
-								<td class="ordrdtl_title_hdng"><strong>Charge Name</strong></td>
+						   <table width="950px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
+							<tr style="background-color:#d1d1d1; width:960px;  font-size:12px;">
+								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.carrier"/> </strong></td>
+							    <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.code"/> </strong></td>
+								<td class="ordrdtl_title_hdng"><strong style="width:auto; min-width:120px; float:left;"><mmr:message messageId="label.ghead.chargename"/> </strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-									<td class="ordrdtl_title_hdng" width="5"><strong>Tariff</strong></td>
-									<td class="ordrdtl_title_hdng" width="12"><strong>Cost</strong></td>
-									<td class="ordrdtl_title_hdng" width="12"><strong>CUR</strong></td>
-
+									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.tariff"/> </strong></td>
+									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
+									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
 								</s:if>
 								<!-- this is to hide the charge for customer_shipper user-->
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
-								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
+								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
 								</s:if>
 								 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-                               <td class="ordrdtl_title_hdng" width="12"><strong>CUR</strong></td>
-                               <td class="ordrdtl_title_hdng" width="12"><strong>EX Rate</strong></td>
+                               <td class="ordrdtl_title_hdng"><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
+                               <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.exrate"/> </strong></td>
                                </s:if>
-								<td class="ordrdtl_title_hdng" width="10"><strong>Status</strong></td>
+								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
 								<td>&nbsp;</td>
 							</tr>
 							<tr>
@@ -1192,7 +1191,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											</td>
 											
 										</s:else>
-										<td style="text-align: left" class="ordrdtl_title_val">
+										<td  class="ordrdtl_title_val">
 										<s:if test="%{name == 'Freight'}">
 											<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
@@ -1208,62 +1207,115 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 
 										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') ||status != 30 && #session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val">
+											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 												<s:textfield size="10"
 													key="quotedChargeName" name="quotedChargeName"
 													value="%{name}" cssClass="text_02" />
+													</s:if>
+													<s:else><s:property value="name" /></s:else>
 											</td>
 								</td>
 									<td class="ordrdtl_title_val">
 												<s:property value="tariffRate" />
 
-											<td class="ordrdtl_title_val"><s:textfield size="5"
+											<td class="ordrdtl_title_val">
+											<s:if test="%{selectedOrder.actualCharges.size ==0}">
+											<s:textfield size="5"
 												key="quotedChargeCost" name="quotedChargeCost"
-												value="%{cost}" cssClass="text_02" cssStyle="text-align:right;" /></td>
+												value="%{cost}" cssClass="text_02" cssStyle="text-align:right;" />
+												</s:if>
+												<s:else><s:property value="cost" /></s:else>
+												</td>
 										<%--	<td class="ordrdtl_title_val">
 												<s:property value="tariffRate" />
 											</td>  --%>
 											
 											<td class="ordrdtl_title_val">
+											<s:if test="%{selectedOrder.actualCharges.size ==0}">
                                                <s:select 
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="quotedcostcurrency" value="%{costcurrency}"
+                                                        name="quotedcostcurrency" value="%{costcurrency}"
                                                            list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                           </s:if>
+                                                           <s:else>
+                                                            <s:if test="%{costcurrency==1}">
+                                           CAD
+                                           </s:if>
+                                           <s:elseif test="%{costcurrency==2}">
+                                           
+                                           USD
+                                           
+                                            </s:elseif>
+                                            <s:else>
+                                            CAD
+                                            </s:else>
+                                                           </s:else>
                                                </td>
-											<td class="ordrdtl_title_val"><s:hidden
-												name="quotedChargeIds" value="%{id}" /> <s:textfield
+											
+												 <td class="ordrdtl_title_val">
+											<s:hidden
+												name="quotedChargeIds" value="%{id}" /> 
+												<s:if test="%{selectedOrder.actualCharges.size ==0}">
+												<s:textfield
 												size="5" key="quotedCharge" name="quotedCharge"
-												value="%{charge}" cssClass="text_02" cssStyle="text-align:right;"/></td>
+												value="%{charge}" cssClass="text_02" cssStyle="text-align:right;"/>
+												
+												</s:if>
+												<s:else><s:property value="charge" /></s:else></td>
 											
 												<td class="ordrdtl_title_val">
+												<s:if test="%{selectedOrder.actualCharges.size ==0}">
                                                <s:select 
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
                                                        name="quotedchargecurrency" value="%{chargecurrency}"
                                                            list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                           </s:if>
+                                                           <s:else>
+                                                           
+                                                           <s:if test="%{chargecurrency==1}">
+                                           CAD
+                                           </s:if>
+                                           <s:elseif test="%{chargecurrency==2}">
+                                           
+                                           USD
+                                           </s:elseif>
+                                           <s:else>
+                                            CAD
+                                            </s:else>
+                                                           
+                                                           </s:else>
                                                </td>
                                            <td class="ordrdtl_title_val">
+                                            <s:if test="%{selectedOrder.actualCharges.size ==0}">
                                                <s:textfield size="5"
                                                     name="quotedexchangerate" value="%{exchangerate}"
                                                     cssClass="text_02" />
+                                                     </s:if>
+                                                    <s:else><s:property value="exchangerate" /></s:else>
                                            </td>   
 											<td class="ordrdtl_title_val">
 											<s:if test="%{cancelledInvoice=='Yes'}">
-											Cancelled
+											<mmr:message messageId="status.cancelled"/>
 											</s:if>
 											<s:else>
+											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 												<s:select value="%{statusText}"
 													cssClass="text_01_combo_big" cssStyle="width:140px;"
 														name="quotedChargeStatusText"
 															list="{'Pending Release','Ready to Invoice'}" theme="simple" />
+															</s:if>
+															<s:else><s:property value="statusText" /></s:else>
 												</s:else>
 											</td>	
+											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 										<td class="ordrdtl_title_val">
 												<s:a onclick="return confirm('Do you really want to delete the selected charge?')"  cssStyle="padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
 												
-													DELETE
+													<mmr:message messageId="btn.delete"/> 
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
 												</s:a>
 										</td>													
-												
+											</s:if>		
 										</s:if>
 										<s:else>
 											<td class="ordrdtl_title_val"><s:property value="name" /></td>
@@ -1303,7 +1355,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										   </s:if>
 											<td class="ordrdtl_title_val">												
  													<s:if test="%{cancelledInvoice=='Yes'}">
-												Cancelled
+											<mmr:message messageId="status.cancelled"/> 
 											</s:if>
 											<s:else>
  												<s:property	value="statusText" />
@@ -1315,11 +1367,12 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</tr>
 								</s:iterator></td>
 							</tr>
+							<s:if test="%{selectedOrder.actualCharges.size ==0}">
 							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="6" class="ordrdtl_title_val" style="padding:10px 3px;">
 										<a href="javascript: updateQuotedCharge()" style="padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;">
-											Save Charge
+											<mmr:message messageId="btn.savecharge"/>  
 										<!--<img border="0" src="<s:url value="/mmr/images/update_charge_btn.png" includeContext="true" />"	>-->
 										
 										
@@ -1328,26 +1381,30 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									
 							</tr>
 							</s:if>
+							</s:if>
+							</table>
 							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+							<s:if test="%{selectedOrder.actualCharges.size ==0}"> 
+						 <table width="940px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
 							<tr style="background-color:#d1d1d1; width:100%;">
-									<td  class="ordrdtl_title" ><strong>Carrier:</strong></td>
-									<td  class="ordrdtl_title" ><strong>Code:</strong></td>
-									<td  class="ordrdtl_title"><strong>New Charge:</strong></td>
+									<td  class="ordrdtl_title" ><strong><mmr:message messageId="label.ghead.carrier"/> :</strong></td>
+									<td  class="ordrdtl_title" ><strong><mmr:message messageId="label.ghead.code"/> :</strong></td>
+									<td  class="ordrdtl_title"><strong><mmr:message messageId="label.ghead.newcharge"/> :</strong></td>
 									<td> </td>
-									<td  class="ordrdtl_title" ><strong>Cost:</strong></td>
-									<td class="ordrdtl_title" width="12"><strong>CUR:</strong></td>
+									<td  class="ordrdtl_title" ><strong style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.cost"/> :</strong></td>
+									<td class="ordrdtl_title" width="12"><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
 									<!-- this is to hide the charge for customer_shipper user-->
 									<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 									<!-- this is to hide the charge for customer_shipper user-->
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
- 								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
+ 								<td class="ordrdtl_title_hdng" ><strong style="width:72px !important; float:left;"><mmr:message messageId="label.ghead.charge"/> :</strong></td>
 								</s:if>
 									</s:if>
-									<td class="ordrdtl_title" width="12"><strong>CUR:</strong></td>
-                               <td class="ordrdtl_title" width="12"><strong>EX Rate:</strong></td>
-							   <td class="ordrdtl_title" width="12"><strong>&nbsp;</strong></td>
-							   <td class="ordrdtl_title" width="12"><strong>&nbsp;</strong></td>
-
+									<td class="ordrdtl_title" width="12"><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
+							     <td class="ordrdtl_title"><strong style="width:75px !important; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
+							  <td class="ordrdtl_title" ><strong>&nbsp;</strong></td>
+							   <td class="ordrdtl_title" ><strong>&nbsp;</strong></td>
+ 
 							</tr>
 							<tr>
 								 <td>
@@ -1416,15 +1473,18 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										list="{'Pending Release','Ready to Invoice'}" theme="simple" />
 									</td>
 									<td class="ordrdtl_title_val">
-										<a href="javascript: addQuotedCharge()" style="padding:3px 21px; background-color:#990000; color:#FFF;font-weight:bold; FONT-SIZE:12PX; text-decoration:none; float:left;">
-											ADD
+										<span style="width:100px; float:left;">
+										<a href="javascript: addQuotedCharge()" style="padding:3px 10px; background-color:#990000; width:auto; color:#FFF;font-weight:bold; FONT-SIZE:12PX; text-decoration:none; float:left;">
+											<mmr:message messageId="btn.add"/> 
 										<!--<img border="0" src="<s:url value="/mmr/images/add_product.png" includeContext="true" />-->
 										
-										</a></td>
+										</a>
+										</span>
+										</td>
 								</tr>
 								
 							</s:if>
-							
+							</s:if>
 							</table>
 							</div>
 							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
@@ -1436,7 +1496,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 			</s:if> 
 							</div>
 								<div class="content_header  borderLeftRight">
-								<div class="cont_hdr_title">Actual Charges:</div>
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.actualcharges"/>  :</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeActual}" /></s:text>
@@ -1444,9 +1504,9 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 					</div>
 					<s:if test="%{selectedOrder.actualCharges.size >0 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size >0 && #session.ROLE.contains('solutions_manager')}">
 					<div id="copy2actual" style="float:right; width:285px; margin-top:-2px; ">
-						<div class="fields">
-							<label style="padding-left:38px !important; width:100px !important;">
-								<a href="javascript: copyTheActual();"  style="text-decoration: none; color:#FFF; font-size:12px;">Copy Charges</a>
+						<div class="fields" >
+							<label style=" width:130px !important; text-align:right; padding-right:5px;">
+								<a href="javascript: copyTheActual();"  style="text-decoration: none; color:#FFF; font-size:12px;"><mmr:message messageId="label.heading.copycharges"/> </a>
 							</label>	
 							<div class="ordrdtl_title_val controls"><s:select id="copy_the_actual"  
 												cssClass="text_01_combo_big" cssStyle="width:140px;"
@@ -1462,26 +1522,26 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 						<table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
 							
 							
-							<tr style="background-color:#d1d1d1; width:100%;  font-size:13px;">
-								<td class="ordrdtl_title_hdng" ><strong style="width:102px !important; float:left;">Carrier</strong></td>
-							   <td class="ordrdtl_title_hdng" ><strong style="width:58px !important; float:left;">Code</strong></td>
-								<td class="ordrdtl_title_hdng" ><strong>Charge Name</strong></td>
+							<tr style="background-color:#d1d1d1; width:100%;  font-size:12px;">
+								<td class="ordrdtl_title_hdng" ><strong style="width:102px !important; float:left;"><mmr:message messageId="label.ghead.carrier"/> </strong></td>
+							   <td class="ordrdtl_title_hdng" ><strong style="width:58px !important; float:left;"><mmr:message messageId="label.ghead.code"/> </strong></td>
+								<td class="ordrdtl_title_hdng" ><strong style="width:110px; float:left;"><mmr:message messageId="label.ghead.chargename"/></strong></td>
 
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-									<td class="ordrdtl_title_hdng" width="6%"  ><strong>Tariff</strong></td>
-									<td class="ordrdtl_title_hdng" width="4%"><strong>Cost</strong></td>
-									<td class="ordrdtl_title_hdng" width="4%"><strong>CUR</strong></td>
- 								</s:if>
+								<td class="ordrdtl_title_hdng"  ><strong style="width:60px; float:left;"><mmr:message messageId="label.ghead.tariff"/> </strong></td>
+									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
+									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
+								</s:if>
 
-								<td class="ordrdtl_title_hdng" width="6%"><strong>Charge</strong></td>
+								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-                               <td class="ordrdtl_title_hdng" width="4%"><strong>CUR</strong></td>
-                               <td class="ordrdtl_title_hdng" width="10%"><strong>EX Rate</strong></td>
-                               </s:if>
-								<td class="ordrdtl_title_hdng" width="13%"><strong>Status</strong></td>
-								<td class="ordrdtl_title_hdng" width="12%"><strong>Invoice#</strong></td>
+                               <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
+                               <td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> </strong></td>
+								</s:if>
+								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
+								<td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.invoice"/> #</strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-									<td class="ordrdtl_title_hdng" width="8%"><strong>&nbsp;EDI#</strong></td>
+									<td class="ordrdtl_title_hdng" ><strong>&nbsp;<mmr:message messageId="label.ghead.edi"/> #</strong></td>
 								</s:if>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
 
@@ -1514,7 +1574,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											</s:else>
 										</td>
 										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') && cancelledInvoice!='Yes'||status != 30 && #session.ROLE.contains('solutions_manager')&& cancelledInvoice!='Yes'}">
-											<td style="width:100px !important; float:left;">
+											<td style="width:100px !important; ">
 												<s:textfield size="10"
 													key="actualChargeName" name="actualChargeName"
 													value="%{name}" cssClass="text_02" />
@@ -1579,11 +1639,13 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
  											</s:if>
 
 											<td>
-												<s:a onclick="return confirm('Do you really want to delete the selected charge?')" cssStyle="background-color:#990000; color:#FFF; padding:3px 10px;font-weight:bold; float:left; font-size:12px; text-decoration:none;"href="delete.actual.charge.shipment.action?method=deletetCharge&id=%{id}">
-													DELETE
+												<span style="width:110px; float:left;">
+												<s:a onclick="return confirm('Do you really want to delete the selected charge?')" cssStyle="background-color:#990000; color:#FFF; padding:3px 10px;font-weight:bold; width:auto;  text-align:center; float:left; font-size:12px; text-decoration:none;"href="delete.actual.charge.shipment.action?method=deletetCharge&id=%{id}">
+													<mmr:message messageId="btn.delete"/> 
 													
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
 												</s:a>
+												</span>	
 											</td>
 										</s:if>
 										<s:else>
@@ -1626,7 +1688,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											</s:if>
 											<td class="ordrdtl_title_val">											
  													<s:if test="%{cancelledInvoice=='Yes'}">
-												Cancelled
+												<mmr:message messageId="status.cancelled"/>
 											</s:if>
 											<s:else>
  												<s:property	value="statusText" />
@@ -1664,7 +1726,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<tr>							
 									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><a
 										href="javascript: updateActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; text-decoration:none; padding:3px 10px;">
-										Save Charge
+										<mmr:message messageId="btn.savecharge"/> 
 										
 										<!--<img border="0"
 										src="<s:url value="/mmr/images/update_charge_btn.png" includeContext="true" />"
@@ -1677,15 +1739,15 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							
 							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 								<tr style="background-color:#d1d1d1;">
-									<td  class="ordrdtl_title" align=""><strong>Carrier:</strong></td>
-									<td  class="ordrdtl_title" align=""><strong>Code:</strong></td>
-									<td  class="ordrdtl_title" align=""><strong>New Charge:</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.carrier"/> :</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.code"/> :</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.newcharge"/> :</strong></td>
 									<td class="ordrdtl_title">&nbsp;</td>
-									<td  class="ordrdtl_title" align=""><strong>Cost:</strong></td>
-									<td  class="ordrdtl_title" align=""><strong>CUR:</strong></td>	
-									<td  class="ordrdtl_title" align=""><strong>Charge:</strong></td>
-									<td  class="ordrdtl_title" align=""><strong>CUR:</strong></td>
-                                   <td  class="ordrdtl_title" align=""><strong>EX Rate:</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.cost"/> :</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>	
+									<td  class="ordrdtl_title" align=""><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.charge"/> :</strong></td>
+									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
+                                   <td  class="ordrdtl_title" align=""><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
@@ -1716,7 +1778,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<s:url id="carrierChargesList" action="listCarrierCharges" />
 									<td align="left" width="35%">
 										<div id="chargeName">
-										<s:select cssClass="text_01_combo_big" cssStyle="width:155px;" headerKey="" headerValue="Select"  name="newActualCharge.name" list="{}" 
+										<s:select cssClass="text_01_combo_big" cssStyle="width:115px;" headerKey="" headerValue="Select"  name="newActualCharge.name" list="{}" 
 										 theme="simple"/>
 								       </div>
 
@@ -1741,7 +1803,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td>
                                                <s:select value="%{statusText}"
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="newActualCharge.chargecurrency"
+                                                        name="newActualCharge.chargecurrency"
                                                            list="#{'1':'CAD','2':'USD'}" theme="simple" />
                                                </td>
                                    <td >
@@ -1755,14 +1817,14 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										name="newActualCharge.statusText"
 										list="{'Pending Release','Ready to Invoice'}" theme="simple" />
 									</td>
-									<td align="left" colspan="2"><a
-										href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; text-decoration:none; padding:3px 10px; float:left;">
-										
-										ADD
+									<td align="left" colspan="2">
+									<span style="width:75px; float:left;">
+									<a href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;">
+										<mmr:message messageId="btn.add"/>
 										<!--<img border="0"
 										src="<s:url value="/mmr/images/add_product.png" includeContext="true" />"
 										>-->
-										</a></td>
+										</a></span></td>
 								</tr>
 						</s:if>
 					</table>
@@ -1773,7 +1835,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 			
 			<div id="payment_info_table">
 			<div class="content_header">
-			<div class="cont_hdrtitle_l" id="payment_inform" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;">&nbsp;&nbsp;Payment Info</div>
+			<div class="cont_hdrtitle_l" id="payment_inform" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:1px 0px 0px 400px;">&nbsp;&nbsp;<mmr:message messageId="label.heading.paymentinfo"/> </div>
 			</div>
 					<%-- <display:table id="payment_info" name="selectedOrder.ccTransactions" export="false" uid="row" cellspacing="0" cellpadding="3">
 					<display:column headerClass="payment_info_tableTitle" sortable="true" title="" />
@@ -1794,17 +1856,17 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
     <thead>
 		<tr style="height:20px">
 			<th><span style="width:200px !important; color:#fff !important;font-weight: bold; 
-			">Auth #</span></th>
+			"><mmr:message messageId="label.ghead.auth"/> #</span></th>
 			<th><span style="width:200px !important;color:#fff !important;font-weight: bold;
-			">Status</span></th>
+			"><mmr:message messageId="label.ghead.status"/> </span></th>
 			<th><span style="width:110px !important; float:left;color:#fff !important;font-weight: bold;
-			">Amount</span></th>
+			"><mmr:message messageId="label.ghead.amount"/> </span></th>
 			<th><span style="width:80px !important; float:left;color:#fff !important;font-weight: bold;
-			">Reference #</span></th>
+			"><mmr:message messageId="label.ghead.ref"/> #</span></th>
 			<th><span style="width:180px !important; float:left;color:#fff !important;font-weight: bold;
-			">Processor Ref #</span></th>
+			"><mmr:message messageId="label.ghead.processorref"/> #</span></th>
 			<th style="width:70px !important;"><span style="width:70px !important; float:left;color:#fff;font-weight: bold;
-			">CC #</span></th>
+			"><mmr:message messageId="label.ghead.cc"/> #</span></th>
 			<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
 			<th></th>
 			</s:if>
@@ -1820,7 +1882,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
  <td style="padding-left: 55px;background-color: #E7E7E7 !important;"><s:property value="processorTransactionId"/></td>
  <td style="padding-left: 15px;background-color: #E7E7E7 !important;"><s:property value="cardNumCharged"/></td> 
 <s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
-	<td><a href="">Refund Charge</a></td> 
+	<td><a href=""><mmr:message messageId="label.btn.refundcharge"/></a></td> 
 	</s:if>		
             </tr>			
             </s:iterator>
@@ -1837,18 +1899,18 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 						</div>
 						<div class="content_table" id="box2" > 
 							<div class="content_header">
-								<div class="cont_hdr_title">Package :</div>
-								<div class="cont_hdrtitle_l" style="width:300px">Package Details
-			for #&nbsp;<s:property value="%{selectedOrder.id}" /></div>
+								<div class="cont_hdr_title"><mmr:message messageId="label.heading.package"/> :</div>
+								<div class="cont_hdrtitle_l" style="width:300px"><mmr:message messageId="label.heading.packagedetails"/> 
+			 #&nbsp;<s:property value="%{selectedOrder.id}" /></div>
 								<div class="form_buttons" >	
-				<a   id="vw_shpmnt_nxt1" style="cursor:pointer">BACK</a>
+				<a   id="vw_shpmnt_nxt1" style="cursor:pointer"><mmr:message messageId="btn.back"/> </a>
 
 								</div>
 							</div>		
 							<div class="cont_data_body" style="border-left: 1px solid #c4c2c2; border-right: 1px solid #c4c2c2; border-bottom:1px solid #c4c2c2; margin-bottom:10px; width:958.3px !important;">
 								<div class="rows">
 									<div class="fields">
-										<label>Package</label>
+										<label><mmr:message messageId="label.viewship.package"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -1856,7 +1918,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>	
 											<div class="fields">
-										<label>Quantity</label>
+										<label><mmr:message messageId="label.viewship.quantity"/> </label>
 										<div class="controls">
 											<span>:</span>
 											<p><s:property
@@ -1865,7 +1927,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</div>
 									<s:iterator value="selectedOrder.packages" status="counterIndex">
 										<div class="fields">
-										<label>Dimensions of Package<s:property
+										<label><mmr:message messageId="label.viewship.dimensionspack"/> <s:property
 							value="%{#counterIndex.index+1}" /></label>
 										<div class="controls">
 											<span>:</span>
@@ -1878,7 +1940,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</div>
 							</div>
 								<div class="fields">
-										<label>Weight of Package <s:property
+										<label><mmr:message messageId="label.viewship.weightpack"/> <s:property
 							value="%{#counterIndex.index+1}" /></label>
 										<div class="controls">
 											<span>:</span>
@@ -1888,7 +1950,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>	
 										<div class="fields">
-										<label>Carrier Dim Package <s:property
+										<label><mmr:message messageId="label.viewship.carrierdimpack"/> <s:property
 							value="%{#counterIndex.index+1}" /></label>
 										<div class="controls">
 											<span>:</span>
@@ -1904,13 +1966,13 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 						</div>
 						</div>
 						<div class="content_table" id="box3" > 
-						<s:include value="add_info_shipping.jsp"></s:include>
+						<jsp:include page="add_info_shipping.jsp"/>
 						</div>
 </div>
 					</div>
 </s:form>					
 					</div>
-				
+			
 </body>
 </html>
 

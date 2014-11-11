@@ -3,6 +3,7 @@ package com.meritconinc.shiplinx.dao;
 
 import java.util.List;
 
+import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
@@ -40,5 +41,6 @@ public interface CustomerDAO{
 	public boolean isWarehouseCustomer(long customerId);
 	public List<CustomerSalesUser> getCustomerSalesInformation(long customerId);
 	public CustomerSalesUser getCustomerSalesUserById(long id);
+	public List<Billduty> getBilldutyList(String locale);
 	
 }

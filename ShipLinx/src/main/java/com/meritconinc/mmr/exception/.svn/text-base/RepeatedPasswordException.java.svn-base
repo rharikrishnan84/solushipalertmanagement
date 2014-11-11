@@ -1,0 +1,12 @@
+package com.meritconinc.mmr.exception;
+
+public class RepeatedPasswordException extends Exception {
+
+	public RepeatedPasswordException(String string) {
+		 super(string);
+	}
+	
+	public RepeatedPasswordException() {
+		 super();
+	}
+}

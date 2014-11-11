@@ -1,0 +1,116 @@
+package com.meritconinc.mmr.utilities.security;
+
+import org.acegisecurity.Authentication;
+import org.acegisecurity.AuthenticationTrustResolver;
+import org.acegisecurity.AuthenticationTrustResolverImpl;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.userdetails.UserDetails;
+import org.apache.log4j.Logger;
+
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.acegi.CustomUser;
+import com.meritconinc.mmr.service.acegi.UserServiceAdapter;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+
+/**
+ * 
+ * @author Rizwan Merchant
+ * User Access ACEGI related utility methods
+ */
+public class UserUtil {
+	private static final Logger log = Logger.getLogger(UserUtil.class);
+	
+	/**
+	 * Get ACEGI user from ACEGI security context
+	 * This object includes MMR User
+	 */
+	static public UserDetails getSignedInUser() {
+		CustomUser customUser = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			Object obj = auth.getPrincipal();
+			if (obj instanceof CustomUser) {
+				customUser = (CustomUser)obj;
+			}
+		}
+		return customUser;
+	}
+	/**
+	 * Get user name from ACEGI security context
+	 */
+	static public String getSignedInUserName() {
+		String userName = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			Object obj = auth.getPrincipal();
+			if (obj instanceof CustomUser) {
+				CustomUser customUser = (CustomUser)obj;
+				User user = (User)customUser.getUserInfo();
+				userName = user.getUsername();
+			}
+			else {
+				userName = (String)obj;
+			}
+		}
+		return userName;
+	}
+	/**
+	 * Get MMR user from ACEGI security context
+	 */
+	static public User getMmrUser() {
+		User mmrUser = null;
+		
+		CustomUser customUser = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			Object obj = auth.getPrincipal();
+			if (obj != null) {
+				if (obj instanceof CustomUser) {
+					customUser = (CustomUser)obj;
+					mmrUser = (User)customUser.getUserInfo();
+				}
+			}
+		}
+		return mmrUser;
+	}
+	/**
+	 * Reload user in ACEGI security context
+	 * Reloads user state from database
+	 * Returns refreshed ACEGI user
+	 */
+	static public UserDetails reloadUserContext (String userName) {
+		UserDetails userDetails = null;
+		UserServiceAdapter userServiceAdapter = (UserServiceAdapter)MmrBeanLocator.getInstance().findBean("userDetailsService");
+		userDetails = userServiceAdapter.loadUserByUsername(userName);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authR = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+		securityContext.setAuthentication(authR);
+		SecurityContextHolder.setContext(securityContext);
+		return userDetails;
+	}
+	/**
+	 * Set ACEGI security context with new MMR user
+	 */
+	static public void setMmrUser(User user) {
+		CustomUser customUser = (CustomUser)getSignedInUser();
+		customUser.setUserInfo(user);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		Authentication authR = new UsernamePasswordAuthenticationToken(customUser, null, customUser.getAuthorities());
+		securityContext.setAuthentication(authR);
+		SecurityContextHolder.setContext(securityContext);
+	}
+	
+	static public boolean isUserRemembered() {
+		boolean ret = false;
+		AuthenticationTrustResolver resolver = new AuthenticationTrustResolverImpl();
+		SecurityContext ctx = SecurityContextHolder.getContext();
+		
+		if (ctx != null) {
+			Authentication auth = ctx.getAuthentication();
+			ret = (resolver.isRememberMe(auth))?true:false;
+		}
+		return ret;
+	}
+}

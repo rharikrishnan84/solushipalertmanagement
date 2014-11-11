@@ -1305,4 +1305,5 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 					
 					return (List)getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
 				}
+				
 }

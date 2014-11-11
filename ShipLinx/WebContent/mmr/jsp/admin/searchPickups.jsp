@@ -164,7 +164,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 					<div class="cont_hdr_title" id="srch_crtra"><mmr:message messageId="label.search.pickup"/></div>
 					<div class="form_buttons" >
 						<a href="javascript: goToCreatePickup()"><mmr:message messageId="label.create.pickup"/></a>
-						<a href="javascript: searchShipment()">Search</a>							
+						<a href="javascript: searchShipment()"><mmr:message messageId="label.searchpickup.search"/></a>							
 					</div>
 				</div>
 			</div>
@@ -198,7 +198,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 					</div>
 					
 					<div class="fields">
-						<label>Carrier Confirmation</label>
+						<label><mmr:message messageId="label.searchpickup.carrierconfirmation"/> </label>
 						<div class="controls"><span>:</span>
 							<s:textfield  name="pickup.confirmationNum" />
 						</div>
@@ -241,7 +241,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 			</div>	
 		
 		<div id="formResult">
-		   <s:include value="list_pickups.jsp"></s:include>
+		  <jsp:include page="list_pickups.jsp"/>
 		   
 		
 		</div>

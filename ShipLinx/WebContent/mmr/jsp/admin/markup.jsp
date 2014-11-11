@@ -429,11 +429,11 @@ display:none;
 	<div class="content_body">
        <div class="content_table">
         <div class="content_header">
-         <div class="cont_hdr_title">Markups</div>
+         <div class="cont_hdr_title"><mmr:message messageId="label.heading.markups"/></div>
 		 <div class="cont_hdrtitle_s"><s:property value="%{markup.customerBusName}"/></div>		 
          <div class="form_buttons">
-          <a href="javascript: addMarkup()">Add New</a>
-          <a href="javascript: defaultmarkup('<s:property value="%{markup.customerId}"/>')">Reset</a>
+          <a href="javascript: addMarkup()"><mmr:message messageId="btn.addnew"/></a>
+          <a href="javascript: defaultmarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.btn.reset"/></a>
 		 
           <a href="javascript: searchMarkup()"><mmr:message messageId="label.search.btn.search"/></a> 
          </div>
@@ -552,19 +552,19 @@ display:none;
 				</div>
 			
 				<div id="srchusr_results">
-					<div id="srchusr_res"><span>Carrier Markups</span></div>
+					<div id="srchusr_res"><span><mmr:message messageId="label.heading.carriermarkup"/></span></div>
 				<!--<img src="<s:url value="/mmr/images/panelResults_top.png" includeContext="true" />" style="margin-left: 52px;margin-top: 16px;width: 853px;position: relative;bottom: 30px;height:31px;" alt="logo"> 	-->
 					<div class="form_buttons">
-					<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+					<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
 						<!--<input type="button" value="EDIT" onclick="editMarkup();" />
 						<input type="button" value="DELETE" onclick="deleteMarkup();" />
 						<input type="button" value="UPLOAD" onclick="uploadMarkup();" />-->
-						<li><a href="#" onclick="editMarkup();">APPLY ALL</a></li>
-						<li><a href="#" onclick="deleteMarkup();">DELETE</a></li>
-						<li><a href="#" onclick="uploadMarkup();">UPLOAD</a></li>
-						 <li><a href="javascript: saveMarkupList()">Save</a></li>
+						<li><a href="#" onclick="editMarkup();"><mmr:message messageId="label.list.applyall"/></a></li>
+						<li><a href="#" onclick="deleteMarkup();"><mmr:message messageId="label.list.delete"/></a></li>
+						<li><a href="#" onclick="uploadMarkup();"><mmr:message messageId="menu.upload"/></a></li>
+						 <li><a href="javascript: saveMarkupList()"><mmr:message messageId="label.propertylist.save"/></a></li>
 						 </ul>
 					</div>
 				</div>
@@ -575,20 +575,20 @@ display:none;
     <thead>
 	<tr height="25px">
 	<th ><input id="check_all" type="checkbox" /></th>
-	<th>ID</th>
-	<th>CARRIER</th>
-	<th>SERVICE</th>
-	<th><span style="width:60px !important; float:left;">OCO</span></th>
-	<th><span style="width:60px !important; float:left;">DCO</span></th>
+	<th><span style="width:40px !important; float:left;"><mmr:message messageId="label.ghead.id"/></span></th>
+	<th><mmr:message messageId="label.ghead.carrier"/></th>
+	<th><mmr:message messageId="label.ghead.service"/></th>
+	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.oco"/></span></th>
+	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.dco"/></span></th>
 
-	<th>TYPE</th>
-	<th><span style="width:60px !important; float:left;">FROM</span></th>
-	<th><span style="width:60px !important; float:left;">TO</span></th>
+	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.type"/></span></th>
+	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.from"/></span></th>
+	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.to"/></span></th>
 
-<th><span style="width:60px !important; float:left;">VARIABLE</span></th>
+<th><span style="width:82px !important; float:left;"><mmr:message messageId="label.ghead.variable"/></span></th>
 	<th style="text-align:right;padding-right:18px">%</th>
 	<th style="text-align:right;padding-right:18px">$</th>
-	<th>INACTIVE</th>
+	<th><span style="width:82px !important; float:left;"><mmr:message messageId="label.ghead.inactive"/></span></th>
 	</tr>
 	</thead>	
 	<tbody>

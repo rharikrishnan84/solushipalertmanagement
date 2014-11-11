@@ -50,5 +50,6 @@ public interface MenusDAO {
   public List<MenuItemVO> getGroupMenusForIdByLevel(int menuId, String level,
       Collection<String> roles, String locale);
 
-  public LocaleVO getLanguageByUserName(String user); 
+  public LocaleVO getLanguageByUserName(String user);
+  public MenuItemVO getWelcomeMenuBylocale(String locale);
 }

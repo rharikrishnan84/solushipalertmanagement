@@ -438,7 +438,21 @@
 	}
 // End Autocomplete Script		
 </script>
-
+<script>
+		$(document).ready(function(){
+			
+		$('#img_get_rates_quote').click(function(){
+				$('#loader').css('display','block');
+				$('#loaderImg').css('background-image','url("../mmr/images/ajax-loader2.gif")');
+				$('#loaderImg').css('display','block');
+				
+		});
+		});
+	</script> 
+	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000;"> 
+    </div>
+</div>
 <div id="messages">
 	<jsp:include page="../common/action_messages.jsp"/>
 </div>
@@ -448,9 +462,9 @@
 	<div class="content_body" >	
 							<div class="content_table" id="quote_address_tbl"> 
 								<div class="content_header">
-									<div class="cont_hdr_title">Ship From</div>
+									<div class="cont_hdr_title"><mmr:message messageId="label.quote.shipfrom"/></div>
 									<div class="form_buttons">
-										<a href="javascript:backtoship();">Switch to Ship Mode</a>	
+										<a href="javascript:backtoship();"><mmr:message messageId="label.quote.switchto"/></a>	
 									</div>
 									
 								</div>		
@@ -485,7 +499,7 @@
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls" id="stateid">
-												<s:include value="../admin/shippingFromProvienceList.jsp"/>
+												<jsp:include page="../admin/shippingFromProvienceList.jsp"/>
 											</div>
 										</div>
 
@@ -498,7 +512,7 @@
 			<div class="content_body" >	
 							<div class="content_table" > 
 								<div class="content_header">
-									<div class="cont_hdr_title">Ship To</div>
+									<div class="cont_hdr_title"><mmr:message messageId="label.quote.shipto"/></div>
 									
 								</div>		
 								<div class="cont_data_body">
@@ -531,7 +545,7 @@
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.state"/></label>
 											<div class="controls" id="stateid2">
-												<s:include value="../admin/shippingToProvienceList.jsp"/>
+												<jsp:include page="../admin/shippingToProvienceList.jsp"/>
 											</div>
 										</div>
 
@@ -544,7 +558,7 @@
 				<div class="content_body" >	
 							<div class="content_table" id="pckg_tbl"> 
 								<div class="content_header" id="choose_pckg">
-									<div class="cont_hdr_title">Service</div>
+									<div class="cont_hdr_title"><mmr:message messageId="label.quote.service"/></div>
 								</div>		
 								<div class="cont_data_body">
 									<div class="rows">
@@ -606,7 +620,7 @@
 										</div>
 										</s:else>
 										<div class="fields">
-										<label>Unit Of Measure</label>
+										<label><mmr:message messageId="label.quote.uom"/>  </label>
           								 <div class="controls"><span>:</span>
           								 <s:select id="measure" name="shippingOrder.unitmeasure"  list="#session.UOM" listKey="unitOfMeasureId" listValue="unitOfMeasure" disabled="false"/></td>
           								 </div>
@@ -624,7 +638,7 @@
 												<s:textfield id="shippingOrder.dutiableAmount" name="shippingOrder.dutiableAmount"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{#session.shippingOrder.dutiableAmount}"/>
 											</div>
 										</div>
-										<div class="fields">
+										<div class="fieldsl">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.holdForPickupRequired"/></label>
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.holdForPickupRequired" value="%{#session.shippingOrder.holdForPickupRequired}" />
@@ -667,7 +681,7 @@
 												<s:checkbox name="shippingOrder.fromTailgate"  value="shippingOrder.fromTailgate"/>
 											</div>
 										</div>
-										<div class="fields" id="hide_this_two_quote">
+										<div class="fieldsl" id="hide_this_two_quote">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.toTailgate"/></label>
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.toTailgate" value="%{#session.shippingOrder.toTailgate}" />
@@ -688,7 +702,7 @@
 </div>
 
 <div id="pckg_div_quote" >
-<s:include value="packageDimention.jsp"/>
+<jsp:include page="packageDimention.jsp"/>
 </div>
 
 <div class="content">
@@ -696,7 +710,7 @@
 	<div class="content_table" style=" border-top:1px solid #555555; padding:5px 0px;">
 		<div class="form_buttons id="" style="width:300px;">
 			<div class="form_buttons" id="img_get_rates_quote">
-				<a href="javascript:getRates()" onclick="return (validateOrder(3,1))"style="">Get Rates</a>	
+				<a href="javascript:getRates()" onclick="return (validateOrder(3,1))"style=""><mmr:message messageId="btn.getrates"/></a>	
 			</div>
 		</div>
 	</div>

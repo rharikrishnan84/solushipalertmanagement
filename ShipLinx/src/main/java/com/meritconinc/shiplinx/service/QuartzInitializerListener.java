@@ -39,11 +39,11 @@ public class QuartzInitializerListener implements ServletContextListener {
 			crt.setName("Trigger"); 
 			//0 m H
 			
-			crt.setCronExpression("0 55 19 * * ?");
+			crt.setCronExpression("0 52 01 * * ?");
 			crt.setTimeZone(TimeZone.getTimeZone("EST"));
 			//crt.setCronExpression("0 11 15 * * ?");
 			log.debug("TIME "+crt.getTimeZone().getDisplayName());
-			
+					
 			scheduler.start();
 			scheduler.scheduleJob(job, crt);
 

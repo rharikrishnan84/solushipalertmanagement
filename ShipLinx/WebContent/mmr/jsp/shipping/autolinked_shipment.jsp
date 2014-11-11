@@ -252,13 +252,15 @@
 <div class="content_table" style="background-color:#FFF;" > 
 	<div class="form-container">		
 		<div id="srchusr_results">
-		<div id="srchusr_res"><span>Auto Linked Shipments</span></div>
+		<div id="srchusr_res"><span><mmr:message messageId="label.autolinked.shipments"/></span></div>
 		<div class="form_buttons">
-		<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+        <a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
+		<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
+		
 			<ul id="actionmenu">
-          <li><a href="javascript: reassignCustomer()" title="<mmr:message messageId="label.reassign.customer"/>" >RE-ASSIGN</a> </li>
-          <li><a href="javascript: acceptShipments1()"title="<mmr:message messageId="label.accept.customer"/>" >ACCEPT</a></li>
+         <li><a href="javascript: reassignCustomer()" title="<mmr:message messageId="label.reassign.customer"/>" ><mmr:message messageId="label.autolinked.reassign"/></a> </li>
+         <li><a href="javascript: acceptShipments1()"title="<mmr:message messageId="label.accept.customer"/>" ><mmr:message messageId="label.autolinked.accept"/></a></li>
+          
 </ul>		  
          </div>
 		</div>			
@@ -266,14 +268,14 @@
     <thead>
 		<tr>
 			<th style="width:30px; text-align:center;"><input type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<th>Company</strong></th>
-			<th>Order #</th>
-			<th>Tracking #</th>
-			<th>Date Created</th>
-			<th>Service</th>
-			<th>Total</th>
-			<th>Addresses</th>
-			<th>Billing Status</th>
+			<th><mmr:message messageId="label.autolinked.company"/></strong></th>
+			<th><mmr:message messageId="label.autolinked.order"/></th>
+			<th><mmr:message messageId="label.autolinked.tracking"/></th>
+			<th><mmr:message messageId="label.autolinked.datecreated"/></th>
+			<th><mmr:message messageId="label.autolinked.service"/></th>
+			<th><mmr:message messageId="label.autolinked.total"/></th>
+			<th><mmr:message messageId="label.autolinked.addresses"/></th>
+			<th><mmr:message messageId="label.autolinked.billingstatus"/></th>
 		</tr>
 	</thead>
 	<tbody>

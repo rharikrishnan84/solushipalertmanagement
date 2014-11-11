@@ -194,8 +194,8 @@ window.onload = function() {
 									<!--<s:submit onclick="submitform()" value="SAVE"/>
 									<s:submit onclick="resetform()" value="RESET"/>-->
 									
-									<a href="#" onclick="submitform()">SAVE</a> 
-									<a href="#" onclick="resetform()">RESET</a> 
+									<a href="#" onclick="submitform()"><mmr:message messageId="label.btn.save"/></a> 
+									<a href="#" onclick="resetform()"><mmr:message messageId="label.btn.reset"/></a> 
 								</div>
 							</div>
 							<div class="cont_data_body">
@@ -255,7 +255,7 @@ window.onload = function() {
 										<div  class="controls"><span>:</span><s:textfield  key="user.userGLOrRefNumber" name="user.userGLOrRefNumber"/></div>
 									</div>
 									<div class="fields">
-									<label>Unit Of Measure</label>
+									<label><mmr:message messageId="label.adduser.unitmeasure"/></label>
 									<div  class="controls"><span>:</span><s:select id="measure" name="user.unitmeasure" value="%{user.unitmeasure}"  list="#{'1':'Imperial(Pounds/Inches)','2':'Metric(Kilograms/Centimetres)'}"  disabled="false"/></div>
 									</div>
 									
@@ -264,7 +264,6 @@ window.onload = function() {
 										<label><mmr:message messageId="label.session.timeout"/> </label>
 										<div class="controls"><span>:</span><s:textfield  key="user.sessionTimeout" name="user.sessionTimeout" id="user_timeout"  onkeypress="return typenumbers(event,\'0123456789\')"/></div>
 									</div>
-									
 								</div>
 								<div class="rows" >
 									<p id="rules" style="color: #000066; font-size: 12px; font-weight: bold;"></p>
@@ -321,13 +320,13 @@ window.onload = function() {
 							<div class="cont_data_body">
 							<s:if test="#session.edit == 'true'">
 								<div class="rows">
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.copies.shipping.label"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_copies"   name="user.printNoOfLabels" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{user.printNoOfLabels}"/>
 										</div>
 									</div>
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.copies.customsinvoice"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="customsinv_copies"   name="user.printNoOfCI" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{user.printNoOfCI}"/>
@@ -336,13 +335,13 @@ window.onload = function() {
 									
 								</div>
 								<div class="rows">
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.preferred.label.size"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_size"  name="user.preferredLabelSize" list="{'--Select--','4 x 6','8 x 11'}"/>
 										</div>
 									</div>
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.auto.print"/> </label>
 										<div class="controls"><s:checkbox key="user.autoPrint" name="user.autoPrint" /></div>
 									</div>
@@ -410,7 +409,7 @@ window.onload = function() {
 										</div>
 									</div>
 									<div class="fieldsl">
-										<label><mmr:message messageId="label.addressbook.defaultToAddress"/> </label>
+										<label style="width:200px !important;"><mmr:message messageId="label.addressbook.defaultToAddress"/> </label>
 										<div class="controls"><span>:</span>
 										<s:hidden name="user.defaultToAddressId" id="user.defaultToAddressId"/>
 										<s:if test="%{user.defaultToAddressId > 0}">

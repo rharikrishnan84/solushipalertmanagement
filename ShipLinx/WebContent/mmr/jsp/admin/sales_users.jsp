@@ -313,6 +313,11 @@ var pslist = pslists.split(",");
 		}
 		
 	</script>
+	<style>
+	.fieldsvvs .controls input {
+		width: 113px !important;
+	}
+	</style>
 
 
 <div id="messages">
@@ -324,20 +329,20 @@ var pslist = pslists.split(",");
        <div class="content_table">
         <div class="content_header">
          <div class="cont_hdr_title" ><!--<mmr:message messageId="label.manage.sales.users"/>-->
-			Customer Sales Team
+			<mmr:message messageId="label.heading.customersalesteam"/>
 		 </div>
 		 <!--<div class="cont_hdrtitle_s"><s:property value="customer.name"/></div>		 -->
          <div class="form_buttons" id="sales_user_bck">
          <a href="searchcustomer.action">
-		 <!--<mmr:message messageId="label.back.customer.edit" />-->back
+		 <mmr:message messageId="btn.back" /> 
 		 </a>
-		  <a href="#" onclick=" checkToAdd();">Add</a>
+		  <a href="#" onclick=" checkToAdd();"><mmr:message messageId="btn.add"/></a>
          </div>
         </div>
         <div class="cont_data_body">
          <div class="rows">
           <div class="fields">
-           <label>Sales Agent</label>
+           <label><mmr:message messageId="label.salesuser.salesagent"/></label>
            <div class="controls"><span>:</span>
             <s:select cssClass="text_01_combo_big" listKey="username" listValue="fullName" 
 							name="customer.salesAgent1" headerKey=""  headerValue="---Select---" list="salesUsers" 
@@ -345,19 +350,19 @@ var pslist = pslists.split(",");
            </div>
           </div>
           <div class="fieldsvvs" id="stateid">
-           <label>SPD %</label>
+           <label><mmr:message messageId="label.salesuser.spd"/> %</label>
            <div class="controls"><span>:</span>
           <s:textfield id="new_comm_percentage_ps" name="new_comm_percentage_ps"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
            </div>
           </div>
           <div class="fieldsvvs">
-           <label>LTL %</label>
+           <label><mmr:message messageId="label.salesuser.ltl"/> %</label>
            <div  class="controls"><span>:</span>
            <s:textfield id="new_comm_percentage_pp" name="new_comm_percentage_pp"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
            </div>
           </div>
           <div class="fieldsvvs">
-           <label>CHB %</label>
+           <label><mmr:message messageId="label.salesuser.chb"/> %</label>
            <div class="controls"><span>:</span>
            	<s:textfield id="new_comm_percentage_chb" name="new_comm_percentage_chb"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
            </div>
@@ -379,14 +384,14 @@ var pslist = pslists.split(",");
 				<div id="srchusr_results">	
 				
 				<div id="srchusr_res">
-				<span>Customer Sales</span>
+				<span><mmr:message messageId="label.heading.customersales"/></span>
 				</div>
 
 
 
 					<div class="form_buttons">
-						<a href="#" onclick="updateSalesUser();">UPDATE</a>
-						<a href="#" onclick="deleteSaleUser();">DELETE</a>
+						<a href="#" onclick="updateSalesUser();"><mmr:message messageId="btn.update"/></a>
+						<a href="#" onclick="deleteSaleUser();"><mmr:message messageId="btn.delete"/></a>
 					</div>
 				</div>
 				
@@ -398,9 +403,9 @@ var pslist = pslists.split(",");
 	<th ><input id="check_all" type="checkbox" name="salesUseCheckBox"/></th>
 	<th style="text-align:left; padding-left:10px;">#</th>
 	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesAgent"/></th>
-	<th style="text-align:left; padding-left:10px;"><!--<mmr:message messageId="label.commission.percentage"/>-->SPD %</th>
-	<th style="text-align:left; padding-left:10px;"><!--<mmr:message messageId="label.commission.percentage.pp"/>-->LTL %</span></th>
-	<th style="text-align:left; padding-left:10px;"><!--<mmr:message messageId="label.commission.percentage.ps"/>-->CHB %</th>	
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.spd"/> %</th>
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.ltl"/> %</th>
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.chb"/> %</th>	
 	</tr>
 	</thead>	
 	<tbody>

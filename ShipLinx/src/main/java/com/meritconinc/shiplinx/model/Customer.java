@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 
 public class Customer {
@@ -68,6 +69,8 @@ public class Customer {
 	
 	private boolean reference=false;
 	
+	private User user;
+	
 	public String getApcontactName() {
 		return apcontactName;
 	}
@@ -82,6 +85,14 @@ public class Customer {
 
 	public void setApPhone(String apPhone) {
 		this.apPhone = apPhone;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	//this is to accommodate IC requirement to add an additional handling fee for a specific customer. Should allow generalization of this feature to all businesses  

@@ -220,7 +220,7 @@
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="label.report.commission"/></div>
 								<div class="form_buttons" >	
-									<a href="javascript: updateInvoiceStatus()">UPDATE STATUS</a>
+									<a href="javascript: updateInvoiceStatus()"><mmr:message messageId="label.commission.updatestatus"/></a>
 									<a href="javascript: submitform()"><mmr:message messageId="label.search.btn.search"/></a>
 								</div>
 							</div>		
@@ -263,7 +263,7 @@
 										
 									</s:else>
 									<div class="fields_topdown">
-										<label>Invoice Status</label>
+										<label><mmr:message messageId="label.commssion.invoicestatus" /></label>
 										<div class="controls">
 											<s:select list="#{'30':'Paid (by Customer)', '10':'Unpaid (by Customer)','50':'Paid to Rep'}" name="commission.repPaid"  
 								 id="paymentStatus" value="statusId"/>								
@@ -282,26 +282,26 @@
 
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;">
-	<div id="srchusr_res"><span>Commission Report</span></div>
+	<div id="srchusr_res"><span><mmr:message messageId="label.commission.commissionreport" /> </span></div>
 		<div id="srchinv_results">	
 			<div class="form_buttons">
-				<a href="javascript:pdf()">PDF</a>
+				<a href="javascript:pdf()"><mmr:message messageId="label.commission.pdf" /> </a>
 			</div>
 		</div>
 	<div id="srchinv_result_tbl" >
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
 	<tr height="25px">
-			<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<th>Inv#</th>
-			<th style="width: 175px !important;">Company</strong></th>
-			<th>Date Created</th>
-			<th style="width: 175px !important;text-align:right;padding-right:10px">Commission</strong></th>
-			<th style="text-align:right;padding-right:10px">Amount</th>
+			<th style="width:30px; text-align:left;"><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
+			<th><mmr:message messageId="label.commission.inv" /></th>
+			<th ><span style=" width:100px; float:left;"><mmr:message messageId="label.commission.company" /></span></th>
+			<th ><span style="width: 120px !important;"><mmr:message messageId="label.commission.datecreated" /> </span></th>
+			<th style="width: auto !important;text-align:right;padding-right:10px"> <span style="width: 120px !important; float:left;"><mmr:message messageId="label.commission.commission" /></span></th>
+			<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.commission.amount" /></th>
 			 <s:if test="%{#session.ROLE.contains('busadmin')}">
-			<th style="text-align:right;padding-right:20px"> Cost </th>
+			<th style="text-align:right;padding-right:10px"> <mmr:message messageId="label.commission.cost" /> </th>
 			</s:if>
-			<th>Status</th>
+			<th><span style="padding-right:5px; width:80px; float:left;"><mmr:message messageId="label.commission.status" /></span></th>
 			
 	</tr>
 	</thead>
@@ -352,7 +352,7 @@
 </tbody>
 			<tfoot>
     <tr>
-      <td>Total</td>
+      <td><span style="float:left; width:65px;"><mmr:message messageId="label.commission.total"/></td>
       <td></td>
 	  <td></td>
       <td></td>
@@ -362,11 +362,11 @@
     </tr>
      <tr>
     <td></td>
-    <td>Total SPD</td>
+    <td><mmr:message messageId="label.commission.totalspd"/></td>
       <td><s:text name="format.money" ><s:param name="value" value="%{#totalSpd}" /></s:text></td>
-	  <td>Total LTL </td>
+	 <td><mmr:message messageId="label.commission.totalltl"/>  </td>
       <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalLtl}" /></s:text></td>
-	  <td style="text-align:right;">Total CHB</td>
+	 <td style="text-align:right;"><mmr:message messageId="label.commission.totalchb"/></td>
 	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalChb}" /></s:text></td>
      
     </tr>
@@ -374,7 +374,7 @@
 </table>
 </div>
 <div class="exportlinks"> 
-	Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<mmr:message messageId="label.bottom.exportto"/> : &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="comm.download.action?type=csv"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  <a href="comm.download.action?type=xl"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
  <a href="comm.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>

@@ -6,7 +6,7 @@ public class CustomsInvoice {
 
 	private long id;
 	private long orderId;
-	private String billTo;
+	private String billTo="Consignee";
 	private String billToAccountNum;
 	private Long billToAddressId;
 	private Address billToAddress = new Address();

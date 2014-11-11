@@ -40,6 +40,7 @@ import com.meritconinc.mmr.exception.CardProcessingException;
 import com.meritconinc.mmr.exception.CustomerNameAlreadyTakenException;
 import com.meritconinc.mmr.exception.UsernameAlreadyTakenException;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
+import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.Common;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
@@ -326,7 +327,15 @@ public String execute() throws Exception {
       }
       if (!breturn)
         return INPUT;
-      getService().add(customer, cc);
+      if(code != null){
+    	        User user = userService.getUserByUsercode(code);
+    	        if(user != null){
+    	        customer.setUser(user);
+    	        getService().add(customer, cc);
+    	        }
+    	        }else{
+    	      	  getService().add(customer, cc);
+    	        }
     } catch (UsernameAlreadyTakenException ue) {
       addActionError(getText("error.username.taken"));
       // addActionMessage(getText("error.username.taken"));

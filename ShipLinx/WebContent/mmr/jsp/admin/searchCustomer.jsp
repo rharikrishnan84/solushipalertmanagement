@@ -271,17 +271,17 @@
 	<div class="content_body">
 <div class="content_table" style="background-color:#fff">
 	<div id="srchusr_results">	
-	<div id="srchusr_res"><span>Customer List</span></div>
+	<div id="srchusr_res"><span><label><mmr:message messageId="label.customer.list"/></label></span></div>
 		<div class="form_buttons" style="float:right;">
-			<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
-			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
+            <a href="#" id="actiondown" ><label><mmr:message messageId="label.action"/></label> <span style="font-size:14px;">&#9660;</span></a>
+			<a href="#" id="actionup" ><label><mmr:message messageId="label.action"/></label> <span style="font-size:14px;">&#9650;</span></a>			
 			<ul id="actionmenu">
-			<li><a href="javascript: markupCustomer();" >MARKUP</a></li>
-			<li><a href="#" onclick="editCustomer();">EDIT</a></li>
-			<li><a href="#" onclick="userCustomer();">USER</a></li>
-			<li><a href="#" onclick="carrier();">Carrier Setup</a></li>
-			<li><a href="#" onclick="emailNotify();">Email Customer</a></li>
-			<li><a href="#" onclick="salesUser();">Sales User</a></li>
+			<li><a href="javascript: markupCustomer();" ><label><mmr:message messageId="label.list.markup"/></label></a></li>
+			<li><a href="#" onclick="editCustomer();"><label><mmr:message messageId="label.list.edit"/></label></a></li>
+			<li><a href="#" onclick="userCustomer();"><label><mmr:message messageId="label.list.user"/></label></a></li>
+			<li><a href="#" onclick="carrier();"><label><mmr:message messageId="label.list.carriersetup"/></label></a></li>
+			<li><a href="#" onclick="emailNotify();"><label><mmr:message messageId="label.list.emailcustomer"/></label></a></li>
+			<li><a href="#" onclick="salesUser();"><label><mmr:message messageId="label.list.salesuser"/></label></a></li>
 			</ul>
 		</div>	
 	</div>
@@ -291,12 +291,12 @@
 		<tr style="height:28px; ">
 			<th style="width:30px; text-align:center;"><input id="check_all" type="checkbox" /></th>
 			<th></th>
-			<th style="text-align:left; padding-left:10px;">NAME</th>
-			<th style="text-align:left;padding-left:10px;">Account #</th>
-			<th style="text-align:left;padding-left:10px;">Address</th>
-			<th style="text-align:left;padding-left:10px;">Phone#</th>
-			<th style="text-align:left;padding-left:10px;">Email</th>
-			<th style="text-align:left;padding-left:10px;">Status</th>
+			<th style="text-align:left; padding-left:10px;"><label><mmr:message messageId="label.ghead.name"/></label></th>
+			<th style="text-align:left;padding-left:10px;"><label style="width:90px; float:left;"><mmr:message messageId="label.ghead.account"/> #</label> </th>
+			<th style="text-align:left;padding-left:10px;"><label><mmr:message messageId="label.ghead.address"/></label></th>
+			<th style="text-align:left;padding-left:10px; width:80px !important;"><label style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.phone"/> #</label> </th>
+			<th style="text-align:left;padding-left:10px;"><label><mmr:message messageId="label.ghead.email"/></label></th>
+			<th style="text-align:left;padding-left:10px;"><label style="width:65px; float:left;"><mmr:message messageId="label.ghead.status"/></label></th>
 			
 		</tr>
 	</thead>
@@ -313,7 +313,7 @@
 				<td style="text-align: left;" <span title="<s:property value="name"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="name"/></div></td>
 				  <td><s:property value="accountNumber"/></td>
 				  <td style="text-align: left;"<span title="<s:property value="address.longAddress2"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="address.longAddress2"/></div></td>
-				  <td style="text-align: left;" <span title="<s:property value="name"/>"></span><div style="width:100px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="address.phoneNo"/></div></td>
+				  <td style="text-align: left;" <span title="<s:property value="name"/>"></span><div style="width:80px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="address.phoneNo"/></div></td>
 				    
 					 <td><s:property value="address.emailAddress"/></td>
 					  <td><s:property value="active"/></td>
@@ -323,7 +323,7 @@
 </tbody>
 </table>
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
-	Export to: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="customer.download.action?type=csv"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  <a href="customer.download.action?type=xl"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
  <a href="customer.download.action?type=xml"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
