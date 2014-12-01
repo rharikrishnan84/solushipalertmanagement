@@ -29,17 +29,29 @@ public class Charge implements Serializable {
   private int costcurrency;
   private int chargecurrency;
   private BigDecimal exchangerate;
+  private Double chargeInLocalCurrency;
+  private Double costInLocalCurrency;
+  private Double tariffInLocalCurrency;
 //Written By Mohan R
   private int chargeGroupId;
   private long slaveServiceId;
   private String slaveCarrierName;
   private boolean isTax;
-  
-  public boolean getIsTax() {
+  private int calculateTax;
+
+public int getCalculateTax() {
+	return calculateTax;
+}
+
+public void setCalculateTax(int calculateTax) {
+	this.calculateTax = calculateTax;
+}
+
+public boolean getIsTax() {
 	return isTax;
 }
 
-public void setTax(boolean isTax) {
+public void setIsTax(boolean isTax) {
 	this.isTax = isTax;
 }
 
@@ -378,5 +390,27 @@ public void setChargeGroupId(int chargeGroupId) {
 	  public void setExchangerate(BigDecimal exchangerate) {
 	    this.exchangerate = exchangerate;
 	  }
-	  
+	  public Double getChargeInLocalCurrency() {
+		  return chargeInLocalCurrency;
+	  }
+
+	  public void setChargeInLocalCurrency(Double chargeInLocalCurrency) {
+		  this.chargeInLocalCurrency = chargeInLocalCurrency;
+	  }
+
+	  public Double getCostInLocalCurrency() {
+		  return costInLocalCurrency;
+	  }
+
+	  public void setCostInLocalCurrency(Double costInLocalCurrency) {
+		  this.costInLocalCurrency = costInLocalCurrency;
+	  }
+
+	  public Double getTariffInLocalCurrency() {
+		  return tariffInLocalCurrency;
+	  }
+
+	  public void setTariffInLocalCurrency(Double tariffInLocalCurrency) {
+		  this.tariffInLocalCurrency = tariffInLocalCurrency;
+	  }
 }

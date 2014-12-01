@@ -75,8 +75,6 @@ import com.meritconinc.shiplinx.carrier.purolator.ws.shipping.proxy.WeightUnit;
 import com.meritconinc.shiplinx.carrier.utils.PurolatorException;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
-import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
-import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 
@@ -380,7 +378,8 @@ public class ShippingServiceClient {
 		addr.setCompany(objectFactory.createAddressCompany(setWithMaxLength(shipFromAddress.getAbbreviationName(),30)));
 		
 		
-		addr.setStreetNumber(".");
+//		addr.setStreetNumber(".");
+		addr.setStreetNumber("b20");
 
 		if(shipFromAddress.getAddress1()!=null){
 			if(shipFromAddress.getAddress1().length()<=30) //max allowed length for this field is 25
@@ -886,7 +885,7 @@ public class ShippingServiceClient {
 			option.setID("ExpressChequeAmount");
 			option.setValue(String.valueOf(order.getCODValue()));
 			arr.getOptionIDValuePair().add(option);
-			optInf.setExpressChequeAddress(objectFactory.createAddress(setReceiverAddress()));
+			optInf.setExpressChequeAddress(objectFactory.createOptionsInformationExpressChequeAddress(setSenderAddress()));
 		}
 
 		optInf.setOptions(arr); 

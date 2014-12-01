@@ -48,11 +48,13 @@ import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ServiceAvailabilityWebServiceClient;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
+import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CreditCard;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
@@ -89,10 +91,12 @@ public class CustomerManagerAction extends CustomerManagerBaseAction implements 
   private List<Province> provinces;
 
   private String signupJSP;
-private long customerId;
-private String role;
+  private long customerId;
+  private String role;
+  private ShippingDAO shippingDAO;
+  private List<CurrencySymbol> currencyList;
 
-private CustomerSalesUser custSalesUser;
+  private CustomerSalesUser custSalesUser;
   public CustomerSalesUser getCustSalesUser() {
 	return custSalesUser;
 }
@@ -201,6 +205,8 @@ public String execute() throws Exception {
 	    } catch (Exception e) {
 	      addActionError(getText("error.timeZones"));
 	    }
+	    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
+	    currencyList=shippingDAO.getallCurrencySymbol();
 	    return SUCCESS;
 	  }
 
@@ -1283,5 +1289,15 @@ public String execute() throws Exception {
 					public void setRole(String role) {
 						this.role = role;
 					}
+
+					public List<CurrencySymbol> getCurrencyList() {
+						return currencyList;
+					}
+
+					public void setCurrencyList(List<CurrencySymbol> currencyList) {
+						this.currencyList = currencyList;
+					}
+					
+	   				
 
 }

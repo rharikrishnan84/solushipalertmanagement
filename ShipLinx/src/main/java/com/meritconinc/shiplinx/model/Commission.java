@@ -24,6 +24,8 @@ public class Commission {
 		private double totalSPD;
 		private double totalLTL;
 		private double totalCHB;
+		private String currency;
+		private String invoiceCurrency;
 		public double getTotalSPD() {
 			return totalSPD;
 		}
@@ -143,6 +145,18 @@ public class Commission {
 		}
 		public void setToDate_web(String toDate_web) {
 			this.toDate_web = toDate_web;
+		}
+		public String getCurrency() {
+			return currency;
+		}
+		public void setCurrency(String currency) {
+			this.currency = currency;
+		}
+		public String getInvoiceCurrency() {
+			return invoiceCurrency;
+		}
+		public void setInvoiceCurrency(String invoiceCurrency) {
+			this.invoiceCurrency = invoiceCurrency;
 		}
 		
 }

@@ -12,6 +12,7 @@
 	<style name="Arial_Normal" isDefault="true" fontName="SansSerif" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<style name="Arial_Bold" fontName="SansSerif" fontSize="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<style name="Arial_Italic" fontName="SansSerif" fontSize="12" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Oblique" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="currencySymbol" class="java.lang.String"/>
 	<field name="charge" class="java.lang.Double"/>
 	<field name="name" class="java.lang.String"/>
 	<variable name="totalCharge" class="java.lang.Double" calculation="Sum">
@@ -62,7 +63,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
+			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-2" style="Arial_Regular_7" positionType="Float" mode="Transparent" x="164" y="0" width="64" height="13" forecolor="#000000" backcolor="#FFFFFF">
 					<printWhenExpression><![CDATA[$F{charge} > 0]]></printWhenExpression>
 				</reportElement>
@@ -75,7 +76,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{charge}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($F{charge})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -91,12 +92,12 @@
 				</textElement>
 				<text><![CDATA[Sub Total:]]></text>
 			</staticText>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="164" y="2" width="65" height="13" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{totalCharge}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($V{totalCharge})]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="187" y="1" width="41" height="1"/>
@@ -112,12 +113,12 @@
 				</textElement>
 				<text><![CDATA[TOTAL:]]></text>
 			</staticText>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement style="Arial_Regular_7" positionType="Float" x="164" y="3" width="65" height="13" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{totalCharge}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($V{totalCharge})]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="187" y="1" width="41" height="1"/>

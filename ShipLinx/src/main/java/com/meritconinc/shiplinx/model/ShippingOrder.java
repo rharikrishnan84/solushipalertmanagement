@@ -249,7 +249,16 @@ public class ShippingOrder implements Serializable {
   private List<Rating> fromRatingList;
   private List<Rating> toRatingList;
   private boolean addChargeFromAdmin = false;
-  public boolean isAddChargeFromAdmin() {
+  private int saveShipmet;
+  public int getSaveShipmet() {
+	return saveShipmet;
+}
+
+public void setSaveShipmet(int saveShipmet) {
+	this.saveShipmet = saveShipmet;
+}
+
+public boolean isAddChargeFromAdmin() {
   	return addChargeFromAdmin;
   }
   
@@ -1462,7 +1471,7 @@ public void setToProvinceName(String toProvinceName) {
     double weight = 0;
     if (this.getPackages() != null) {
       for (Package p : this.getPackages()) {
-    	  if(p.getWeight().intValue()<1){
+    	  if(p.getWeight() != null&&p.getWeight().intValue()<1){
     		  p.setWeight(new BigDecimal(1));
     	  }
         if (p.getWeight() != null)

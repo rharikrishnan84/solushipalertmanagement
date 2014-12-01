@@ -58,7 +58,69 @@ public class Invoice {
 	private String salesRep;
 	private int repPaid;
 	private int[] repPaidList = new int[10];
-	
+	private double totalLTL;
+	private double totalCHB;
+	private double totalSPD;
+	private List<String> calculateTaxId; 
+	private double breakdownTotal;
+	private String emailType;
+	private String invoiceCurrencySymbol;
+	public String getInvoiceCurrencySymbol() {
+		return invoiceCurrencySymbol;
+	}
+
+	public void setInvoiceCurrencySymbol(String invoiceCurrencySymbol) {
+		this.invoiceCurrencySymbol = invoiceCurrencySymbol;
+	}
+
+	public double getBreakdownTotal() {
+		return breakdownTotal;
+	}
+
+	public void setBreakdownTotal(double breakdownTotal) {
+		this.breakdownTotal = breakdownTotal;
+	}
+
+	public String getEmailType() {
+		return emailType;
+	}
+
+	public void setEmailType(String emailType) {
+		this.emailType = emailType;
+	}
+
+	public List<String> getCalculateTaxId() {
+		return calculateTaxId;
+	}
+
+	public void setCalculateTaxId(List<String> calculateTaxId) {
+		this.calculateTaxId = calculateTaxId;
+	}
+
+	public double getTotalLTL() {
+		return totalLTL;
+	}
+
+	public void setTotalLTL(double totalLTL) {
+		this.totalLTL = totalLTL;
+	}
+
+	public double getTotalCHB() {
+		return totalCHB;
+	}
+
+	public void setTotalCHB(double totalCHB) {
+		this.totalCHB = totalCHB;
+	}
+
+	public double getTotalSPD() {
+		return totalSPD;
+	}
+
+	public void setTotalSPD(double totalSPD) {
+		this.totalSPD = totalSPD;
+	}
+
 	public int getRepPaid() {
 		return repPaid;
 	}

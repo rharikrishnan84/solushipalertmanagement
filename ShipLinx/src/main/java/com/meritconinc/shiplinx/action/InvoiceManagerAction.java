@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.CreditCard;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceCharge;
@@ -58,10 +60,11 @@ import com.meritconinc.shiplinx.service.InvoiceManager;
 import com.meritconinc.shiplinx.service.ShippingService;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
 
 public class InvoiceManagerAction extends BaseAction implements Preparable, ServletRequestAware,
-    ServletResponseAware {
+    ServletResponseAware{
   private static final long serialVersionUID = 250927861;
   private List<ShippingOrder> orders;
   private List<Charge> chargeList;
@@ -84,7 +87,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<Invoice> selectedInvoices;
   private List<User> salesUsers;
   private UserService userService;
-
+  private List<CurrencySymbol> currencyList;
   private List<Boolean> select;
   private CreditCard creditCard;
   private List<ARTransaction> arTransactions;
@@ -104,7 +107,28 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<String> InvoiceIdList = new ArrayList<String>();
   private List<Commission> commissions;
   private String paymentStatus;
-  public List<Invoice> getInvoicesNew() {
+  private List<Invoice> invoiceBreakdown;
+  private List<Invoice> invoiceBreakdownList;
+  Invoice invoiceModel = new  Invoice();
+  
+
+public List<Invoice> getInvoiceBreakdown() {
+	return invoiceBreakdown;
+}
+
+public void setInvoiceBreakdown(List<Invoice> invoiceBreakdown) {
+	this.invoiceBreakdown = invoiceBreakdown;
+}
+
+public List<Invoice> getInvoiceBreakdownList() {
+	return invoiceBreakdownList;
+}
+
+public void setInvoiceBreakdownList(List<Invoice> invoiceBreakdownList) {
+	this.invoiceBreakdownList = invoiceBreakdownList;
+}
+
+public List<Invoice> getInvoicesNew() {
 	  	return invoicesNew;
 	  }
 	  
@@ -237,6 +261,10 @@ public String getSalesRep() {
   }
 
   public String execute() throws Exception {
+	  String method = request.getParameter("method");
+	  if(method!=null){
+		  return searchInvoice();
+	  }
 	  getSession().remove("invoice");
 	  Customer c = new Customer();
 	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
@@ -310,8 +338,72 @@ public String getSalesRep() {
 	  				      this.statusList = invoiceManager.getInvoiceStatusList();
 	  				      return "paylist";
 	  				    }
-	  				    return SUCCESS;
-  }
+	  		  /// Exchange Rate 
+	  		List<Charge> chargesList = new ArrayList<Charge>();
+	  			    double invoiceAmt = 0.0;
+	  			    double invoiceCost = 0.0;
+	  			    double invoiceTax = 0.0;
+	  			    int currencyId=0;
+	  			    for(Invoice invoiceResult : invoices){
+	  			      chargesList =  invoiceManager.getChargeExchangeRateByInvoiceId(invoiceResult.getInvoiceId());
+	  			    currencyId = chargesList.get(0).getChargecurrency();
+	  			    for(Charge charge : chargesList){
+	  			        
+	  			    	if(charge.getExchangerate() != null && !charge.getExchangerate().equals(0.0) && !charge.getExchangerate().equals("")){
+	  			    	invoiceAmt += charge.getCharge() * charge.getExchangerate().doubleValue();
+	  			        invoiceCost += charge.getCost() * charge.getExchangerate().doubleValue();
+	  			          if(charge.getIsTax()){
+	  			            invoiceTax += charge.getCharge() * charge.getExchangerate().doubleValue();	       
+	  			          }
+	  			    	}else{
+	  			    		double exRate = 1.0;
+	  			    		invoiceAmt += charge.getCharge() * exRate;
+	  				        invoiceCost += charge.getCost() * exRate;
+	  				          if(charge.getIsTax()){
+	  				            invoiceTax += charge.getCharge() * exRate;	       
+	  				          }
+	  			    	}
+	  			      }
+	  			       invoiceResult.setInvoiceAmount(invoiceAmt);
+	  			       invoiceResult.setInvoiceCost(invoiceCost);
+	  			        if(invoiceTax!=0.0){
+	  			          invoiceResult.setInvoiceTax(invoiceTax);
+	  			        }
+	  			    }
+	  		  			Invoice invoiceObj = invoiceManager.getInvoiceById(invoices.get(0).getInvoiceId());
+	  				    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
+	  				    CurrencySymbol currencySymbol = new CurrencySymbol();
+	  				    if(invoiceObj.getCustomer().getDefaultCurrency()!=null && !invoiceObj.getCustomer().getDefaultCurrency().equals("")){
+	  				      currencySymbol = shippingDAO.getSymbolByCurrencycode(invoiceObj.getCustomer().getDefaultCurrency());
+	  			        getSession().put("customerDefaultCurrency", currencySymbol.getCurrencySymbol());
+	  				    }else{
+	  				    	if(UserUtil.getMmrUser().getLocale() != null){
+	  				    		if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_ADMIN)){
+	  				    	 currencySymbol = shippingDAO.getCurrencyCodeByCountryName(UserUtil.getMmrUser().getLocale().substring(3,5));
+	  				    	}else if(currencyId>0){
+	  				    		currencySymbol = shippingDAO.getCurrencyCodeById(currencyId);
+	  				    	}
+	  				    	 //---------------------
+	  					      	  if(currencySymbol==null){
+	  					      		  for(int j=0;j<ShiplinxConstants.EURO_UNION_LIST.length;j++){
+	  					      			  if(UserUtil.getMmrUser().getLocale().substring(3,5).equalsIgnoreCase(ShiplinxConstants.EURO_UNION_LIST[j])){
+	  					      				currencySymbol=shippingService.getCurrencyCodeByCountryName("EUCG");
+	  					      				break;
+	  					      			  }
+	  					      		  }
+	  					      	  }
+	  				    	 //-------------------------
+	  				    	 getSession().put("customerDefaultCurrency", currencySymbol.getCurrencySymbol());
+	  				    	}else{
+	  				    		getSession().put("customerDefaultCurrency", "$");
+	  				    	}
+	  				    	
+	  				    }
+	  				  return SUCCESS;
+	  		  }
+	  				    ///// End
+	  			   
+  
 
   public void setInvoices(List<Invoice> invoices) {
     this.invoices = invoices;
@@ -385,12 +477,11 @@ public String getSalesRep() {
 
 	    if (orderIds.size() > 0)
 	      invoices = invoiceManager.createInvoices(orderIds, invoice);
-
 	    String args[] = new String[1];
 	    args[0] = String.valueOf(invoices.size());
 	    addActionMessage(getText("invoice.created", new String[] { args[0] }));
 	    this.statusList = invoiceManager.getInvoiceStatusList();
-
+	    getSession().put("customerDefaultCurrency", invoices.get(0).getInvoiceCurrencySymbol());
 	    return SUCCESS;
 	  }
 
@@ -761,9 +852,12 @@ public String getSalesRep() {
         response.setContentType("application/pdf");        
         Long l = Long.parseLong(invoiceId);
         if(salesUser!=null){
-        	 this.invoiceManager.getSalesInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
+        	 /*this.invoiceManager.getSalesInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
         	            false,salesUser);
-        }else{
+        }else{*/
+        	 this.invoiceManager.getSalesInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
+           	            false,salesUser);
+       }else{
         this.invoiceManager.getInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
             false);
         }
@@ -833,9 +927,9 @@ public String getSalesRep() {
     	  					CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(charge.getCarrierId(),
     	  							charge.getChargeCode(), charge.getChargeCodeLevel2(), chargeGroupId);
     	  					if((ccc!=null && ccc.isTax())||(charge.getChargeCode()!= null &&charge.getChargeCode().equalsIgnoreCase("TAX"))){
-    	  						charge.setTax(true);
+    	  						charge.setIsTax(true);
     	  					}else{
-    	  						charge.setTax(false);
+    	  						charge.setIsTax(false);
     	  					}
     	  				}
     	  			}
@@ -856,7 +950,11 @@ public String getSalesRep() {
         String[] userCosts = this.request.getParameterValues("actualChargeCost");
         String[] userNames = this.request.getParameterValues("actualChargeName");
         String[] trackNos = this.request.getParameterValues("trackingNumbers");
-
+        String checkdTaxId = request.getParameter("calculateTaxId");
+        String[] calculateTaxId=checkdTaxId.split(",");
+        if(!calculateTaxId[0].isEmpty()){
+        	invoice.setCalculateTaxId(Arrays.asList(calculateTaxId));
+        }
         invoice = invoiceManager.updateInvoice(invoice, ids, userCharges, userCosts, userNames,
             trackNos);
         this.setInvoice(invoice);
@@ -875,37 +973,120 @@ public String getSalesRep() {
     String method = request.getParameter("method");
     String salesRep = request.getParameter("salesRep");
     String invoiceId = request.getParameter("invoiceIdlist");
+    Commission commission = this.getCommission();
     UserSearchCriteria criteria = new UserSearchCriteria();
     criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
     criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
     criteria.setSortBy(UserSearchCriteria.SORT_BY_FIRSTNAME);
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
       criteria.setBranch(UserUtil.getMmrUser().getBranch());
+    if(method == null){
+    	    if(commission.getSalesUser().equals("-1"))
+    	    	commission.setSalesUser(null);
+    	    }
     salesUsers = userService.findUsers(criteria, 0, 0);
     if(salesRep!=null && invoiceId!=null){
     	    	updateInvoiceStatus(salesRep,invoiceId);
     	    }
     if (method != null) {
     	getSession().remove("commission");
-    	Commission commission = getCommission();
-
+    	 commission = getCommission();
+    	 currencyList=shippingService.getallCurrencySymbol();
       return SUCCESS;
     }
 
 
-    Commission commission = this.getCommission();
     
         commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
                 FormattingUtil.DATE_FORMAT_WEB));
         commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
                 FormattingUtil.DATE_FORMAT_WEB));
-        
+        String toCurrency = commission.getCurrency();
         commissions = invoiceManager.searchCommissions(commission);
+        
+        /// ===================== Exchange Rate =========================== 
+        for(Commission commissionReport : commissions){
+
+        	Double exRate = 0.0;
+        	if(commissionReport.getInvoiceCurrency() != null && !commissionReport.getInvoiceCurrency().isEmpty() &&  toCurrency != null && !toCurrency.isEmpty()){
+        		if(commissionReport.getInvoiceCurrency().equals(toCurrency)){
+        			exRate = 1.0;
+        		}else{
+        			exRate = shippingService.getExchangeRate(commissionReport.getInvoiceCurrency(),toCurrency);
+        		}
+        		if(exRate == null){
+        			addActionError("There is no exchange rate in database for selected currency " + toCurrency +", or invoice currency "+ commissionReport.getCurrency());
+        			currencyList=shippingService.getallCurrencySymbol();
+        			salesRecords.clear();
+        			return SUCCESS;
+        		}
+        		commissionReport.setCommissionPayable(commissionReport.getCommissionPayable() * exRate);
+        		commissionReport.setCostTotal(commissionReport.getCostTotal() * exRate);
+        		commissionReport.setInvoiceTotal(commissionReport.getInvoiceTotal() * exRate);
+        		commissionReport.setTotalSPD(commissionReport.getTotalSPD() * exRate);
+        		commissionReport.setTotalCHB(commissionReport.getTotalCHB() * exRate);
+        		commissionReport.setTotalLTL(commissionReport.getTotalLTL() * exRate);
+        	}
+        
+        }
+      /// ===================== End ===========================
+        
         statusId = commission.getRepPaid();
         findPaymentStaus(statusId);
+        currencyList=shippingService.getallCurrencySymbol();
+        CurrencySymbol currencySymbol = shippingService.getSymbolByCurrencycode(toCurrency);
+        getSession().put("commissionCurrencySymbol", currencySymbol.getCurrencySymbol());
     return SUCCESS;
   }
-
+  
+  public String invoiceBreakdown() throws Exception{
+	  	  String inclCancelldInv=request.getParameter("inclCancelledInv");
+	  	String method = request.getParameter("method");
+	  		  	  if(method!=null){
+	  		  		  return SUCCESS;
+	  		  	  }
+	  	  Commission commission = this.getCommission();
+	     
+	  	  commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
+	  			  FormattingUtil.DATE_FORMAT_WEB));
+	  	  commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+	  			  FormattingUtil.DATE_FORMAT_WEB));
+	  	if(inclCancelldInv.equalsIgnoreCase("true")){
+	  			  		invoiceBreakdown=invoiceManager.searchInvoicesBreakdownIncludeCanceledInvoice(commission);  
+	  			  	  }else{
+	  	  invoiceBreakdown=invoiceManager.searchInvoicesBreakdown(commission);
+	  			  	  }
+	  	  List<Invoice> tempInvoiceList=new ArrayList<Invoice>();
+	  	  //invoiceBreakdown=invoiceManager.searchCommissions(commission);
+	  	  List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>(); 
+	  	  if(inclCancelldInv!=null){
+	  		  for(Invoice invoice:invoiceBreakdown){
+	  			 double invoiceAmt=0;
+	  				  groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
+	  				  for(Invoice grpInv:groupedInvoiceCharges){
+	  					  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
+	  						invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+	  					  }
+	  					  if("LTL".equalsIgnoreCase(grpInv.getEmailType())){
+	  						invoice.setTotalLTL(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+	  					  }
+	  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
+	  						invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+	  					  }
+	  				  }
+	  				  if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
+	  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+	  					  invoice.setInvoiceAmount(invoiceAmt);
+	  				  tempInvoiceList.add(invoice);
+	  				  }
+	  		  }
+	  		  invoiceBreakdown.clear();
+	  		  
+	  		  invoiceBreakdown.addAll(tempInvoiceList);
+	  	  }
+	  	  return SUCCESS;
+	    }
+    
   public String salesReport() throws Exception {
 	  Customer c = new Customer();
 	   c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
@@ -916,6 +1097,7 @@ public String getSalesRep() {
     if (method != null) {
       getSession().remove("salesRecord");
       SalesRecord sales = getSalesRecord();
+      currencyList=shippingService.getallCurrencySymbol();
       return SUCCESS;
     }
 
@@ -926,6 +1108,63 @@ public String getSalesRep() {
       sales.setBranch(UserUtil.getMmrUser().getBranch());
 
     salesRecords = invoiceManager.generateSalesReport(sales);
+    
+  /// ===================== Exchange Rate =========================== 
+    
+    String toCurrency = null;
+    for(SalesRecord salesRecord : salesRecords){
+    	Double exRate = 0.0;
+    	toCurrency = sales.getCurrency();
+    	if(salesRecord.getCurrency() != null && !salesRecord.getCurrency().isEmpty() &&  toCurrency != null && !toCurrency.isEmpty()){
+    		if(salesRecord.getCurrency().equals(toCurrency)){
+    			exRate = 1.0;
+    		}else{
+    			exRate = shippingService.getExchangeRate(salesRecord.getCurrency(),toCurrency);
+    		}
+    		if(exRate == null){
+    			addActionError("There is no exchange rate in database for selected currency " + toCurrency +", or invoice currency "+ salesRecord.getCurrency());
+    			currencyList=shippingService.getallCurrencySymbol();
+    			salesRecords.clear();
+    			return SUCCESS;
+    		}
+    		salesRecord.setTotalCost(salesRecord.getTotalCost() * exRate);
+    		salesRecord.setTotalAmount(salesRecord.getTotalAmount() * exRate);
+    	}
+    }
+    List<SalesRecord> tempSalesRecords=new ArrayList<SalesRecord>();
+    for(SalesRecord report:salesRecords){
+    	boolean repAvoid=false;
+    	for(SalesRecord tmp:tempSalesRecords){
+    		if(report.getMonth().equals(tmp.getMonth())){
+    			repAvoid=true;
+    		}
+    	}
+    	if(!repAvoid){
+    		tempSalesRecords.add(report);
+    	}
+    }
+    if(tempSalesRecords.size()>0){
+    	for(SalesRecord report:tempSalesRecords){
+    		double totalAmt=0.0;
+    		double totalCost=0.0;
+    		for(SalesRecord sTmp1:salesRecords){
+    			if(sTmp1.getMonth().equals(report.getMonth())){
+    				totalAmt+=sTmp1.getTotalAmount();
+    				totalCost+=sTmp1.getTotalCost();
+    			}
+    		}
+    		report.setTotalAmount(totalAmt);
+    		report.setTotalCost(totalCost);
+    	}
+    }
+    salesRecords.clear();
+    salesRecords.addAll(tempSalesRecords);
+    
+  /// ===================== End =========================== 
+    
+    currencyList=shippingService.getallCurrencySymbol();
+    CurrencySymbol currencySymbol = shippingService.getSymbolByCurrencycode(sales.getCurrency());
+    getSession().put("salesCurrencySymbol", currencySymbol.getCurrencySymbol());
     return SUCCESS;
   }
 
@@ -1125,6 +1364,106 @@ public String sendEmailNotificationForInvoice() {
 	return SUCCESS;
 	}
 	
+  public String invoiceBreakdownPrint() throws IOException{
+	  	
+	  	try{  
+	  	  String method=request.getParameter("method");
+	  	  String type=request.getParameter("type");
+	  	String inclCancelldInv= request.getParameter("inclCancelldInv");
+	  	  UserSearchCriteria criteria = new UserSearchCriteria();
+	  	  criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	  criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
+	  	  criteria.setSortBy(UserSearchCriteria.SORT_BY_FIRSTNAME);
+	  	  if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
+	  		  criteria.setBranch(UserUtil.getMmrUser().getBranch());
+	  	  salesUsers = userService.findUsers(criteria, 0, 0);
+	  	  
+	  	  if(method!=null){
+	  		  getSession().remove("commission");
+	  		  Commission commission = getCommission();
+	  
+	  		  return SUCCESS;
+	  	  }
+	  	  Commission commission = this.getCommission();
+	  	  commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
+	  			  FormattingUtil.DATE_FORMAT_WEB));
+	  	  commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+	  			  FormattingUtil.DATE_FORMAT_WEB));
+	  	if(inclCancelldInv.equalsIgnoreCase("true")){
+	  			  		invoiceBreakdownList=invoiceManager.searchInvoicesBreakdownIncludeCanceledInvoice(commission);  
+	  			  	  }else{
+	  			  		invoiceBreakdownList=invoiceManager.searchInvoicesBreakdown(commission);
+	  			  	  }
+	  	  if("xml".equalsIgnoreCase(type)){
+	  		  String shippingLabelFileName =getUniqueTempxmlFileNamecomm("InvoiceBreakdown");
+	  		  write_XML_File_invoiceBreakdown(invoiceBreakdownList,shippingLabelFileName);
+	  		  response.setContentType("application/xml");
+	  		  response.setHeader("Content-Disposition",
+	  				  "attachment;filename=InvoiceBreakdown.xml");
+	  		  File xmlFile = new File(shippingLabelFileName);
+	  		  FileInputStream fileInputStream = new FileInputStream(xmlFile);
+	  		  /*ServletContext ctx =ServletActionContext.getServletContext();
+	  	  	InputStream is = ctx.getResourceAsStream(shippingLabelFileName)*/
+	  		  int read=0;
+	  		  byte[] bytes = new byte[1024];
+	  		  OutputStream os = response.getOutputStream();
+	  
+	  		  while((read = fileInputStream.read(bytes))!= -1){
+	  			  os.write(bytes, 0, read);
+	  		  }
+	  		  os.flush();
+	  		  os.close();	
+	  
+	  	  }else if("csv".equalsIgnoreCase(type)){
+	  		  String shippingLabelFileName = getUniqueTempcsvFileNamecomm("InvoiceBreakdown");
+	  
+	  		  FileWriter writer = new FileWriter(shippingLabelFileName);
+	  		  generateCsvFileInvoiceBreakdown(invoiceBreakdownList,writer);
+	  		  response.setContentType("application/csv");
+	  		  response.setHeader("Content-Disposition",
+	  				  "attachment;filename=InvoiceBreakdown.csv");
+	  		  File csvFile = new File(shippingLabelFileName);
+	  		  FileInputStream fileInputStream = new FileInputStream(csvFile);
+	  		  /*ServletContext ctx =ServletActionContext.getServletContext();
+	  	  	InputStream is = ctx.getResourceAsStream(shippingLabelFileName)*/
+	  		  int read=0;
+	  		  byte[] bytes = new byte[1024];
+	  		  OutputStream os = response.getOutputStream();
+	  
+	  		  while((read = fileInputStream.read(bytes))!= -1){
+	  		  os.write(bytes, 0, read);
+	  		  }
+	  		  os.flush();
+	  		  os.close();	
+	  
+	  
+	  	  }else if("xl".equalsIgnoreCase(type)){
+	  		  String shippingLabelFileName = getUniqueTempxlFileNamecomm("InvoiceBreakdown");
+	  
+	  		  createxlfileInvoiceBreakdown(invoiceBreakdownList,shippingLabelFileName);
+	  		  response.setContentType("application/msexcel");
+	  		  response.setHeader("Content-Disposition",
+	  				  "attachment;filename=InvoiceBreakdown.xls");
+	  		  File xlFile = new File(shippingLabelFileName);
+	  		  FileInputStream fileInputStream = new FileInputStream(xlFile);
+	  		  /*ServletContext ctx =ServletActionContext.getServletContext();
+	  	  	InputStream is = ctx.getResourceAsStream(shippingLabelFileName)*/
+	  		  int read=0;
+	  		  byte[] bytes = new byte[1024];
+	  		  OutputStream os = response.getOutputStream();
+	  
+	  		  while((read = fileInputStream.read(bytes))!= -1){
+	  			  os.write(bytes, 0, read);
+	  		  }
+	  		  os.flush();
+	  		  os.close();	
+	  	  }
+	  	}
+	  	catch(Exception e){
+	  		e.printStackTrace();
+	  	}
+	  	  return SUCCESS;
+	     }
 	public String commissionprint() throws IOException
 	{
 		
@@ -1219,6 +1558,120 @@ String type=request.getParameter("type");
 	
 		return SUCCESS;
 	}
+	
+	public void write_XML_File_invoiceBreakdown(List<Invoice> invoiceBreakdownList,String shippingLabelFileName){
+				DocumentBuilderFactory docBuilder = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder=null;
+				try {
+					builder = docBuilder.newDocumentBuilder();
+				} catch (ParserConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				Document doc = builder.newDocument();
+				 Element shipingList = doc.createElement("Reports");
+				 doc.appendChild(shipingList);
+				 double totalSPD=0.0;
+				 double totalLTL=0.0;
+				 double totalCHB=0.0;
+				 double totalAmount=0.0;
+				 double totalTax=0.0;
+				 List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>(); 
+				 for(Invoice invoice :invoiceBreakdownList){
+					 double invoiceAmt=0;
+					 					 groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
+					 					 for(Invoice grpInv:groupedInvoiceCharges){
+					 	  					  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
+					 	  						invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+					 	  					  }
+					 	  					  if("LTL".equalsIgnoreCase(grpInv.getEmailType())){
+					 	  						 invoice.setTotalLTL(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+					 	  					  }
+					 	  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
+					 	  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+					 	  					  }
+					 	  				  }
+					 					 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
+					 		  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+					 		  					invoice.setInvoiceAmount(invoiceAmt);
+					 Element log1 = doc.createElement("Invoice");
+			         shipingList.appendChild(log1);
+				         Element number = doc.createElement("InvoiceNumber");
+				         number.appendChild(doc.createTextNode(removeNull(invoice.getInvoiceNum())));
+				         log1.appendChild(number);
+				         Element Company = doc.createElement("Company");
+				         
+				         
+				         Company.appendChild(doc.createTextNode(removeNull(invoice.getInvoiceNum())));
+				         log1.appendChild(Company);
+				         
+				         Element datecreated = doc.createElement("DateCreated");
+				         datecreated.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getDateCreated()))));
+				         log1.appendChild(datecreated);
+				         
+				         Element amount = doc.createElement("Amount");
+				         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(invoiceAmt))));
+				         log1.appendChild(amount);
+				         
+				         Element tax = doc.createElement("Tax");
+				         tax.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getInvoiceTax()))));
+				         log1.appendChild(tax);
+				         
+				         Element SPD = doc.createElement("SPD");
+				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         log1.appendChild(SPD);
+				         
+				         Element LTL = doc.createElement("LTL");
+				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         log1.appendChild(SPD);
+				         
+				         Element CHB = doc.createElement("CHB");
+				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         log1.appendChild(SPD);
+				         totalAmount+=invoiceAmt;
+				         totalTax+=invoice.getInvoiceTax();
+				         totalSPD+=invoice.getTotalSPD();
+				         totalLTL+=invoice.getTotalLTL();
+				         totalCHB+=invoice.getTotalCHB();
+					 					 }
+				 }
+				 Element log1 = doc.createElement("Invoice");
+		         shipingList.appendChild(log1);
+		         Element tamt = doc.createElement("TotalAmount");
+		         tamt.appendChild(doc.createTextNode(removeNull(String.valueOf(totalAmount))));
+		         log1.appendChild(tamt);
+		         Element tTax = doc.createElement("TotalTax");
+		         tTax.appendChild(doc.createTextNode(removeNull(String.valueOf(totalTax))));
+		         log1.appendChild(tTax);
+				 Element tSPD = doc.createElement("TotalSPD");
+		         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(totalSPD))));
+		         log1.appendChild(tSPD);
+		
+		         Element tLTL = doc.createElement("TotalLTL");
+		         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(totalLTL))));
+		         log1.appendChild(tLTL);
+		         
+		         Element tCHB = doc.createElement("TotalCHB");
+		         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(totalCHB))));
+		         log1.appendChild(tCHB);
+				 
+					try{
+					TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			          Transformer transformer = transformerFactory.newTransformer();
+			           transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			           DOMSource source = new DOMSource(doc);
+			           StreamResult result = new StreamResult(new File(shippingLabelFileName));
+			           transformer.transform(source, result);
+		//	           response.setContentType("application/octet-stream");
+		//	           response.setHeader("Content-Disposition", "attachement; filename=xyz.xml");
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					
+					System.out.println("File saved for Invoice Breakdown!");
+				
+			}
 	
 	public  void write_XML_File_commission(List<Commission> commissionList,String shippingLabelFileName){
 		 
@@ -1338,7 +1791,99 @@ String type=request.getParameter("type");
 			}
 			return text;
 		}
-
+		private void generateCsvFileInvoiceBreakdown(List<Invoice> InvoiceBreakdownList,FileWriter writer){
+					try{
+						double totalSPD=0.0;
+						double totalLTL=0.0;
+						double totalCHB=0.0;
+						double totalAmount=0.0;
+						double totalTax=0.0;
+						ArrayList<String> srcList = new ArrayList<String>();
+						List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>();
+						writer.append("invoicenumber");
+						writer.append(',');
+						writer.append("company");
+						writer.append(',');
+						writer.append("dateCreater");
+						writer.append(',');
+						writer.append("Amount");
+						writer.append(',');
+						writer.append("Tax");
+						writer.append(',');
+						writer.append("SPD");
+						writer.append(',');
+						writer.append("LTL");
+						writer.append(',');
+						writer.append("CHB");
+						writer.append('\n');
+						for(Invoice invoice :InvoiceBreakdownList){
+							double invoiceAmt=0;
+														 groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
+														 for(Invoice grpInv:groupedInvoiceCharges){
+										  					  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
+										  						invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+										  					  }
+										  					  if("LTL".equalsIgnoreCase(grpInv.getEmailType())){
+										  						 invoice.setTotalLTL(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+										  					  }
+										  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
+										  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+										  					  }
+										  				  }
+														 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
+											  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+											  					invoice.setInvoiceAmount(invoiceAmt);
+							writer.append(removeNull(invoice.getInvoiceNum()));
+							writer.append(',');
+							writer.append(removeNull(invoice.getCustomer().getName()));
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoice.getDateCreated())));
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoiceAmt)));   
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoice.getInvoiceTax())));   
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoice.getTotalSPD())));   
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoice.getTotalLTL())));   
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(invoice.getTotalCHB())));
+							writer.append('\n');
+			
+							totalAmount+=invoiceAmt;
+							totalTax+=invoice.getInvoiceTax();
+							totalSPD+=invoice.getTotalSPD();
+							totalLTL+=invoice.getTotalLTL();
+							totalCHB+=invoice.getTotalCHB();
+							}
+						}
+						writer.append("Total Amount");
+						writer.append(',');
+						writer.append(String.valueOf(totalAmount));
+						writer.append(',');
+						writer.append("Total Tax");
+						writer.append(',');
+						writer.append(String.valueOf(totalTax));
+						writer.append(',');
+						writer.append("Total SPD");
+						writer.append(',');
+						writer.append(String.valueOf(totalSPD));
+						writer.append(',');
+						writer.append("Total LTL");
+						writer.append(',');
+						writer.append(String.valueOf(totalLTL));
+						writer.append(',');
+						writer.append("Total CHB");
+						writer.append(',');
+						writer.append(String.valueOf(totalCHB));
+						writer.flush();
+						writer.close();
+						System.out.println("csv generated successfully");
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+					
 		public  void write_XML_File_sales(List<SalesRecord> salesrecord,String shippingLabelFileName){
 			
 			 
@@ -1411,7 +1956,77 @@ String type=request.getParameter("type");
 				
 				System.out.println("File saved for sale!");
 		}
-	
+		public void createxlfileInvoiceBreakdown(List<Invoice> invoicebreakdownList,String shippingLabelFileName) throws IOException{
+					HSSFWorkbook workbook=new HSSFWorkbook();
+					HSSFSheet sheet =  workbook.createSheet("FirstSheet");  
+					HSSFRow rowhead=   sheet.createRow((short)0);
+					rowhead.createCell((short) 0).setCellValue("Invoice Number");
+					rowhead.createCell((short) 1).setCellValue("Name");
+					rowhead.createCell((short) 2).setCellValue("Date Created");
+					rowhead.createCell((short) 3).setCellValue("Amount");
+					rowhead.createCell((short) 4).setCellValue("Tax");
+					rowhead.createCell((short) 5).setCellValue("SPD");
+					rowhead.createCell((short) 6).setCellValue("LTL");
+					rowhead.createCell((short) 7).setCellValue("CHB");
+					int i=1;
+					double totalSPD=0;
+					double totalLTL=0;
+					double totalCHB=0;
+					double totalAmount=0;
+					double totalTax=0;
+					List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>();
+					for(Invoice invoice :invoicebreakdownList){
+						double invoiceAmt=0;
+												 groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
+												 for(Invoice grpInv:groupedInvoiceCharges){
+								  					  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
+								  						invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+								  					  }
+								  					  if("LTL".equalsIgnoreCase(grpInv.getEmailType())){
+								  						 invoice.setTotalLTL(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+								  					  }
+								  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
+								  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+								  					  }
+								  				  }
+												 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
+									  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+									  					invoice.setInvoiceAmount(invoiceAmt);
+						HSSFRow row=   sheet.createRow((short)i);
+						row.createCell((short) 0).setCellValue(removeNull(invoice.getInvoiceNum()));
+						row.createCell((short) 1).setCellValue(removeNull(invoice.getCustomer().getName()));
+					row.createCell((short) 2).setCellValue(removeNull(String.valueOf(invoice.getDateCreated())));
+						row.createCell((short) 3).setCellValue(removeNull(String.valueOf(invoiceAmt)));
+						row.createCell((short) 4).setCellValue(removeNull(String.valueOf(invoice.getInvoiceTax())));
+						row.createCell((short) 5).setCellValue(removeNull(String.valueOf(invoice.getTotalSPD())));
+						row.createCell((short) 6).setCellValue(removeNull(String.valueOf(invoice.getTotalLTL())));
+						row.createCell((short) 7).setCellValue(removeNull(String.valueOf(invoice.getTotalCHB())));
+						totalAmount+=invoiceAmt;
+						totalTax+=invoice.getInvoiceTax();
+						totalSPD+=invoice.getTotalSPD();
+					    totalLTL+=invoice.getTotalLTL();
+						totalCHB+=invoice.getTotalCHB();
+						i++;
+						}
+					}
+					if(invoicebreakdownList!=null && invoicebreakdownList.size()>1){
+						HSSFRow rowheads=   sheet.createRow((short)invoicebreakdownList.size()+1);
+						rowheads.createCell((short) 0).setCellValue("Total Amount");
+						rowheads.createCell((short) 1).setCellValue(String.valueOf(totalAmount));
+						rowheads.createCell((short) 2).setCellValue("Total Tax");
+						rowheads.createCell((short) 3).setCellValue(String.valueOf(totalTax));
+					    rowheads.createCell((short) 4).setCellValue("Total SPD");
+						rowheads.createCell((short) 5).setCellValue(String.valueOf(totalSPD));
+						rowheads.createCell((short) 6).setCellValue("Total LTL");
+						rowheads.createCell((short) 7).setCellValue(String.valueOf(totalLTL));
+						rowheads.createCell((short) 8).setCellValue("Total CHB");
+						rowheads.createCell((short) 9).setCellValue(String.valueOf(totalCHB));
+					}
+					FileOutputStream fileOut =  new FileOutputStream(shippingLabelFileName);
+					workbook.write(fileOut);
+					fileOut.close();
+					System.out.println("Your excel file has been generated!");
+				}
 		
 		 private  void generateCsvFile(List<Commission> commissionList,FileWriter writer)
 		   {
@@ -1750,4 +2365,15 @@ String type=request.getParameter("type");
 	  		paymentStatus="PaidToRep";
 	  	}
 }
+
+public List<CurrencySymbol> getCurrencyList() {
+	return currencyList;
+}
+
+public void setCurrencyList(List<CurrencySymbol> currencyList) {
+	this.currencyList = currencyList;
+}
+  
+  
+
 }

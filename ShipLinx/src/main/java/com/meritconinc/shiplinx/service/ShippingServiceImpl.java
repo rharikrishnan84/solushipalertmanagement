@@ -36,7 +36,8 @@ import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
 import com.meritconinc.shiplinx.model.BillingStatus;
-
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
@@ -239,7 +240,6 @@ public class ShippingServiceImpl implements ShippingService {
 
     log.debug("---------addPackage-----------" + shippingOrder.getPackages());
     addPackage(shippingOrder.getPackages(), shippingOrder.getId());
-
     log.debug("---------saveLabel-----------");
     for (ShippingLabel label : shippingOrder.getLabels()) {
       label.setOrderId(shippingOrder.getId().longValue());
@@ -367,7 +367,6 @@ public class ShippingServiceImpl implements ShippingService {
   public void addPackage(List<Package> packageList, Long orderId) throws Exception {
     getShippingDAO().addPackage(packageList, orderId);
   }
-
   public void updatePackage(Package pkg) {
     shippingDAO.updatePackage(pkg);
   }
@@ -486,12 +485,28 @@ public class ShippingServiceImpl implements ShippingService {
     ShippingOrder order = getShippingDAO().getShippingOrder(orderId);
     if (order != null) {
       order.setPaymentRequired(isPaymentRequired(order));
+      if (order.getUnitmeasure() == 2 && order.getSaveShipmet()==0) {
+	      for (Package pack : order.getPackages()) {
+	        double lengthDouble = pack.getLength().doubleValue() / 0.39370;
+	        double widthDouble = pack.getWidth().doubleValue() / 0.39370;
+	        double heightDouble = pack.getHeight().doubleValue() / 0.39370;
+	        double weightDouble = pack.getWeight().doubleValue()/2.2;
+	        BigDecimal length = new BigDecimal(lengthDouble);
+	        BigDecimal width = new BigDecimal(widthDouble);
+	        BigDecimal height = new BigDecimal(heightDouble);
+	        pack.setWeight(new BigDecimal(weightDouble).setScale(2,BigDecimal.ROUND_HALF_UP));
+	        pack.setLength(new BigDecimal(FormattingUtil.roundFigureRates(lengthDouble, 0)));
+	        pack.setWidth(new BigDecimal(FormattingUtil.roundFigureRates(widthDouble, 0)));
+	        pack.setHeight(new BigDecimal(FormattingUtil.roundFigureRates(heightDouble, 0)));
+	      }
+	    }else{
       for (Package p : order.getPackages()) {
         p.setLength(new BigDecimal(FormattingUtil.roundFigureRates(p.getLength().doubleValue(), 0)));
         p.setHeight(new BigDecimal(FormattingUtil.roundFigureRates(p.getHeight().doubleValue(), 0)));
         p.setWidth(new BigDecimal(FormattingUtil.roundFigureRates(p.getWidth().doubleValue(), 0)));
     	 
-      }
+	    }
+    }
     }
     return order;
 
@@ -1116,8 +1131,10 @@ public class ShippingServiceImpl implements ShippingService {
         && so.getToAddress().isSendNotification() && so.getFromAddress().isSendNotification()) {
       toAddress = so.getFromAddress().getEmailAddress() + ";" + so.getToAddress().getEmailAddress();
       strAttention = "Customer";
+    }else if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+    	    	toAddress = "customsdistribution@integratedcarriers.com";
+    	    	strAttention = so.getFromAddress().getContactName();
     }
-
     if (toAddress == null || toAddress.length() == 0) {
       log.error("User's email address is not sent, cannot send an email quote!");
       return false;
@@ -1125,7 +1142,12 @@ public class ShippingServiceImpl implements ShippingService {
     try {
       // GROUP_EMAIL_ADDRESS_en_CA
 
-      String subject = MessageUtil.getMessage("label.subject.shipment.notification");
+    	String subject = null;
+    	        if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+    	      	  subject = "New CHB Shipment";
+    	        }else{
+    	      	  subject = MessageUtil.getMessage("label.subject.shipment.notification");
+    	        }
 
       String body = MessageUtil.getMessage("mail.shipment.notification.body");
 
@@ -2034,11 +2056,18 @@ public class ShippingServiceImpl implements ShippingService {
       } else {
         fromAddress = business.getAddress().getEmailAddress();
       }
-      if (so.getService() != null && so.getService().getEmailType().equalsIgnoreCase("SPD")) {
+     
+      if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+          List<String> bccAddress = new ArrayList<String>();
+          bccAddress.add("customsdistribution@integratedcarriers.com");
+    	  retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+    	            business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
+    	            business.getAddress().getEmailAddress(), bccAddress, subject, body, null, true);
+      }else if (so.getService() != null && so.getService().getEmailType().equalsIgnoreCase("SPD")) {
         retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
             business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
             business.getAddress().getEmailAddress(), null, subject, body, null, true);
-      } else {
+      }else {
         retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
             business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
             business.getLtlEmail(), null, subject, body, null, true);
@@ -2106,4 +2135,25 @@ public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so) {
 	return this.shippingDAO.findShipmentsAdminById(so);
 }
 
+public List<ExchangeRateCurrency> getAllExchangeRateCurrency(){
+	return this.shippingDAO.getAllExchangeRateCurrency();
+}
+
+public void updateExchangeRateCurrency(ExchangeRateCurrency exchangeRate){
+	this.shippingDAO.updateExchangeRateCurrency(exchangeRate);
+}
+public Double getExchangeRate(String currencyCode, String currencyCode2){
+	return this.shippingDAO.getExchangeRate(currencyCode,currencyCode2);
+}
+public CurrencySymbol getCurrencyCodeByCountryName(String fromCountry){
+	return this.shippingDAO.getCurrencyCodeByCountryName(fromCountry);
+}
+public List<CurrencySymbol> getallCurrencySymbol(){
+	return this.shippingDAO.getallCurrencySymbol();
+}
+@Override
+public CurrencySymbol getSymbolByCurrencycode(String currencyCode) {
+	
+	return this.shippingDAO.getSymbolByCurrencycode(currencyCode);
+}
 }

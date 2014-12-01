@@ -255,7 +255,7 @@ window.onload = doOnload;
 								<div class="content_header">
 									<div class="cont_hdr_title">
 									<s:if test="#session.edit == 'true'">
-										<mmr:message messageId="label.heading.editcustomer"/> : 
+										<mmr:message messageId="label.heading.editcustomer"/>  
 										<s:hidden name="method" value="edit"/>
 										<s:hidden name="customer.businessId" />
 									</s:if> 
@@ -412,7 +412,7 @@ window.onload = doOnload;
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.default.currency"/></label>
 											<div class="controls"><span>:</span><s:select
-												list="#{'CAD':'CAD', 'USD':'USD'}"
+												list="#{'CAD':'CAD', 'USD':'USD','CNY':'CNY','EUR':'EUR'}"
 												name="customer.defaultCurrency" headerKey="" headerValue=""
 												  /> </div>
 										</div>	
@@ -421,6 +421,12 @@ window.onload = doOnload;
            										<label><mmr:message messageId="label.customer.showref"/></label>
            										<div class="controls"><span>:</span>
             									<s:checkbox name="customer.reference" value="%{customer.reference}" key="customer.reference" id="showref"/>             
+            									</div>
+           								</div>
+           								<div class="fields">
+           										<label><mmr:message messageId="label.customer.chbCustomer"/></label>
+           										<div class="controls"><span>:</span>
+            									<s:checkbox name="customer.chbCustomer" value="%{customer.chbCustomer}" key="customer.chbCustomer" id="chbcus"/>             
             									</div>
            								</div>
 										</s:if>

@@ -1,9 +1,12 @@
 package com.meritconinc.shiplinx.dao;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,8 @@ import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.model.BillingStatus;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
@@ -34,6 +39,7 @@ import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingDAO {
   private static final Logger log = LogManager.getLogger(ShippingDAOImpl.class);
@@ -116,7 +122,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     int i = 0;
     try {
       for (Package pack : packageList) {
-        pack.setOrderId(orderId);
+        pack.setOrderId(orderId);        
         getSqlMapClientTemplate().insert("addPackage", pack);
       }
     } catch (Exception e) {
@@ -507,13 +513,13 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
   public void updateCharge(Charge charge) throws Exception {
     // TODO Auto-generated method stub
     try {
-      Map<String, Object> paramObj = new HashMap<String, Object>();
+      /*Map<String, Object> paramObj = new HashMap<String, Object>();
       paramObj.put("name", charge.getName());
       paramObj.put("cost", charge.getCost());
       paramObj.put("status", charge.getStatus());
       paramObj.put("charge", charge.getCharge());
       paramObj.put("discountAmount", charge.getDiscountAmount());
-      paramObj.put("tariffRate", charge.getTariffRate());
+      paramObj.put("tariffRate", charge.getCalculateTax());
       paramObj.put("id", charge.getId());
       paramObj.put("carrierId", charge.getCarrierId());
       paramObj.put("carrierName", charge.getCarrierName());
@@ -521,10 +527,10 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       paramObj.put("costcurr", charge.getCostcurrency());
       paramObj.put("chargecurr", charge.getChargecurrency());
       paramObj.put("exchangerate", charge.getExchangerate());
-
+      paramObj.put("calculateTax", charge.getCalculateTax());*/
       
 
-      getSqlMapClientTemplate().update("updateCharge", paramObj);
+      getSqlMapClientTemplate().update("updateCharge", charge);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -1306,4 +1312,40 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 					return (List)getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
 				}
 				
+				public List<ExchangeRateCurrency> getAllExchangeRateCurrency(){
+					return (List)getSqlMapClientTemplate().queryForList("getAllExchangeRateCurrency");
+				}
+
+				public void updateExchangeRateCurrency(ExchangeRateCurrency exchangeRate){
+					DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					Date now = new Date();
+					String DateTime=dateFormat.format(now);
+					exchangeRate.setDate(Timestamp.valueOf(DateTime));
+					getSqlMapClientTemplate().update("updateExchangeRateCurrency", exchangeRate);
+				}
+
+				public Double getExchangeRate(String currencyCode, String currencyCode2){
+					Map<String, Object> paramObj = new HashMap<String, Object>();
+					paramObj.put("currencyCode", currencyCode);
+					paramObj.put("currencyCode2", currencyCode2);
+					return (Double) getSqlMapClientTemplate().queryForObject("getExchangeRate", paramObj);
+				}
+				public CurrencySymbol getCurrencyCodeByCountryName(String countryName){
+					Map<String, Object> paramObj=new HashMap<String, Object>();
+					paramObj.put("countryCode", countryName);
+					return (CurrencySymbol) getSqlMapClientTemplate().queryForObject("getCurrencyCodeByCountryName", paramObj);
+				}
+
+				public List<CurrencySymbol> getallCurrencySymbol(){
+					return  ( List<CurrencySymbol>)getSqlMapClientTemplate().queryForList("getallCurrencySymbol");
+				}
+				@Override
+								public CurrencySymbol getSymbolByCurrencycode(
+										String currencyCode) {
+									return (CurrencySymbol)getSqlMapClientTemplate().queryForObject("getSymbolByCurrencycode",currencyCode);
+								}
+				public CurrencySymbol getCurrencyCodeById(int id){
+					return (CurrencySymbol)getSqlMapClientTemplate().queryForObject("getCurrencyCodeById",id);
+					
+				}
 }

@@ -24,6 +24,7 @@
 	<parameter name="totalLTL" class="java.lang.String"/>
 	<parameter name="totalCHB" class="java.lang.String"/>
 	<parameter name="SalesUserFlag" class="java.lang.Boolean"/>
+	<parameter name="currencySymbol" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -260,7 +261,7 @@
 				<text><![CDATA[Billing Address:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="staticText-7" x="397" y="154" width="62" height="16" forecolor="#981C1E"/>
+				<reportElement key="staticText-7" x="400" y="154" width="62" height="16" forecolor="#981C1E"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -273,7 +274,7 @@
 				<text><![CDATA[Amount:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="staticText-7" x="397" y="169" width="42" height="16" forecolor="#981C1E"/>
+				<reportElement key="staticText-7" x="400" y="169" width="42" height="16" forecolor="#981C1E"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -408,7 +409,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getCurrency()]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
+			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-15" x="464" y="187" width="84" height="15"/>
 				<box rightPadding="2">
 					<pen lineWidth="1.0" lineColor="#666666"/>
@@ -420,7 +421,7 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="10" isItalic="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getTotalInvoiceCharge()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format((((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getTotalInvoiceCharge()))]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="staticText-7" x="387" y="187" width="77" height="15" forecolor="#FF0033"/>
@@ -436,7 +437,7 @@
 				</textElement>
 				<text><![CDATA[Total Due:]]></text>
 			</staticText>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
+			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-15" x="463" y="169" width="85" height="16"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -447,10 +448,10 @@
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="10" isItalic="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getInvoiceTax()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format((((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getInvoiceTax()))]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
-				<reportElement key="textField-15" x="463" y="154" width="85" height="16"/>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement key="textField-15" positionType="Float" x="463" y="154" width="85" height="16"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -460,7 +461,7 @@
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="10" isItalic="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getInvoiceAmount()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format((((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getInvoiceAmount()))]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
 				<reportElement key="textField-8" x="469" y="102" width="77" height="13"/>
@@ -855,6 +856,9 @@ CONSIGNEE]]></text>
 				<reportElement key="subreport" positionType="Float" isPrintRepeatedValues="false" x="319" y="34" width="190" height="67" isRemoveLineWhenBlank="true" backcolor="#FFCC99">
 					<printWhenExpression><![CDATA[new Boolean(((java.util.Collection)($F{charges})).size()>0)]]></printWhenExpression>
 				</reportElement>
+				<subreportParameter name="currencySymbol">
+					<subreportParameterExpression><![CDATA[$P{currencySymbol}]]></subreportParameterExpression>
+				</subreportParameter>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource((java.util.Collection)($F{chargesForInvoice}))]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA["./jasperreports/src/main/java/com/meritconinc/shiplinx/service/impl/jasperreports/InvoiceChargesSR.jasper"]]></subreportExpression>
 			</subreport>
@@ -1193,7 +1197,7 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 				</textElement>
 				<text><![CDATA[Total Due:]]></text>
 			</staticText>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="false">
+			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-7" x="291" y="12" width="91" height="13" forecolor="#FF0033"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1204,7 +1208,7 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 				<textElement>
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Helvetica-BoldOblique"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getTotalInvoiceCharge()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format((((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getTotalInvoiceCharge()))]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="false">
 				<reportElement key="textField-7" x="256" y="12" width="35" height="13" forecolor="#FF0033"/>
@@ -1219,32 +1223,32 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.Invoice)($P{Invoice})).getCurrency()]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="68" y="25" width="69" height="13" forecolor="#FF0033">
 					<printWhenExpression><![CDATA[$P{SalesUserFlag}==true ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{totalSPD}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($P{totalSPD})]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="253" y="26" width="69" height="12" forecolor="#FF0033">
 					<printWhenExpression><![CDATA[$P{SalesUserFlag}==true ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{totalLTL}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($P{totalLTL})]]></textFieldExpression>
 			</textField>
-			<textField pattern="$ #,##0.00" isBlankWhenNull="true">
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="463" y="24" width="77" height="14" forecolor="#FF0033">
 					<printWhenExpression><![CDATA[$P{SalesUserFlag}==true ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{totalCHB}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{currencySymbol}+" "+new DecimalFormat("#,##0.00").format($P{totalCHB})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="5" y="26" width="52" height="13">

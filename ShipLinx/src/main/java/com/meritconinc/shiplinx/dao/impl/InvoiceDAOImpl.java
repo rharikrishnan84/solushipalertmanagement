@@ -11,6 +11,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Invoice;
@@ -223,4 +224,23 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 								return (List<Commission>) getSqlMapClientTemplate().queryForList(
 										"getCommissionsByInvoiceId", invoiceId);
 							}
+							
+							public List<Invoice> searchInvoicesBreakdown(Commission commission){
+									return (List<Invoice>)getSqlMapClientTemplate().queryForList("searchInvoiceBreakdown",commission);
+							}
+								
+							public List<Invoice> searchInvoicesBreakdownIncludeCanceledInvoice(Commission commission){
+								return (List<Invoice>)getSqlMapClientTemplate().queryForList("searchInvoicesBreakdownIncludeCanceledInvoice",commission);
+						}
+							public List<Invoice> getInvoiceChargeDetails(Long invoiceId){
+									Map<String,Object> paramObj= new HashMap<String, Object>();
+									paramObj.put("invoiceId", invoiceId);
+									return (List<Invoice>)getSqlMapClientTemplate().queryForList("getInvoiceChargeDetailsById",paramObj);
+							}
+							@Override
+														public List<Charge> getChargeExchangeRateByInvoiceId(
+																long invoiceId) {
+															
+															return (List<Charge>) getSqlMapClientTemplate().queryForList("getChargeExchangeRateByInvoiceId",invoiceId);
+														}
 }

@@ -64,7 +64,7 @@
 		<result property="userCode" column="user_code"/>
 		<result property="logoURL" column="logo_url"/>
 		<result property="commissionPercentageCHB" column="commission_perc_CHB"/>
-    <result property="timeZone" column="time_zone"/>
+        <result property="timeZone" column="time_zone"/>
 	</resultMap>
 	
 		<resultMap id="userResultUnit" class="com.meritconinc.mmr.model.security.User">
@@ -99,6 +99,7 @@
        <result property="locale" column="locale"/>
        <result property="description" column="description"/>
        <result property="localeText" column="locale_text"/>
+         <result property="displayText" column="display_text"/>
    </resultMap>
    <resultMap id="userLanguage" class="com.meritconinc.mmr.model.common.LocaleVO">
        <result property="localeText" column="locale_text"/>
@@ -108,7 +109,7 @@
     <result property="firstName" column="first_name"/>
     <result property="lastName" column="last_name"/>
    </resultMap>
-
+  
 	<select id="address" resultMap="addressMap">
 		select address_line, city, state_province, country_code, postal_zip 
 			from user where username=#username#
@@ -421,4 +422,9 @@
     <select id="getUserByUsercode" resultMap="userResultUsercode">
        select * from user where user_code=#userCode#
     </select>
+    
+    <select id="getDisplayTextByLocale" resultMap="userLocale">
+       select * from locale where locale=#locale#
+    </select>
+    
 </sqlMap>

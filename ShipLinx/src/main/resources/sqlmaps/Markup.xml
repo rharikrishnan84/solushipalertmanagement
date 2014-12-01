@@ -527,14 +527,16 @@
    <select id="isCustomerMarkupByDisabled" resultClass="int">
        select count(*) from customer_markup where customer_id=#customerId# and disabled=0
    </select>
-   
-   <select id="getMarkupListForCustomerAndCarrier1" resultMap="MarkupResult">
-      select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
-               m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type , m.variable
-        from customer_markup m, service s, carrier c
-        where  s.carrier_id=c.carrier_id  
-        and m.service_id=s.service_id
-        and m.customer_id = #customerId#  
-        and disabled = 0
-   </select>
+
+	<select id="getMarkupListForCustomerAndCarrier1" resultMap="MarkupResult">
+		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name,
+		m.business_id, m.from_country, m.to_country,
+		m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type ,
+		m.variable
+		from customer_markup m, service s, carrier c
+		where s.carrier_id=c.carrier_id
+		and m.service_id=s.service_id
+		and (m.customer_id = #customerId# or m.customer_id=0)
+		and disabled = 0
+	</select>
 </sqlMap>

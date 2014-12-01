@@ -443,4 +443,7 @@ public class ShiplinxConstants {
 	 public static final String SPS_EMAIL_TYPE="SPD";
 	 public static final String CHB_EMAIL_TYPE="CHB";
 	 public static final String DEFAULT_COD_PIN="0";
+	 public static final String DefaultCurrencySymbol="$";
+	 //Europian union country code list for currency code EUR
+	 public static final String [] EURO_UNION_LIST = {"AT", "BE", "BG", "HR", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "NL", "PL", "PT", "RO", "SK", "ES", "SI", "SE", "GB"};
 }

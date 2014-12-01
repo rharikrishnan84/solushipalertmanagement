@@ -13,6 +13,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.MessageDAO;
 import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.model.common.CountryVO;
 import com.meritconinc.mmr.model.common.LocaleVO;
 import com.meritconinc.mmr.model.security.User;
@@ -30,12 +31,13 @@ public class MessageUtil {
 
 	public static String getPreferredLocale() {
 		String locale = null;
+		Locale newLocale = null;
 		User user = UserUtil.getMmrUser();
 		if (user != null) {
-			locale = user.getLocale();
-			ActionContext.getContext().getSession().put("locale", locale);
-			Locale newLocale = new Locale(locale.substring(0,2), locale.substring(3));
-			ActionContext.getContext().setLocale(newLocale);
+				locale = user.getLocale();
+					ActionContext.getContext().getSession().put("locale", locale);
+					 newLocale = new Locale(locale.substring(0,2), locale.substring(3));
+					 ActionContext.getContext().setLocale(newLocale);
 		}
 		return locale;
 	} 

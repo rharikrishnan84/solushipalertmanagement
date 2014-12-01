@@ -98,7 +98,7 @@ if(lstmenu1 !=null && lstmenu1.size()>0)
 
 %>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/closeWindow.js"></script>		
-<body onload="getOnloadStatus('<%=windowStatus%>','<%=packType%>','<%=request.getContextPath()%>','<%=strHtag %>','<%=strStag %>');">
+<body>
 <div id="wrapper_new">
 	
 				<s:include value="%{#session.business.headerKey}"></s:include>		

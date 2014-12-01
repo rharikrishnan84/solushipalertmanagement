@@ -1710,6 +1710,14 @@
             <result type="tiles" name="success">unavailable</result>
         </action>
        	        
+       	<action name="invoiceBreakdown.download" method="invoiceBreakdownPrint" class="invoiceManagerAction">
+		    <result type="redirectAction" name="success">invoiceBreakdown</result>
+		</action>
+		
+		<action name="invoiceBreakdown" class="invoiceManagerAction" method="invoiceBreakdown">
+            <result type="tiles" name="success">invoiceBreakdown</result>
+            <result type="tiles" name="input">invoiceBreakdown</result>
+       	</action> 
 	</package>
 
 </struts>

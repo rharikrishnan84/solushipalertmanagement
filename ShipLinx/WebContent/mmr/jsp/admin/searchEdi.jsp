@@ -283,7 +283,7 @@ display:none;
 				<th style="width:130px !important;"><mmr:message messageId="label.ediinvoice.invoicedate"/> </th>
 				<th style="width:130px !important;"><mmr:message messageId="label.ediinvoice.processed"/></th>
 				<!--<th style="width:150px !important;">Detail Seq. #</th>-->
-				<th><mmr:message messageId="label.invoices.amount" /></th>
+				<th><mmr:message messageId="label.ediinvoice.amount"/></th>
 				<th><mmr:message messageId="label.ediinvoice.filename"/></th>
 				<th><mmr:message messageId="label.ediinvoice.status"/></th>
 				<th><mmr:message messageId="label.ediinvoice.message"/></th>

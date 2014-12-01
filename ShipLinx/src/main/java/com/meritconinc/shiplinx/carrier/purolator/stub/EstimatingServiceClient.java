@@ -145,7 +145,8 @@ public class EstimatingServiceClient {
 				logger.info("No services returned by Puro web service!");
 				return ratingList;
 			}
-				
+			List<Service> tempList=new ArrayList<Service>();
+			Integer[] servicesToRemove = new Integer[50];
 			for(Service service: availableServices.getValue().getService()){
 				//rateMap = callGetQuickEstimate(stub,requestContext);
 
@@ -175,10 +176,16 @@ public class EstimatingServiceClient {
 				//need to continue with next value if not available and selected by user
 
 				//this service provides the services customer is requesting
-				availServiceCount++;
+				if(!checkOptions){	
+					tempList.add(service);
+				}else{
+					availServiceCount++;
+				}
 				//rateMap2.putAll(callGetFullEstimate(stub,requestContext,availableServices.getService()[i]));
 			}
-
+			for(Service service:tempList){
+				availableServices.getValue().getService().remove(service);
+			}
 			if(availServiceCount>0)
 				ratingList = callGetFullEstimate();
 			return ratingList;
@@ -814,7 +821,9 @@ public class EstimatingServiceClient {
 			logger.debug("Service " + service.getID() +" does not support COD!");
 			return false;
 		}
-
+		if(availableSignatureRequired && order.getSignatureRequired()==1){
+						availableSignatureRequired=false;
+					}
 		return true;	
 			
 	}
@@ -935,7 +944,7 @@ public class EstimatingServiceClient {
 			option.setID("ExpressChequeAmount");
 			option.setValue(String.valueOf(order.getCODValue()));
 			arr.getOptionIDValuePair().add(option);
-			optInf.setExpressChequeAddress(objectFactory.createAddress(setReceiverAddress()));
+			optInf.setExpressChequeAddress(objectFactory.createAddress(setSenderAddress()));
 		}
 		
 		//if nothing is selected then set the OriginSignatureNotRequired option

@@ -16,6 +16,7 @@ import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.constants.NavConsts;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.PropertyDAO;
+import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.mmr.model.common.LoginStatusVO;
 import com.meritconinc.mmr.model.common.MenuItemVO;
@@ -167,7 +168,18 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 			}
 			else if(StringUtil.isEmpty(nextAction)) {
 				MenusDAO menusDAO = (MenusDAO) MmrBeanLocator.getInstance().findBean("menusDAO");
-				MenuItemVO menuItem = menusDAO.getMenuById(user.getDefaultMenuId(), user.getRoles(), MessageUtil.getLocale());
+				UserDAO userDAO = (UserDAO)MmrBeanLocator.getInstance().findBean("userDAO");
+				String displayTextLocale = null;
+				MenuItemVO menuItem  = new MenuItemVO();
+				if(MessageUtil.getLocale() != null && !MessageUtil.getLocale().isEmpty()){
+					displayTextLocale=userDAO.getDisplayTextByLocale(MessageUtil.getLocale()).getDisplayText();
+					if(displayTextLocale!=null && !displayTextLocale.isEmpty()){
+						menuItem = menusDAO.getMenuById(user.getDefaultMenuId(), user.getRoles(),displayTextLocale);
+					}else{
+						menuItem = menusDAO.getMenuById(user.getDefaultMenuId(), user.getRoles(), MessageUtil.getLocale());
+					}
+				}
+				 
 				if(menuItem!=null){
 					//Check if the Customer is a Warehouse Customer, if Yes, then redirect to the corresponding url.
 					if(UserUtil.getMmrUser().getCustomerId() > 0)
@@ -182,7 +194,12 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 					nextAction = menuItem.getUrl();
 					//determine the top menu to highlight
 					while(!menuItem.getLevel().equalsIgnoreCase(MenuItemVO.TOP_LEVEL)){
-						menuItem = menusDAO.getMenuById(menuItem.getParentId(), user.getRoles(), MessageUtil.getLocale());
+						if(displayTextLocale!=null && !displayTextLocale.isEmpty()){
+							menuItem = menusDAO.getMenuById(menuItem.getParentId(), user.getRoles(), displayTextLocale);
+						}else{
+							menuItem = menusDAO.getMenuById(menuItem.getParentId(), user.getRoles(), MessageUtil.getLocale());
+						}
+						
 						if(menuItem.getName().equalsIgnoreCase(NavConsts.TOP_LEVEL_SHIPPING))
 						{
 							menuItem.setUrl(NavConsts.SHIPPING_WAREHOUSE_CUSTOMER);

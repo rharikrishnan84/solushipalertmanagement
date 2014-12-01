@@ -75,7 +75,7 @@
 			<th style="width: 175px !important;"> <mmr:message messageId="label.searchar.invoicenumber"/></th>
 			<th style="width: 220px ;"><mmr:message messageId="label.searchar.remittancedate"/></th>
 			<th style="text-align:right;padding-right:10px;width: 75px ;"><mmr:message messageId="label.searchar.amount"></mmr:message></th>
-			<th style="width: 75px ;"><mmr:message messageId="label.searchar.paidby"/><mmr:message messageId="Payment Ref#"/></th>	
+			<th style="width: 75px ;"><mmr:message messageId="label.searchar.paidby"/><mmr:message messageId="Payment Ref#"/></th>
 			<th style="width: 175px !important;"><mmr:message messageId="label.searchar.paymentref"></mmr:message></th>
 			</tr>
 		</thead>

@@ -321,7 +321,8 @@ var vkey = "";
 		<div id="rslt_stmnt">
 			<div class="form_buttons" style="float:right;">
 			<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
-			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a><ul id="actionmenu">
+			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
+			<ul id="actionmenu">
 				<li><a href="<%=request.getContextPath()%>/admin/addnewproduct.action" ><mmr:message messageId="label.list.addproduct"/></a></li>
 				<li><s:a onclick="editProduct();" href="#" cssClass="gridedit" ><mmr:message messageId="label.list.edit"/> </s:a></li>
 				<li><s:a onclick="deleteProduct()" href="#" cssClass="griddelete"><mmr:message messageId="label.list.delete"/> </s:a></li>

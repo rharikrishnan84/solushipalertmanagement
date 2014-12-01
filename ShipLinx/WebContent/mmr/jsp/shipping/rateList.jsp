@@ -803,7 +803,7 @@ var radioselected = 0;
 	<!-- Check if the Shipment is International and if the packagetype is 'Package' OR 'Pallet' -->
 	<s:if test="%{shippingOrder.isInternationalShipment==true && (#session.shippingOrder.packageTypeId.packageTypeId==3 || #session.shippingOrder.packageTypeId.packageTypeId==4)}">
 	<div id="customInvoiceDetails">
-		<s:include value="CustomsInvoiceDetails.jsp" />
+		<jsp:include page="CustomsInvoiceDetails.jsp" />
 	</div>
 	</s:if>
 	
@@ -941,19 +941,37 @@ var radioselected = 0;
 					<td style="position:relative;"> 
 					<div style="position:relative;" class="popup_div">
 						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label><mmr:message messageId="label.ratelist.total"/> :</label> 
-						<s:text name="format.money" ><s:param name="value" value="%{totalCost}" /></s:text> :  <s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text></b></div>
+						<s:label name="curr" value="%{#session.LocalCurrencySymbol}"/>
+			<s:text name="format.customMoney" ><s:param name="value" value="%{totalCostLocalCurrency}" /></s:text> : 
+						
+       		<s:label name="curr" value="%{#session.LocalCurrencySymbol}"/>
+			<s:text name="format.customMoney" ><s:param name="value" value="%{totalChargeLocalCurrency}" /></s:text></b></div>
 													<div class="popup_text"
 														id="popup_<s:property value="%{#index}"/>">
 														<s:iterator value="charges">
-															<s:property value="%{name}"/> :<s:text name="format.money" ><br/>
-							<s:param name="value" value="%{tariffRate}" /></s:text> :<s:text name="format.money" ><br/>
-							<s:param name="value" value="%{cost}" /></s:text> :<s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
+															<s:property value="%{name}" /> :<s:label name="curr"
+																value="%{#session.LocalCurrencySymbol}" />
+															<s:text name="format.customMoney">
+																<br />
+																<s:param name="value" value="%{tariffInLocalCurrency}" />
+															</s:text> :<s:label name="curr"
+																value="%{#session.LocalCurrencySymbol}" />
+															<s:text name="format.customMoney">
+																<br />
+																<s:param name="value" value="%{costInLocalCurrency}" />
+															</s:text> :<s:label name="curr"
+																value="%{#session.LocalCurrencySymbol}" />
+															<s:text name="format.customMoney">
+																<br />
+																<s:param name="value" value="%{chargeInLocalCurrency}" />
+															</s:text>
+															<br />
 														</s:iterator>
 
 														<s:set var="markupTypeText"
 															value="%{shippingOrder.rateList[#rowstatus.index].markupTypeText}" />
 														<s:if test="#markupTypeText.equals('Flat')">
-															<s:property value="%{markupTypeText}"/> :<s:text name="format.money" ><s:param name="value" value="%{markupFlat}" /></s:text>
+															<s:property value="%{markupTypeText}"/> :<s:label name="curr" value="%{#session.LocalCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{markupFlat}" /></s:text>
 
 														</s:if>
 

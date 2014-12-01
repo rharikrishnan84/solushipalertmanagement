@@ -703,7 +703,8 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	public boolean isCustomerMarkupByDisabled(long customerId) {
 		return markupDAO.isCustomerMarkupByDisabled(customerId);
 	}
+	
 	public List<Markup> getAllMarkupsForCustomer(Long customerId){
-						return markupDAO.getAllMarkupsForCustomer(customerId);
-					}
+		return markupDAO.getAllMarkupsForCustomer(customerId);
+	}
 }

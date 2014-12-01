@@ -76,8 +76,34 @@ public class Rating implements Serializable {
 
   private long slaveServiceId;
   private long slaveCarrierId;
-   
+  private Double totalChargeLocalCurrency;
+  private Double totalCostLocalCurrency;
+  private String localCurrencySymbol;
   
+  
+  public Double getTotalChargeLocalCurrency() {
+	  return totalChargeLocalCurrency;
+  }
+
+  public void setTotalChargeLocalCurrency(Double totalChargeLocalCurrency) {
+	  this.totalChargeLocalCurrency = totalChargeLocalCurrency;
+  }
+
+  public Double getTotalCostLocalCurrency() {
+	  return totalCostLocalCurrency;
+  }
+
+  public void setTotalCostLocalCurrency(Double totalCostLocalCurrency) {
+	  this.totalCostLocalCurrency = totalCostLocalCurrency;
+  }
+
+  public String getLocalCurrencySymbol() {
+	  return localCurrencySymbol;
+  }
+
+  public void setLocalCurrencySymbol(String localCurrencySymbol) {
+	  this.localCurrencySymbol = localCurrencySymbol;
+  }
   private int variable;    
       public int getVariable() {
   	return variable;

@@ -56,7 +56,7 @@
 	}
 	.login_box ul{ float:left; height:auto; width:auto; list-style-type:none;}
 	.login_box ul li{ height:25px;}
-	..login_box ul li label{ width:130px; padding-top:3px; padding-right:5px; float:left; font-size:10px; text-align:right; }
+	.login_box ul li label{ width:130px; padding-top:3px; padding-right:5px; float:left; font-size:10px; text-align:right; }
 	.login_box ul li select,.login_box ul li input{ float:left;  padding:0px;}
 	.login_box ul li select{ height:22px; width:122px; }
 	.login_box ul li input{ height:20px; width:120px; }

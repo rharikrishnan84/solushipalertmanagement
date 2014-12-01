@@ -1,6 +1,5 @@
 package com.meritconinc.mmr.interceptor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,7 +7,9 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.meritconinc.mmr.dao.MenusDAO;
+import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.model.common.MenuItemVO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.opensymphony.xwork2.ActionContext;
 
 public class MenuGenerator {
@@ -26,6 +27,16 @@ public class MenuGenerator {
 
 	public void generateMenus(int selectedId) {
 		// TODO Auto-generated method stub
+		UserDAO userDAO = (UserDAO)MmrBeanLocator.getInstance().findBean("userDAO");
+		String displayTextLocale = null;
+		String tempLocale = locale;
+		if(locale != null && !locale.isEmpty()){
+			displayTextLocale = userDAO.getDisplayTextByLocale(locale).getDisplayText();
+			if(displayTextLocale !=null && !displayTextLocale.isEmpty()){
+				locale = displayTextLocale;
+			}
+		}
+		
         List<MenuItemVO> topMenu = menusDAO.getTopMenus(roles, locale);
 		checkForUrlUpdate(topMenu, roles, menusDAO, locale);
 		List<MenuItemVO> levelOneMenus = null;
@@ -63,7 +74,8 @@ public class MenuGenerator {
 			ActionContext.getContext().getSession().remove("LEVEL_TWO_MENUS");			
 		}
 		MenuItemVO menuItem = menusDAO.getWelcomeMenuBylocale(locale);
-		ActionContext.getContext().getSession().put("getWelcomeMenu", menuItem.getMsgContent());
+				ActionContext.getContext().getSession().put("getWelcomeMenu", menuItem.getMsgContent());
+			  locale =tempLocale;
 	}
 
 	private List<MenuItemVO> getLevelTwoMenus(MenuItemVO selectedMenu, 	List<MenuItemVO> levelOneMenus, Collection<String> roles,

@@ -285,16 +285,16 @@ function removeCustomAlert() {
 					status="lvl_one_menus">
 					<li> <a
 						href="<s:url value="%{url}" includeContext="true" includeParams="none" />">
-					<s:property value="name" /> </a>  <s:if
+										<s:property value="name" /> </a>  <s:if
 						test="%{#lvl_one_menus.last != true}">
-						</li>
+						
 					</s:if>
+					</li>
 				</s:iterator>
 							
 						</ul>
-						<s:if test="%{!#session.ROLE.contains('sales')}">
 						<p><s:label value="%{#session.getWelcomeMenu}"/> &nbsp;&nbsp;&nbsp;&nbsp;<s:property value="#session['username']" />
-					    </s:if>
+ 		               </p>
 					</div>
 				
 					<div class="nextlevelmenu">

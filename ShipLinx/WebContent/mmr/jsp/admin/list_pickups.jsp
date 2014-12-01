@@ -157,14 +157,13 @@
     <thead>
 		<tr style="height:35px">
 			<th style="width:30px; text-align:center;"><input id="check_all" onclick="checkUncheck('check_uncheck_row')" type="checkbox" /></th>
-			<th><span style=" width:auto; float:left;"><mmr:message messageId="label.searchpickup.customer"/></span></th>
+<th><span style=" width:auto; float:left;"><mmr:message messageId="label.searchpickup.customer"/></span></th>
 			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.pickupdate"/></span> </th>
 			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.pickuptime"/> </span></th>
 			<th style="width:135px !important;float:right;margin-top:10px"><mmr:message messageId="label.searchpickup.pickuplocation"/> </th>
 			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.carrier"/></span></th>
 			<th><span style=" width:125px; float:left;"><mmr:message messageId="label.searchpickup.confirmationnum"/></span> </th>
 			<th><span style=" width:125px; float:left;"><mmr:message messageId="label.searchpickup.pickupaddress"/> </span></th>
-			
 			<th><span style=" width:100px; float:left;"><mmr:message messageId="label.searchpickup.status"/></span></th>
 		
 		</tr>

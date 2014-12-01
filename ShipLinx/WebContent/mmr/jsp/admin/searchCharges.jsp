@@ -218,7 +218,7 @@ function editCharge(){
 		<div id="rslt_stmnt" class="form_buttons">
 		<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
 			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
-		<ul id="actionmenu">
+			<ul id="actionmenu">
 			<li><a href="#" onclick="editCharge();" href="#" ><mmr:message messageId="label.list.edit"/></a></li>
 			<li><a href="#" onclick="deleteCharge()" href="#"><mmr:message messageId="label.list.delete"/></a></li>
 			</ul>			

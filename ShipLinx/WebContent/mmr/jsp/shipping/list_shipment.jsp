@@ -19,11 +19,7 @@
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
 	
 	
-	<style>
-		#srchshipmnt_result_tbl_print_label{margin-left: 0px; float: right; width:auto; margin-right:10px;}
-		.form_buttons{ float:right;}
 		
-	</style>	
 	<script type="text/javascript">
  $(document).ready(function() {
   $('#sample1').dataTable({
@@ -275,7 +271,11 @@ function download_files(type) {
 			false
 		</s:else>
 	</s:set>
-	
+	<style>
+			#srchshipmnt_result_tbl_print_label{margin-left: 0px; float: right; width:auto; margin-right:10px;}
+		.form_buttons{ float:right;}
+		
+	</style>
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;margin-top:1px">
 	<div id="srchusr_res"><span><mmr:message messageId="label.track.header.listshipment"/></span></div>
@@ -311,7 +311,7 @@ function download_files(type) {
 			</s:else>
 			
 		</div>
-
+		
 		</div>
 	</div>	
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
@@ -321,7 +321,7 @@ function download_files(type) {
 			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}"> 
 			<th><span style="width:90px !important; float:left;"><mmr:message messageId="label.ghead.company"/></th>
 			</s:if>
-		<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.order"/> #</span></th>
+			<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.order"/> #</span></th>
 			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.tracking"/> #</span></th>
 			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.shipdate"/></span></th>
 			<s:if test="%{#request.fromCart != null && #request.fromCart != 'false'}">
@@ -336,8 +336,7 @@ function download_files(type) {
 			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.carrier"/></span></th>
 				</s:else>
 			<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.service"/></span></th>
-			<th ><span style="width:60px !important; float:left; text-align:right;" title="Quoted/Billed Weight"><mmr:message messageId="label.ghead.qb"/></span></th>
-			<th ><span style="width:80px !important; float:left; text-align:left;" title="Quoted/Billed Weight"><mmr:message messageId="label.ghead.weight"/></span></th>
+			<th ><span style="width:100px !important; float:left; " title="Quoted/Billed Weight"><mmr:message messageId="label.ghead.qb"/>/<mmr:message messageId="label.ghead.weight"/></span></th>
 			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.quotedcharge"/></span></th>
 			<th ><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.billedcharge"/></span></th>
 			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.fromaddress"/></span></th>
@@ -404,21 +403,38 @@ function download_files(type) {
 				</s:else>
 				<td title="<s:property value="service.name"/>"><div style="width:80px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="service.name"/></div></td>
 				
-				<td style="width:70px; text-align:right;"><s:property value="quotedWeight" /></td>
-				<td style="width:70px; text-align:right;"><s:property value="billedWeight" />
-				</td>
+				<td style="width:100px; "><s:property value="quotedWeight" />/<s:property value="billedWeight" /></td>
 				<td style="width:70px">
-					$<s:property value="%{shipments[#index].quoteTotalCharge}"/>
-					
+					<s:if test="%{shipments[#index].quoteTotalCharge} !=null">
+						<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].quoteTotalCharge}"/></s:text>
+					</s:if>
+					<s:else>
+					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
+					</s:else>
 					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-					 /$<s:property value="%{shipments[#index].quoteTotalCost}"/>
+					<s:if test="%{shipments[#index].quoteTotalCost} !=null">
+					 /<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].quoteTotalCost}"/></s:text>
+					</s:if>
+					<s:else>
+					 /<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
+					</s:else>
 					</s:if>
 					</td>
 					<td>
-					$<s:property value="%{shipments[#index].actualTotalCharge}"/>
+					<s:if test="%{shipments[#index].actualTotalCharge} !=null">
+					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].actualTotalCharge}"/></s:text>
+					</s:if>
+					<s:else>
+					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
+					</s:else>
 					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-					/ $
-					<s:property value="%{shipments[#index].actualTotalCost}"/>
+					<s:if test="%{shipments[#index].actualTotalCost} !=null">
+				/ <s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>
+					<s:text name="format.customMoney" ><s:param value="%{shipments[#index].actualTotalCost}"/></s:text>
+					</s:if>
+					<s:else>
+					/ <s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
+					</s:else>
 					</s:if>
 					</td>
 				<td title="<s:property value="fromAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromAddress.longAddress" /></div></td>

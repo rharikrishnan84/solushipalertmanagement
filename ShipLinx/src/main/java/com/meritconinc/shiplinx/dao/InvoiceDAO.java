@@ -3,6 +3,7 @@ package com.meritconinc.shiplinx.dao;
 import java.util.List;
 
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.Commission;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
@@ -50,4 +51,8 @@ public interface InvoiceDAO {
 	 public Commission getcommissionbyId(Long invoiceId, String salesUser);
 	 public void deleteCommission(long invoiceId);
 	 public List<Commission> getCommissionsByInvoiceId(long invoiceId);
+	 public List<Invoice> searchInvoicesBreakdown(Commission commission);
+     public List<Invoice> getInvoiceChargeDetails(Long invoiceId);
+     public List<Charge> getChargeExchangeRateByInvoiceId(long invoiceId);
+     public List<Invoice> searchInvoicesBreakdownIncludeCanceledInvoice(Commission commission);
 }

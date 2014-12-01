@@ -124,9 +124,10 @@ display:none;
 					<label><mmr:message messageId="label.currency" /></label>
 					<div class="controls">
 						<s:select
-		list="#{'CAD':'CAD', 'USD':'USD'}"
-		name="salesRecord.currency" headerKey="" headerValue=""
+		list="currencyList"
+		name="salesRecord.currency" listKey="currencyCode" listValue="currencyCode"
 		cssClass="text_01_combo_medium" />
+		
 					</div>
 				</div>
 
@@ -158,7 +159,6 @@ display:none;
 	<th style="width:20px; text-align:center;"><input id="check_all" type="checkbox" /></th>
 	<th style="width: 175px !important;"><mmr:message messageId="label.commission.year"/></strong></th>
 	<th style="width: 220px ;"><mmr:message messageId="label.commission.month"/></th>
-	<th><mmr:message messageId="label.commission.currency"/></th>
 	<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.commission.totalcost"/> </th>
 	<th style="width: 175px !important;text-align:right;padding-right:10px"><mmr:message messageId="label.commission.totalrevenue"/> </th>
 	</tr>
@@ -171,9 +171,8 @@ display:none;
 	             <td style="width:20px; text-align:center;"> <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/> </td>	   
 	            <td><s:property value="year"/></td>
 	            <td><s:property value="monthName"/></td>
-				 <td><s:property value="Currency"/></td>
-	            <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="totalCost" /></s:text></td>
-				<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="totalAmount" /></s:text></td>		 
+	            <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="totalCost" /></s:text></td>
+				<td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="totalAmount" /></s:text></td>		 
 				</tr>
 				 <s:set var="total" value="%{#total+totalCost}"/> 
 				  <s:set var="totals" value="%{#totals+totalAmount}"/> 
@@ -183,10 +182,9 @@ display:none;
     <tr>
       <td><span style="float:left; width:65px;"><mmr:message messageId="label.commission.total"/>:</span></td>
       <td></td>
-	  <td></td>
       <td></td>
-	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#total}" /></s:text></td>
-	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totals}" /></s:text></td>
+	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#total}" /></s:text></td>
+	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totals}" /></s:text></td>
      
     </tr>
   </tfoot>

@@ -256,7 +256,10 @@ public class EODManifestCreator implements BinaryExportView {
       trgBufferWritter.write(content.toString());
       txtBufferWritter.close();
       trgBufferWritter.close();
-      String path = customerCarrier.getProperty3();
+      String path = "198.73.126.254/MANIFEST";
+      if (this.customerCarrier != null && this.customerCarrier.getProperty3() !=null) {
+          path = this.customerCarrier.getProperty3();
+        }
       String[] pathSplit = path.split("/");
       StringBuilder stringBuilder = new StringBuilder();
       for (int i = 0; i < pathSplit.length; i++) {
@@ -265,7 +268,11 @@ public class EODManifestCreator implements BinaryExportView {
         }
       }
       client.connect(pathSplit[0]);
-      client.login(customerCarrier.getProperty1(), customerCarrier.getProperty2());
+      if (this.customerCarrier != null && this.customerCarrier.getProperty1()!=null && this.customerCarrier.getProperty2() !=null)
+          client.login(this.customerCarrier.getProperty1(), this.customerCarrier.getProperty2());
+        else {
+          client.login("smackay", "zxc67*^");
+        }
       txtFileInputStream = new FileInputStream(txtFile);
       trgFileInputStream = new FileInputStream(trgFile);
       if (stringBuilder != null && stringBuilder.length() > 0) {

@@ -19,6 +19,9 @@
 		<result property="paidAmount"	column="paid_amount"/>
 		<result property="payableDays"	column="payable_days"/>
 		<result property="currency"	column="currency"/>
+		<result property="totalCHB"	column="chb_total"/>
+		<result property="totalLTL"	column="ltl_total"/>
+		<result property="totalSPD"	column="spd_total"/>
 		<result property="customer" column="customer_id" select="getCustomerInfoByCustomerId"/>
 		<result property="paymentStatusString" column="payment_status" select="getInvoiceStatusById"/>
 		<result property="salesRep" column="sales_username" />		
@@ -74,7 +77,40 @@
 		<result property="totalLTL" column="total_ltl"/>
 		<result property="totalCHB" column="total_chb"/>
 	</resultMap>
+	
+	<resultMap id="commissionResultMap" class="com.meritconinc.shiplinx.model.Commission">
+		<result property="customerId"	column="customer_id"/>	
+		<result property="customerName"	column="customer_name"/>	
+		<result property="invoiceId"	column="invoice_id"/>
+		<result property="invoiceNum"	column="invoice_num"/>
+		<result property="userId"	column="user_id"/>
+		<result property="invoiceTotal"	column="invoice_total"/>
+		<result property="costTotal"	column="cost_total"/>
+		<result property="commissionPayable"	column="commission_payable"/>
+		<result property="customerPaid"	column="customer_paid"/>
+		<result property="repPaid"	column="rep_paid"/>
+		<result property="notes"	column="notes"/>
+		<result property="dateCreated"	column="date_created"/>
+		<result property="salesUser" column="sales_user"/>
+		<result property="totalSPD" column="total_spd"/>
+		<result property="totalLTL" column="total_ltl"/>
+		<result property="totalCHB" column="total_chb"/>
+		<result property="invoiceCurrency" column="currency"/>
+	</resultMap>
 
+	<resultMap id="breakDownTotalsMap" class="com.meritconinc.shiplinx.model.Invoice">
+		<result property="breakdownTotal"/>
+		<result property="emailType"/>	
+	</resultMap>
+
+	<resultMap id="exRateResult" class="com.meritconinc.shiplinx.model.Charge">
+		<result property="exchangerate"	column="exchange_rate"/>	
+		<result property="isTax" column="is_tax"/>
+		<result property="charge" column="charge"/>
+		<result property="cost" column="cost"/>
+		<result property="chargecurrency" column="charge_currency"/>
+	</resultMap>
+ 
 	<insert id="createInvoice" parameterClass="com.meritconinc.shiplinx.model.Invoice">
 		  insert into invoice(invoice_num, customer_id,date_created,invoice_date, due_date, invoice_amount,invoice_cost,invoice_tax,invoice_tax_cost,payment_status,paid_amount,payable_days,currency,business_id) 
 		  values (#invoiceNum#, #customerId#,#dateCreated#,#invoiceDate#,#invoiceDueDate#, #invoiceAmount#,#invoiceCost#,#invoiceTax#,#invoiceTaxCost#,#paymentStatus#,#paidAmount#,#payableDays#,#currency#,#businessId#)
@@ -149,16 +185,12 @@
 	</select>
 	
 	<select id="getSalesReport" parameterClass="com.meritconinc.shiplinx.model.SalesRecord" resultMap="salesRecordMap">
-		 	SELECT sum(invoice_amount) AS 'total_amount', sum(invoice_cost) AS 'total_cost', month(invoice_date) AS 'month', monthname(invoice_date) AS 'month_name', year(invoice_date) AS 'year', currency AS 'currency' 
+		 	SELECT i.currency,sum(invoice_amount) AS 'total_amount', sum(invoice_cost) AS 'total_cost', month(invoice_date) AS 'month', monthname(invoice_date) AS 'month_name', year(invoice_date) AS 'year' 
 		 	from invoice i left join customer c on (i.customer_id=c.customer_id) where i.business_id = #businessId#	
 		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
 		 			i.customer_id = #customerId#
 		 		</isGreaterThan>	
-		 		<isNotNull property="currency">
-			 		<isNotEmpty prepend="and" property="currency">
-			 			i.currency = #currency#
-			 		</isNotEmpty>	
-		 		</isNotNull>
+		 		
 		 		<isNotNull prepend="AND" property="year">
 		 			<![CDATA[year(i.invoice_date) = #year#]]>
 		 		</isNotNull>
@@ -173,7 +205,7 @@
 		 		<iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
   					i.payment_status=#paymentStatusList[]#
 				</iterate>
-				group by month(i.invoice_date), i.currency
+				group by month(i.invoice_date) , i.currency 
 				 
 	</select>
 
@@ -403,8 +435,8 @@
             select * from commission where invoice_id = #invoiceId# 
 	</select>
  	
-	<select id="searchCommissions" parameterClass="com.meritconinc.shiplinx.model.Commission" resultMap="commissionMap">
-	select c.* from commission c left join invoice_charges i on (i.invoice_id=c.invoice_id) where  c.rep_paid=#repPaid#  and c.commission_payable != 0 and i.cancelled_invoice='No'
+	<select id="searchCommissions" parameterClass="com.meritconinc.shiplinx.model.Commission" resultMap="commissionResultMap">
+	select c.*,i.currency from commission c left join invoice_charges ic on (ic.invoice_id=c.invoice_id) left join invoice i on(i.invoice_id=ic.invoice_id) where  c.rep_paid=#repPaid#  and c.commission_payable != 0 and ic.cancelled_invoice='No'
 		<isNotNull prepend="AND" property="fromDate">
 		 	<![CDATA[c.date_created >= #fromDate#]]>
 		</isNotNull>
@@ -419,4 +451,42 @@
 	<delete id = "deleteCommission">
 		    delete from commission where invoice_id=#invoiceId#
 	    </delete>
+	    
+	    <select id="searchInvoicesBreakdownIncludeCanceledInvoice" parameterClass="com.meritconinc.shiplinx.model.Commission"
+		resultMap="invoiceMap">
+		select * from invoice where  	
+	 		<![CDATA[date_created >= #fromDate#]]>
+		and 
+	 		<![CDATA[date_created <= #toDate#]]>	 		
+		group by invoice_id
+	</select>
+	
+	<select id="searchInvoiceBreakdown" parameterClass="com.meritconinc.shiplinx.model.Commission"
+		resultMap="invoiceMap">
+		select * from invoice where  	
+	 		<![CDATA[date_created >= #fromDate#]]>
+		and 
+	 		<![CDATA[date_created <= #toDate#]]>	
+	 	and	payment_status!=40 		
+		group by invoice_id
+	</select>
+
+	<select id="getInvoiceChargeDetailsById" resultMap="breakDownTotalsMap">
+		select sum(ch.charge), s.email_type
+		from 	invoice_charges ic ,
+				charges ch ,
+				shipping_order so ,
+				service s,charge_group cg
+		where 	ic.invoice_id=#invoiceId#
+				and ic.charge_id=ch.id
+				and ch.order_id=so.order_id
+				and so.service_id=s.service_id
+				and cg.group_code=ch.charge_code
+				and cg.is_tax=0
+		group by s.email_type
+	</select>
+	
+	<select id="getChargeExchangeRateByInvoiceId" resultMap="exRateResult">
+           select c.charge, c.cost, c.exchange_rate, c.charge_currency, cg.is_tax from charges c left join invoice_charges ic on(c.id=ic.charge_id) left join carrier_charge_code ccc on(c.charge_code=ccc.charge_code) left join charge_group cg on(cg.id=ccc.charge_group_id) where ic.invoice_id=#invoiceId# group by c.id;
+		</select>	
 </sqlMap>

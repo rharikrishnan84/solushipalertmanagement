@@ -582,13 +582,14 @@ display:none;
 	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.dco"/></span></th>
 
 	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.type"/></span></th>
-	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.from"/></span></th>
+	<th><span style="width:65px !important; float:left;"><mmr:message messageId="label.ghead.from"/></span></th>
 	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.to"/></span></th>
 
-<th><span style="width:82px !important; float:left;"><mmr:message messageId="label.ghead.variable"/></span></th>
+<th><span style="width:85px !important; float:left;"><mmr:message messageId="label.ghead.variable"/></span></th>
 	<th style="text-align:right;padding-right:18px">%</th>
 	<th style="text-align:right;padding-right:18px">$</th>
-	<th><span style="width:82px !important; float:left;"><mmr:message messageId="label.ghead.inactive"/></span></th>
+		<th><span style="width:82px !important; float:left;"><mmr:message messageId="label.ghead.inactive"/></span></th>
+ 
 	</tr>
 	</thead>	
 	<tbody>

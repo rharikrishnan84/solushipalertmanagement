@@ -34,7 +34,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 <div class="content_body">
 							<div class="content_table">
 								<div class="content_header">
-									<div class="cont_hdrtitle_c" style="width:460px !important;"><mmr:message messageId="label.enter.shipping.details"/><s:if test="%{shippingOrder.id > 0}">&nbsp;---&nbsp;<mmr:message messageId="label.shippingOrderTab.order"/>#&nbsp;<font color="white"><s:property value="shippingOrder.id" /></font></s:if>
+									<div class="cont_hdrtitle_c" style="width:auto !important;"><mmr:message messageId="label.enter.shipping.details"/><s:if test="%{shippingOrder.id > 0}">&nbsp;---&nbsp;<mmr:message messageId="label.shippingOrderTab.order"/>#&nbsp;<font color="white"><s:property value="shippingOrder.id" /></font></s:if>
 	<s:else>
 	
 	<mmr:message messageId="label.enter.new.shipping.details"/></s:else>
@@ -90,10 +90,10 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 				<div class="content_body">
 				<div class="content_table">
 								<div class="content_header">
-									<div class="cont_hdrtitle_c"><mmr:message messageId="label.enter.shipping.details"/><s:if test="%{shippingOrder.id > 0}">&nbsp;---&nbsp;<mmr:message messageId="label.shippingOrderTab.order"/>#&nbsp;<font color="white"><s:property value="shippingOrder.id" /></font></s:if>
+									<div class="cont_hdrtitle_c" style="width:auto !important;"><mmr:message messageId="label.enter.shipping.details"/><s:if test="%{shippingOrder.id > 0}">&nbsp;---&nbsp;<mmr:message messageId="label.shippingOrderTab.order"/>#&nbsp;<font color="white"><s:property value="shippingOrder.id" /></font></s:if>
 	<s:else><mmr:message messageId="label.enter.new.shipping.details"/></s:else></div>
-									<div class="form_buttons" style="width:200px">
-										<a href="javascript:backToShipment();"><mmr:message messageId="btn.switch.quotemode"/></a>
+									<div class="form_buttons" style="width:203px">
+										<a href="javascript:backToShipment();"><span style="width:100% !important;"><mmr:message messageId="btn.switch.quotemode"/></span></a>
 									</div>
 								</div>
 							</div>	

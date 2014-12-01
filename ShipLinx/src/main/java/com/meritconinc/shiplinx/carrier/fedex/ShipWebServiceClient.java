@@ -194,8 +194,13 @@ public class ShipWebServiceClient extends FedExRequestHelper {
       shipperAddress.setPostalCode(order.getFromAddress().getPostalCode());
       shipperAddress.setCountryCode(order.getFromAddress().getCountryCode());
       shipperAddress.setCity(order.getFromAddress().getCity());
-      String[] shipperStreetLineArr = new String[1];
+      String[] shipperStreetLineArr = new String[2];
       shipperStreetLineArr[0] = order.getFromAddress().getAddress1();
+      if(order.getFromAddress().getAddress2()!= null && !order.getFromAddress().getAddress2().isEmpty()){
+      shipperStreetLineArr[1] = order.getFromAddress().getAddress2();
+      }else{
+    	  shipperStreetLineArr[1]="";
+      }
       // shipperAddress.set
       shipperAddress.setStreetLines(shipperStreetLineArr);
       shipper.setAddress(shipperAddress);
@@ -212,8 +217,13 @@ public class ShipWebServiceClient extends FedExRequestHelper {
       recipientAddress.setPostalCode(order.getToAddress().getPostalCode());
       recipientAddress.setCountryCode(order.getToAddress().getCountryCode());
       recipientAddress.setCity(order.getToAddress().getCity());
-      String[] recipientStreetLineArr = new String[1];
+      String[] recipientStreetLineArr = new String[2];
       recipientStreetLineArr[0] = order.getToAddress().getAddress1();
+      if(order.getToAddress().getAddress2()!=null && !order.getToAddress().getAddress2().isEmpty()){
+      recipientStreetLineArr[1] = order.getToAddress().getAddress2();
+      }else{
+    	  recipientStreetLineArr[1]="";
+      }
       // shipperAddress.set
       recipientAddress.setStreetLines(recipientStreetLineArr);
       if (order.getToAddress().isResidential())

@@ -670,4 +670,9 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
   
   	return (User)getSqlMapClientTemplate().queryForObject("getUserByUsercode",userCode);
     }
+
+@Override
+public LocaleVO getDisplayTextByLocale(String locale) {
+	return (LocaleVO) getSqlMapClientTemplate().queryForObject("getDisplayTextByLocale",locale);
+}
 }

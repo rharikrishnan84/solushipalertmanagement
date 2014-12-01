@@ -39,13 +39,22 @@ public class QuartzInitializerListener implements ServletContextListener {
 			crt.setName("Trigger"); 
 			//0 m H
 			
-			crt.setCronExpression("0 52 01 * * ?");
+			crt.setCronExpression("0 55 19 * * ?");
 			crt.setTimeZone(TimeZone.getTimeZone("EST"));
 			//crt.setCronExpression("0 11 15 * * ?");
 			log.debug("TIME "+crt.getTimeZone().getDisplayName());
-					
+						JobDetail job3 = new JobDetail();
+						job3.setName("Job3");
+						job3.setJobClass(ExchangeRateCurrencyUpdater.class);
+						CronTrigger crt3 = new CronTrigger();
+						crt3.setName("Trigger3");
+						//crt3.setCronExpression("05 * * * * ?");
+						crt3.setCronExpression("0 00 05 * * ?");
+						crt3.setTimeZone(TimeZone.getTimeZone("EST"));
+			
 			scheduler.start();
 			scheduler.scheduleJob(job, crt);
+			scheduler.scheduleJob(job3, crt3);
 
 		} catch (Exception e) {
 			System.out.println(e);

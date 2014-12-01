@@ -75,5 +75,6 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public Markup getUniqueMarkupList(Markup markup);
   public Markup findBaseMarkup(Markup markup);
   public boolean isCustomerMarkupByDisabled(long customerId);
+  
   public List<Markup> getAllMarkupsForCustomer(Long customerId);
 }

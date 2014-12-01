@@ -21,9 +21,6 @@ public class MenuItemVO  implements Serializable{
 	private List subMenuItems=null;
 	private String image;
 	private String imageOver;
-	
-	private String helptag;
-	private String supporttag;
 	private String msgContent;
 	public String getMsgContent() {
 		return msgContent;
@@ -31,6 +28,9 @@ public class MenuItemVO  implements Serializable{
 	public void setMsgContent(String msgContent) {
 		this.msgContent = msgContent;
 	}
+	private String helptag;
+	private String supporttag;
+	 
 	/**
 	 * @return the id
 	 */

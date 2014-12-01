@@ -537,6 +537,8 @@
         <put-attribute name="mainBody" value="/mmr/jsp/admin/salesReport.jsp"/>
     </definition>    
 	
-	
+	<definition name="invoiceBreakdown" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/invoiceBreakdown.jsp"/>
+    </definition> 
 </tiles-definitions>
 

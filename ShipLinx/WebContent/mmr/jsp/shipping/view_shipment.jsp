@@ -615,8 +615,8 @@ function deletecharge(action){
 						<div class="navi4">
 							<ul style="float:left; width:400px; border:0px;">
 								<li><mmr:message messageId="menu.orderdetails"/></li>
-						        <li><mmr:message messageId="menu.packagedetails"/></li>
-        						<li><mmr:message messageId="menu.statusupdate"/></li>
+        <li><mmr:message messageId="menu.packagedetails"/></li>
+        <li><mmr:message messageId="menu.statusupdate"/></li>
 							</ul>
 							<s:if test="%{selectedOrder.statusId!=40}">
 								<a id="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a>
@@ -1128,7 +1128,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<div class="cont_hdr_title"><mmr:message messageId="label.heading.quotecharges"/> :</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
-								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeQuoted}" /></s:text>
+								<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>
+								<s:text name="format.customMoney" ><s:param name="value" value="%{selectedOrder.totalChargeQuoted}" /></s:text>
 								</s:if>	
 								</div>
 								<s:if test="%{selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('busadmin') || selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('solutions_manager')}">
@@ -1143,7 +1144,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</label>
 							
 								<div class="controls" style="text-align:right;">
-									<s:select id="copy_to_actual" cssStyle=" float:left; width:176px !important;"  
+									<s:select id="copy_to_actual" cssStyle=" float:left; width:176px !important;" 
 													cssClass="text_01_combo_big"
 														name="quotedChargeStatusText"
 															list="{'','Pending Release','Ready to Invoice','Quick Invoice'}" theme="simple" />
@@ -1157,7 +1158,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<tr style="background-color:#d1d1d1; width:960px;  font-size:12px;">
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.carrier"/> </strong></td>
 							    <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.code"/> </strong></td>
-								<td class="ordrdtl_title_hdng"><strong style="width:auto; min-width:120px; float:left;"><mmr:message messageId="label.ghead.chargename"/> </strong></td>
+   								<td class="ordrdtl_title_hdng"><strong style="width:auto; min-width:120px; float:left;"><mmr:message messageId="label.ghead.chargename"/> </strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.tariff"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
@@ -1168,7 +1169,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
 								</s:if>
 								 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-                               <td class="ordrdtl_title_hdng"><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
+                                <td class="ordrdtl_title_hdng"><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
                                <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.exrate"/> </strong></td>
                                </s:if>
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
@@ -1234,8 +1235,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<s:if test="%{selectedOrder.actualCharges.size ==0}">
                                                <s:select 
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                        name="quotedcostcurrency" value="%{costcurrency}"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                        name="quotedcostcurrency" value="%{costcurrency}" headerKey="0" headerValue=" "
+                                                           list="currencyList" listKey="id" listValue="currencyCode" theme="simple" />
                                                            </s:if>
                                                            <s:else>
                                                             <s:if test="%{costcurrency==1}">
@@ -1267,8 +1268,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<s:if test="%{selectedOrder.actualCharges.size ==0}">
                                                <s:select 
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="quotedchargecurrency" value="%{chargecurrency}"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                       name="quotedchargecurrency" value="%{chargecurrency}" headerKey="0" headerValue=" "
+                                                           list="currencyList" listKey="id" listValue="currencyCode"  theme="simple" />
                                                            </s:if>
                                                            <s:else>
                                                            
@@ -1309,11 +1310,13 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											</td>	
 											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 										<td class="ordrdtl_title_val">
+												<span style="width:110px; float:left;">
 												<s:a onclick="return confirm('Do you really want to delete the selected charge?')"  cssStyle="padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
 												
 													<mmr:message messageId="btn.delete"/> 
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
 												</s:a>
+												</span>
 										</td>													
 											</s:if>		
 										</s:if>
@@ -1391,20 +1394,20 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td  class="ordrdtl_title" ><strong><mmr:message messageId="label.ghead.code"/> :</strong></td>
 									<td  class="ordrdtl_title"><strong><mmr:message messageId="label.ghead.newcharge"/> :</strong></td>
 									<td> </td>
-									<td  class="ordrdtl_title" ><strong style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.cost"/> :</strong></td>
+									<td  class="ordrdtl_title" ><strong style="width:65px !important; float:left;"><mmr:message messageId="label.ghead.cost"/> :</strong></td>
 									<td class="ordrdtl_title" width="12"><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
 									<!-- this is to hide the charge for customer_shipper user-->
 									<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 									<!-- this is to hide the charge for customer_shipper user-->
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
- 								<td class="ordrdtl_title_hdng" ><strong style="width:72px !important; float:left;"><mmr:message messageId="label.ghead.charge"/> :</strong></td>
+ 								 <td class="ordrdtl_title"><strong style="width:85px !important; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
 								</s:if>
 									</s:if>
 									<td class="ordrdtl_title" width="12"><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
-							     <td class="ordrdtl_title"><strong style="width:75px !important; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
-							  <td class="ordrdtl_title" ><strong>&nbsp;</strong></td>
+                                <td class="ordrdtl_title"><strong style="width:75px !important; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
 							   <td class="ordrdtl_title" ><strong>&nbsp;</strong></td>
- 
+							   <td class="ordrdtl_title" ><strong>&nbsp;</strong></td>
+
 							</tr>
 							<tr>
 								 <td>
@@ -1445,8 +1448,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td class="ordrdtl_title_val">
                                                <s:select value="%{statusText}"
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="newQuotedCharge.costcurrency"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                       name="newQuotedCharge.costcurrency" headerKey="1" 
+                                                           list="currencyList" listKey="id" listValue="currencyCode" theme="simple" />
                                                </td>
 									<!-- <td>&nbsp;</td> -->
 									<td class="ordrdtl_title_val">
@@ -1457,8 +1460,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td class="ordrdtl_title_val">
                                    
                                                <s:select  cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="newQuotedCharge.chargecurrency" 
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                        name="newQuotedCharge.chargecurrency" headerKey="1" 
+                                                           list="currencyList" listKey="id" listValue="currencyCode"  theme="simple" />
                                                </td>
                                                
                                    <td class="ordrdtl_title_val">
@@ -1473,12 +1476,12 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										list="{'Pending Release','Ready to Invoice'}" theme="simple" />
 									</td>
 									<td class="ordrdtl_title_val">
-										<span style="width:100px; float:left;">
+									<span style="width:100px; float:left;">
 										<a href="javascript: addQuotedCharge()" style="padding:3px 10px; background-color:#990000; width:auto; color:#FFF;font-weight:bold; FONT-SIZE:12PX; text-decoration:none; float:left;">
 											<mmr:message messageId="btn.add"/> 
 										<!--<img border="0" src="<s:url value="/mmr/images/add_product.png" includeContext="true" />-->
 										
-										</a>
+</a>
 										</span>
 										</td>
 								</tr>
@@ -1499,14 +1502,15 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<div class="cont_hdr_title"><mmr:message messageId="label.heading.actualcharges"/>  :</div>
 								<div class="cont_hdrtitle_l" style="width:200px">
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
-								<s:text name="format.money" ><s:param name="value" value="%{selectedOrder.totalChargeActual}" /></s:text>
+								<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>
+								<s:text name="format.customMoney" ><s:param name="value" value="%{selectedOrder.totalChargeActual}" /></s:text>
 								</s:if>
 					</div>
 					<s:if test="%{selectedOrder.actualCharges.size >0 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size >0 && #session.ROLE.contains('solutions_manager')}">
 					<div id="copy2actual" style="float:right; width:285px; margin-top:-2px; ">
 						<div class="fields" >
 							<label style=" width:130px !important; text-align:right; padding-right:5px;">
-								<a href="javascript: copyTheActual();"  style="text-decoration: none; color:#FFF; font-size:12px;"><mmr:message messageId="label.heading.copycharges"/> </a>
+		<a href="javascript: copyTheActual();"  style="text-decoration: none; color:#FFF; font-size:12px;"><mmr:message messageId="label.heading.copycharges"/> </a>
 							</label>	
 							<div class="ordrdtl_title_val controls"><s:select id="copy_the_actual"  
 												cssClass="text_01_combo_big" cssStyle="width:140px;"
@@ -1528,16 +1532,16 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td class="ordrdtl_title_hdng" ><strong style="width:110px; float:left;"><mmr:message messageId="label.ghead.chargename"/></strong></td>
 
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-								<td class="ordrdtl_title_hdng"  ><strong style="width:60px; float:left;"><mmr:message messageId="label.ghead.tariff"/> </strong></td>
+									<td class="ordrdtl_title_hdng"  ><strong style="width:60px; float:left;"><mmr:message messageId="label.ghead.tariff"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
-								</s:if>
+ 								</s:if>
 
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
                                <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
                                <td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> </strong></td>
-								</s:if>
+                               </s:if>
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
 								<td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.invoice"/> #</strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
@@ -1593,8 +1597,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<td class="ordrdtl_title_val">
                                                <s:select value="%{statusText}"
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="actualcostcurrency" value="%{costcurrency}"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                       name="actualcostcurrency" value="%{costcurrency}" headerKey="0" headerValue=" "
+                                                           list="currencyList" listKey="id" listValue="currencyCode"  theme="simple" />
                                                </td>
 											
 											</s:if>
@@ -1605,8 +1609,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<td class="ordrdtl_title_val">
                                    
                                                <s:select  cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="actualchargecurrency" value="%{chargecurrency}"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                       name="actualchargecurrency" value="%{chargecurrency}" headerKey="0" headerValue=" "
+                                                           list="currencyList" listKey="id" listValue="currencyCode"   theme="simple" />
                                                </td>   
                                                <td class="ordrdtl_title_val">
                                                <s:textfield size="5"
@@ -1614,7 +1618,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
                                                     cssClass="text_02" />
 											<td class="ordrdtl_title_val">
 											<s:if test="%{cancelledInvoice=='Yes'}">
-											Cancelled
+											<mmr:message messageId="status.cancelled"/>
 											</s:if>
 											<s:else>
 												
@@ -1645,7 +1649,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 													
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
 												</s:a>
-												</span>	
+												</span>
 											</td>
 										</s:if>
 										<s:else>
@@ -1721,6 +1725,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</tr>
 							</table>
 							</div>
+							<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
                            <table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px;">
                            <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
@@ -1747,7 +1752,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>	
 									<td  class="ordrdtl_title" align=""><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.charge"/> :</strong></td>
 									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
-                                   <td  class="ordrdtl_title" align=""><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
+                                    <td  class="ordrdtl_title" align=""><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
 									<td class="ordrdtl_title">&nbsp;</td>
@@ -1792,8 +1797,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td>
                                                <s:select value="%{statusText}"
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                       name="newActualCharge.costcurrency"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                       name="newActualCharge.costcurrency" 
+                                                           list="currencyList" listKey="id" listValue="currencyCode" theme="simple" />
                                                </td>
 									<td align="left">
 									<s:textfield size="5"
@@ -1803,8 +1808,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td>
                                                <s:select value="%{statusText}"
                                                    cssClass="text_01_combo_big" cssStyle="width:61px;"
-                                                        name="newActualCharge.chargecurrency"
-                                                           list="#{'1':'CAD','2':'USD'}" theme="simple" />
+                                                        name="newActualCharge.chargecurrency" 
+                                                           list="currencyList" listKey="id" listValue="currencyCode" theme="simple" />
                                                </td>
                                    <td >
                                                <s:textfield size="5"
@@ -1819,15 +1824,17 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</td>
 									<td align="left" colspan="2">
 									<span style="width:75px; float:left;">
-									<a href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;">
+									<a href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;">	
 										<mmr:message messageId="btn.add"/>
 										<!--<img border="0"
 										src="<s:url value="/mmr/images/add_product.png" includeContext="true" />"
 										>-->
-										</a></span></td>
+										</a>
+										</span>
+										</td>
 								</tr>
 						</s:if>
-					</table>
+					</table></div>
 						<div id="payment_rqd_end">&nbsp;</div>
 			
 			<!-- Start: Payment Info Module -->

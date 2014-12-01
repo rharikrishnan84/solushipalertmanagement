@@ -13,11 +13,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Iterator;
 
 import javax.mail.MessagingException;
 
@@ -105,11 +105,15 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   CarrierErrorMessage errorLogObj;
 
   private CarrierServiceManager carrierServiceManager;
+
+//code for boostup rate list speed
   HashMap orderThreadMap = new HashMap();
-   HashMap servicesMapToApply=new HashMap();
+  HashMap servicesMapToApply=new HashMap();
   HashMap markupMapForCustomer=new HashMap();
   private List<Service> listOfAllServices=new ArrayList<Service>();
   List<CustomerCarrier> customerCarriers=new ArrayList<CustomerCarrier>();
+  //----------------------------------
+  
   private boolean addDummyRateForLTL = false;
   public List<Rating> fromRatingList = new ArrayList<Rating>();
 
@@ -124,14 +128,14 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     this.customerCarrierThread = customerCarrier;
     this.parentThread = parentThread;
   }
-    
+  
   public List<Service> getListOfAllServices() {
-  	  return listOfAllServices;
-    }
-  
-  
+	  return listOfAllServices;
+  }
+
+
   public void setListOfAllServices(List<Service> listOfAllServices) {
-  	  this.listOfAllServices = listOfAllServices;
+	  this.listOfAllServices = listOfAllServices;
   }
 
   public CarrierServiceManagerImpl() {
@@ -265,19 +269,19 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       markup.setDisabled(0);
       boolean flagCarrierList;
       List<Markup> myMarkups=markupManagerService.getAllMarkupsForCustomer(order.getCustomerId());
-            customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
-            for(Carrier carrier:carriersForBusiness){
-          	  List<Markup> localMarkup=new ArrayList<Markup>();
-          	  for(Markup myMarkupSlice:myMarkups){
-          		  if(myMarkupSlice.getCarrierId().equals(carrier.getId())){
-          			  localMarkup.add(myMarkupSlice);
-          		  }
-          	  }
-          	  if(localMarkup!=null && localMarkup.size()>0){
-          		  markupMapForCustomer.put(carrier.getId(),localMarkup);
-          	  }
-            }
-            Set markupSet = markupMapForCustomer.entrySet(); 
+      customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
+      for(Carrier carrier:carriersForBusiness){
+    	  List<Markup> localMarkup=new ArrayList<Markup>();
+    	  for(Markup myMarkupSlice:myMarkups){
+    		  if(myMarkupSlice.getCarrierId().equals(carrier.getId())){
+    			  localMarkup.add(myMarkupSlice);
+    		  }
+    	  }
+    	  if(localMarkup!=null && localMarkup.size()>0){
+    		  markupMapForCustomer.put(carrier.getId(),localMarkup);
+    	  }
+      }
+      Set markupSet = markupMapForCustomer.entrySet(); 
       for (Carrier carrier : carriersForBusiness) {
         CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
         Iterator i1 = markupSet.iterator();
@@ -291,12 +295,13 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         	}
         }
         flagCarrierList=false;
-        if(markupLst!=null && markupLst.size()>0){
-        	flagCarrierList=true;
+        for(Markup markup1:markupLst){
+        	if(!markup1.getCustomerId().equals(0)){
+        		flagCarrierList=true;
+        	}
         }
-                        
         markup.setCarrierId(carrier.getId());
-       // flagCarrierList = markupManagerService.getMarkupListForCustomerAndCarrier(markup);
+        //flagCarrierList = markupManagerService.getMarkupListForCustomerAndCarrier(markup);
         if (markup != null
             && (flagCarrierList == true || carrier.getId() == ShiplinxConstants.CARRIER_GENERIC)) {
           tempCarriersForBusiness.add(carrier);
@@ -305,20 +310,20 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       ShippingOrder upsShippingOrderThread = new ShippingOrder();
       carriersForBusiness = tempCarriersForBusiness;
       listOfAllServices=carrierServiceDAO.getAllServices();
-                  
-            //servicesMapToApply.put(0, serviceList);
-            for(Carrier carrier:carriersForBusiness){
-          	  List<Service> serviceList = new ArrayList<Service>();
-          	  for(Service service:listOfAllServices){
-          		  if(service.getMasterCarrierId().equals(carrier.getId())){
-          			  serviceList.add(service);
-          		  }
-          	  }
-          	  //servicesToApply
-          	  if(serviceList.size()>0){
-          		  servicesMapToApply.put(carrier.getId(), serviceList);
-          	  }
-            }
+
+      //servicesMapToApply.put(0, serviceList);
+      for(Carrier carrier:carriersForBusiness){
+    	  List<Service> serviceList = new ArrayList<Service>();
+    	  for(Service service:listOfAllServices){
+    		  if(service.getMasterCarrierId().equals(carrier.getId())){
+    			  serviceList.add(service);
+    		  }
+    	  }
+    	  //servicesToApply
+    	  if(serviceList.size()>0){
+    		  servicesMapToApply.put(carrier.getId(), serviceList);
+    	  }
+      }
       for (Carrier carrier : carriersForBusiness) {        
         // get the appropriate account to be used to generate/rate the
         // shipment
@@ -380,17 +385,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                 	        }
                 	}
                 }
-                /*	for(int j=0;j<groupingThreadList.size();j++){
-                		((Thread) groupingThreadList.get(j)).join();
-                	}
-                	
-                	upsShippingOrderThread = shippingorderThread;
-                	 if(shippingorderThread.getFromRatingList()!=null && shippingorderThread.getToRatingList()!=null){
-    		        	 findCheapestRate(ratingList, shippingorderThread);	         	
-    		          }
-                }*/
                 
-                ///////End UPS Issue
                 
                 else{
         try {
@@ -449,19 +444,19 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
       }
       Set upsSet= orderThreadMap.entrySet();
-            Iterator upsIterator = upsSet.iterator();
-            while(upsIterator.hasNext()){
-          	  Map.Entry threadOrder = (Map.Entry)upsIterator.next();
-          	  String key=(String) threadOrder.getKey();
-          	  if(key!=null && key.equals(Long.toString(ShiplinxConstants.CARRIER_UPS))){
-          		  orderThread=(ShippingOrder) threadOrder.getValue();
-          		  break;
-          	  }
-            }
-            upsShippingOrderThread = orderThread;
-          	 if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
-      	        	 findCheapestRate(ratingList, orderThread);	         	
-                }
+      Iterator upsIterator = upsSet.iterator();
+      while(upsIterator.hasNext()){
+    	  Map.Entry threadOrder = (Map.Entry)upsIterator.next();
+    	  String key=(String) threadOrder.getKey();
+    	  if(key!=null && key.equals(Long.toString(ShiplinxConstants.CARRIER_UPS))){
+    		  orderThread=(ShippingOrder) threadOrder.getValue();
+    		  break;
+    	  }
+      }
+      upsShippingOrderThread = orderThread;
+      if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
+    	  findCheapestRate(ratingList, orderThread);	         	
+      }
       if(upsShippingOrderThread!=null && upsShippingOrderThread.getToRatingList()==null &&  upsShippingOrderThread.getFromRatingList() !=null && upsShippingOrderThread.getFromRatingList().size()>0){
     	  ratingList.addAll(upsShippingOrderThread.getFromRatingList());
       }else if(upsShippingOrderThread!=null && upsShippingOrderThread.getFromRatingList()==null &&  upsShippingOrderThread.getToRatingList() !=null && upsShippingOrderThread.getToRatingList().size()>0){
@@ -1112,10 +1107,14 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       }
       // check if template is set in business, then only send mail if it
       // is set.
+      if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){
+    	      	  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    	        }else{
       Business business = businessService.getBusinessById(order.getBusinessId());
       if (!StringUtil.isEmpty(business.getShipOrderNotificationBody())) {
         sendOrderShippedEmailNotification(order);
       }
+    	        }
     } catch (ShiplinxException e) {
       log.error("Error in ship order!", e);
       if (order.getPickup().getPickupId() > 0) // pick up was scheduled,
@@ -1148,7 +1147,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
   private boolean sendOrderShippedEmailNotification(ShippingOrder so) {
     boolean retval = true;
-    String toAddress = so.getToAddress().getEmailAddress();
+    String toAddress = null;
+        if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+        	toAddress = "customsdistribution@integratedcarriers.com";
+        }else{
+       		toAddress =  so.getToAddress().getEmailAddress();
+        }
 
     if (toAddress == null || toAddress.length() == 0) {
       log.error("User's email address is not set, cannot send an shipment notification!");
@@ -1569,16 +1573,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       // if the shipment is a "LTL PER SKID" service, then markup should
       // be based on # of skids.
       // Using the same weight fields to store skid range
-      //Service service = carrierServiceDAO.getService(rate.getServiceId());
       Service service=null;
-            for(Service serviceTmp:listOfAllServices){
-          	  if(rate.getServiceId()==serviceTmp.getId()){
-          		  service=serviceTmp;
-          	  }
-            }
-            if(service==null){
-          	  service = carrierServiceDAO.getService(rate.getServiceId());
-            }
+      for(Service serviceTmp:listOfAllServices){
+    	  if(rate.getServiceId()==serviceTmp.getId()){
+    		  service=serviceTmp;
+    	  }
+      }
+      if(service==null){
+    	  service = carrierServiceDAO.getService(rate.getServiceId());
+      }
       log.debug("Service ID 1" + service.getId());
       if (service != null && service.getServiceType() == ShiplinxConstants.SERVICE_TYPE_LTL_SKID) {
         log.debug("Applying markup based on # of skids: " + order.getPackages().size());
@@ -1610,16 +1613,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           }
         }
         if (count == ratingList.size() && service.getMasterServiceId() != null) {
-          //Service findService = carrierServiceDAO.getService(service.getMasterServiceId());
         	Service findService=null;
-        	        	for(Service serviceTmp:listOfAllServices){
-        	          	  if(service.getMasterServiceId()==serviceTmp.getId()){
-        	          		findService=serviceTmp;
-        	          	  }
-        	            }
-        	          if(findService==null){
-        	        	  findService = carrierServiceDAO.getService(service.getMasterServiceId());
-        	          }
+        	for(Service serviceTmp:listOfAllServices){
+        		if(service.getMasterServiceId()==serviceTmp.getId()){
+        			findService=serviceTmp;
+        		}
+        	}
+        	if(findService==null){
+        		findService = carrierServiceDAO.getService(service.getMasterServiceId());
+        	}
           Markup markups = markupManagerService.getMarkupObj(order);
           markups.setServiceId(findService.getId());
           markup = markupManagerService.getUniqueMarkup(markups);
@@ -1796,16 +1798,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         } else {
           serviceId = service.getId();
         }
-       // Service masters = carrierServiceDAO.getService(serviceId);
         Service masters=null;
-                for(Service serviceTmp:listOfAllServices){
-              	  if(serviceId==serviceTmp.getId()){
-              		  masters=serviceTmp;
-              	  }
-                }
-                if(masters==null){
-                	masters = carrierServiceDAO.getService(serviceId);
-                }
+        for(Service serviceTmp:listOfAllServices){
+        	if(serviceId==serviceTmp.getId()){
+        		masters=serviceTmp;
+        	}
+        }
+        if(masters==null){
+        	masters = carrierServiceDAO.getService(serviceId);
+        }
         if (masters == null) {
           masters = service;
         }
@@ -3552,26 +3553,25 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 			    ArrayList threadList = new ArrayList();
 			    List<Markup> currentMarkupList=new ArrayList<Markup>();
 			    List<Rating> ratingList = new ArrayList<Rating>();
-		    // List<Service> carrierServicesList = getServicesForCarrier(carrier.getId());
 			    Set serviceSet = servicesMapToApply.entrySet();
-			    			    			    Iterator itr = serviceSet.iterator();
-			    			    			    List<Service> carrierServicesList= new ArrayList<Service>();
-			    			    			    while(itr.hasNext()){
-			    			    			    	  Map.Entry entry = (Map.Entry)itr.next();
-			    			    			    	  Long key=(Long) entry.getKey();
-			    			    		    	  if(key.equals(carrier.getId())){
-			    			    			    		  carrierServicesList = (List<Service>) entry.getValue();
-			    			    			    	  }
-			    			    				}
-			    			    			    Set MarkupSet = markupMapForCustomer.entrySet();
-			    			    			    Iterator mitr = MarkupSet.iterator();
-			    			    			    while(mitr.hasNext()){
-			    			    			    	  Map.Entry entry = (Map.Entry)mitr.next();
-			    			    			    	  Long key=(Long) entry.getKey();
-			    			    			    	  if(key.equals(carrier.getId())){
-			    			    			    		  currentMarkupList = (List<Markup>) entry.getValue();
-			    			    			    	  }
-			    			    				}
+			    Iterator itr = serviceSet.iterator();
+			    List<Service> carrierServicesList= new ArrayList<Service>();
+			    while(itr.hasNext()){
+			    	Map.Entry entry = (Map.Entry)itr.next();
+			    	Long key=(Long) entry.getKey();
+			    	if(key.equals(carrier.getId())){
+			    		carrierServicesList = (List<Service>) entry.getValue();
+			    	}
+			    }
+			    Set MarkupSet = markupMapForCustomer.entrySet();
+			    Iterator mitr = MarkupSet.iterator();
+			    while(mitr.hasNext()){
+			    	Map.Entry entry = (Map.Entry)mitr.next();
+			    	Long key=(Long) entry.getKey();
+			    	if(key.equals(carrier.getId())){
+			    		currentMarkupList = (List<Markup>) entry.getValue();
+			    	}
+			    }
 		     List<Service> fullCarrierServicesList = carrierServicesList;
 		      List<Service> tempCarrierServiceList = new ArrayList<Service>();
 		      List<Service> tempCarrierServiceListToCopy = new ArrayList<Service>();
@@ -3583,20 +3583,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		      boolean flagCheckForErrorAlert = true;
 		      Markup markupForFilter = new Markup();
 		      Boolean markupResult=false;
-		      //List<Markup> markupResult = new ArrayList<Markup>();
 		   // Filter out disabled services for the current carrier to reduce unwanted ltl table lookup
 		      for (int i = 0; i < carrierServicesList.size(); i++) {
-		        //tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
 		    	  tempService = carrierServicesList.get(i);
 		        markupForFilter.setServiceId(tempService.getId());
 		        markupForFilter.setCustomerId(order.getCustomerId());
-		        /*markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-		        if (markupResult.size() > 0*/
 		        if(currentMarkupList!=null && currentMarkupList.size()>0){
-		        			        	markupResult=true;
-		        			        }
-		        			        //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-		        			        if (markupResult
+		        	markupResult=true;
+		        }
+		        //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+		        if (markupResult
 		            && (carrierServicesList.get(i).getId()
 		                .equals(carrierServicesList.get(i).getMasterServiceId()) || carrierServicesList
 		                .get(i).getMasterCarrierId() != ShiplinxConstants.CARRIER_GENERIC)) {
@@ -3605,26 +3601,22 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		        }
 		      }
 		      if(carrierServicesList.size()<1){
-		      	        	//List<CustomerCarrier> customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
-		      	        	if(customerCarriers != null && customerCarriers.size()>0){
+		      	       		if(customerCarriers != null && customerCarriers.size()>0){
 		      	        		for (CustomerCarrier customerCarrier2 : customerCarriers) {
 		      	        			if(carrier.getId().equals(customerCarrier2.getCarrierId())){
 		      	       				carrierServicesList = carrierServiceDAO.getServicesByCarrierId(carrier.getId());
 		      	                	}
 		      					}
 		      	        		for (int i = 0; i < carrierServicesList.size(); i++) {
-		              	          //tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
 		      	        			tempService = carrierServicesList.get(i);
 		      	        	          markupForFilter.setServiceId(tempService.getId());
 		      	        	          markupForFilter.setCustomerId(order.getCustomerId());
-		      	        	          /*markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-		      	       	          if (markupResult.size() > 0){*/
 		      	        	        markupResult=false;
-		      	        	      		      	        	          if(currentMarkupList!=null && currentMarkupList.size()>0){
-		      	        	      		      	        	        	  markupResult=true;
-		      	        	      		      	        	          }
-		      	        	      		      	        	          //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-		      	        	      		      	        	          if (markupResult){
+		      	        	        if(currentMarkupList!=null && currentMarkupList.size()>0){
+		      	        	        	markupResult=true;
+		      	        	        }
+		      	        	        //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+	if (markupResult){
 		      	        	        	  tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
 		      	        	          }
 		      	       	}
@@ -3634,7 +3626,6 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		      carrierServicesList = tempCarrierServiceListForFilter;
 		   // checking packages whether exceeded size or not for filter out
 		      for (int i = 0; i < carrierServicesList.size(); i++) {
-		        //tempService = carrierServiceManager.getService(carrierServicesList.get(i).getId());
 		    	  tempService = carrierServicesList.get(i);
 		        carrierServicesList.get(i).setMasterServiceId(tempService.getMasterServiceId());
 		        flagCheckLimit = true;
@@ -3659,14 +3650,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		
 		          markupForFilter.setServiceId(tempService.getId());
 		          markupForFilter.setCustomerId(order.getCustomerId());
-//		          markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-//		          if (markupResult.size() > 0) {
 		          markupResult=false;
-		          		          if(currentMarkupList!=null && currentMarkupList.size()>0){
-		          		        	  markupResult=true;
-		          		          }
-		          		          //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
-		          		          if (markupResult) {
+		          if(currentMarkupList!=null && currentMarkupList.size()>0){
+		        	  markupResult=true;
+		          }
+		          //markupResult = markupManagerService.getMarkupListForCustomerForFilter(markupForFilter);
+		          if (markupResult) {
 		            tempCarrierServiceList.add(carrierServicesList.get(i));
 		          }
 		        }

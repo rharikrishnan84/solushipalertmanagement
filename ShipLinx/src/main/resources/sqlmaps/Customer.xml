@@ -29,6 +29,7 @@
 			<result property="creditCardActive" column="customer_id" select="getActiveCreditCardForCustomer"/>
 			<result property="branch" column="branch"/>
 			<result property="defaultCurrency" column="default_currency"/>
+			<result property="chbCustomer" column="chb_customer"/>
 	</resultMap>
 	
 	<resultMap id="CustomerId" class="com.meritconinc.shiplinx.model.Customer">
@@ -79,8 +80,8 @@
 			select count(1) as count from customer where name = #customername# and business_id=#businessId# and customer_id!=#customerId#
 	</select>
 	<insert id="addCustomer" parameterClass="com.meritconinc.shiplinx.model.Customer">
-			 insert into customer(name,active,date_created,timeZone,deleted,api_password, api_username, business_id, address_id, account_number, sales_agent, sales_agent2, payable_days, payment_type, payment_type_level, additional_handling_charge, credit_limit, monthly_spend, branch, default_currency,show_ref) 
-			  values (#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#, #businessId#, #addressId#, #accountNumber#, #salesAgent#, #salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#, #additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#, #defaultCurrency#,#reference#)
+			 insert into customer(name,active,date_created,timeZone,deleted,api_password, api_username, business_id, address_id, account_number, sales_agent, sales_agent2, payable_days, payment_type, payment_type_level, additional_handling_charge, credit_limit, monthly_spend, branch, default_currency,show_ref,chb_customer) 
+			  values (#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#, #businessId#, #addressId#, #accountNumber#, #salesAgent#, #salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#, #additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#, #defaultCurrency#,#reference#,#chbCustomer#)
  			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -127,7 +128,9 @@
 	
 	<update id = 'editCustomer' parameterClass="com.meritconinc.shiplinx.model.Customer">
 		update customer set name=#name#, active=#active#, api_username=#apiUsername#,api_password=#apiPassword#,timeZone=#timeZone#, 
-		invoice_email=#invoicingEmail#, account_number=#accountNumber#, sales_agent=#salesAgent#, payable_days=#payableDays#, payment_type=#paymentType#, payment_type_level=#paymentTypeLevel#, additional_handling_charge=#additionalHandlingCharge#, credit_limit=#creditLimit#, default_currency = #defaultCurrency#,show_ref=#reference#
+		invoice_email=#invoicingEmail#, account_number=#accountNumber#, sales_agent=#salesAgent#, 
+		payable_days=#payableDays#, payment_type=#paymentType#, payment_type_level=#paymentTypeLevel#,
+		 additional_handling_charge=#additionalHandlingCharge#, credit_limit=#creditLimit#, default_currency = #defaultCurrency#,show_ref=#reference#,chb_customer=#chbCustomer#
 		where customer_id=#id# and business_id=#businessId#
 	</update>	
 	
@@ -178,6 +181,6 @@
 		select * from customer c where c.customer_id = #id# 
 	</select>
 	<select id="getBilldutyList" resultMap="billdutyResult">
-		select * from bill_duty where locale=#locale#;
+		select * from bill_duty where locale=#locale#
 	</select>
 </sqlMap>

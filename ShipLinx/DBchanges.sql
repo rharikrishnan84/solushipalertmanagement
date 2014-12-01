@@ -1854,8 +1854,121 @@ INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '16
 
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('solutions_manager', '146');//save
 
-ALTER TABLE `shipping_order` ADD COLUMN `unitmeasure` INT NULL DEFAULT '0' AFTER `slave_service_id`;
+ALTER TABLE `shipping_order` 
+ADD COLUMN `unitmeasure` INT NULL DEFAULT '0' AFTER `slave_service_id`;
 
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.navigation.caltax', 'Calculate Tax', 'en_CA', 1);
 
-INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.user.selectlocale', 'Select Locale', 'en_CA', 0);
+
+
+---------------------------------- Issue 497 ---------------------------------------------------------------------
+INSERT INTO `menu` (`name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`, `image_over`) VALUES ('Invoice Breakdown', '/admin/commReport.action?method=new', '3', 'LEVEL_1', '1', '400', 'menu.admin.invoiceBreakdown', 'N', 'N');
+INSERT INTO `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('428', 'busadmin', '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.invoiceBreakdown', 'INVOICE BREAKDOWN', 'en_CA', 1);
+INSERT INTO `business_menu` (`business_id`, `menu_id`) VALUES ('1', '428');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('invoiceBreakdown', '400', 1, 'Invoice Breakdown', 1, NULL);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1018');
+UPDATE `menu` SET `url`='/admin/invoiceBreakdown.action?method=new' WHERE `id`='428';
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.report.invoicebreakdown', 'Invoice Breakdown', 'en_CA', 0);
+
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('invoiceBreakdown.download', '400', 1, 'Invoice Breakdown Report', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_admin', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_base', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('admin', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sales', '1019', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_shipper', '1019', NULL);
+
+ALTER TABLE `invoice` 
+ADD COLUMN `chb_total` DOUBLE NOT NULL DEFAULT '0' AFTER `commission_calculated`,
+ADD COLUMN `spd_total` DOUBLE NOT NULL DEFAULT '0' AFTER `chb_total`,
+ADD COLUMN `ltl_total` DOUBLE NOT NULL DEFAULT '0' AFTER `spd_total`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.included.cancelledinvoice', 'Included Cancelled Invoices', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.invoice.breakdown', 'Invoice Breakdown', 'en_CA', 0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.inv', 'Inv', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.company', 'Company', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.datecreated', 'Date Created', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.Amount', 'Amount', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.Tax', 'Tax', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.SPD', 'SPD', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.LTL', 'LTL', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('invoice.breakedown.CHB', 'CHB', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('invoice.breakdown.total', 'Total', 'en_CA', 0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.csv', 'CSV', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.excel', 'Excel', 'en_CA', 0, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.xml', 'XML', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.export.to', 'Export to', 'en_CA', 0);
+------------------------------------------------------ Issue 493 ------------------------------
+alter table customer add chb_customer bit(1) default 0;
+
+update business set ship_order_notification_body='mail.shipment.notification.body' where business_id=1;
+
+----------------------------- Issue 490 ------------------------------------------------------------alterALTER TABLE `newsouship`.`charges` 
+ALTER TABLE `charges` ADD COLUMN `calculate_tax` INT NULL DEFAULT 0 AFTER `charge_group_id`;
+
+-------------------------------Issue 499 --------------------------------------------------------
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.commission.not include Taxes', 'The Totals do not include Taxes', 'en_CA', 1);
+
+
+----------------------------- issue 433 -------------------------------------------------------
+ALTER TABLE `shipping_order` 
+ADD COLUMN `save_shipment` INT NULL DEFAULT 0 AFTER `signature_image`;
+
+----------------------------- issue 296 ------------------------------------------------------ // need to go live
+
+UPDATE `currency_symbol` SET `country_code`='EUCG' WHERE `id`='35';
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '0000-00-00 00:00:00', 'CAD', 'EUR', '0.7');
+INSERT INTO `exchange_rate_currency` (`id`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('','0000-00-00 00:00:00', 'USD', 'EUR', '0.8');
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '0000-00-00 00:00:00', 'CAD', 'CNY', '5.3987');
+
+INSERT INTO `newsoluship`.`locale` (`locale`, `description`, `locale_text`, `active`, `display_text`) VALUES ('en_US', 'English America', 'English', 1, 'en_CA');
+INSERT INTO `newsoluship`.`locale` (`locale`, `description`, `locale_text`, `active`, `display_text`) VALUES ('zh_CN', 'Chinese China', 'Chinese', 1, 'zh_CN');
+
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'MNT', 'CAD', '0.00060');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'MNT', 'USD', '0.00053');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'MNT', 'EUR', '0.00043');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'CAD', 'MNT', '1673.10');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'USD', 'MNT', '1882.50');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'EUR', 'MNT', '2345.21');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'MNT', 'CNY', '0.0033');
+INSERT INTO `exchange_rate_currency` (`date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('2014-11-19 15:30:08', 'CNY', 'MNT', '307.27');
+
+
+
+
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '2014-11-19 15:30:08', 'CNY', 'CAD', '0.18');
+
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '2014-11-19 15:30:08', 'CNY', 'EUR', '0.13');
+
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '2014-11-19 15:30:08', 'EUR', 'CAD', '1.41');
+
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '2014-11-19 15:30:08', 'EUR', 'USD', '1.24');
+
+INSERT INTO `exchange_rate_currency` (`id`, `date`, `cur_from`, `cur_to`, `exch_rate`) VALUES ('', '2014-11-19 15:30:08', 'EUR', 'CNY', '7.63');
+
+
+ALTER TABLE `locale` 
+ADD COLUMN `display_text` VARCHAR(45) NULL DEFAULT NULL AFTER `active`;
+
+ALTER TABLE `charges` 
+CHANGE COLUMN `exchange_rate` `exchange_rate` DECIMAL(10,2) NULL DEFAULT '0.00' ;
+
+
+UPDATE `locale` SET `display_text`='en_CA' WHERE `locale`='en_CA';
+UPDATE `locale` SET `display_text`='fr_CA' WHERE `locale`='fr_CA';
+UPDATE `locale` SET `display_text`='zh_CN' WHERE `locale`='zh_CN';
+
+----------------------------- end -----------------------------------------------------------
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.customer.chbCustomer', 'CHB Customer', 'en_CA', 0);
+
+
+

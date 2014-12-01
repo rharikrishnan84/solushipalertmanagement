@@ -11,16 +11,18 @@ import javax.servlet.ServletContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyContent;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.meritconinc.mmr.dao.MessageDAO;
+import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.opensymphony.xwork2.ActionContext;
 
 // parent tag for MmrMessageParamTag
 public class MmrMessageTag extends BodyTagSupport {
@@ -32,7 +34,7 @@ public class MmrMessageTag extends BodyTagSupport {
 	private String messageId;
 	private List<String> params = new ArrayList<String>();
 	boolean bodyExists = false;
-	
+	private UserDAO userDAO;
 	
 	public void addParam(String param) {
 		params.add(param);
@@ -52,11 +54,23 @@ public class MmrMessageTag extends BodyTagSupport {
 										ServletActionContext.SERVLET_CONTEXT));
 				MessageDAO messageDAO = (MessageDAO) context
 						.getBean("messageDAO");
+				userDAO = (UserDAO)MmrBeanLocator.getInstance().findBean("userDAO");
+				String messageTemplate = null;
+				String displayTextLocale = null;
 				if (locale == null) {
 					locale = MessageUtil.getLocale();
 				}
-				String messageTemplate = messageDAO.getMessage(messageId,
-						locale);
+				if(locale != null && !locale.isEmpty()){
+					displayTextLocale = userDAO.getDisplayTextByLocale(locale).getDisplayText();
+					if(displayTextLocale != null && !displayTextLocale.isEmpty()){
+						messageTemplate=messageDAO.getMessage(messageId,
+								displayTextLocale);
+					}else{
+						messageTemplate=messageDAO.getMessage(messageId,
+								locale);
+					}
+				}
+				
 				if (messageTemplate != null) {
 					pageContext.getOut().print(messageTemplate);
 				}
@@ -75,16 +89,34 @@ public class MmrMessageTag extends BodyTagSupport {
 		bodyExists = true;
 		WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext((ServletContext)ActionContext.getContext().get(ServletActionContext.SERVLET_CONTEXT));
 		MessageDAO messageDAO = (MessageDAO)context.getBean("messageDAO");
+		String messageTemplate = null;
+		String displayTextLocale = null;
+		userDAO = (UserDAO)MmrBeanLocator.getInstance().findBean("userDAO");
 		if (locale == null) {
 			locale = (String)ActionContext.getContext().getSession().get("locale");
 		}
-		String messageTemplate = messageDAO.getMessage(messageId, locale);
+		if(locale != null && !locale.isEmpty()){
+			displayTextLocale = userDAO.getDisplayTextByLocale(locale).getDisplayText();
+			if(displayTextLocale != null && !displayTextLocale.isEmpty()){
+				messageTemplate=messageDAO.getMessage(messageId,
+						displayTextLocale);
+			}else{
+				messageTemplate=messageDAO.getMessage(messageId,
+						locale);
+			}
+		}
 		MessageFormat messageFormatter = null;
 		
 		if (messageTemplate != null) {
-			String ar[] = locale.split("_");
+			if(displayTextLocale != null && !displayTextLocale.isEmpty()){
+			String ar[] = displayTextLocale.split("_");
 			Locale locale = new Locale(ar[0], ar[1]);	
 			messageFormatter = new MessageFormat(messageTemplate, locale);
+			}else{
+				String ar[] = locale.split("_");
+				Locale locale = new Locale(ar[0], ar[1]);	
+				messageFormatter = new MessageFormat(messageTemplate, locale);
+			}
 		}
 		BodyContent bodyContent = getBodyContent();
 		try {

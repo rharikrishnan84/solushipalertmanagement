@@ -12,6 +12,8 @@ import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
 import com.meritconinc.shiplinx.model.DangerousGoods;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.OrderProduct;
 import com.meritconinc.shiplinx.model.OrderStatus;
@@ -194,4 +196,16 @@ public interface ShippingDAO {
   public void updateLoggedEvent(Map<String,Object> details);
   public String getTrackingNumberFromPackage(String trackingNumber);
   public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so);
+  public List<ExchangeRateCurrency> getAllExchangeRateCurrency();
+
+  public void updateExchangeRateCurrency(ExchangeRateCurrency exchangeRate);
+
+  public Double getExchangeRate(String currencyCode, String currencyCode2);
+
+  public CurrencySymbol getCurrencyCodeByCountryName(String fromCountry);
+
+  public List<CurrencySymbol> getallCurrencySymbol();
+  
+  public CurrencySymbol getSymbolByCurrencycode(String currencyCode);
+  public CurrencySymbol getCurrencyCodeById(int id);
 }

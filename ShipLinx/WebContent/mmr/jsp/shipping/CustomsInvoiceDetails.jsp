@@ -500,9 +500,9 @@ function toShoworHide(checked)
 <div class="content_body" style="padding-bottom:1px;" >	
 							<div class="content_table"  >
 								<div class="content_header" id="checkbox_header" >
-									<div class="cont_hdrtitlelarge" style="width:470px !important;">
+									<div class="cont_hdrtitlelarge" style="width:auto !important;">
 										<mmr:message messageId="label.like.customs.invoice"/>
-										<s:checkbox name="shippingOrder.customsInvoiceRequired"  value="%{shippingOrder.customsInvoiceRequired}" id="customs_invoice_checkbox" onclick="toShoworHide(this.checked);"/>
+										<span style = "margin-left: 10px;"><s:checkbox name="shippingOrder.customsInvoiceRequired"  value="%{shippingOrder.customsInvoiceRequired}" id="customs_invoice_checkbox" onclick="toShoworHide(this.checked);"/></span>
 									</div>
 								</div>
 							</div>

@@ -6,6 +6,9 @@
 
 <html> 
 <head> 
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
     <sj:head jqueryui="true" />
     <sx:head />
     <title><s:text name="edi.title"/></title> 
@@ -15,24 +18,14 @@
 </style> 
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 </head> 
-<body> 
-<SCRIPT language="JavaScript">
-	function searchInvoice()
-	{
-	 document.searchform.action = "invoice.action";
-	 document.searchform.submit();
-	}
-		
+<script language="JavaScript">
+
+
 	function submitform()
 	{	
-		document.searchInvoiceForm.action = "invoice.list.action?method=new";
-	 document.searchInvoiceForm.submit();
+	 document.getElementById("searchInvoice").action ="invoice.action?method=new";
+		document.getElementById("searchInvoice").submit();
 	 //return false;
-	}
-	
-	function showID(name)
-	{
-		alert(name);
 	}
 	
 	function setInvoiceNum()
@@ -42,8 +35,9 @@
 		//alert(invnum_val);
 		document.getElementById("invoice.invoiceNum").value = invnum_val;		
 	}
-</SCRIPT>
-		
+	
+</script>
+
 <script>
  $(document).ready(function(){
   var wndo = window.innerHeight;
@@ -54,13 +48,13 @@
 <style>
 	input.dojoComboBox{ width:105px !important;}
 </style>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<body>
 <div id="messages">
 <jsp:include page="../common/action_messages.jsp"/>
 </div>
 
 <div class="form-container"> 
-<s:form action="invoice.list" name="searchInvoiceForm">
+<s:form action="invoice.list" name="searchInvoiceForm" id="searchInvoice">
 
 
 <div class="content_body" >	
@@ -69,7 +63,7 @@
 								<div class="cont_hdr_title"><mmr:message messageId="label.invoice.search"/></div>
 								<div class="form_buttons" >		
 									<a href="javascript: submitform()"><mmr:message messageId="label.search.btn.search"/></a>
-									a href="invoice.action"><mmr:message messageId="label.btn.reset"/></a>
+									<a href="invoice.action"><mmr:message messageId="label.btn.reset"/></a>
 								</div>
 							</div>		
 							<div class="cont_data_body">
@@ -134,7 +128,7 @@
 </div>			
 </s:form>	
 </div>
-
+</body>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/autocomplete.js"></script>
 
 

@@ -1,7 +1,11 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 
-
+<style>
+.smallFields{
+	width:88px !important;
+}
+</style>
 <SCRIPT type="text/javascript">
 
 	
@@ -62,7 +66,7 @@
 				<s:textfield id="cip[#counterIndex.index].totalPrice" name="customerSalesCommission"   theme="simple" size="3" value="%{shippingOrder.customsInvoice.products[#counterIndex.index].productQuantity*shippingOrder.customsInvoice.products[#counterIndex.index].unitPrice}" cssStyle="text-align:right;padding-right:5px"/>
 			   </div>
 			  </div>
-			  <div class="fields_topdown_s">         
+			  <div class="fields_topdown_s" style="margin-left:-13px;">         
 			   <div class="controls">
 			  <input type="checkbox" value="<s:property value="%{#counterIndex.index}"/>" name="delete_element" />
 				</div>

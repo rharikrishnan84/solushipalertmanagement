@@ -926,7 +926,7 @@ var count=parseInt(prevQuantity);
 							<div class="content_table" id="contenttbl">
 								<div class="content_header" style="margin-top:1px; margin-bottom:1px;">
 									<div class="cont_hdr_title"><mmr:message messageId="label.search.reference"/></div>
-									<div class="cont_hdrtitle_l" style="width:630px"><mmr:message messageId="label.search.referenceheading"/></div>
+									<div class="cont_hdrtitle_l" style="width:610px"><mmr:message messageId="label.search.referenceheading"/></div>
 									<div class="form_buttons">
 										<a class="referenceOpen" onclick="javascript:return false;" style="padding:0px; background-color:transparent;" href="">
 										<img src="<%=request.getContextPath()%>/mmr/images/hide.png"/>
@@ -982,8 +982,6 @@ var count=parseInt(prevQuantity);
 					</div>
 	</div>					
 	<jsp:include page="order_SelectedToAddress.jsp"/>
-		
-	
 	<jsp:include page="shipping_packages.jsp"/>
 	<div id="pckg_div_quote">
 	<jsp:include page="packageDimention.jsp"/>

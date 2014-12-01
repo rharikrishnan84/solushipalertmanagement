@@ -11,6 +11,8 @@ import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.DangerousGoods;
@@ -185,5 +187,14 @@ public interface ShippingService {
   //End
   public List<ShippingOrder> findShipmentsAdminById(ShippingOrder so);
   
+  public List<ExchangeRateCurrency> getAllExchangeRateCurrency();
     
+  public void updateExchangeRateCurrency(ExchangeRateCurrency exchangeRate);
+
+  public Double getExchangeRate(String currencyCode, String currencyCode2);
+
+  public CurrencySymbol getCurrencyCodeByCountryName(String fromCountry);
+
+  public List<CurrencySymbol> getallCurrencySymbol();
+  public CurrencySymbol getSymbolByCurrencycode(String currencyCode); 
 }

@@ -60,6 +60,8 @@
 			<result property="ratedAsWeight" column="rated_as_weight" />
 			<result property="billToType" column="billing_type" />
 			<result property="billToAccountNum" column="billing_account" />	
+			<result property="unitmeasure" column="unitmeasure"/>	
+			<result property="saveShipmet" column="save_shipment"/>	
 	</resultMap>
 	
 	<resultMap id="ShippingOrdersAllStatus" class="com.meritconinc.shiplinx.model.OrderStatus">
@@ -143,6 +145,8 @@
             <result property="quoteTotalCost" column="quote_cost"/>
             <result property="actualTotalCharge" column="actual_total"/>
            <result property="actualTotalCost" column="actual_cost"/>
+           <result property="unitmeasure" column="unitmeasure"/>
+           <result property="saveShipmet" column="save_shipment"/>	
 	</resultMap>
 	
 	
@@ -198,9 +202,10 @@
       <result property="carrierId" column ="carrier_id"/>
        <result property="carrierName" column ="carrier_name"/>
       <result property="costcurrency" column="cost_currency" />
-            <result property="chargecurrency" column="charge_currency" />
-             <result property="exchangerate" column="exchange_rate" />
-			<result property="chargeGroupId" column="charge_group_id" />
+      <result property="chargecurrency" column="charge_currency" />
+      <result property="exchangerate" column="exchange_rate" />
+	  <result property="chargeGroupId" column="charge_group_id" />
+	  <result property="calculateTax" column="calculate_tax" />
        </resultMap>
 	
   <resultMap id="chargesResult" class="com.meritconinc.shiplinx.model.Charge">
@@ -494,11 +499,33 @@
 	</resultMap>
 	
 	<insert id="addShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
-			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,account_num) 
-			 					 values (#orderNum#, #statusId#,#shipToId#,	#shipFromId#,	#packageTypeId.packageTypeId#,	#businessId#, #customerId#,	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,	#docsOnly#, #holdForPickupRequired#,#insideDelivery#,	#specialEquipment#,	#CODPayment#,	#CODValue#,	#CODCurrency#,	#CODPin#, #dangerousGoods#,	#reqDeliveryDate#,	#carrierId#,#serviceId#,#originalServiceId#,#totalCharge#,	#baseCharge#,	#fromInstructions#,	#toInstructions#,#fromTailgate#,#toTailgate#,	#fromAttention#,#toAttention#,	#dateCreated#,	#recidential#,	#scheduledShipDate#,#masterTrackingNum#,	#live#, 	#fromZone#, #toZone#, #quantity#, 	#referenceOneName#, #referenceOne#, #referenceTwoName#, #referenceTwo#, #podDateTime#,#podReceiver#,#markPercent#, #markType#, #fuelPercent#, #billingStatus#,#paidAmount#,#billedWeight#, #billedWeightUOM#, #quotedWeight#, #quotedWeightUOM#, #currency#, #createdBy#, #batchId#, #message#, #tradeShowPickup#, #tradeShowDelivery#, #insidePickup#, #appointmentPickup#, #appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#, #billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#accountNum#)     
+			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,account_num,unitmeasure,save_shipment) 
+			 					 values (#orderNum#, #statusId#,#shipToId#,	#shipFromId#,	#packageTypeId.packageTypeId#,	#businessId#, #customerId#,	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,	#docsOnly#, #holdForPickupRequired#,#insideDelivery#,	#specialEquipment#,	#CODPayment#,	#CODValue#,	#CODCurrency#,	#CODPin#, #dangerousGoods#,	#reqDeliveryDate#,	#carrierId#,#serviceId#,#originalServiceId#,#totalCharge#,	#baseCharge#,	#fromInstructions#,	#toInstructions#,#fromTailgate#,#toTailgate#,	#fromAttention#,#toAttention#,	#dateCreated#,	#recidential#,	#scheduledShipDate#,#masterTrackingNum#,	#live#, 	#fromZone#, #toZone#, #quantity#, 	#referenceOneName#, #referenceOne#, #referenceTwoName#, #referenceTwo#, #podDateTime#,#podReceiver#,#markPercent#, #markType#, #fuelPercent#, #billingStatus#,#paidAmount#,#billedWeight#, #billedWeightUOM#, #quotedWeight#, #quotedWeightUOM#, #currency#, #createdBy#, #batchId#, #message#, #tradeShowPickup#, #tradeShowDelivery#, #insidePickup#, #appointmentPickup#, #appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#, #billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#accountNum#,#unitmeasure#,#saveShipmet#)     
 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
+	
+	<resultMap id="ExchangeRateCurrencyResult" class="com.meritconinc.shiplinx.model.ExchangeRateCurrency">
+			<result property="id" column="id"/>
+			<result property="date" column="date"/>
+		<result property="currencyFrom" column="cur_from"/>
+			<result property="currencyTo" column="cur_to"/>
+			<result property="exchangeRate" column="exch_rate"/>
+	</resultMap>
+	
+	<resultMap id="CurrencySymbolTableResult" class="com.meritconinc.shiplinx.model.CurrencySymbol">
+			<result property="id"/>
+			<result property="currencyCode"/>
+			<result property="countryCode"/>
+			<result property="currencySymbol"/>
+			<result property="countryName"/>
+			<result property="currencyName"/>
+	</resultMap>
+	
+	<resultMap id="CurrencySymbolResult" class="com.meritconinc.shiplinx.model.CurrencySymbol">
+			<result property="currencySymbol" column="currency_symbol"/>
+			<result property="currencyCode" column="currency_code" />
+	</resultMap>
 	
 	<insert id="addPackage" parameterClass="com.meritconinc.shiplinx.model.Package">
 			  insert into package	(package_id,	order_id,	description,	length,		width,	height,		weight,		position,	tracking_number,	cod_value,	insurance_amount,	freight_class, 	billed_weight, 	reference1, 	reference2, 	reference3, 	weight_uom, dimmed_string,type) 
@@ -634,7 +661,7 @@
 	</select>
 
 	<update id = "updateShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" >
-		update shipping_order set order_id=#id#
+		update shipping_order set order_id=#id#,save_shipment=0
 		<dynamic>
 			<isGreaterThan prepend="," property="paidAmount" compareValue="0">
 				paid_amount = #paidAmount#
@@ -697,7 +724,7 @@
 						billing_status=#billingStatus#, paid_amount=#paidAmount#, applied_amount=#appliedAmount#, refunded_amount=#refundedAmount#, billed_weight=#billedWeight#, currency=#currency#, message=#message#,
 						quoted_weight=#quotedWeight#, quoted_weight_uom=#quotedWeightUOM#, billed_weight_uom=#billedWeightUOM#, scheduled_ship_date=#scheduledShipDate#, tradeshow_pickup = #tradeShowPickup#, tradeshow_delivery = #tradeShowDelivery#, 
 						inside_pickup = #insidePickup#, appointment_pickup = #appointmentPickup#, appointment_delivery = #appointmentDelivery#, fromtailgate = #fromTailgate#, totailgate = #toTailgate#,
-						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#
+						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#, unitmeasure=#unitmeasure#
 				where order_id=#id#
 	</update>	
 
@@ -833,10 +860,11 @@
 			</iterate> 		
 	</select>	
 	
-	<insert id="updateCharge">
+	<update id="updateCharge" parameterClass="com.meritconinc.shiplinx.model.Charge">
 			 update charges set name=#name#, charge=#charge#, cost=#cost#, discount_amount=#discountAmount#, status=#status#, tariff_rate=#tariffRate#,
-						carrier_name=#carrierName#,carrier_id=#carrierId#, edi_invoice_number=#ediNumber#,cost_currency=#costcurr#,charge_currency=#chargecurr#,exchange_rate=#exchangerate# where id=#id#              				
- 	</insert>		
+						carrier_name=#carrierName#,carrier_id=#carrierId#, edi_invoice_number=#ediInvoiceNumber#,cost_currency=#costcurrency#,charge_currency=#chargecurrency#,
+						exchange_rate=#exchangerate#, calculate_tax=#calculateTax# where id=#id#              				
+ 	</update>		
 		
 	<update id = "updatePackage" parameterClass="com.meritconinc.shiplinx.model.Package" >
 		update package set package_id=package_id
@@ -1266,5 +1294,33 @@
 	select * from shipping_order where order_id=#id#
 	</select>
 	
+	<select id="getAllExchangeRateCurrency" resultMap="ExchangeRateCurrencyResult">
+	select * from exchange_rate_currency
+	</select>
+
+	<update id="updateExchangeRateCurrency" parameterClass="com.meritconinc.shiplinx.model.ExchangeRateCurrency">
+		update exchange_rate_currency set exch_rate=#exchangeRate#,date=#date# where id=#id#
+	</update>
+
+	<select id="getExchangeRate"  resultClass="java.lang.Double">
+		select exch_rate from exchange_rate_currency where cur_from=#currencyCode# and cur_to=#currencyCode2#
+	</select>
+	
+	<select id="getCurrencyCodeByCountryName"  resultMap="CurrencySymbolTableResult">
+		select * from currency_symbol where country_code=#countryCode# 
+	</select>
+	
+	
+	<select id="getallCurrencySymbol"  resultMap="CurrencySymbolTableResult">
+		select * from currency_symbol 
+	</select>
+	
+	<select id="getSymbolByCurrencycode"  resultMap="CurrencySymbolResult">
+		select currency_symbol,currency_code from currency_symbol where currency_code=#currencyCode#
+	</select>
+	
+	<select id="getCurrencyCodeById"  resultMap="CurrencySymbolResult">
+		select currency_symbol,currency_code from currency_symbol where id=#id#
+	</select>
 </sqlMap>
 

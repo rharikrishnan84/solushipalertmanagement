@@ -4,6 +4,7 @@ public class LocaleVO {
 	private String locale;
 	private String description;
 	private String localeText;
+	private String displayText;
 	
 	
 	public String getLocale() {
@@ -24,6 +25,11 @@ public class LocaleVO {
 	public void setLocaleText(String localeText) {
 		this.localeText = localeText;
 	}
-	
+	public String getDisplayText() {
+		return displayText;
+	}
+	public void setDisplayText(String displayText) {
+		this.displayText = displayText;
+	}
 	
 } 

@@ -825,7 +825,7 @@ var count=parseInt(prevQuantity);
 	} 
 	</script> 
 <div id="messages">
-	<jsp:include page="../common/action_messages.jsp"/>
+	<s:include value="../common/action_messages.jsp"/>
 </div>
 <s:form action="shipment.stageThree" cssClass="form" name="userform" id="userform" theme="simple" >
 <div class="form-container" >
@@ -837,7 +837,7 @@ var count=parseInt(prevQuantity);
 							<div class="content_table" id="contenttbl">
 								<div class="content_header" style="margin-top:1px; margin-bottom:1px;">
 									<div class="cont_hdr_title"><mmr:message messageId="label.search.reference"/></div>
-									<div class="cont_hdrtitle_l" style="width:650px"><mmr:message messageId="label.search.referenceheading"/></div>
+									<div class="cont_hdrtitle_l" style="width:610px"><mmr:message messageId="label.search.referenceheading"/></div>
 									<div class="form_buttons">
 										<a class="referenceOpen" onclick="javascript:return false;" style="padding:0px; background-color:transparent;" href="">
 											<img src="/shiplinx/mmr/images/hide.png">

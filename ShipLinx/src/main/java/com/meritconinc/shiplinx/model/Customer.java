@@ -70,7 +70,15 @@ public class Customer {
 	private boolean reference=false;
 	
 	private User user;
-	
+	private boolean chbCustomer;
+	public boolean isChbCustomer() {
+		return chbCustomer;
+	}
+
+	public void setChbCustomer(boolean chbCustomer) {
+		this.chbCustomer = chbCustomer;
+	}
+
 	public String getApcontactName() {
 		return apcontactName;
 	}

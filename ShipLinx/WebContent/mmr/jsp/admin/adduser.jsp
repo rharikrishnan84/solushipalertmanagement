@@ -259,11 +259,16 @@ window.onload = function() {
 									<div  class="controls"><span>:</span><s:select id="measure" name="user.unitmeasure" value="%{user.unitmeasure}"  list="#{'1':'Imperial(Pounds/Inches)','2':'Metric(Kilograms/Centimetres)'}"  disabled="false"/></div>
 									</div>
 									
-									
 									<div class="fields">
 										<label><mmr:message messageId="label.session.timeout"/> </label>
 										<div class="controls"><span>:</span><s:textfield  key="user.sessionTimeout" name="user.sessionTimeout" id="user_timeout"  onkeypress="return typenumbers(event,\'0123456789\')"/></div>
 									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.user.selectlocale"/></label>
+										<div class="controls"><span>:</span><s:select name="user.locale" value="%{user.locale}" headerKey="-1"  headerValue="--Select Locale--" listKey="locale" listValue="description" list="#session.localeList" ></s:select></div>
+									</div>
+									
 								</div>
 								<div class="rows" >
 									<p id="rules" style="color: #000066; font-size: 12px; font-weight: bold;"></p>
@@ -320,13 +325,13 @@ window.onload = function() {
 							<div class="cont_data_body">
 							<s:if test="#session.edit == 'true'">
 								<div class="rows">
-									<div class="fieldsl">
+									<div class="fields">
 										<label><mmr:message messageId="label.copies.shipping.label"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_copies"   name="user.printNoOfLabels" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{user.printNoOfLabels}"/>
 										</div>
 									</div>
-									<div class="fieldsl">
+									<div class="fields">
 										<label><mmr:message messageId="label.copies.customsinvoice"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="customsinv_copies"   name="user.printNoOfCI" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{user.printNoOfCI}"/>
@@ -335,13 +340,13 @@ window.onload = function() {
 									
 								</div>
 								<div class="rows">
-									<div class="fieldsl">
+									<div class="fields">
 										<label><mmr:message messageId="label.preferred.label.size"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_size"  name="user.preferredLabelSize" list="{'--Select--','4 x 6','8 x 11'}"/>
 										</div>
 									</div>
-									<div class="fieldsl">
+									<div class="fields">
 										<label><mmr:message messageId="label.auto.print"/> </label>
 										<div class="controls"><s:checkbox key="user.autoPrint" name="user.autoPrint" /></div>
 									</div>
@@ -354,13 +359,13 @@ window.onload = function() {
 							<div class="cont_data_body">
 							
 								<div class="rows">
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.copies.shipping.label"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_copies"  name="user.printNoOfLabels" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="1"/>
 										</div>
 									</div>
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.copies.customsinvoice"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="customsinv_copies"   name="user.printNoOfCI" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="3"/>
@@ -369,13 +374,13 @@ window.onload = function() {
 									
 								</div>
 								<div class="rows">
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.preferred.label.size"/> </label>
 										<div class="controls"><span>:</span>
 										<s:select id="label_size"  name="user.preferredLabelSize" list="{'--Select--','4 x 6','8 x 11'}" value="%{user.preferredLabelSize}"/>
 										</div>
 									</div>
-									<div class="fields">
+									<div class="fieldsl">
 										<label><mmr:message messageId="label.auto.print"/> </label>
 										<div class="controls"><span>:</span><s:checkbox key="user.autoPrint" name="user.autoPrint" /></div>
 									</div>

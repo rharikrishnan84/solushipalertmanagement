@@ -10,7 +10,12 @@
 		<sj:head jqueryui="true" />
 		<sx:head />
 		<script>
-	
+		 $(document).keydown(function(e) { 
+			if (e.keyCode == 8) {
+				 e.preventDefault();
+			}
+				
+			}); 
 	$(window).load(function() {
   var wndo = $(window).height();
   wndo -=46;
@@ -37,21 +42,27 @@ jConfirm('You want to delete the charge?', 'Yes', 'No', function(confirmationMes
 	<body>
 		<SCRIPT language="JavaScript">
 		var taxes = new Array();
+		var taxId=[];
 				var count=0;
-				function checkInvoice(index) {		
-					var txt1 = document.getElementById("editTaxActualCharge"+index).checked;
-				    if(txt1){
-				    	 document.getElementById("editTaxActualCharges"+index).readOnly=false;
-				         	taxes[count]=txt1;
-					    	count++;
-					    }else{
-					    	document.getElementById("editTaxActualCharges"+index).readOnly=true;
-					    }
+				function checkInvoice(taxId) {		
+					if(document.getElementById("checkbox["+taxId+"]").checked){			    	
+						document.getElementById("text["+taxId+"]").readOnly=true;
+					}else{
+						document.getElementById("text["+taxId+"]").readOnly=false;
 					}
+				}
+				
 			function updateInvoice() {
-				document.editform.action = "update.invoice.action";
+				$("input:checkbox").each(function(){
+				    var $this = $(this);    
+				    if($this.is(":checked")){
+				    	taxId.push($this.attr("name"));
+				    }
+				});
+				document.editform.action = "update.invoice.action?calculateTaxId="+taxId;
 				document.editform.submit();
 			}
+			
 			function backInvoice() {
 				document.editform.action = "invoice.action";
 				document.editform.submit();
@@ -139,7 +150,7 @@ jConfirm('You want to delete the charge?', 'Yes', 'No', function(confirmationMes
 								<s:hidden id="actualChargeIds" name="actualChargeIds" value="%{id}" /> 
 								<s:hidden name="trackingNumbers" value="%{masterTrackingNum}" />
 								<s:textfield size="8" key="actualCharge" name="actualCharge"
-													value="%{charge}" cssClass="text_02" id="editTaxActualCharges%{#index}" readOnly="readonly" />
+													value="%{charge}" cssClass="text_02" id="text[%{id}]" readOnly="true"/>
 							</td>
 							
 							<%-- <td class="ordrdtl_title_val" width="35%">
@@ -152,12 +163,13 @@ jConfirm('You want to delete the charge?', 'Yes', 'No', function(confirmationMes
 							<s:hidden id="actualChargeIds" name="actualChargeIds" value="%{id}"/>
 							 <s:hidden name="trackingNumbers" value="%{masterTrackingNum}" /> 
 							 <s:textfield size="8" 	key="actualCharge" name="actualCharge"
-								value="%{charge}" cssClass="text_02" id="editactualCharge[[%{#index}]" />
+								value="%{charge}" cssClass="text_02" id="editactualCharge[%{#index}]" />
 						</td>
 						</s:else>
-						<td class="ordrdtl_title_val" width="55%">
-							<span style="width:120px; float:left;"><s:a href="#"  onclick="return confirm('%{id}')"  cssStyle="padding:3px 10px; position:relative; right:121px; float:left; width:auto !important; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;">
-							<mmr:message messageId="btn.delete"/> </s:a></span>
+						<td class="ordrdtl_title_val" width="20%" style="right: 11px;">
+						   <s:a href="#" onclick="return confirm('%{id}')"
+						   cssStyle="padding:3px 10px; position:relative; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;">
+						   <mmr:message messageId="btn.delete"/> </s:a>
 						</td>
      					<td>
      					<s:hidden name="tax_ver" value="%{isTax}"/>
@@ -167,8 +179,8 @@ jConfirm('You want to delete the charge?', 'Yes', 'No', function(confirmationMes
 						  <mmr:message messageId="label.navigation.caltax" />:</label>
 						  
 						  <div class="controls" style="width:20px !important"> 													
-					    	<s:checkbox style="width:22px !important" name="caltax" cssClass="check_uncheck_row"
-						   id="editTaxActualCharge%{#index}" onclick="checkInvoice('%{#index}')" />
+					    	<s:checkbox style="width:22px !important" name="%{id}" cssClass="check_uncheck_row"
+						   id="checkbox[%{id}]" onclick="checkInvoice('%{id}')" />
 						</div> 
 						 </div> 
 						  </s:if>  
