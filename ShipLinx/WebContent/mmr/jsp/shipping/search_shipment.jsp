@@ -305,7 +305,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 												 />
 											</div>
 										</div>
-										<s:if test="%{#session.ROLE.contains('busadmin')}">
+										<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.name" /></label>
 											<s:url id="customerList" action="listCustomers" />

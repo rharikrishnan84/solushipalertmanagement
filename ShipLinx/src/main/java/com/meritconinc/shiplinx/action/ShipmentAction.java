@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -2351,8 +2352,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    try {
 	      // clear the previous errors
 	      clearActionErrors();
+	      System.out.println("Starting Time Mohan ==== "+System.currentTimeMillis());
 	      List<Rating> ratingList = carrierServiceManager.rateShipment(shippingOrder);
-
+	      System.out.println("End Time Mohan ==== "+System.currentTimeMillis());
 	      Boolean isTransitDaysZero = false;
 	      for (Rating ratingListTRD : ratingList) {
 	        if (ratingListTRD != null && ratingListTRD.getTransitDays() <= 0
@@ -5568,7 +5570,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
 		        order.setQuoteTotalCharge(Double.valueOf(round.format(totalQuoteCharge)));
 		        shippingDAO.updateTotalCharges(order);
-
+		        currencyList=shippingDAO.getallCurrencySymbol();
 				addActionMessage(getText("charge.deleted.successfully"));
 			}
 		} catch (Exception e) {

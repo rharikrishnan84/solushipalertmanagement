@@ -104,10 +104,9 @@
 	</resultMap>
 
 	<resultMap id="exRateResult" class="com.meritconinc.shiplinx.model.Charge">
-		<result property="exchangerate"	column="exchange_rate"/>	
-		<result property="isTax" column="is_tax"/>
 		<result property="charge" column="charge"/>
 		<result property="cost" column="cost"/>
+		<result property="exchangerate"	column="exchange_rate"/>	
 		<result property="chargecurrency" column="charge_currency"/>
 	</resultMap>
  
@@ -487,6 +486,6 @@
 	</select>
 	
 	<select id="getChargeExchangeRateByInvoiceId" resultMap="exRateResult">
-           select c.charge, c.cost, c.exchange_rate, c.charge_currency, cg.is_tax from charges c left join invoice_charges ic on(c.id=ic.charge_id) left join carrier_charge_code ccc on(c.charge_code=ccc.charge_code) left join charge_group cg on(cg.id=ccc.charge_group_id) where ic.invoice_id=#invoiceId# group by c.id;
+           select c.charge, c.cost, c.exchange_rate, c.charge_currency from charges c left join invoice_charges ic on(c.id=ic.charge_id) where ic.invoice_id=#invoiceId# group by c.id;
 		</select>	
 </sqlMap>

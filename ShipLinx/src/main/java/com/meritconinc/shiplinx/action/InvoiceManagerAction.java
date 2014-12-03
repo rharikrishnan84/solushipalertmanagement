@@ -339,13 +339,17 @@ public String getSalesRep() {
 	  				      return "paylist";
 	  				    }
 	  		  /// Exchange Rate 
-	  		List<Charge> chargesList = new ArrayList<Charge>();
+	  		/*List<Charge> chargesList = new ArrayList<Charge>();
 	  			    double invoiceAmt = 0.0;
 	  			    double invoiceCost = 0.0;
 	  			    double invoiceTax = 0.0;
 	  			    int currencyId=0;
 	  			    for(Invoice invoiceResult : invoices){
+	  			    	System.out.println("Mohan ======="+invoiceResult.getInvoiceId());
 	  			      chargesList =  invoiceManager.getChargeExchangeRateByInvoiceId(invoiceResult.getInvoiceId());
+	  			      if(chargesList==null || chargesList.size()==0){
+	  			    	   continue;
+	  			      }
 	  			    currencyId = chargesList.get(0).getChargecurrency();
 	  			    for(Charge charge : chargesList){
 	  			        
@@ -398,10 +402,52 @@ public String getSalesRep() {
 	  				    		getSession().put("customerDefaultCurrency", "$");
 	  				    	}
 	  				    	
-	  				    }
+	  				    }*/
+	  		  
+	  		  
+	  		    /// New Code
+	  		 for(Invoice invoiceResult : invoices){
+	  			 
+	  			List<Charge> chargesList =  invoiceManager.getChargeExchangeRateByInvoiceId(invoiceResult.getInvoiceId());
+			      if(chargesList==null || chargesList.size()==0){
+			    	   continue;
+			      }
+			      if(chargesList.get(0).getExchangerate() != null && !chargesList.get(0).getExchangerate().equals(0.0) && !chargesList.get(0).getExchangerate().equals("")){
+			    	  invoiceResult.setInvoiceAmount(invoiceResult.getInvoiceAmount() * chargesList.get(0).getExchangerate().doubleValue() );
+			    	  invoiceResult.setInvoiceCost(invoiceResult.getInvoiceCost() * chargesList.get(0).getExchangerate().doubleValue());
+			    	  invoiceResult.setInvoiceTax(invoiceResult.getInvoiceTax() * chargesList.get(0).getExchangerate().doubleValue());
+			      }
+	  			 //Invoice invoiceObj = invoiceManager.getInvoiceById(invoiceResult.getInvoiceId());
+				    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
+				    CurrencySymbol currencySymbol = new CurrencySymbol();
+				    if(invoiceResult.getCustomer().getDefaultCurrency()!=null && !invoiceResult.getCustomer().getDefaultCurrency().isEmpty()){
+				      currencySymbol = shippingDAO.getSymbolByCurrencycode(invoiceResult.getCustomer().getDefaultCurrency());
+			        getSession().put("customerDefaultCurrency", currencySymbol.getCurrencySymbol());
+				    }else{
+				    	if(UserUtil.getMmrUser().getLocale() != null){
+				    	 currencySymbol = shippingDAO.getCurrencyCodeByCountryName(UserUtil.getMmrUser().getLocale().substring(3,5));
+				    	 //---------------------
+					      	  if(currencySymbol==null && currencySymbol.getCurrencySymbol()==null && currencySymbol.getCurrencySymbol().isEmpty()){
+					      		  for(int j=0;j<ShiplinxConstants.EURO_UNION_LIST.length;j++){
+					      			  if(UserUtil.getMmrUser().getLocale().substring(3,5).equalsIgnoreCase(ShiplinxConstants.EURO_UNION_LIST[j])){
+					      				currencySymbol=shippingService.getCurrencyCodeByCountryName("EUCG");
+					      				break;
+					      			  }
+					      		  }
+					      	  }
+				    	 //-------------------------
+				    	 getSession().put("customerDefaultCurrency", currencySymbol.getCurrencySymbol());
+				    	}else{
+				    		getSession().put("customerDefaultCurrency", "$");
+				    	}
+				    	
+				    }
+	  		 }
+	  		   
+	  		    ///
+	  				  ///// End
 	  				  return SUCCESS;
 	  		  }
-	  				    ///// End
 	  			   
   
 

@@ -127,7 +127,9 @@ public class FedEx implements CarrierService {
 		try{
 			RateAvailableWebServiceClient rateAvailableWebServiceClient = new RateAvailableWebServiceClient(shippingOrder,services, customerCarrier);
 			rateAvailableWebServiceClient.buildRateRequest();
+			if(rateAvailableWebServiceClient!=null){
 			ratingList = rateAvailableWebServiceClient.getRatingList();
+			}
 
 		}catch (FedExException e) {
 			e.printStackTrace();

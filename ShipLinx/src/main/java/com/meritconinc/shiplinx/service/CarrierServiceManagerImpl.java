@@ -1112,7 +1112,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	        }else{
       Business business = businessService.getBusinessById(order.getBusinessId());
       if (!StringUtil.isEmpty(business.getShipOrderNotificationBody())) {
+    	  //changed
         sendOrderShippedEmailNotification(order);
+    	  
       }
     	        }
     } catch (ShiplinxException e) {
@@ -1174,7 +1176,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         return false;
       }
 
-      body = new String(body.replaceAll("%TOADDRESSNAME", so.getToAddress().getContactName()));
+      /*body = new String(body.replaceAll("%TOADDRESSNAME", so.getToAddress().getContactName()));
       body = new String(body.replaceAll("%FROMCOMPANYNAME", so.getFromAddress()
           .getAbbreviationName()));
       body = new String(body.replaceAll("%CARRIERNAME", so.getCarrierName()));
@@ -1199,8 +1201,37 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       body = new String(body.replaceAll("%TRACKINGNUMBER", so.getMasterTrackingNum()));
       body = new String(body.replaceAll("%TRACKINGURL", "\"" + so.getTrackingURL() + "\""));
       body = new String(body.replaceAll("%BUSINESSLOGO", "\"" + so.getBusiness().getLogoURL()
-          + "\""));
-
+          + "\""));*/
+      body = new String(body.replaceAll("%ATTENTION", "Customer"));
+      body = new String(
+          body.replaceAll(
+              "%ShipDate",
+              FormattingUtil.getFormattedDate(so.getScheduledShipDate(),
+                  FormattingUtil.DATE_FORMAT_WEB) + ""));
+      body = new String(body.replaceAll("%SFROMCOMPANY", so.getFromAddress().getAbbreviationName()));
+      body = new String(body.replaceAll("%SFROMADDRESS1", so.getFromAddress().getAddress1()));
+      body = new String(body.replaceAll("%SFROMADDRESS2%", so.getFromAddress().getAddress2()));
+      body = new String(body.replaceAll("%SFROMZIP", so.getFromAddress().getPostalCode()));
+      body = new String(body.replaceAll("%SFROMPROVINCE", so.getFromAddress().getProvinceCode()));
+      body = new String(body.replaceAll("%SFROMCOUNTRY", so.getFromAddress().getCountryCode()));
+      body = new String(body.replaceAll("%SFROMCITY", so.getFromAddress().getCity()));
+      body = new String(body.replaceAll("%STOCOMPANY", so.getToAddress().getAbbreviationName()));
+      body = new String(body.replaceAll("%STOADDRESS1", so.getToAddress().getAddress1()));
+      body = new String(body.replaceAll("%STOADDRESS2%", so.getToAddress().getAddress2()));
+      body = new String(body.replaceAll("%STOCITY", so.getToAddress().getCity()));
+      body = new String(body.replaceAll("%STOZIP", so.getToAddress().getPostalCode()));
+      body = new String(body.replaceAll("%STOPROVINCE", so.getToAddress().getProvinceCode()));
+      body = new String(body.replaceAll("%STOCOUNTRY", so.getToAddress().getCountryCode()));
+      body = new String(body.replaceAll("%CARRIERSERVICE", so.getCarrierName() + " "
+          + so.getService().getName()));
+      body = new String(body.replaceAll("%TOTALPIECES", so.getQuantity() + " Pcs"));
+      body = new String(body.replaceAll("%TOTALWEIGHT", so.getRateList().get(0).getBillWeight()
+          + " " + so.getBilledWeightUOM()));
+      if (so.getTrackingURL() != null) {
+        body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
+      } else {
+        body = new String(body.replaceAll("%TRACKINGURL", ""));
+      }
       List<String> bccAddresses = new ArrayList<String>();
       // bccAddresses.add(user.getBusiness().getAddress().getEmailAddress());
 

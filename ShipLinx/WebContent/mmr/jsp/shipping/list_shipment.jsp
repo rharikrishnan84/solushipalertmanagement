@@ -405,14 +405,16 @@ function download_files(type) {
 				
 				<td style="width:100px; "><s:property value="quotedWeight" />/<s:property value="billedWeight" /></td>
 				<td style="width:70px">
-					<s:if test="%{shipments[#index].quoteTotalCharge} !=null">
+				<s:hidden name="mohan" value="%{shipments[#index].quoteTotalCharge}"/>
+				<s:hidden name="mohan1" value="%{shipments[#index].quoteTotalCost}"/>
+					<s:if test="%{shipments[#index].quoteTotalCharge !=null}">
 						<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].quoteTotalCharge}"/></s:text>
 					</s:if>
 					<s:else>
 					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
 					</s:else>
 					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-					<s:if test="%{shipments[#index].quoteTotalCost} !=null">
+					<s:if test="%{shipments[#index].quoteTotalCost !=null}">
 					 /<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].quoteTotalCost}"/></s:text>
 					</s:if>
 					<s:else>
@@ -421,14 +423,14 @@ function download_files(type) {
 					</s:if>
 					</td>
 					<td>
-					<s:if test="%{shipments[#index].actualTotalCharge} !=null">
+					<s:if test="%{shipments[#index].actualTotalCharge !=null}">
 					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].actualTotalCharge}"/></s:text>
 					</s:if>
 					<s:else>
 					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
 					</s:else>
 					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
-					<s:if test="%{shipments[#index].actualTotalCost} !=null">
+					<s:if test="%{shipments[#index].actualTotalCost !=null}">
 				/ <s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>
 					<s:text name="format.customMoney" ><s:param value="%{shipments[#index].actualTotalCost}"/></s:text>
 					</s:if>

@@ -1971,4 +1971,8 @@ UPDATE `locale` SET `display_text`='zh_CN' WHERE `locale`='zh_CN';
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.customer.chbCustomer', 'CHB Customer', 'en_CA', 0);
 
 
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('mail.shipment.notification.subject', '%COMPANYNAME - Shipment Notification', 'en_CA', 1, '');
+UPDATE `business` SET `ship_order_notification_subject`='mail.shipment.notification.subject' WHERE `business_id`='1';
+UPDATE `resourcebundle` SET `msg_id`='mail.shipment.notify.body' WHERE `msg_id`='mail.shipment.notification.body' and`locale`='en_CA' and`is_fmk`=0;
+
 

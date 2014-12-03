@@ -97,7 +97,39 @@ public class RateAvailableWebServiceClient extends FedExRequestHelper{
 		authenticationInfo();
 		request.setClientDetail(createClientDetail());
         request.setWebAuthenticationDetail(createWebAuthenticationDetail());
-         
+        if(request!=null){
+       	 if(request.getClientDetail()!=null){
+       		 if(request.getClientDetail().getAccountNumber()==null || request.getClientDetail().getAccountNumber().isEmpty()){
+       			 return null;
+       		 }else if(request.getClientDetail().getMeterNumber()==null || request.getClientDetail().getMeterNumber().isEmpty()){
+       			 return null;
+       		 }
+       	 }else{
+       		 return null;
+       	 }
+        }
+        /* if(request!=null){
+        	 if(request.getClientDetail()!=null){
+        		 if(request.getClientDetail().getAccountNumber()==null || request.getClientDetail().getAccountNumber().isEmpty()){
+        			 return null;
+        		 }else if(request.getClientDetail().getMeterNumber()==null || request.getClientDetail().getMeterNumber().isEmpty()){
+        			 return null;
+        		 }
+        	 }else{
+        		 return null;
+        	 }
+        	 if(request.getWebAuthenticationDetail()!=null){
+        		 if(request.getWebAuthenticationDetail().getUserCredential()!=null && request.getWebAuthenticationDetail().getUserCredential().getKey()==null || request.getWebAuthenticationDetail().getUserCredential().getKey().isEmpty()){
+        			 return null;
+        		 }else if(request.getWebAuthenticationDetail().getUserCredential()!=null && request.getWebAuthenticationDetail().getUserCredential().getPassword()==null || request.getWebAuthenticationDetail().getUserCredential().getPassword().isEmpty()){
+        			 return null;
+        		 }else if(request.getWebAuthenticationDetail().getUserCredential()==null){
+        			 return null;
+        		 }
+        	 }else{
+        		 return null;
+        	 }
+         }*/
         // set transactionDetail
 	    TransactionDetail transactionDetail = new TransactionDetail();
 	    transactionDetail.setCustomerTransactionId("java sample - Rate Request"); // The client will get the same value back in the response

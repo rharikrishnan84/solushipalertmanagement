@@ -378,8 +378,7 @@ public class ShippingServiceClient {
 		addr.setCompany(objectFactory.createAddressCompany(setWithMaxLength(shipFromAddress.getAbbreviationName(),30)));
 		
 		
-//		addr.setStreetNumber(".");
-		addr.setStreetNumber("b20");
+		addr.setStreetNumber(".");
 
 		if(shipFromAddress.getAddress1()!=null){
 			if(shipFromAddress.getAddress1().length()<=30) //max allowed length for this field is 25

@@ -1157,10 +1157,10 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	          CurrencySymbol currencySymbol = new CurrencySymbol();
 	          	          if(customer.getDefaultCurrency()!=null && !customer.getDefaultCurrency().isEmpty()){
 	          	              currencySymbol = shippingDAO.getSymbolByCurrencycode(customer.getDefaultCurrency());  
-	          	          }else{
+	          	          }/*else{
 	          	        	  
 	          	        	if(UserUtil.getMmrUser().getLocale() != null){
-	  				    		if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_ADMIN)){
+	  				    		//if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_ADMIN)){
 	  				    	 currencySymbol = shippingDAO.getCurrencyCodeByCountryName(UserUtil.getMmrUser().getLocale().substring(3,5));
 	  				    	}else if(shippingOrder.get(0).getChargesForInvoice().get(0).getChargecurrency()>0){
 	  				    		currencySymbol = shippingDAO.getCurrencyCodeById(shippingOrder.get(0).getChargesForInvoice().get(0).getChargecurrency());
@@ -1175,6 +1175,17 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  					      	  }
 	  				    	 //-------------------------
 	  				    	}
+	          	          }*/
+	          	          else{
+	          	        	currencySymbol=shippingDAO.getSymbolByCurrencycode(invoice.getCurrency()); 
+	          	        	if(currencySymbol==null && currencySymbol.getCurrencySymbol() == null || currencySymbol.getCurrencySymbol().isEmpty()){
+					      		  for(int j=0;j<ShiplinxConstants.EURO_UNION_LIST.length;j++){
+					      			  if(UserUtil.getMmrUser().getLocale().substring(3,5).equalsIgnoreCase(ShiplinxConstants.EURO_UNION_LIST[j])){
+					      				currencySymbol=shippingDAO.getCurrencyCodeByCountryName("EUCG");
+					      				break;
+					      			  }
+					      		  }
+					      	  }
 	          	          }
 	          //// ===================== End ================
 	          for (ShippingOrder so : shippingOrder) {
@@ -1243,9 +1254,9 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	          URL logo2 = (InvoiceManagerImpl.class.getResource(logo2Path));
 	          parameters.put("logo", logo);
 	          parameters.put("logo2", logo2);
-	          if(customer.getDefaultCurrency()==null || customer.getDefaultCurrency().isEmpty()){
+	          /*if(customer.getDefaultCurrency()==null || customer.getDefaultCurrency().isEmpty()){
 	        	  invoice.setCurrency(currencySymbol.getCurrencyCode());
-	          }
+	          }*/
 	          JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(invoice.getOrders());
 
 	          JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, ds);
