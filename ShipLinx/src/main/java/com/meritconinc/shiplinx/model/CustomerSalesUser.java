@@ -9,6 +9,8 @@ public class CustomerSalesUser {
 	private double commissionPercentagePerPalletService=0;
 	private double commissionPercentagePerSkidService=0;
 	private double commisionPercentagePerCHB=0;
+	private double commisionPercentagePerFPA=0;
+	private double commisionPercentagePerFWD=0;
 	private String email;
 	
 	public long getCustomerId() {
@@ -63,6 +65,17 @@ public class CustomerSalesUser {
 		this.commisionPercentagePerCHB = commisionPercentagePerCHB;
 	}
 	
-	
+	public double getCommisionPercentagePerFPA() {
+				return commisionPercentagePerFPA;
+			}
+			public void setCommisionPercentagePerFPA(double commisionPercentagePerFPA) {
+				this.commisionPercentagePerFPA = commisionPercentagePerFPA;
+			}
+			public double getCommisionPercentagePerFWD() {
+				return commisionPercentagePerFWD;
+			}
+			public void setCommisionPercentagePerFWD(double commisionPercentagePerFWD) {
+				this.commisionPercentagePerFWD = commisionPercentagePerFWD;
+			}
 	
 }

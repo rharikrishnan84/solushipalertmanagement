@@ -56,5 +56,7 @@ public interface CarrierServiceDAO {
   public List<Service> getServicesForCarrierAdmin(Long carrierId);
   
   public List<Service> getAllServices();
+  
+  public String getCurrencyByAccount(String accountNumber1);
 
 }

@@ -306,4 +306,8 @@
  	<select id="getAllServices" resultMap="CarrierServicesResult1">
    		select * from service s 
  	</select>
+ 	
+ 	<select id="getCurrencyByAccount" resultClass="String">
+	 select currency_code from currency_symbol where country_code=(SELECT country FROM customer_carrier where account_number1=#accountNumber1# or account_number2=#accountNumber1# limit 1)
+	</select>
 </sqlMap>

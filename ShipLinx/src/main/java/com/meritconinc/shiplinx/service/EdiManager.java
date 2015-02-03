@@ -17,5 +17,6 @@ public interface EdiManager {
 	public List<EdiItem> searchByFileName(EdiItem item);
 	public List<EdiItem> findEdiItems(EdiItem item);
 	public int releaseEdiFile(String ediFileName) throws Exception;
+	public List<EdiItem> searchFileInEdiItem(String uploadFileName);
 }
  

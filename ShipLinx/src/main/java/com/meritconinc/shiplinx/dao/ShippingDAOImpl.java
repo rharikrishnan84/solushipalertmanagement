@@ -697,33 +697,44 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
           + so.getToDate());
 
       List<ShippingOrder> list_match = new ArrayList<ShippingOrder>();
-    		 
-      List<ShippingOrder> list = getSqlMapClientTemplate().queryForList("findShipments", so);
-    		
+      String queryId1 = "";
+      String queryId2 = "";
+      String queryId3 = "";
+      if ("SEARCH_SHIPMENTS".equalsIgnoreCase(so.getPurpose())){
+          queryId1 = "findShipments";
+          queryId2 = "findShipmentsAdminById";
+          queryId3 = "findShipmentsAdmin";
+      }else{
+          queryId1 = "findShipments1";
+          queryId2 = "findShipmentsAdminById1";
+          queryId3 = "findShipmentsAdmin1";
+      }
+      so.setPurpose(""); // Clear purpose
+      List<ShippingOrder> list = getSqlMapClientTemplate().queryForList(queryId1, so);
       if (role.equalsIgnoreCase("busadmin")) {
-        List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
-        list2 = getSqlMapClientTemplate().queryForList("findShipmentsAdmin", so);
-        if(list.size()==0 && so.getId()!=null && so.getId()>0){
-        	list2 = getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
-        }
-        if (list.size() == 0) {
-          list.addAll(list2);
-        } else {
-          for (int i = 0; i < list2.size(); i++) {
-            boolean flagDublicate = true;
-            for (int j = 0; j < list.size(); j++) {
-            	if (list2.get(i).getId().equals(list.get(j).getId())) {
-                flagDublicate = false;
+          List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
+          if(list.size()==0 && so.getId()!=null && so.getId()>0){
+          	list2 = getSqlMapClientTemplate().queryForList(queryId2, so);
+          }else{
+          	list2 = getSqlMapClientTemplate().queryForList(queryId3, so);
+          }
+          if (list.size() == 0) {
+            list.addAll(list2);
+          } else {
+            for (int i = 0; i < list2.size(); i++) {
+              boolean flagDublicate = true;
+              for (int j = 0; j < list.size(); j++) {
+              	if (list2.get(i).getId().equals(list.get(j).getId())) {
+                  flagDublicate = false;
+                }
+              }
+              if (flagDublicate) {
+                list_match.add(list2.get(i));
               }
             }
-            if (flagDublicate) {
-              list_match.add(list2.get(i));
-            }
+            list.addAll(list_match);
           }
-          list.addAll(list_match);
         }
-      }
-   
       return list;
     } catch (Exception e) {
       e.printStackTrace();
@@ -1348,4 +1359,34 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 					return (CurrencySymbol)getSqlMapClientTemplate().queryForObject("getCurrencyCodeById",id);
 					
 				}
+				
+				public void updateShippingOrderCurrency(long orderId, String newCurrency){
+				     Map<String, Object> paramObj = new HashMap<String, Object>();
+				     paramObj.put("orderId", orderId);
+				     paramObj.put("newCurrency", newCurrency);
+				     getSqlMapClientTemplate().update("updateShippingOrderCurrency", paramObj);
+				    }
+				
+				@Override
+								public String getCurrencyByCountry(String accCountry) {
+									// TODO Auto-generated method stub
+									Map<String, Object> paramObj = new HashMap<String, Object>();
+									paramObj.put("acccountry", accCountry);
+									String cur=(String) getSqlMapClientTemplate().queryForObject("getCurrencyByCountry", paramObj);
+									return cur;
+								}
+				
+								@Override
+								public int getCountryIdByCountryCode(String accCountry,String currencyCode) {
+									// TODO Auto-generated method stub
+									Map<String, Object> paramObj = new HashMap<String, Object>();
+									paramObj.put("acccountry", accCountry);
+									paramObj.put("currencyCode",currencyCode);
+									Integer cid=(Integer)getSqlMapClientTemplate().queryForObject("getCountryIdByCountryCode", paramObj);
+									if(cid!=null){
+										return cid.intValue();
+									}else{
+										return 1;
+									}
+								}
 }

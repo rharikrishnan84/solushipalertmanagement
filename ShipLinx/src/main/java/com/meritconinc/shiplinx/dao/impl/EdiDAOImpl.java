@@ -1,5 +1,6 @@
 package com.meritconinc.shiplinx.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -146,7 +147,14 @@ public class EdiDAOImpl extends SqlMapClientDaoSupport implements EdiDAO {
 			if (item.getInvoiceNumber() != null && item.getInvoiceNumber().trim().isEmpty())
 				item.setInvoiceNumber(null);
 			List<EdiItem> ediItemList = (List<EdiItem>) getSqlMapClientTemplate().queryForList("findEdiItems", item);
-			return ediItemList;
+			List<EdiItem> ediItemList1=new ArrayList<EdiItem>();
+						for(EdiItem e:ediItemList){
+							if(e.getTotInvoiceAmount()!=null){
+								log.error(e.getId()+"is having null amount and its status is"+e.getStatus()+"(ie)"+e.getStatusText());
+								ediItemList1.add(e);
+							}
+						}
+			return ediItemList1;
 		}
 		return null;
 	}	
@@ -168,5 +176,12 @@ public class EdiDAOImpl extends SqlMapClientDaoSupport implements EdiDAO {
 	// return ediItemList;
 	// return null;
 	// }
+	
+	@Override
+		public List<EdiItem> searchFileInEdiItem(String uploadFileName) {
+			// TODO Auto-generated method stub
+			List<EdiItem> i=getSqlMapClientTemplate().queryForList("searchFileInEdiItem", uploadFileName);
+			return i;
+		}
 
 }

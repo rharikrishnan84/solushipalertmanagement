@@ -232,6 +232,14 @@ function download_files(type) {
 	  }
 	 }
 	
+function loadCachedPage(selPage){
+	document.searchform.action = "list.shipment.action?cacheId="+selPage.value;
+	document.searchform.submit();
+}
+
+function loadTrackingURL(url){
+	window.open(url,"_blank","directories=no, status=no,width=1400, height=870,top=0,left=0");
+}
 </script>	
 <style>
 	.width150{ width:150px !important; }
@@ -295,6 +303,10 @@ function download_files(type) {
 			
 			
 			<div id="srchshipmnt_result_tbl_print_label">
+			<s:if test="%{#request.current_page != null}">
+				<font class="srchshipmnt_text_03"> <mmr:message messageId="label.display.records"/></font>&nbsp;
+				<s:select id="cached_pages" cssClass="text_01_combo_small" list="cachedList" listKey="key" listValue="value" value="%{#request.current_page}" onchange="loadCachedPage(this)"/>
+			</s:if>
 			<font class="srchshipmnt_text_03"><mmr:message messageId="label.copies.shipping.label"/></font>&nbsp;
 			<s:if test="%{#request.no_of_lbls != null}">
 				<s:select id="label_copies" cssStyle="width:39px;" cssClass="text_01_combo_small" list="#{'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','10':'10'}" value="%{#request.no_of_lbls}"/>
@@ -359,13 +371,13 @@ function download_files(type) {
 				<s:hidden name="selectedShipments[%{#index}].id" value="%{id}"/>
 					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" />
 					  <s:hidden name="selectedShipments[%{#index}].statusId" id="selectedShipments[%{#index}].statusId" value="%{statusId}"/>
-					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoice.id"/>" />
+					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoiceId"/>" />
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />
 				
 				</td>
 				<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}">
-					<td title="<s:property value="customer.name"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div></td>
-				
+					<td title="<s:property value="customerName"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customerName"/></div></td>
+					
 				</s:if>
 				<td>
 				<s:a href="view.shipment.action?viewShipmentId=%{id}"> 
@@ -375,11 +387,21 @@ function download_files(type) {
 				
 				<td style="width:100px !important;height:30px;overflow:hidden;text-overflow: ellipsis">
 				<s:if test="%{trackingURL!=null}">
-					<a href="javascript:track('<s:property value="id"/>')"><s:property value="masterTrackingNum"/> </a>
+					<a href="javascript:loadTrackingURL('<s:property value="trackingURL"/>')"><s:property value="masterTrackingNum"/> </a>
 				</s:if>
 				<s:else>
 					<s:a href="view.shipment.action?notrackurl='true'&viewShipmentId=%{id}"> 
-					<s:property value="masterTrackingNum"/>
+					<s:if test="%{masterTrackingNum!=null}">
+							<s:if test="%{masterTrackingNum.length()!=0}">
+								<s:property value="masterTrackingNum"/>
+							</s:if>
+							<s:else>
+								<s:property value="id"/>
+							</s:else>
+						</s:if>
+						<s:else>
+							<s:property value="id"/>
+						</s:else>
 					</s:a>
 				</s:else>
 				</td>
@@ -398,10 +420,10 @@ function download_files(type) {
 				</s:else>
 				</s:if>
 				<s:else>
-				<td title="<s:property value="service.masterCarrier.name"/>"><div style="width:70px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="service.masterCarrier.name"/></div></td>
+				<td title="<s:property value="masterCarrierName"/>"><div style="width:70px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="masterCarrierName"/></div></td>
 				
 				</s:else>
-				<td title="<s:property value="service.name"/>"><div style="width:80px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="service.name"/></div></td>
+				<td title="<s:property value="serviceName"/>"><div style="width:80px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="serviceName"/></div></td>
 				
 				<td style="width:100px; "><s:property value="quotedWeight" />/<s:property value="billedWeight" /></td>
 				<td style="width:70px">
@@ -439,10 +461,12 @@ function download_files(type) {
 					</s:else>
 					</s:if>
 					</td>
-				<td title="<s:property value="fromAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromAddress.longAddress" /></div></td>
+				<%-- <td title="<s:property value="fromAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromAddress.longAddress" /></div></td>
 				
-				<td title="<s:property value="toAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toAddress.longAddress"/></div></td>
+				<td title="<s:property value="toAddress.longAddress"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toAddress.longAddress"/></div></td> --%>
+				<td title="<s:property value="fromAddressLong"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromAddressLong" /></div></td>
 				
+				<td title="<s:property value="toAddressLong"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toAddressLong"/></div></td>
 				
 				<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager')}">
 					<td title="<s:property value="statusName"/><img src="<s:url value="/mmr/images/stamp_check.png" includeContext="true" />" alt="Update" border="0" onclick="javascript:updateShipment('<s:property value="id"/>');" style="cursor: pointer;">"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="statusName"/><img src="<s:url value="/mmr/images/stamp_check.png" includeContext="true" />" alt="Update" border="0" onclick="javascript:updateShipment('<s:property value="id"/>');" style="cursor: pointer;"></div></td>

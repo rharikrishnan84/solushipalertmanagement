@@ -7,9 +7,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Currency;
+import java.util.Locale;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +40,7 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.cwsi.eshipper.carrier.ups.rate.SubTotalDocument.SubTotal;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.service.UserService;
@@ -91,7 +97,10 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<Boolean> select;
   private CreditCard creditCard;
   private List<ARTransaction> arTransactions;
+  
+  private SubTotal subtotals;
 
+  private SalesRecord salesRecord;
   private Integer statusId;
 
   public static final List<String> MONTH_LIST = createMonthList();
@@ -413,9 +422,9 @@ public String getSalesRep() {
 			    	   continue;
 			      }
 			      if(chargesList.get(0).getExchangerate() != null && !chargesList.get(0).getExchangerate().equals(0.0) && !chargesList.get(0).getExchangerate().equals("")){
-			    	  invoiceResult.setInvoiceAmount(invoiceResult.getInvoiceAmount() * chargesList.get(0).getExchangerate().doubleValue() );
-			    	  invoiceResult.setInvoiceCost(invoiceResult.getInvoiceCost() * chargesList.get(0).getExchangerate().doubleValue());
-			    	  invoiceResult.setInvoiceTax(invoiceResult.getInvoiceTax() * chargesList.get(0).getExchangerate().doubleValue());
+			    	 // invoiceResult.setInvoiceAmount(invoiceResult.getInvoiceAmount() * chargesList.get(0).getExchangerate().doubleValue() );
+			    	  //invoiceResult.setInvoiceCost(invoiceResult.getInvoiceCost() * chargesList.get(0).getExchangerate().doubleValue());
+			    	  //invoiceResult.setInvoiceTax(invoiceResult.getInvoiceTax() * chargesList.get(0).getExchangerate().doubleValue());
 			      }
 	  			 //Invoice invoiceObj = invoiceManager.getInvoiceById(invoiceResult.getInvoiceId());
 				    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
@@ -757,7 +766,7 @@ public String getSalesRep() {
   }
 
   public void setSalesRecord(SalesRecord salesRecord) {
-
+	  this.salesRecord = salesRecord;
     getSession().put("salesRecord", salesRecord);
   }
 
@@ -1052,7 +1061,7 @@ public String getSalesRep() {
         
         /// ===================== Exchange Rate =========================== 
         for(Commission commissionReport : commissions){
-
+        	
         	Double exRate = 0.0;
         	if(commissionReport.getInvoiceCurrency() != null && !commissionReport.getInvoiceCurrency().isEmpty() &&  toCurrency != null && !toCurrency.isEmpty()){
         		if(commissionReport.getInvoiceCurrency().equals(toCurrency)){
@@ -1072,6 +1081,8 @@ public String getSalesRep() {
         		commissionReport.setTotalSPD(commissionReport.getTotalSPD() * exRate);
         		commissionReport.setTotalCHB(commissionReport.getTotalCHB() * exRate);
         		commissionReport.setTotalLTL(commissionReport.getTotalLTL() * exRate);
+        		commissionReport.setTotalFPA(commissionReport.getTotalFPA() * exRate);
+        		commissionReport.setTotalFWD(commissionReport.getTotalFWD() * exRate);
         	}
         
         }
@@ -1089,10 +1100,11 @@ public String getSalesRep() {
 	  	  String inclCancelldInv=request.getParameter("inclCancelledInv");
 	  	String method = request.getParameter("method");
 	  		  	  if(method!=null){
+	  		  		currencyList=shippingService.getallCurrencySymbol();
 	  		  		  return SUCCESS;
 	  		  	  }
 	  	  Commission commission = this.getCommission();
-	     
+	     String currency = commission.getCurrency();
 	  	  commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
 	  			  FormattingUtil.DATE_FORMAT_WEB));
 	  	  commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
@@ -1108,8 +1120,9 @@ public String getSalesRep() {
 	  	  if(inclCancelldInv!=null){
 	  		  for(Invoice invoice:invoiceBreakdown){
 	  			 double invoiceAmt=0;
-	  				  groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
-	  				  for(Invoice grpInv:groupedInvoiceCharges){
+	  			 //invoice.setCurrency(currency);
+	  				 // groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
+	  				  /*for(Invoice grpInv:groupedInvoiceCharges){
 	  					  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
 	  						invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
 	  					  }
@@ -1119,15 +1132,41 @@ public String getSalesRep() {
 	  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
 	  						invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
 	  					  }
+	  					if("FPA".equalsIgnoreCase(grpInv.getEmailType())){
+	  								  						invoice.setTotalFPA(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+	  								  						System.out.println("FPA TYPE"+invoice.getTotalFPA());
+	  								  				 }
+	  							  					 if("FWD".equalsIgnoreCase(grpInv.getEmailType())){
+	  								  						invoice.setTotalFWD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+	  								  					System.out.println("FWD TYPE"+invoice.getTotalFWD());
+	  								  				 }
 	  				  }
-	  				  if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
-	  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+	  				  if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0 || invoice.getTotalFPA()>0 || invoice.getTotalFWD()>0){
+	  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();*/
+	  			if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0 || invoice.getTotalFWD()>0 || invoice.getTotalFPA()>0){
+	  				if(currency!=null && invoice.getCurrency()!=null && currency.equals(invoice.getCurrency())){
+	  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();
+	  				}else{
+	  					double tempSPD = invoiceManager.currencyConversion(invoice.getCurrency(), currency, invoice.getTotalSPD());
+	  					double tempLTL = invoiceManager.currencyConversion(invoice.getCurrency(), currency, invoice.getTotalLTL());
+	  					double tempCHB = invoiceManager.currencyConversion(invoice.getCurrency(), currency, invoice.getTotalCHB());
+	  					double tempFPA = invoiceManager.currencyConversion(invoice.getCurrency(), currency, invoice.getTotalFPA());
+	  					double tempFWD = invoiceManager.currencyConversion(invoice.getCurrency(), currency, invoice.getTotalFWD());
+	  					invoice.setTotalSPD(tempSPD);
+	  					invoice.setTotalLTL(tempLTL);
+	  					invoice.setTotalCHB(tempCHB);
+	  					invoice.setTotalFWD(tempFWD);
+	  					invoice.setTotalFPA(tempFPA);
+	  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();
+	  					invoice.setCurrency(currency);
+	  					
+	  				}
 	  					  invoice.setInvoiceAmount(invoiceAmt);
 	  				  tempInvoiceList.add(invoice);
 	  				  }
 	  		  }
 	  		  invoiceBreakdown.clear();
-	  		  
+	  		currencyList=shippingService.getallCurrencySymbol();
 	  		  invoiceBreakdown.addAll(tempInvoiceList);
 	  	  }
 	  	  return SUCCESS;
@@ -1153,11 +1192,20 @@ public String getSalesRep() {
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
       sales.setBranch(UserUtil.getMmrUser().getBranch());
 
+    CurrencySymbol curSymbol = shippingService.getSymbolByCurrencycode(sales.getCurrency());
+        Locale locale = null;
+        if (curSymbol != null){
+        	locale = new Locale(curSymbol.getLanguageCode()!=null?curSymbol.getLanguageCode():"en", curSymbol.getCountryCode());
+        }else{
+        	locale = new Locale("en", "CA");
+        }
+    	//NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+    	NumberFormat currencyFormatter = NumberFormat.getNumberInstance(locale);
     salesRecords = invoiceManager.generateSalesReport(sales);
     
   /// ===================== Exchange Rate =========================== 
     
-    String toCurrency = null;
+   /* String toCurrency = null;
     for(SalesRecord salesRecord : salesRecords){
     	Double exRate = 0.0;
     	toCurrency = sales.getCurrency();
@@ -1205,12 +1253,25 @@ public String getSalesRep() {
     }
     salesRecords.clear();
     salesRecords.addAll(tempSalesRecords);
-    
+    */
   /// ===================== End =========================== 
+    
+    BigDecimal totcost = new BigDecimal(0.0).setScale(2,RoundingMode.CEILING);
+        BigDecimal totcharge = new BigDecimal(0.0).setScale(2,RoundingMode.CEILING);
+        for (SalesRecord sale : salesRecords) {
+        	BigDecimal tcost = new BigDecimal(sale.getTotalCost()).setScale(2,RoundingMode.CEILING);
+        	totcost = totcost.add(tcost);
+        	BigDecimal tcharge = new BigDecimal(sale.getTotalAmount()).setScale(2,RoundingMode.CEILING);
+        	totcharge = totcharge.add(tcharge);
+        	sale.setTotalCostDisplay(currencyFormatter.format(tcost.doubleValue()));
+        	sale.setTotalAmountDisplay(currencyFormatter.format(tcharge.doubleValue()));
+    	}
     
     currencyList=shippingService.getallCurrencySymbol();
     CurrencySymbol currencySymbol = shippingService.getSymbolByCurrencycode(sales.getCurrency());
     getSession().put("salesCurrencySymbol", currencySymbol.getCurrencySymbol());
+    getSession().put("totalCost", currencyFormatter.format(totcost.doubleValue()));
+    getSession().put("totalCharge", currencyFormatter.format(totcharge.doubleValue()));
     return SUCCESS;
   }
 
@@ -1342,10 +1403,11 @@ public String sendEmailNotificationForInvoice() {
 		if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
 			sales.setBranch(UserUtil.getMmrUser().getBranch());
 		List<SalesRecord> sale=invoiceManager.generateSalesReport(sales);	
-		
+		String currency=sales.getCurrency();
 		if("xml".equalsIgnoreCase(type)){
 			String shippingLabelFileName = getUniqueTempxmlFileNamesale("sales");
-			write_XML_File_sales(sale,shippingLabelFileName);
+			//write_XML_File_sales(sale,shippingLabelFileName);
+			write_XML_File_sales(sale,shippingLabelFileName,currency);
 			response.setContentType("application/xml");
 			response.setHeader("Content-Disposition",
 					"attachment;filename=sales.xml");
@@ -1367,7 +1429,8 @@ public String sendEmailNotificationForInvoice() {
 				String shippingLabelFileName = getUniqueTempcsvFileNamesale("sales");
 				
 				FileWriter writer = new FileWriter(shippingLabelFileName);
-				generateCsvFileSales(sale,writer);
+				//generateCsvFileSales(sale,writer);
+				generateCsvFileSales(sale,writer,currency);
 				response.setContentType("application/csv");
 				response.setHeader("Content-Disposition",
 						"attachment;filename=sales.csv");
@@ -1388,7 +1451,8 @@ public String sendEmailNotificationForInvoice() {
 			}else if("xl".equalsIgnoreCase(type)){
 				String shippingLabelFileName = getUniqueTempxlFileNamesale("sales");
 				
-				createxlfilesales(sale,shippingLabelFileName);
+				//createxlfilesales(sale,shippingLabelFileName);
+				createxlfilesales(sale,shippingLabelFileName,currency);
 				response.setContentType("application/msexcel");
 				response.setHeader("Content-Disposition",
 						"attachment;filename=sales.xls");
@@ -1440,6 +1504,14 @@ public String sendEmailNotificationForInvoice() {
 	  			  	  }else{
 	  			  		invoiceBreakdownList=invoiceManager.searchInvoicesBreakdown(commission);
 	  			  	  }
+	  	List<Invoice> tempInvoiceList=new ArrayList<Invoice>();
+	    for(Invoice invoice:invoiceBreakdownList){
+	             if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0 || invoice.getTotalFWD()>0 || invoice.getTotalFPA()>0){
+	            	 tempInvoiceList.add(invoice);
+	             }
+	           }
+	                  invoiceBreakdownList.clear();
+	                  invoiceBreakdownList.addAll(tempInvoiceList);
 	  	  if("xml".equalsIgnoreCase(type)){
 	  		  String shippingLabelFileName =getUniqueTempxmlFileNamecomm("InvoiceBreakdown");
 	  		  write_XML_File_invoiceBreakdown(invoiceBreakdownList,shippingLabelFileName);
@@ -1623,6 +1695,8 @@ String type=request.getParameter("type");
 				 double totalCHB=0.0;
 				 double totalAmount=0.0;
 				 double totalTax=0.0;
+				 double totalFPA=0.0;
+				 double totalFWD=0.0;
 				 List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>(); 
 				 for(Invoice invoice :invoiceBreakdownList){
 					 double invoiceAmt=0;
@@ -1637,9 +1711,16 @@ String type=request.getParameter("type");
 					 	  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
 					 	  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
 					 	  					  }
+					 	  					  
+					 	  					if("FPA".equalsIgnoreCase(grpInv.getEmailType())){
+					 	  											 	  						 invoice.setTotalFPA(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+					 	  											 	  					  }
+					 	  											 	  					if("FWD".equalsIgnoreCase(grpInv.getEmailType())){
+					 	  											 	  						 invoice.setTotalFWD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+					 	  											 	  					  }
 					 	  				  }
-					 					 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
-					 		  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+					 					if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0 || invoice.getTotalFPA()>0 || invoice.getTotalFWD()>0){
+					 							invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();
 					 		  					invoice.setInvoiceAmount(invoiceAmt);
 					 Element log1 = doc.createElement("Invoice");
 			         shipingList.appendChild(log1);
@@ -1657,7 +1738,7 @@ String type=request.getParameter("type");
 				         log1.appendChild(datecreated);
 				         
 				         Element amount = doc.createElement("Amount");
-				         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(invoiceAmt))));
+				         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoiceAmt,2)))));
 				         log1.appendChild(amount);
 				         
 				         Element tax = doc.createElement("Tax");
@@ -1665,42 +1746,62 @@ String type=request.getParameter("type");
 				         log1.appendChild(tax);
 				         
 				         Element SPD = doc.createElement("SPD");
-				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalSPD(),2)))));
 				         log1.appendChild(SPD);
 				         
 				         Element LTL = doc.createElement("LTL");
-				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
-				         log1.appendChild(SPD);
+				         /*SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         log1.appendChild(SPD);*/
+				         LTL.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalLTL(),2)))));
+				         log1.appendChild(LTL);
 				         
 				         Element CHB = doc.createElement("CHB");
-				         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
-				         log1.appendChild(SPD);
+				         /*SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(invoice.getTotalSPD()))));
+				         log1.appendChild(SPD);*/
+				         CHB.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalCHB(),2)))));
+				         log1.appendChild(CHB);
+				         Element FPA = doc.createElement("FPA");
+				         FPA.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFPA(),2)))));
+				         log1.appendChild(FPA);
+				         Element FWD = doc.createElement("FWD");
+				         FWD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFWD(),2)))));
+				         log1.appendChild(FWD);
 				         totalAmount+=invoiceAmt;
 				         totalTax+=invoice.getInvoiceTax();
 				         totalSPD+=invoice.getTotalSPD();
 				         totalLTL+=invoice.getTotalLTL();
 				         totalCHB+=invoice.getTotalCHB();
+				         totalFPA+=invoice.getTotalFPA();
+				         totalFWD+=invoice.getTotalFWD();
 					 					 }
 				 }
 				 Element log1 = doc.createElement("Invoice");
 		         shipingList.appendChild(log1);
 		         Element tamt = doc.createElement("TotalAmount");
-		         tamt.appendChild(doc.createTextNode(removeNull(String.valueOf(totalAmount))));
+		         tamt.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalAmount,2)))));
 		         log1.appendChild(tamt);
 		         Element tTax = doc.createElement("TotalTax");
-		         tTax.appendChild(doc.createTextNode(removeNull(String.valueOf(totalTax))));
+		         tTax.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalTax,2)))));
 		         log1.appendChild(tTax);
 				 Element tSPD = doc.createElement("TotalSPD");
-		         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(totalSPD))));
+		         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)))));
 		         log1.appendChild(tSPD);
 		
 		         Element tLTL = doc.createElement("TotalLTL");
-		         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(totalLTL))));
+		         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)))));
 		         log1.appendChild(tLTL);
 		         
 		         Element tCHB = doc.createElement("TotalCHB");
-		         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(totalCHB))));
+		         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)))));
 		         log1.appendChild(tCHB);
+		         
+		         Element tFPA = doc.createElement("TotalFPA");
+		         tFPA.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)))));
+		         log1.appendChild(tFPA);
+		          				 
+		         Element tFWD = doc.createElement("TotalFWD");
+		         tFWD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)))));
+		         log1.appendChild(tFWD);
 				 
 					try{
 					TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -1740,6 +1841,9 @@ String type=request.getParameter("type");
 		 double totalLTL=0.0;
 		 double totalCHB=0.0;
 		 
+		 double totalFPA=0.0;
+		 double totalFWD=0.0;
+		 
 		 for(Commission commission :commissionList){
 	
 		         /*Attr attr = doc.createAttribute("id");
@@ -1770,12 +1874,12 @@ String type=request.getParameter("type");
 		         log1.appendChild(commissionElement);
 	
 		         Element amount = doc.createElement("Amount");
-		         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getInvoiceTotal()))));
+		         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getInvoiceTotal(),2)))));
 		         log1.appendChild(amount);
 		         
 		         if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
 		         Element cost = doc.createElement("Cost");
-		         cost.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getCostTotal()))));
+		         cost.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getCostTotal(),2)))));
 		         log1.appendChild(cost);
 		         }
 		         
@@ -1785,34 +1889,51 @@ String type=request.getParameter("type");
 		         log1.appendChild(status);
 		         
 		         Element SPD = doc.createElement("SPD");
-		         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalSPD()))));
+		         SPD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalSPD(),2)))));
 		         log1.appendChild(SPD);
 	
 		         Element LTL = doc.createElement("LTL");
-		         LTL.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalLTL()))));
+		         LTL.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalLTL(),2)))));
 		         log1.appendChild(LTL);
 		         
 		         Element CHB = doc.createElement("CHB");
-		         CHB.appendChild(doc.createTextNode(removeNull(String.valueOf(commission.getTotalCHB()))));
+		         CHB.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalCHB(),2)))));
 		         log1.appendChild(CHB);
+		         
+		         Element FPA = doc.createElement("FPA");
+		         FPA.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFPA(),2)))));
+		         log1.appendChild(FPA);
+		         Element FWD = doc.createElement("FWD");
+		         FWD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFWD(),2)))));
+		         log1.appendChild(FWD);
 		         totalSPD+=commission.getTotalSPD();
 		         totalLTL+=commission.getTotalLTL();
 		         totalCHB+=commission.getTotalCHB();
+		         totalFPA+=commission.getTotalFPA();
+		         totalFWD+=commission.getTotalFWD();
 		       
 		}
 		 Element log1 = doc.createElement("Commission");
          shipingList.appendChild(log1);
 		 Element tSPD = doc.createElement("TotalSPD");
-         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(totalSPD))));
+         tSPD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)))));
          log1.appendChild(tSPD);
 
          Element tLTL = doc.createElement("TotalLTL");
-         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(totalLTL))));
+         tLTL.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)))));
          log1.appendChild(tLTL);
          
          Element tCHB = doc.createElement("TotalCHB");
-         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(totalCHB))));
+         tCHB.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)))));
          log1.appendChild(tCHB);
+         
+         Element tFPA = doc.createElement("TotalFPA");
+         tFPA.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)))));
+         log1.appendChild(tFPA);
+         
+         Element tFWD = doc.createElement("TotalFWD");
+         tFWD.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)))));
+         log1.appendChild(tFWD);
 		 
 			try{
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -1842,6 +1963,8 @@ String type=request.getParameter("type");
 						double totalSPD=0.0;
 						double totalLTL=0.0;
 						double totalCHB=0.0;
+						double totalFPA=0.0;
+						double totalFWD=0.0;
 						double totalAmount=0.0;
 						double totalTax=0.0;
 						ArrayList<String> srcList = new ArrayList<String>();
@@ -1861,6 +1984,10 @@ String type=request.getParameter("type");
 						writer.append("LTL");
 						writer.append(',');
 						writer.append("CHB");
+						writer.append(',');
+						writer.append("FPA");
+						writer.append(',');
+						writer.append("FWD");
 						writer.append('\n');
 						for(Invoice invoice :InvoiceBreakdownList){
 							double invoiceAmt=0;
@@ -1875,9 +2002,16 @@ String type=request.getParameter("type");
 										  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
 										  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
 										  					  }
+										  					  
+										  					if("FPA".equalsIgnoreCase(grpInv.getEmailType())){
+										  						invoice.setTotalFPA(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+										  					}
+										  					if("FWD".equalsIgnoreCase(grpInv.getEmailType())){
+										  						invoice.setTotalFWD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+										  					}
 										  				  }
-														 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
-											  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+														 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0|| invoice.getTotalFPA()>0|| invoice.getTotalFWD()>0){
+															 invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();
 											  					invoice.setInvoiceAmount(invoiceAmt);
 							writer.append(removeNull(invoice.getInvoiceNum()));
 							writer.append(',');
@@ -1887,13 +2021,17 @@ String type=request.getParameter("type");
 							writer.append(',');
 							writer.append(removeNull(String.valueOf(invoiceAmt)));   
 							writer.append(',');
-							writer.append(removeNull(String.valueOf(invoice.getInvoiceTax())));   
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getInvoiceTax(),2))));   
 							writer.append(',');
-							writer.append(removeNull(String.valueOf(invoice.getTotalSPD())));   
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalSPD(),2))));   
 							writer.append(',');
-							writer.append(removeNull(String.valueOf(invoice.getTotalLTL())));   
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalLTL(),2))));   
 							writer.append(',');
-							writer.append(removeNull(String.valueOf(invoice.getTotalCHB())));
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalCHB(),2))));
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFPA(),2))));
+							writer.append(',');
+							writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFWD(),2))));
 							writer.append('\n');
 			
 							totalAmount+=invoiceAmt;
@@ -1901,27 +2039,37 @@ String type=request.getParameter("type");
 							totalSPD+=invoice.getTotalSPD();
 							totalLTL+=invoice.getTotalLTL();
 							totalCHB+=invoice.getTotalCHB();
+							totalFPA+=invoice.getTotalFPA();
+							totalFWD+=invoice.getTotalFWD();
 							}
 						}
 						writer.append("Total Amount");
 						writer.append(',');
-						writer.append(String.valueOf(totalAmount));
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalAmount,2)));
 						writer.append(',');
 						writer.append("Total Tax");
 						writer.append(',');
-						writer.append(String.valueOf(totalTax));
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalTax,2)));
 						writer.append(',');
 						writer.append("Total SPD");
 						writer.append(',');
-						writer.append(String.valueOf(totalSPD));
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)));
 						writer.append(',');
 						writer.append("Total LTL");
 						writer.append(',');
-						writer.append(String.valueOf(totalLTL));
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)));
 						writer.append(',');
 						writer.append("Total CHB");
 						writer.append(',');
-						writer.append(String.valueOf(totalCHB));
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)));
+						writer.append(',');
+						writer.append("Total FPA");
+						writer.append(',');
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)));
+						writer.append(',');
+						writer.append("Total FWD");
+						writer.append(',');
+						writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)));
 						writer.flush();
 						writer.close();
 						System.out.println("csv generated successfully");
@@ -1930,7 +2078,7 @@ String type=request.getParameter("type");
 					}
 				}
 					
-		public  void write_XML_File_sales(List<SalesRecord> salesrecord,String shippingLabelFileName){
+		public  void write_XML_File_sales(List<SalesRecord> salesrecord,String shippingLabelFileName,String currency){
 			
 			 
 			 DocumentBuilderFactory docBuilder = DocumentBuilderFactory.newInstance();
@@ -1969,14 +2117,15 @@ String type=request.getParameter("type");
 			         log1.appendChild(Month);
 		
 			         Element Currency = doc.createElement("Currency");
-			         Currency.appendChild(doc.createTextNode(removeNull(srecord.getCurrency())));
+			         //Currency.appendChild(doc.createTextNode(removeNull(srecord.getCurrency())));
+			         Currency.appendChild(doc.createTextNode(removeNull(currency)));
 			         log1.appendChild(Currency);
 		
 			         Element Cost = doc.createElement("Totalcost");
-			         Cost.appendChild(doc.createTextNode(removeNull(String.valueOf(srecord.getTotalCost()))));
+			         Cost.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(srecord.getTotalCost(),2)))));
 			         log1.appendChild(Cost);
 			         Element amount = doc.createElement("Totalcost");
-			         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(srecord.getTotalAmount()))));
+			         amount.appendChild(doc.createTextNode(removeNull(String.valueOf(FormattingUtil.roundFigureRates(srecord.getTotalAmount(),2)))));
 			         log1.appendChild(amount);
 			         
 			         
@@ -2014,13 +2163,19 @@ String type=request.getParameter("type");
 					rowhead.createCell((short) 5).setCellValue("SPD");
 					rowhead.createCell((short) 6).setCellValue("LTL");
 					rowhead.createCell((short) 7).setCellValue("CHB");
+					rowhead.createCell((short) 8).setCellValue("FPA");
+					rowhead.createCell((short) 9).setCellValue("FWD");
 					int i=1;
 					double totalSPD=0;
 					double totalLTL=0;
 					double totalCHB=0;
+					double totalFPA=0;
+					double totalFWD=0;
 					double totalAmount=0;
 					double totalTax=0;
 					List<Invoice> groupedInvoiceCharges = new ArrayList<Invoice>();
+					
+					
 					for(Invoice invoice :invoicebreakdownList){
 						double invoiceAmt=0;
 												 groupedInvoiceCharges=invoiceManager.getInvoiceChargeDetails(invoice.getInvoiceId());
@@ -2034,39 +2189,53 @@ String type=request.getParameter("type");
 								  					  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
 								  						 invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
 								  					  }
+								  					if("FPA".equalsIgnoreCase(grpInv.getEmailType())){
+								  						invoice.setTotalFPA(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+								  					}
+								  					if("FWD".equalsIgnoreCase(grpInv.getEmailType())){
+								  						invoice.setTotalFWD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+								  					}
 								  				  }
-												 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0){
-									  					invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB();
+												 if(invoice.getTotalSPD()>0 || invoice.getTotalLTL()>0 || invoice.getTotalCHB()>0|| invoice.getTotalFPA()>0|| invoice.getTotalFWD()>0){
+													 invoiceAmt=invoice.getTotalSPD()+invoice.getTotalLTL()+invoice.getTotalCHB()+invoice.getTotalFPA()+invoice.getTotalFWD();
 									  					invoice.setInvoiceAmount(invoiceAmt);
 						HSSFRow row=   sheet.createRow((short)i);
 						row.createCell((short) 0).setCellValue(removeNull(invoice.getInvoiceNum()));
 						row.createCell((short) 1).setCellValue(removeNull(invoice.getCustomer().getName()));
 					row.createCell((short) 2).setCellValue(removeNull(String.valueOf(invoice.getDateCreated())));
-						row.createCell((short) 3).setCellValue(removeNull(String.valueOf(invoiceAmt)));
-						row.createCell((short) 4).setCellValue(removeNull(String.valueOf(invoice.getInvoiceTax())));
-						row.createCell((short) 5).setCellValue(removeNull(String.valueOf(invoice.getTotalSPD())));
-						row.createCell((short) 6).setCellValue(removeNull(String.valueOf(invoice.getTotalLTL())));
-						row.createCell((short) 7).setCellValue(removeNull(String.valueOf(invoice.getTotalCHB())));
+						row.createCell((short) 3).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoiceAmt,2))));
+						row.createCell((short) 4).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getInvoiceTax(),2))));
+						row.createCell((short) 5).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalSPD(),2))));
+						row.createCell((short) 6).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalLTL(),2))));
+						row.createCell((short) 7).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalCHB(),2))));
+						row.createCell((short) 8).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFPA(),2))));
+						row.createCell((short) 9).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(invoice.getTotalFWD(),2))));
 						totalAmount+=invoiceAmt;
 						totalTax+=invoice.getInvoiceTax();
 						totalSPD+=invoice.getTotalSPD();
 					    totalLTL+=invoice.getTotalLTL();
 						totalCHB+=invoice.getTotalCHB();
+						totalFPA+=invoice.getTotalFPA();
+						totalFWD+=invoice.getTotalFWD();
 						i++;
 						}
 					}
 					if(invoicebreakdownList!=null && invoicebreakdownList.size()>1){
 						HSSFRow rowheads=   sheet.createRow((short)invoicebreakdownList.size()+1);
 						rowheads.createCell((short) 0).setCellValue("Total Amount");
-						rowheads.createCell((short) 1).setCellValue(String.valueOf(totalAmount));
+						rowheads.createCell((short) 1).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalAmount,2)));
 						rowheads.createCell((short) 2).setCellValue("Total Tax");
-						rowheads.createCell((short) 3).setCellValue(String.valueOf(totalTax));
+						rowheads.createCell((short) 3).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalTax,2)));
 					    rowheads.createCell((short) 4).setCellValue("Total SPD");
-						rowheads.createCell((short) 5).setCellValue(String.valueOf(totalSPD));
+						rowheads.createCell((short) 5).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)));
 						rowheads.createCell((short) 6).setCellValue("Total LTL");
-						rowheads.createCell((short) 7).setCellValue(String.valueOf(totalLTL));
+						rowheads.createCell((short) 7).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)));
 						rowheads.createCell((short) 8).setCellValue("Total CHB");
-						rowheads.createCell((short) 9).setCellValue(String.valueOf(totalCHB));
+						rowheads.createCell((short) 9).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)));
+						rowheads.createCell((short) 10).setCellValue("Total FPA");
+						rowheads.createCell((short) 11).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)));
+						rowheads.createCell((short) 12).setCellValue("Total FWD");
+						rowheads.createCell((short) 13).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)));
 					}
 					FileOutputStream fileOut =  new FileOutputStream(shippingLabelFileName);
 					workbook.write(fileOut);
@@ -2081,6 +2250,8 @@ String type=request.getParameter("type");
 				double totalSPD=0.0;
 			    double totalLTL=0.0;
 			    double totalCHB=0.0;
+			    double totalFPA=0.0;
+			    double totalFWD=0.0;
 				ArrayList<String> srcList = new ArrayList<String>();
 			    writer.append("invoicenumber");
 			    writer.append(',');
@@ -2103,6 +2274,10 @@ String type=request.getParameter("type");
 			    writer.append("LTL");
 			    writer.append(',');
 			    writer.append("CHB");
+			    writer.append(',');
+			    writer.append("FPA");
+			    writer.append(',');
+			    writer.append("FWD");
 			    writer.append('\n');
 			    for(Commission commission :commissionList){
 			   
@@ -2125,17 +2300,23 @@ String type=request.getParameter("type");
 		        findPaymentStaus(commission.getRepPaid());
 		        writer.append(removeNull(String.valueOf(paymentStatus)));   
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(commission.getTotalSPD())));   
+		        writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalSPD(),2))));   
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(commission.getTotalLTL())));   
+		        writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalLTL(),2))));   
 		        writer.append(',');
-		        writer.append(removeNull(String.valueOf(commission.getTotalCHB())));
+		        writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalCHB(),2))));
+		        writer.append(',');
+		        writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFPA(),2))));
+		        writer.append(',');
+		        writer.append(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFWD(),2))));
 		        writer.append('\n');
 		    
 			 
 		        totalSPD+=commission.getTotalSPD();
 		        totalLTL+=commission.getTotalLTL();
 		        totalCHB+=commission.getTotalCHB();
+		        totalFPA+=commission.getTotalFPA();
+		        totalFWD+=commission.getTotalFWD();
 		         
 			    //generate whatever data you want
 		 
@@ -2143,15 +2324,23 @@ String type=request.getParameter("type");
 			}
 			writer.append("Total SPD");
 			writer.append(',');
-			writer.append(String.valueOf(totalSPD));
+			writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)));
 			writer.append(',');
 			writer.append("Total LTL");
 			writer.append(',');
-			writer.append(String.valueOf(totalLTL));
+			writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)));
 			writer.append(',');
 			writer.append("Total CHB");
 			writer.append(',');
-			writer.append(String.valueOf(totalCHB));
+			writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)));
+			writer.append(',');
+			writer.append("Total FPA");
+			writer.append(',');
+			writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)));
+			writer.append(',');
+			writer.append("Total FWD");
+			writer.append(',');
+			writer.append(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)));
 			writer.flush();
 		    writer.close();
 		    System.out.println("csv generated successfully");
@@ -2162,7 +2351,7 @@ String type=request.getParameter("type");
 			} 
 		    }
 		 
-		 private  void generateCsvFileSales(List<SalesRecord> salesList,FileWriter writer)
+		 private  void generateCsvFileSales(List<SalesRecord> salesList,FileWriter writer,String currency)
 		   {
 			try
 			{
@@ -2185,7 +2374,7 @@ String type=request.getParameter("type");
 			    writer.append(',');
 		        writer.append(removeNull(salesreport.getMonthName()));
 		        writer.append(',');
-		        writer.append(removeNull(salesreport.getCurrency()));   
+		        writer.append(removeNull(currency)); 
 		        writer.append(',');
 		        writer.append(removeNull(String.valueOf(salesreport.getTotalCost()))); 
 		        writer.append(',');
@@ -2213,7 +2402,7 @@ String type=request.getParameter("type");
 		    }
 		 
 		 
-		 public void createxlfilesales(List<SalesRecord> salesList,String shippingLabelFileName) throws IOException{
+		 public void createxlfilesales(List<SalesRecord> salesList,String shippingLabelFileName,String currency) throws IOException{
 				
 		        HSSFWorkbook workbook=new HSSFWorkbook();
 		        HSSFSheet sheet =  workbook.createSheet("FirstSheet");  
@@ -2229,7 +2418,7 @@ String type=request.getParameter("type");
 		        HSSFRow row=   sheet.createRow((short)i);
 		        row.createCell((short) 0).setCellValue(removeNull(sList.getYear()));
 		        row.createCell((short) 1).setCellValue(removeNull(sList.getMonthName()));
-		        row.createCell((short) 2).setCellValue(removeNull(sList.getCurrency()));
+		        row.createCell((short) 2).setCellValue(removeNull(currency));
 		        row.createCell((short) 3).setCellValue(removeNull(String.valueOf((sList.getTotalCost()))));
 		        row.createCell((short) 4).setCellValue(removeNull(String.valueOf(sList.getTotalAmount())));
 		        i++;
@@ -2260,51 +2449,67 @@ String type=request.getParameter("type");
 			        rowhead.createCell((short) 7).setCellValue("SPD");
 			        rowhead.createCell((short) 8).setCellValue("LTL");
 			        rowhead.createCell((short) 9).setCellValue("CHB");
+			        rowhead.createCell((short) 10).setCellValue("FPA");
+			        rowhead.createCell((short) 11).setCellValue("FWD");
 		        }else{
 			        rowhead.createCell((short) 5).setCellValue("status");
 			        rowhead.createCell((short) 6).setCellValue("SPD");
 			        rowhead.createCell((short) 7).setCellValue("LTL");
 			        rowhead.createCell((short) 8).setCellValue("CHB");
+			        rowhead.createCell((short) 9).setCellValue("FPA");
+			        rowhead.createCell((short) 10).setCellValue("FWD");
 		        }
 		        int i=1;
 		        double totalSPD=0;
 		        double totalLTL=0;
 		        double totalCHB=0;
+		        double totalFPA=0;
+		        double totalFWD=0;
 		        for(Commission commission :commissionList){
 		        	
 		        HSSFRow row=   sheet.createRow((short)i);
 		        row.createCell((short) 0).setCellValue(removeNull(commission.getInvoiceNum()));
 		        row.createCell((short) 1).setCellValue(removeNull(commission.getCustomerName()));
 		        row.createCell((short) 2).setCellValue(removeNull(String.valueOf(commission.getDateCreated())));
-		        row.createCell((short) 3).setCellValue(removeNull(String.valueOf((commission.getCommissionPayable()))));
-		        row.createCell((short) 4).setCellValue(removeNull(String.valueOf(commission.getInvoiceTotal())));
+		        row.createCell((short) 3).setCellValue(removeNull(String.valueOf((FormattingUtil.roundFigureRates(commission.getCommissionPayable(),2)))));
+		        row.createCell((short) 4).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getInvoiceTotal(),2))));
 		        if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase("sales")){
-		        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(commission.getCostTotal())));		       
+		        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getCostTotal(),2))));		       
 		        findPaymentStaus(commission.getRepPaid());
 		        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(paymentStatus)));
-		        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(commission.getTotalSPD())));
-		        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(commission.getTotalLTL())));
-		        row.createCell((short) 9).setCellValue(removeNull(String.valueOf(commission.getTotalCHB())));
+		        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalSPD(),2))));
+		        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalLTL(),2))));
+		        row.createCell((short) 9).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalCHB(),2))));
+		        row.createCell((short) 10).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFPA(),2))));
+		        row.createCell((short) 11).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFWD(),2))));
 		        }else{
 		        	findPaymentStaus(commission.getRepPaid());
 			        row.createCell((short) 5).setCellValue(removeNull(String.valueOf(paymentStatus)));
-			        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(commission.getTotalSPD())));
-			        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(commission.getTotalLTL())));
-			        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(commission.getTotalCHB())));
+			        row.createCell((short) 6).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalSPD(),2))));
+			        row.createCell((short) 7).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalLTL(),2))));
+			        row.createCell((short) 8).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalCHB(),2))));
+			        row.createCell((short) 9).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFPA(),2))));
+			        row.createCell((short) 10).setCellValue(removeNull(String.valueOf(FormattingUtil.roundFigureRates(commission.getTotalFWD(),2))));
 		        }
 		        totalSPD+=commission.getTotalSPD();
 		        totalLTL+=commission.getTotalLTL();
 		        totalCHB+=commission.getTotalCHB();
+		        totalFPA+=commission.getTotalFPA();
+		        totalFWD+=commission.getTotalFWD();
 		        i++;
 				 }
 		        if(commissionList!=null && commissionList.size()>1){
 		        HSSFRow rowheads=   sheet.createRow((short)commissionList.size()+1);
 		        rowheads.createCell((short) 0).setCellValue("Total SPD");
-		        rowheads.createCell((short) 1).setCellValue(String.valueOf(totalSPD));
+		        rowheads.createCell((short) 1).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalSPD,2)));
 		        rowheads.createCell((short) 2).setCellValue("Total LTL");
-		        rowheads.createCell((short) 3).setCellValue(String.valueOf(totalLTL));
+		        rowheads.createCell((short) 3).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalLTL,2)));
 		        rowheads.createCell((short) 4).setCellValue("Total CHB");
-		        rowheads.createCell((short) 5).setCellValue(String.valueOf(totalCHB));
+		        rowheads.createCell((short) 5).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalCHB,2)));
+		        rowheads.createCell((short) 6).setCellValue("Total FPA");
+		        rowheads.createCell((short) 7).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalFPA,2)));
+		        rowheads.createCell((short) 8).setCellValue("Total FWD");
+		        rowheads.createCell((short) 9).setCellValue(String.valueOf(FormattingUtil.roundFigureRates(totalFWD,2)));
 		        }
 		        FileOutputStream fileOut =  new FileOutputStream(shippingLabelFileName);
 		        workbook.write(fileOut);
@@ -2420,6 +2625,12 @@ public void setCurrencyList(List<CurrencySymbol> currencyList) {
 	this.currencyList = currencyList;
 }
   
-  
+public SubTotal getSubtotals() {
+	return subtotals;
+}
+
+public void setSubtotals(SubTotal subtotals) {
+	this.subtotals = subtotals;
+} 
 
 }

@@ -266,5 +266,7 @@
 		select * from
 		province where name=#province_code#    
    </select>
-
+<update id="setSendNotification">
+   		update address set send_notification = !send_notification where address_id=#addressId#
+   </update>
 </sqlMap>

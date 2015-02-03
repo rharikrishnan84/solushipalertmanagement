@@ -15,6 +15,8 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.EdiInfo;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.EdiItem;
 import com.meritconinc.shiplinx.model.LoggedEvent;
 import com.meritconinc.shiplinx.model.Package;
@@ -290,7 +292,10 @@ public class EdiPurolatorParser extends EdiParser {
 			populateCustomer(shipment, item.getAccountNumber());
 			
 			populateCharges(shipment, item, isAddressCorrection);
-			
+			if(shipment.getCharges()!=null && shipment.getCharges().size()>0)
+							{
+								shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
+							}
 			// Verify Total Shipment
 			double ediShipmentTotAmount = StringUtil.getDouble(getEdiField(SHIPMENT_TOTAL_AMT));
 			double shipmentTotCharges = shipment.getTotalCostActual();
@@ -406,12 +411,79 @@ public class EdiPurolatorParser extends EdiParser {
 		charge.setEdiInvoiceNumber(item.getInvoiceNumber());
 		charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 		
+		//COST CURRENCY CODE FIX STARTS HERE
+		String currencyCode=null;
+		if(shipment.getCurrency()!=null && !(shipment.getCurrency()).equals("")){
+			CurrencySymbol costCurrency = shippingService.getSymbolByCurrencycode(shipment.getCurrency());
+			charge.setCostcurrency(costCurrency.getId());
+		}else{
+			String currency=shippingService.getCurrencyByAccountNumber(item.getAccountNumber());
+			CurrencySymbol CurrencySymbol = shippingService.getSymbolByCurrencycode(currency);
+			charge.setCostcurrency(CurrencySymbol.getId());
+			charge.setCurrency(CurrencySymbol.getCurrencyCode());
+			shipment.setCurrency(CurrencySymbol.getCurrencyCode());
+		}
+//COST CURRENCY CODE FIX ENDED HERE			
+		
+//CHARGE CURRENCY CODE FIX STARTS HERE
+		if(shipment.getCustomer()!=null){
+			currencyCode=shipment.getDbShipment().getCustomer().getDefaultCurrency();
+			}
+		if((currencyCode ==null || ("").equals(currencyCode)) && shipment.getCustomerId()!=null){
+			Customer customerInfo=customerDAO.getCustomerInfoByCustomerId(shipment.getCustomerId(), shipment.getBusinessId());
+			currencyCode=customerInfo.getDefaultCurrency();
+			}
+		if(currencyCode!=null && !currencyCode.isEmpty()){
+			CurrencySymbol Currency = shippingService.getSymbolByCurrencycode(currencyCode);
+			charge.setChargecurrency(Currency.getId());
+			charge.setCurrency(currencyCode);
+			}
+			else{
+				charge.setChargecurrency(charge.getCostcurrency());
+				currencyCode=shipment.getCurrency();
+				charge.setCurrency(currencyCode);
+				}
+		if(currencyCode == null || ("").equals(currencyCode)){
+			currencyCode = "CAD";
+			charge.setCurrency("CAD");
+		}
+//CHARGE CURRENCY CODE FIX ENDED HERE
+		
+		
 		if (chargeGroupCode != null && (chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
 										chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {
-			charge.setCharge( applyMarkup(shipment, charge, item) );
+			/*charge.setCharge( applyMarkup(shipment, charge, item) );
 		} else {
-			charge.setCharge(charge.getCost());
-		}
+			charge.setCharge(charge.getCost());*/
+			if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									charge.setCharge( applyMarkup(shipment, charge, item) );
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									charge.setCharge( applyMarkup(shipment, charge, item)*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
+							
+						} 
+						else {
+							if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									charge.setCharge(charge.getCost());
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									charge.setCharge(charge.getCost()*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
+				 		}
+		
 		charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
 		return charge;
 	}
@@ -574,6 +646,13 @@ public class EdiPurolatorParser extends EdiParser {
 		if(getEdiField(PACKAGE_QUANTITY)!=null && !getEdiField(PACKAGE_QUANTITY).isEmpty()){
 		dbShipment.setQuantity(Integer.parseInt(getEdiField(PACKAGE_QUANTITY)));
 		}
+		if(getEdiField(ACTUAL_WGT)!=null && !getEdiField(ACTUAL_WGT).equals("") && !getEdiField(ACTUAL_WGT).isEmpty()){
+						dbShipment.setBilledWeight(Float.parseFloat(getEdiField(ACTUAL_WGT)));
+					}
+					else{
+						String tempActualWeight="0";
+						dbShipment.setBilledWeight(Float.parseFloat(tempActualWeight));
+					}
 		this.shippingService.updateShippingOrder(dbShipment);
 	}
 

@@ -100,8 +100,14 @@ public class DHLRequestBuilder {
 						}
 						
 					}
-					if (qtdShp.getTotalTransitDays() != null)
-						r.setTransitDays(qtdShp.getTotalTransitDays());
+					/*if (qtdShp.getTotalTransitDays() != null)
+					+						r.setTransitDays(qtdShp.getTotalTransitDays());*/
+										try{
+													int totalTDays=qtdShp.getTotalTransitDays()+qtdShp.getPickupPostalLocAddDays()+qtdShp.getDeliveryPostalLocAddDays();
+													r.setTransitDays(Integer.valueOf(qtdShp.getTotalTransitDays()+qtdShp.getPickupPostalLocAddDays()+qtdShp.getDeliveryPostalLocAddDays()));
+											}catch(Exception e){
+												e.printStackTrace();
+											}
 					
 					try{
 						//Trying to extract the Remote Area Surcharge

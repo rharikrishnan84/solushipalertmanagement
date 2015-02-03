@@ -328,4 +328,14 @@ public class AddressDAOImpl extends SqlMapClientDaoSupport implements
 	  		
 	  	}
 
+	 public void setSendNotification(Long addressId){
+		 		 try{
+		 		 Map<String,Object> paramObj=new HashMap<String,Object>();
+		 		 paramObj.put("addressId", addressId);
+		 		 getSqlMapClientTemplate().update("setSendNotification",paramObj);
+		 		 } catch(Exception e){
+		 			 e.printStackTrace();
+		 		 }
+		 	 }	 
+	 
 }

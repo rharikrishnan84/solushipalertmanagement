@@ -58,4 +58,5 @@ public interface AddressDAO {
 
   Address findDefaultFromAddressForAddress(Long addressId);
   public Province getProvinceName(String provinceCode);
+  public void setSendNotification(Long addressId);
 }

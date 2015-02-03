@@ -139,5 +139,7 @@
 		</isNotNull>    	
 		order by invoice_date desc	    		
 	</select> 		
-		
+	<select id="searchFileInEdiItem" resultMap="EdiItemResult">
+		select  * from edi_item where edi_file_name=#uploadFileName#
+		 </select>	
 </sqlMap>

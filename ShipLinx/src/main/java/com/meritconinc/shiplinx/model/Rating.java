@@ -74,6 +74,8 @@ public class Rating implements Serializable {
 
   private long zoneStructureId;
 
+  private String accountCountry;
+  
   private long slaveServiceId;
   private long slaveCarrierId;
   private Double totalChargeLocalCurrency;
@@ -537,6 +539,14 @@ public String getAccountNum() {
 
 public void setAccountNum(String accountNum) {
 	this.accountNum = accountNum;
+}
+
+public String getAccountCountry() {
+	return accountCountry;
+}
+
+public void setAccountCountry(String accountCountry) {
+	this.accountCountry = accountCountry;
 }
 
 }

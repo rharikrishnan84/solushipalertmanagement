@@ -204,6 +204,16 @@
 											 readonly="readonly"/>
 										</div>
 									</div>
+									<div class="fields_topdown">
+					<label><mmr:message messageId="label.currency" /></label>
+					<div class="controls">
+						<s:select
+		list="currencyList"
+		name="commission.currency" listKey="currencyCode" listValue="currencyCode"
+		cssClass="text_01_combo_medium" />
+		
+					</div>
+				</div>
 									<div class="fields_topdown" >
 										<div class="controls"  style="width:180px ! important; margin-top: 18px;" >
 											<input type="checkbox" name="commission.includeCancelledInv" id="incl_can_inv" style="width:14px ! important;margin:0px ! important;">
@@ -243,7 +253,9 @@
 			<th style="width: 70px !important;text-align:right;padding-right:10px"><mmr:message messageId="invoice.breakedown.Tax"/></th>
 			<th style="width: 70px !important;text-align:right;padding-right:10px"><mmr:message messageId="invoice.breakedown.SPD"/></th>
 			<th style="width: 100px !important;text-align:right;padding-right:10px"><mmr:message messageId="invoice.breakedown.LTL"/></th>
-			<th style="width: 255px !important;text-align:left;padding-right:10px;"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.CHB"/></span></th>
+			<th style="width: 100px !important;text-align:left;padding-right:10px;"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.CHB"/></span></th>
+ 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FWD"/></th>
+ 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FPA"/></th>
  		
 			<!-- <th style="width: 155px !important;text-align:center;padding-right:10px"></th> -->
 	</tr>
@@ -255,6 +267,8 @@
 				<s:set var="totalSpd" value="0" />
 				<s:set var="totalLtl" value="0" />
 				<s:set var="totalChb" value="0" />
+				<s:set var="totalfwd" value="0" />
+				<s:set var="totalfpa" value="0" />
 				<s:set var="totalinvoiceAmt" value="0" />
 				<s:set var="totalInvoiceTax" value="0" />
             <s:iterator id="invoicetable" value="invoiceBreakdown" status="rowstatus">
@@ -269,7 +283,9 @@
 		        <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{invoiceTax}" /></s:text></td>
 		     	<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{totalSPD}" /></s:text></td>
 		     	<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{totalLTL}" /></s:text></td>
-		     	<td style="text-align:left;"><span style=" padding-left:70px;"><s:text name="format.money" ><s:param name="value" value="%{totalCHB}" /></s:text></span></td>
+		     	<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{totalCHB}" /></s:text></td>
+		     	<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{totalFWD}" /></s:text></td>
+		     	<td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{totalFPA}" /></s:text></td>
 			 	<%-- <td style="text-align:right;padding-right:20px">$<s:property value="totalCHB" /></td> --%>
 			 	
 			</tr>	
@@ -277,6 +293,8 @@
 				 <s:set var="totalLtl" value="%{#totalLtl+totalLTL}"/>
 				 <s:set var="totalSpd" value="%{#totalSpd+totalSPD}"/>
 				 <s:set var="totalChb" value="%{#totalChb+totalCHB}"/>  
+				 <s:set var="totalfwd" value="%{#totalfwd+totalFWD}"/>
+				 <s:set var="totalfpa" value="%{#totalfpa+totalFPA}"/>
 				 <s:set var="totalinvoiceAmt" value="%{#totalinvoiceAmt+invoiceAmount}"/>  
 				 <s:set var="totalInvoiceTax" value="%{#totalInvoiceTax+invoiceTax}"/>  
 			</s:iterator>
@@ -293,7 +311,9 @@
       <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalInvoiceTax}" /></s:text></td>
       <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalSpd}" /></s:text></td>
 	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalLtl}" /></s:text></td>
-	  <td style="text-align:left;"><span style=" padding-left:64px;"><s:text name="format.money" ><s:param name="value" value="%{#totalChb}" /></s:text></span></td>
+	  <td style="text-align:right;"><span style=" padding-left:64px;"><s:text name="format.money" ><s:param name="value" value="%{#totalChb}" /></s:text></span></td>
+	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalfwd}" /></s:text></td>
+	  <td style="text-align:right;"><s:text name="format.money" ><s:param name="value" value="%{#totalfpa}" /></s:text></td>
    </tr>
   </tfoot>
 </table>

@@ -60,6 +60,7 @@ import com.meritconinc.shiplinx.model.SalesRecord;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.CreditCardTransactionManager;
+import com.meritconinc.shiplinx.model.SubTotal;
 import com.meritconinc.shiplinx.service.InvoiceManager;
 import com.meritconinc.shiplinx.service.PinBlockManager;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
@@ -77,6 +78,8 @@ public class InvoiceManagerImpl implements InvoiceManager {
   private CreditCardTransactionManager ccTransactionManager;
   private PinBlockManager pinBlockManager;
   private UserDAO userDAO;
+  
+  private List<Invoice> groupedInvoiceCharges;
 
   public BusinessDAO getBusinessDAO() {
     return businessDAO;
@@ -144,7 +147,42 @@ public class InvoiceManagerImpl implements InvoiceManager {
 
         if (orders.size() > 0) {
           Invoice i = createInvoice(orders, invoice, cus, currency);
+          		groupedInvoiceCharges=getInvoiceChargeDetails(i.getInvoiceId());
+          		for(Invoice grpInv:groupedInvoiceCharges){
+          			double totalLTL=0.0;
+          			double totalFPA=0.0;
+          			double totalSPD=0.0;
+          			double totalCHB=0.0;
+          			double totalFWD=0.0;
+          			  if("SPD".equalsIgnoreCase(grpInv.getEmailType())){
+          				  invoice.setTotalSPD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+          				  System.out.println("SPD TYPE"+invoice.getTotalSPD());
+          			  }
+          			  if("LTL".equalsIgnoreCase(grpInv.getEmailType())){
+          				invoice.setTotalLTL(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+          				System.out.println("LTL TYPE"+invoice.getTotalLTL());
+          			  }
+          			  if("CHB".equalsIgnoreCase(grpInv.getEmailType())){
+          				invoice.setTotalCHB(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+          				System.out.println("CHB TYPE"+invoice.getTotalCHB());
+          		 }
+          			 if("FPA".equalsIgnoreCase(grpInv.getEmailType())){
+          					invoice.setTotalFPA(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+          					System.out.println("FPA TYPE"+invoice.getTotalFPA());
+          			 }
+          			 if("FWD".equalsIgnoreCase(grpInv.getEmailType())){
+          					invoice.setTotalFWD(FormattingUtil.roundFigureRates(grpInv.getBreakdownTotal(), 2));
+          				System.out.println("FWD TYPE"+invoice.getTotalFWD());
+          			 }
+          		
+          		totalSPD=invoice.getTotalSPD();
+          		totalLTL=invoice.getTotalLTL();
+          		totalCHB=invoice.getTotalCHB();
+          		totalFWD=invoice.getTotalFWD();
+          		totalFPA=invoice.getTotalFPA();
+          		invoiceDAO.updateInvoiceTotalByEMail(totalSPD,totalLTL,totalCHB,totalFWD,totalFPA,i.getInvoiceId());
           // Start Issue No:44
+          		}
           /*
            * int [] paymentStatus = {Invoice.INVOICE_STATUS_UNPAID};
            * i.setPaymentStatusString("Unpaid"); i.setPaymentStatusList(paymentStatus);
@@ -205,10 +243,10 @@ public class InvoiceManagerImpl implements InvoiceManager {
                     
                               /*CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(carrier_id,
                         c.getChargeCode(), c.getChargeCodeLevel2());*/
-
+                    	                    
           log.info(c.getChargeCode() + " " + c.getChargeCodeLevel2());
           if (ccc != null && !ccc.isTax()) {
-            double cost = FormattingUtil.add(i.getInvoiceCost(), c.getCost()).doubleValue();
+            double cost = FormattingUtil.add(i.getInvoiceCost(), currencyConversionFromId(c.getCostcurrency(), o.getCurrency(), c.getCost())).doubleValue();
             i.setInvoiceCost(FormattingUtil.roundFigureRates(cost, 2));
             double amount = (FormattingUtil.add(i.getInvoiceAmount(), c.getCharge())).doubleValue();
             i.setInvoiceAmount(FormattingUtil.roundFigureRates(amount, 2));
@@ -246,7 +284,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
         	          	  }else{
         	          		tax =  ccc.getTaxRate(); 
         	          	  }
-            c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
+           c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
              totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();
             i.setInvoiceTax(FormattingUtil.roundFigureRates(totalTax, 2));
             taxFlag=false;
@@ -295,10 +333,10 @@ public class InvoiceManagerImpl implements InvoiceManager {
       i.setInvoiceDate(new Timestamp(new Date().getTime()));
       // setting the default currency of the customer to the invoice if it
       // is set
-      if (!StringUtil.isEmpty(customer.getDefaultCurrency()))
-        i.setCurrency(customer.getDefaultCurrency());
-      else
+      if (!StringUtil.isEmpty(currency))
         i.setCurrency(currency);
+      else
+        i.setCurrency(customer.getDefaultCurrency());
 
       String[] pins = pinBlockManager.getNewPrefixedPinNumbers(
           ShiplinxConstants.PIN_TYPE_INVOICE_NUMBERS, 1, i.getBusinessId());
@@ -468,8 +506,8 @@ public class InvoiceManagerImpl implements InvoiceManager {
             + " credt card for invoice charges", e);
       }
       /// ============= Exchange Rate ===========
-      i.setInvoiceAmount(invoiceAmt);
-      i.setInvoiceCost(invoiceCost);
+     // i.setInvoiceAmount(invoiceAmt);
+     // i.setInvoiceCost(invoiceCost);
        if(invoiceTax!=0.0){
          i.setInvoiceTax(invoiceTax);
        }
@@ -502,6 +540,8 @@ public class InvoiceManagerImpl implements InvoiceManager {
 			    	
 			    }
        /// =============== End ==================
+         i.setInvoiceAmount(i.getInvoiceAmount()-i.getInvoiceTax());
+         i.setInvoiceCost(i.getInvoiceCost()-i.getInvoiceTax());
     } catch (Exception e) {
       log.error("Unable to create invoice for customer " + customer.getName());
       log.error(e.getMessage(), e);
@@ -1005,6 +1045,7 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
       throws Exception {
     // String fileName = getUniqueTempPDFFileName("mainInvoice");
   Commission commission = invoiceDAO.getcommissionbyId(invoice.getInvoiceId(), salesUser);
+  SubTotal subtotals =  invoiceDAO.getcommissionbyIdd(invoice.getInvoiceId());
   boolean flag = true;  // flag for showing totalSPD,totalLTL,totalCHB
     long start = System.currentTimeMillis();
     if (invoice != null && invoice.getCustomer() != null && invoice.getBusinessId() != null
@@ -1074,6 +1115,42 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
               }
             }
           }
+          
+          CurrencySymbol currencySymbol = new CurrencySymbol();
+	          if(customer.getDefaultCurrency()!=null && !customer.getDefaultCurrency().isEmpty()){
+	              currencySymbol = shippingDAO.getSymbolByCurrencycode(customer.getDefaultCurrency());  
+	          }/*else{
+	        	  
+	        	if(UserUtil.getMmrUser().getLocale() != null){
+		    		//if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_ADMIN)){
+		    	 currencySymbol = shippingDAO.getCurrencyCodeByCountryName(UserUtil.getMmrUser().getLocale().substring(3,5));
+		    	}else if(shippingOrder.get(0).getChargesForInvoice().get(0).getChargecurrency()>0){
+		    		currencySymbol = shippingDAO.getCurrencyCodeById(shippingOrder.get(0).getChargesForInvoice().get(0).getChargecurrency());
+		    	}
+			      	  if(currencySymbol==null){
+			      		  for(int j=0;j<ShiplinxConstants.EURO_UNION_LIST.length;j++){
+			      			  if(UserUtil.getMmrUser().getLocale().substring(3,5).equalsIgnoreCase(ShiplinxConstants.EURO_UNION_LIST[j])){
+			      				currencySymbol=shippingDAO.getCurrencyCodeByCountryName("EUCG");
+			      				break;
+			      			  }
+			      		  }
+			      	  }
+		    	 //-------------------------
+		    	}
+	          }*/
+	          else{
+	        	currencySymbol=shippingDAO.getSymbolByCurrencycode(invoice.getCurrency()); 
+	        	if(currencySymbol==null && currencySymbol.getCurrencySymbol() == null || currencySymbol.getCurrencySymbol().isEmpty()){
+	      		  for(int j=0;j<ShiplinxConstants.EURO_UNION_LIST.length;j++){
+	      			  if(UserUtil.getMmrUser().getLocale().substring(3,5).equalsIgnoreCase(ShiplinxConstants.EURO_UNION_LIST[j])){
+	      				currencySymbol=shippingDAO.getCurrencyCodeByCountryName("EUCG");
+	      				break;
+	      			  }
+	      		  }
+	      	  }
+	          }
+	          
+	          
           Map parameters = new HashMap();
           parameters.put("Business", business);
           parameters.put("Invoice", invoice);
@@ -1086,9 +1163,15 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
           parameters.put("PackageWeight", packageWeight);
           parameters.put("PackageBilledWeight", packageBilledWeight);
           parameters.put("SalesUserFlag", flag);
+          parameters.put("currencySymbol", currencySymbol.getCurrencySymbol());
 /*          parameters.put("totalSPD", String.valueOf(commission.getTotalSPD()));
           parameters.put("totalLTL", String.valueOf(commission.getTotalLTL()));
           parameters.put("totalCHB", String.valueOf(commission.getTotalCHB()));*/
+          parameters.put("totalSPD", " "+subtotals.getTotalSPD());
+          parameters.put("totalLTL", " "+subtotals.getTotalLTL());
+          parameters.put("totalCHB", " "+subtotals.getTotalCHB());
+          parameters.put("totalFPA", " "+subtotals.getTotalFPA());
+          parameters.put("totalFWD", " "+subtotals.getTotalFWD());
           String logoPath = "/images/" + business.getLogoFileName();
           String logo2Path = "/images/" + business.getLogoHiResFileName();
           URL logo = (InvoiceManagerImpl.class.getResource(logoPath));
@@ -1118,7 +1201,8 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
   private boolean generateInvoiceMainPage(String url, Invoice invoice, String fileName)
 	      throws Exception {
 	    // String fileName = getUniqueTempPDFFileName("mainInvoice");
-
+	  SubTotal subtotals =  invoiceDAO.getcommissionbyIdd(invoice.getInvoiceId());
+	    boolean flag=true;
 	    long start = System.currentTimeMillis();
 	    if (invoice != null && invoice.getCustomer() != null && invoice.getBusinessId() != null
 	        && invoice.getOrders() != null) {
@@ -1225,13 +1309,13 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
   	            	if((charge.getExchangerate()==null || charge.getExchangerate().equals(0.0)) && charge.getExchangerate().equals("")){
   	            	charge.setExchangerate(new BigDecimal(1.00));
   	            }else{
-  	            	charge.setCharge(charge.getCharge()* charge.getExchangerate().doubleValue());
+  	            	charge.setCharge(charge.getCharge()/** charge.getExchangerate().doubleValue()*/);
   	            }
   	           }
 	          }
 	         
-	          invoice.setInvoiceAmount(invoice.getInvoiceAmount()*shippingOrder.get(0).getChargesForInvoice().get(0).getExchangerate().doubleValue());
-	          invoice.setInvoiceTax(invoice.getInvoiceTax()*shippingOrder.get(0).getChargesForInvoice().get(0).getExchangerate().doubleValue());
+	         // invoice.setInvoiceAmount(invoice.getInvoiceAmount()*shippingOrder.get(0).getChargesForInvoice().get(0).getExchangerate().doubleValue());
+	          //invoice.setInvoiceTax(invoice.getInvoiceTax()*shippingOrder.get(0).getChargesForInvoice().get(0).getExchangerate().doubleValue());
 	          Map<String, Object> parameters = new HashMap<String, Object>();
 	          parameters.put("Business", business);
 	          parameters.put("Invoice", invoice);
@@ -1243,10 +1327,16 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	          parameters.put("Status", statusId);
 	          parameters.put("PackageWeight", packageWeight);
 	          parameters.put("PackageBilledWeight", packageBilledWeight);
-	          parameters.put("SalesUserFlag", false);
+	          /*parameters.put("SalesUserFlag", false);
 	          parameters.put("totalSPD","");
 	          parameters.put("totalLTL", "");
-	          parameters.put("totalCHB", "");
+	          parameters.put("totalCHB", "");*/
+	          parameters.put("SalesUserFlag", new Boolean(true));
+          	  parameters.put("totalSPD", " "+subtotals.getTotalSPD());
+	          parameters.put("totalLTL", " "+subtotals.getTotalLTL());
+	          parameters.put("totalCHB", " "+subtotals.getTotalCHB());
+	          parameters.put("totalFPA", " "+subtotals.getTotalFPA());
+	          parameters.put("totalFWD", " "+subtotals.getTotalFWD());
 	          parameters.put("currencySymbol", currencySymbol.getCurrencySymbol());
 	          String logoPath = "/images/" + business.getLogoFileName();
 	          String logo2Path = "/images/" + business.getLogoHiResFileName();
@@ -2294,8 +2384,74 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  	public List<Invoice> getInvoiceChargeDetails(Long invoiceId){
 	  			  		return invoiceDAO.getInvoiceChargeDetails(invoiceId);
 	  			  	}
+	  	
+	  	@Override
+	  	public List<Invoice> getInvoiceByEmailType(Long invoiceId){
+		  		return invoiceDAO.getInvoiceByEmailType(invoiceId);
+		  	}
+	  	
 	  	@Override
 	  				public List<Charge> getChargeExchangeRateByInvoiceId(long invoiceId) {
 	  					return invoiceDAO.getChargeExchangeRateByInvoiceId(invoiceId);
 	  				}
+
+	  	public Double currencyConversionFromId(int fromCurrency, int toCurrency, double amount){
+	  		List<CurrencySymbol> currencyList=shippingDAO.getallCurrencySymbol();
+	  		String fromCur = "";
+	  		String toCur = "";
+	  		
+	  		for(CurrencySymbol currencySymbol : currencyList){
+	  			if(currencySymbol.getId() == fromCurrency){
+	  				fromCur = currencySymbol.getCurrencyCode();
+	  			}else if(currencySymbol.getId() == toCurrency){
+	  				toCur = currencySymbol.getCurrencyCode();
+	  			}
+	  		}
+	  		
+	  		return currencyConversion(fromCur, toCur, amount);
+	  	}
+	  	
+	  	public Double currencyConversionFromId(int fromCurrency, String toCurrency, double amount){
+	  		List<CurrencySymbol> currencyList=shippingDAO.getallCurrencySymbol();
+	  		String fromCur = "";
+	  		String toCur = "";
+	  		
+	  		for(CurrencySymbol currencySymbol : currencyList){
+	  			if(currencySymbol.getId() == fromCurrency){
+	  				fromCur = currencySymbol.getCurrencyCode();
+	  			}
+	  		}
+	  		
+	  		return currencyConversion(fromCur, toCurrency, amount);
+	  	}
+	  	
+	  	@Override
+	  	public Double currencyConversionToId(String fromCurrency, int toCurrency, double amount){
+	  		List<CurrencySymbol> currencyList=shippingDAO.getallCurrencySymbol();
+	  		String fromCur = "";
+	  		String toCur = "";
+	  		
+	  		for(CurrencySymbol currencySymbol : currencyList){
+	  			if(currencySymbol.getId() == toCurrency){
+	  				toCur = currencySymbol.getCurrencyCode();
+	  			}
+	  		}
+	  		
+	  		return currencyConversion(fromCurrency, toCur, amount);
+	  	}
+	  	
+		@Override
+		public Double currencyConversion(String fromCurrency,
+				String toCurrency, double amount) {
+			if(fromCurrency !=null && toCurrency !=null && fromCurrency.equals(toCurrency)){
+				return amount;
+			}else{
+				Double exchangeRate = shippingDAO.getExchangeRate(fromCurrency, toCurrency);
+				if(exchangeRate!=null && exchangeRate != 0){
+					return (amount*exchangeRate);
+				}else{
+					return (amount*1);
+				}
+			}
+		}
 }

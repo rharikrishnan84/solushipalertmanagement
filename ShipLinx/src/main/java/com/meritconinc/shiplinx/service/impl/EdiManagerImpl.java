@@ -323,5 +323,9 @@ public class EdiManagerImpl implements EdiManager {
 		return false;
 	}
 
-	
+	@Override
+		public List<EdiItem> searchFileInEdiItem(String uploadFileName) {
+			// TODO Auto-generated method stub
+			return ediDAO.searchFileInEdiItem(uploadFileName);
+		}
 }

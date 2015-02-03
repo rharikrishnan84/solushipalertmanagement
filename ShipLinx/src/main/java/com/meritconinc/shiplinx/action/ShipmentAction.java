@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.meritconinc.shiplinx.action;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +14,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -30,8 +26,12 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import com.meritconinc.mmr.model.common.KeyValueVO;
+
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,9 +80,9 @@ import com.meritconinc.shiplinx.carrier.CarrierService;
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ServiceAvailabilityWebServiceClient;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
+import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
-import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
 import com.meritconinc.shiplinx.model.Billduty;
@@ -94,6 +94,7 @@ import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.Country;
 import com.meritconinc.shiplinx.model.CreditCard;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
@@ -165,6 +166,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private String uploadFileName;
 //	private List<OrderStatus> orderStatusList;
 	private MarkupManager markupManagerService;
+	
+	private List<KeyValueVO> cachedList;
 	public List<CurrencySymbol> getCurrencyList() {
 		return currencyList;
 	}
@@ -2176,10 +2179,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    log.debug("-----------stageThree-------------");
 	    String customs = request.getParameter("customs");
 	    String stagethree = request.getParameter("getrates");
+	    String emailNotification = request.getParameter("emailNotify");
+	    String emailNotification2 = request.getParameter("emailNotify2");
 	    ShippingOrder shippingOrder = getShippingOrder();
-	    if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
+	   /* if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 			shippingOrder.setCurrency("USD");
-		}
+		}*/
 	    shippingOrder.setMarkPercent(null);
 	    List<RecordList> pickuplist = pickupService.getPickupList();
 	    session.put("pickuplist", pickuplist);
@@ -2388,7 +2393,28 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      for (Rating r : ratingList) {
 	        r.setId(counter++);
 	      }
-	      shippingOrder.setRateList(ratingList);
+	      
+	      CustomerDAO customermanagerDAO=(CustomerDAO) MmrBeanLocator.getInstance().findBean("customermanagerDAO");
+
+	      			//CustomerDAO customermanagerDAO = (CustomerDAO) MmrBeanLocator.getInstance().findBean("customermanagerDAO");
+	      		//	List<Rating> ratinglist1 = shippingOrder.getRateList();
+	      			//if (shippingOrder.getId() != null) {
+	      				String shipCustomerCurrency1 = customermanagerDAO.getCustomerCurrencyById(shippingOrder.getCustomerId());
+	      				for (Rating r : ratingList) {
+	      					String accCountry = r.getAccountCountry();
+	      					int costConId = shippingService.getCountryIdByCountryCode(accCountry, "");
+	      					int chargeConId = shippingService.getCountryIdByCountryCode("",shipCustomerCurrency1);
+	      					for (Charge c : r.getCharges()) {
+	      						if ((c.getCostcurrency() == 0)
+	      								&& (c.getChargecurrency() == 0)) {
+	      							c.setCostcurrency(costConId);
+	      							c.setChargecurrency(chargeConId);
+	      							shippingService.updateCharge(c);
+	      						}
+	      					}
+	      				}
+	      			//}
+	      	      shippingOrder.setRateList(ratingList);
 
 	      List<HashMap<String, String>> rateOption = new ArrayList<HashMap<String, String>>();
 
@@ -2526,7 +2552,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      //// ==================== Exchanage Rate ===================
 	      if(shippingOrder.getCustomer() != null && shippingOrder.getCustomer().getDefaultCurrency()!=null && !shippingOrder.getCustomer().getDefaultCurrency().isEmpty()){
 	    	  	    	  symbol=shippingService.getSymbolByCurrencycode(shippingOrder.getCustomer().getDefaultCurrency());
-	    	  	      }else{//EUCG
+	    	  	      }/*else{//EUCG
 	    	  	    	  symbol=shippingService.getCurrencyCodeByCountryName(user.getLocale().substring(3, 5));
 	    	  	      	  if(symbol==null){
 	    	  	      		  for(int i=0;i<ShiplinxConstants.EURO_UNION_LIST.length;i++){
@@ -2536,24 +2562,32 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    	  	      			  }
 	    	  	      		  }
 	    	  	      	  }
-	    	  	      }
+	    	  	      */  
 	 //// ==================== End ===================
-	      if(symbol!=null)
-	    	  session.put("LocalCurrencySymbol", symbol.getCurrencySymbol());
-	      else
-	    	  session.put("LocalCurrencySymbol", "$");
 	      Double exchRate;
-	      if(symbol!=null){
 	      for(Rating rate:ratingList){
+	    	  if(symbol==null || ("").equals(symbol.getCurrencyCode()) || symbol.getCurrencyCode() ==null){
+		    	  String accCountry = rate.getAccountCountry();
+		    	  String accCurrency = shippingService.getCurrencyByCountry(accCountry);
+		    	  symbol=shippingService.getSymbolByCurrencycode(accCurrency);
+	    	  }
 	    	  String toCurrency;
-	    	  toCurrency=symbol.getCurrencyCode();
-	    	  rate.setLocalCurrencySymbol(symbol.getCurrencySymbol());
+	    	  if(symbol!=null){
+	    		  session.put("LocalCurrencySymbol", symbol.getCurrencySymbol());
+	    		  toCurrency=symbol.getCurrencyCode();
+	    		  rate.setLocalCurrencySymbol(symbol.getCurrencySymbol());
+	    	  }else{
+	    		  session.put("LocalCurrencySymbol", "$");
+	    		  toCurrency = "CAD";
+	    		  rate.setLocalCurrencySymbol("$");
+	    	  }
 	    	  for(Charge charge:rate.getCharges()){
 
-	    		  String fromCurrency=charge.getCurrency();
-	    		  if(fromCurrency==null){
+	    		  //String fromCountry=rate.getCurrency();
+	    		  String fromCurrency = rate.getCurrency();
+	    		  /*if(fromCurrency==null){
 	    			  fromCurrency=rate.getCurrency();
-	    		  }
+	    		  }*/
 	    		  if(fromCurrency ==null){
 	    			  fromCurrency=shippingOrder.getCurrency();
 	    		  }
@@ -2568,6 +2602,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    				  toCurrencysymbol1=currencySymbol.getId();
 	    			  }
 	    		  }
+	    		  
 	    		  exchRate=shippingService.getExchangeRate(fromCurrency,toCurrency);
 	    		  if(fromCurrency.equalsIgnoreCase(toCurrency))
 	    			  exchRate=1d;
@@ -2581,12 +2616,21 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  if(exchRate!=null){
 	    			  BigDecimal exchRate1=new BigDecimal(exchRate);
 	    			  charge.setExchangerate(exchRate1);
-	    			  if(charge.getCost()!=null)
-	    				  charge.setCostInLocalCurrency(charge.getCost()*exchRate);
-	    			  if(charge.getCharge()!=null)
+	    			  if(charge.getCost()!=null){
+	    				  charge.setCostInLocalCurrency(charge.getCost());
+	    			  }
+	    			  if(charge.getCharge()!=null){
+	    				  double tempCharge = new BigDecimal(charge.getCharge()*exchRate).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+	    				  log.debug("Before Currency Converting =======================>"+charge.getCharge());
 	    				  charge.setChargeInLocalCurrency(charge.getCharge()*exchRate);
-	    			  if(charge.getTariffRate()!=null)
-	    				  charge.setTariffInLocalCurrency(charge.getTariffRate()*exchRate);
+	    				  charge.setCharge(tempCharge);
+	    				  log.debug("After Currency Converting =======================>"+charge.getCharge());
+	    				  log.debug("Exchage Rate for Currency Convertion =======================>"+exchRate);
+	    			  }
+	    			  if(charge.getTariffRate()!=null){
+	    				  charge.setTariffInLocalCurrency(charge.getTariffRate());
+	    				  charge.setCustomerTarrifRate(charge.getTariffRate()*exchRate);
+	    			  }
 	    			  charge.setChargecurrency(toCurrencysymbol1);
 	    			  charge.setCostcurrency(fromCurrencysymbol1);
 	    			  if(charge.getCostInLocalCurrency()==null)
@@ -2597,9 +2641,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    				  charge.setTariffInLocalCurrency(0.00);
 	    		  }
 	    	  }
+	    	  if(toCurrency!=null){
+	    			 // shippingOrder.setCurrency(toCurrency);
+	    			  rate.setCurrency(toCurrency);
+	    		  }
 	    	  if(rate.getCharges().get(0).getExchangerate()!=null){
 	    		  rate.setTotalChargeLocalCurrency(rate.getTotal()*rate.getCharges().get(0).getExchangerate().doubleValue());
-	    		  rate.setTotalCostLocalCurrency(rate.getTotalCost()*rate.getCharges().get(0).getExchangerate().doubleValue());
+	    		  rate.setTotalCostLocalCurrency(rate.getTotalCost());
 	    		  if(rate.getTotalChargeLocalCurrency()==null){
 	    			  rate.setTotalChargeLocalCurrency(0.00);
 	    		  }
@@ -2607,7 +2655,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    			  rate.setTotalCostLocalCurrency(0.00);
 	    		  }
 	    	  }
-	      }}
+	      }
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	      for (CarrierErrorMessage carrierErrorMessage : carrierServiceManager.getErrorMessages()) {
@@ -2627,6 +2675,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	     * pack.setHeight(height.setScale(2, BigDecimal.ROUND_HALF_UP)); } }
 	     */
 	    // if quick ship option is chosen, then redirect to ship
+	    getSession().put("shippingOrder", shippingOrder);
 	    if (((shippingOrder.getServiceId_web() != null && shippingOrder.getServiceId_web() > 0)
 	    	|| shippingOrder.isCheapestMethod() || shippingOrder.isFastestMethod())&&(stagethree!=null && stagethree.equalsIgnoreCase("false")))
 	      if (shippingOrder.getRateList().size() == 1) {
@@ -2641,6 +2690,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	          shippingOrder.getBillToType() + " - " + shippingOrder.getBillToAccountNum());
 	    
 	    	    this.addresslist();
+	    	    if(emailNotification.equalsIgnoreCase("true")){
+	    	    				addressService.setSendNotification(shippingOrder.getFromAddress().getAddressId());
+	    	    			}
+	    	    		    if(emailNotification2.equalsIgnoreCase("true")){
+	    	    				addressService.setSendNotification(shippingOrder.getToAddress().getAddressId());
+	    	    			}
 	    return SUCCESS;
 
 	  }
@@ -2819,10 +2874,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			
 			//get the rating/surcharges/charges for selected index from the list
 			Rating r = shippingOrder.getRateList().get(Integer.parseInt(rateIndex));
+			
+			
 			//Charge shippingCharge = r.getCharge();
-			if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
+			/*if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 				r.setCurrency("USD");
-			}
+			}*/
 			 carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance().findBean(
 				       "carrierServiceDAO");
 				     Carrier chargeCarrier = carrierServiceDAO.getCarrier(r.getCarrierId());
@@ -2831,6 +2888,17 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				      Double actualTotalCost = 0.0;
 				      Double actualTotalCharge = 0.0;
 				      if (r != null) {
+				    	  if(r.getCharges()!=null){
+				    		  if(r.getCarrierId() == 10){
+				    			  Iterator<Charge> iteratorCharge = r.getCharges().iterator();
+				    			  while(iteratorCharge.hasNext()){
+				    				  Charge charge = iteratorCharge.next();
+				    				  if(charge.getChargeCode()!=null && charge.getChargeCode().equals(ShiplinxConstants.GROUP_FUEL_CHARGE) && charge.getCharge() == 0 ){
+				    					  iteratorCharge.remove();
+				    				  }
+				    			  }
+				    		  }
+				    	  }
 				        for (int i = 0; i < r.getCharges().size(); i++) {
 				        	if(r.getSlaveCarrierName()!=null){
 				        					        		r.getCharges().get(i).setCarrierId(r.getSlaveCarrierId());
@@ -2854,9 +2922,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				          }
 				        }
 
-				        shippingOrder.setQuoteTotalCost(quoteTotalCost);
+				        //shippingOrder.setQuoteTotalCost(quoteTotalCost);
 				        shippingOrder.setQuoteTotalCharge(quoteTotalCharge);
-				        shippingOrder.setActualTotalCost(actualTotalCost);
+				       // shippingOrder.setActualTotalCost(actualTotalCost);
 				        shippingOrder.setActualTotalCharge(actualTotalCharge);
 
 				     }
@@ -2952,6 +3020,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					else
 						addActionError(MessageUtil.getMessage("shipment.notification.mail.failure"));
 				}
+				addressService.setSendNotification(shippingOrder.getFromAddress().getAddressId());
+				addressService.setSendNotification(shippingOrder.getToAddress().getAddressId());
 			}
 		}
 		catch (CardProcessingException cpe) { //this is if card could not be authorized
@@ -4001,17 +4071,47 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
 				so.setBranch(UserUtil.getMmrUser().getBranch());
 			
-			if (this.shippingService != null) {
-				this.setShipments( this.shippingService.getShipments(so) );
-//				getSession().put("shipments", shipments);
-				//set tracking url
-				for(ShippingOrder sho: this.getShipments())
-				{
-					if(!StringUtil.isEmpty(sho.getTrackingURL()))
-						continue;
-					String strTrackingUrl = this.shippingService.getTrackingURL(sho.getId());
-					sho.setTrackingURL(strTrackingUrl);
+			String reqCacheId = this.request.getParameter("cacheId");
+			boolean cacheNotFound = false;
+			Object cacheObject = null;
+			if (reqCacheId == null || "".equals(reqCacheId)){
+				cacheNotFound = true;
+			}else{
+				cacheObject = getSession().get(reqCacheId);
+				if (cacheObject == null || "".equals(cacheObject)){
+					cacheNotFound = true;
 				}
+			}
+			if (this.shippingService != null && cacheNotFound) {
+				so.setPurpose("SEARCH_SHIPMENTS");
+				List<ShippingOrder> shipments = this.shippingService.getShipments(so);
+				int rows_per_page = 500;
+				int temp = 1;
+				String cacheId = "";
+				cachedList = new ArrayList<KeyValueVO>();
+				for (int i = 0; i < shipments.size(); i=i+rows_per_page) {
+					String uuid = UUID.randomUUID().toString();
+					temp = i + rows_per_page; 
+					if (temp > shipments.size()){
+						temp = shipments.size();
+					}
+					KeyValueVO keyValue = new KeyValueVO();
+					List<ShippingOrder> subList = shipments.subList(i, temp);
+					getSession().put(uuid, subList);
+					if (i==0){
+						cacheId = uuid;
+					}
+					keyValue.setKey(uuid);
+					keyValue.setValue(i+" - "+temp);
+					cachedList.add(keyValue);
+				}
+				request.setAttribute("current_page", cacheId);
+				getSession().put("cachedList", cachedList);
+				this.setShipments((List<ShippingOrder>)getSession().get(cacheId));
+			}else{
+				cachedList = (List<KeyValueVO>) getSession().get("cachedList");
+				request.setAttribute("current_page", reqCacheId);
+				this.setShipments((List<ShippingOrder>)cacheObject);
 			}
 			
 			User user = userService.findUserByUsername(UserUtil.getMmrUser().getUsername());
@@ -4027,20 +4127,22 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getCustomerId()>0){
 								List<ShippingOrder> orderTemp= new ArrayList<ShippingOrder>();
 								orderTemp=this.getShipments();
-								for(ShippingOrder orderCheck:orderTemp){
-									if(orderCheck!=null && orderCheck.getCharges()!=null && orderCheck.getCharges().size()>0){
-										Double exchRate=orderCheck.getCharges().get(0).getExchangerate().doubleValue();
-										if(exchRate>0 && orderCheck.getQuoteTotalCost()!=null && orderCheck.getQuoteTotalCost()>0){
-											orderCheck.setQuoteTotalCost(orderCheck.getQuoteTotalCost()*exchRate);
-										}
-										if(exchRate>0 && orderCheck.getQuoteTotalCharge()!=null && orderCheck.getQuoteTotalCharge()>0){
-											orderCheck.setQuoteTotalCharge(orderCheck.getQuoteTotalCharge()*exchRate);
-										}
-										if(exchRate>0 && orderCheck.getActualTotalCost()!=null && orderCheck.getActualTotalCost()>0){
-											orderCheck.setActualTotalCost(orderCheck.getActualTotalCost()*exchRate);
-										}
-										if(exchRate>0 && orderCheck.getActualTotalCharge()!=null && orderCheck.getActualTotalCharge()>0){
-											orderCheck.setActualTotalCharge(orderCheck.getActualTotalCharge()*exchRate);
+								if(orderTemp!=null){
+									for(ShippingOrder orderCheck:orderTemp){
+										if(orderCheck!=null && orderCheck.getCharges()!=null && orderCheck.getCharges().size()>0){
+											Double exchRate=orderCheck.getCharges().get(0).getExchangerate().doubleValue();
+											/*if(exchRate>0 && orderCheck.getQuoteTotalCost()!=null && orderCheck.getQuoteTotalCost()>0){
+												orderCheck.setQuoteTotalCost(orderCheck.getQuoteTotalCost()*exchRate);
+											}*/
+											if(exchRate>0 && orderCheck.getQuoteTotalCharge()!=null && orderCheck.getQuoteTotalCharge()>0){
+												orderCheck.setQuoteTotalCharge(orderCheck.getQuoteTotalCharge());
+											}
+											/*if(exchRate>0 && orderCheck.getActualTotalCost()!=null && orderCheck.getActualTotalCost()>0){
+												orderCheck.setActualTotalCost(orderCheck.getActualTotalCost()*exchRate);
+											}*/
+											if(exchRate>0 && orderCheck.getActualTotalCharge()!=null && orderCheck.getActualTotalCharge()>0){
+												orderCheck.setActualTotalCharge(orderCheck.getActualTotalCharge());
+											}
 										}
 									}
 								}
@@ -4693,7 +4795,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      e.printStackTrace();
 	      addActionError(getText("content.error.unexpected"));
 	    }
-
+	    initCarrierList();
 	    return SUCCESS;
 	  }
 
@@ -4806,7 +4908,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			          }
 			          DecimalFormat round = new DecimalFormat("###.##");
 			          order.setId(this.getSelectedOrder().getId());
-			          order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
+			         // order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
 			          order.setActualTotalCharge(Double.valueOf(round.format(totalActualCharge)));
 			          shippingDAO.updateTotalCharges(order);
 			          getSession().remove("newActualCharge");
@@ -5045,7 +5147,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			          }
 			    		  DecimalFormat round = new DecimalFormat("###.##");
 				          curOrder.setId(this.getSelectedOrder().getId());
-				          curOrder.setActualTotalCost(Double.valueOf(round.format(totalQuoteCost)));
+				         // curOrder.setActualTotalCost(Double.valueOf(round.format(totalQuoteCost)));
 				          curOrder.setActualTotalCharge(Double.valueOf(round.format(totalQuoteCharge)));
 				          shippingDAO.updateTotalCharges(curOrder);
 
@@ -5069,9 +5171,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			    }
 			    DecimalFormat round = new DecimalFormat("###.##");
 			    order.setId(this.getSelectedOrder().getId());
-			    order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
+			   // order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
 			    order.setActualTotalCharge(Double.valueOf(round.format(totalActualCharge)));
-			    order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
+			   // order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
 			    order.setQuoteTotalCharge(Double.valueOf(round.format(totalQuoteCharge)));
 			    shippingDAO.updateTotalCharges(order);
 			    return SUCCESS;
@@ -5161,13 +5263,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		          for (int i = 0; i < this.getSelectedOrder().getCharges().size(); i++) {
 		            if (this.getSelectedOrder().getCharges().get(i).getType() == 0) {
 		              totalQuoteCharge += this.getSelectedOrder().getCharges().get(i).getCharge();
-		              totalQuoteCost += this.getSelectedOrder().getCharges().get(i).getCost();
+		              //totalQuoteCost += this.getSelectedOrder().getCharges().get(i).getCost();
 		            }
 		          }
 		          DecimalFormat round = new DecimalFormat("###.##");
 		          order.setCarrierId(this.getSelectedOrder().getCarrierId());
 		          order.setId(this.getSelectedOrder().getId());
-		          order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
+		         // order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
 		          order.setQuoteTotalCharge(Double.valueOf(round.format(totalQuoteCharge)));
 		          shippingDAO.updateTotalCharges(order);
 		          log.debug("Add Quoted Charge");
@@ -5220,7 +5322,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      Double totalActualCharge = 0.0;
 		      Double totalActualCost = 0.0;
 			System.out.println(order);
+			String newCurrency = this.request.getParameter("ordCurrency");
 			if (order != null) {
+				 if (!order.getCurrency().equalsIgnoreCase(newCurrency)){
+			           shippingDAO.updateShippingOrderCurrency(order.getId(), newCurrency);
+			          }
 				String [] ids = this.request.getParameterValues("actualChargeIds");
 				String [] userCharges = this.request.getParameterValues("actualCharge");
 				String [] userCosts = this.request.getParameterValues("actualChargeCost");
@@ -5230,7 +5336,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				String[] costCurrency = this.request.getParameterValues("actualcostcurrency");
 			    String[] chargeCurrency = this.request.getParameterValues("actualchargecurrency");
 			    String[] exchangeRate = this.request.getParameterValues("actualexchangerate");
-
+               
 			           ///////////// =================== Exchange Rate ===============
 			    CurrencySymbol costCurrencytmp=new CurrencySymbol();
 			    			    CurrencySymbol chargeCurrencytmp=new CurrencySymbol();
@@ -5248,7 +5354,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			    		    			  if(exchangeRatetmp==null){
 			    			    				  exchangeRatetmp=1d;
 			    			    			  }
-			    			    			  exchangeRate[i]=exchangeRatetmp.toString();
+			    			    			 // exchangeRate[i]=exchangeRatetmp.toString();
 			    			    		  }
 			    
 			    //// ============== End =================
@@ -5295,7 +5401,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			          }
 			          DecimalFormat round = new DecimalFormat("###.##");
 			          curOrder.setId(this.getSelectedOrder().getId());
-			          curOrder.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
+			         // curOrder.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
 			          curOrder.setActualTotalCharge(Double.valueOf(round.format(totalActualCharge)));
 			          shippingDAO.updateTotalCharges(curOrder);
 
@@ -5328,7 +5434,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        ShippingOrder order = this.getSelectedOrder();
 	        shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 	        System.out.println(order);
+	        String newCurrency = this.request.getParameter("ordCurrency");
 	        if (order != null) {
+	        	 if (!order.getCurrency().equalsIgnoreCase(newCurrency)){
+	                 shippingDAO.updateShippingOrderCurrency(order.getId(), newCurrency);
+	           }
 	          String[] ids = this.request.getParameterValues("quotedChargeIds");
 	          String[] userCharges = this.request.getParameterValues("quotedCharge");
 	          String[] userCosts = this.request.getParameterValues("quotedChargeCost");
@@ -5338,6 +5448,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	          String[] chargeCurrency = this.request.getParameterValues("quotedchargecurrency");
 	          String[] exchangeRate = this.request.getParameterValues("quotedexchangerate");
 	          // String[] actualChargeIds = this.request.getParameterValues("actualChargeIds");
+	        /*  Map<String, Object> paramObj = new HashMap<String, Object>(5);
+	          
+	           for(int i=0;i<exchangeRate.length;i++){
+	        	   paramObj.put(exchangeRate[i], userNames[i]);
+	           }
+	          */
 	          List<String> list = new ArrayList<String>(Arrays.asList(userStatusTexts));
 	          list.removeAll(Arrays.asList("", null));
 	          CurrencySymbol costCurrencytmp=new CurrencySymbol();
@@ -5358,7 +5474,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	            	        		  if(exchangeRatetmp==null){
 	            	        			  exchangeRatetmp=1d;
 	            	        		  }
-	            	        		  exchangeRate[i]=exchangeRatetmp.toString();
+	            	        		 // exchangeRate[i]=exchangeRatetmp.toString();
 	            	        	  }
 	           ///////// ===================== End ====================
 	            if (soCharge != null) {
@@ -5565,9 +5681,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        }
 		        DecimalFormat round = new DecimalFormat("###.##");
 		        order.setId(this.getSelectedOrder().getId());
-		        order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
+		       // order.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
 		        order.setActualTotalCharge(Double.valueOf(round.format(totalActualCharge)));
-		        order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
+		       // order.setQuoteTotalCost(Double.valueOf(round.format(totalQuoteCost)));
 		        order.setQuoteTotalCharge(Double.valueOf(round.format(totalQuoteCharge)));
 		        shippingDAO.updateTotalCharges(order);
 		        currencyList=shippingDAO.getallCurrencySymbol();
@@ -7551,7 +7667,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				        if(order !=null && order.getCharges()!=null && order.getCharges().size()>0 && order.getCharges().get(0).getExchangerate()!=null){
 					 	 exchRate=order.getCharges().get(0).getExchangerate().doubleValue();
 				        }
-					 if(exchRate!=null){
+					 /*if(exchRate!=null){
 					
 						if( order.getCODValue()!=null && order.getCODValue()>0){
 							order.setCODValue(order.getCODValue()*exchRate);
@@ -7575,7 +7691,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 							order.setQuoteTotalCharge(multiplyWithExchangeRate(order.getQuoteTotalCharge(),exchRate));
 						}
 						//order.setQuoteTotalCharge(order.getq);
-					 }
+					 }*/
 						return order;
 					}
 					
@@ -7606,6 +7722,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						}
 					}
 					}
-					
+					public List<KeyValueVO> getCachedList() {
+						return cachedList;
+					}
+
+					public void setCachedList(List<KeyValueVO> cachedList) {
+						this.cachedList = cachedList;
+					}
 			/// ============== End =======================				
 }

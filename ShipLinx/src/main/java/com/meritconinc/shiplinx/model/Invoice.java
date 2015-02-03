@@ -65,7 +65,22 @@ public class Invoice {
 	private double breakdownTotal;
 	private String emailType;
 	private String invoiceCurrencySymbol;
-	public String getInvoiceCurrencySymbol() {
+	
+	private double totalFPA;
+		private double totalFWD;
+		public double getTotalFPA() {
+			return totalFPA;
+		}
+		public void setTotalFPA(double totalFPA) {
+			this.totalFPA = totalFPA;
+		}
+		public double getTotalFWD() {
+			return totalFWD;
+		}
+		public void setTotalFWD(double totalFWD) {
+			this.totalFWD = totalFWD;
+		}
+		public String getInvoiceCurrencySymbol() {
 		return invoiceCurrencySymbol;
 	}
 
@@ -379,4 +394,6 @@ public class Invoice {
 			public void setCancelled(boolean cancelled) {
 				this.cancelled = cancelled;
 			}
+			
+			
 }

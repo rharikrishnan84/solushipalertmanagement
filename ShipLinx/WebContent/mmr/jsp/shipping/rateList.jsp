@@ -997,7 +997,12 @@ var radioselected = 0;
 						<s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text></b></div>
 						<div class="popup_text" id="popup_<s:property value="%{#index}"/>">
 							<s:iterator  value="charges">
-							<s:property value="%{name}"/> : <s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
+							<s:property value="%{name}"/> 		<s:set var="tariff" value="%{customerTarrifRate}"></s:set>
+       <s:set var="charge" value="%{charge}"></s:set>
+       <s:if test="#tariff > charge">
+       :<s:text name="format.money"><br/><s:param name="value" value="tariff" /></s:text> 
+       </s:if>
+       :<s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
 							</s:iterator>
 						<div class="closebtn"></div>
 						</div>

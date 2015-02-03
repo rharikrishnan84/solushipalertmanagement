@@ -53,6 +53,14 @@ var pslistr = "<%= request.getAttribute("psList")%>";
 var pslists= pslistr.substring(1,pslistr.length-1);
 var pslist = pslists.split(",");
 
+var fpalistr = "<%= request.getAttribute("fpaList")%>";
+var fpalists= fpalistr.substring(1,fpalistr.length-1);
+var fpalist = fpalists.split(",");
+
+var fwdlistr = "<%= request.getAttribute("fwdList")%>";
+var fwdlists= fwdlistr.substring(1,fwdlistr.length-1);
+var fwdlist = fwdlists.split(",")
+
 	function submitform()
 	{
 		if(document.customerform.method.value=='edit'){
@@ -136,12 +144,16 @@ var pslist = pslists.split(",");
 				document.getElementById('new_comm_percentage_ps').value = pslist[elem.selectedIndex-1];
 				document.getElementById('new_comm_percentage_pp').value = pplist[elem.selectedIndex-1];
 				document.getElementById('new_comm_percentage_chb').value = pclist[elem.selectedIndex-1];
+				document.getElementById('new_comm_percentage_fpa').value = fpalist[elem.selectedIndex-1];
+				document.getElementById('new_comm_percentage_fwd').value = fwdlist[elem.selectedIndex-1];
 			}
 			else
 			{
 				document.getElementById('new_comm_percentage_ps').value = '0.0';
 				document.getElementById('new_comm_percentage_pp').value = '0.0';
 				document.getElementById('new_comm_percentage_chb').value = '0.0';
+				document.getElementById('new_comm_percentage_fpa').value = '0.0';
+				document.getElementById('new_comm_percentage_fwd').value = '0.0';
 			}
 		}		
 	}
@@ -155,14 +167,16 @@ var pslist = pslists.split(",");
 		var commission_ps = document.getElementById("new_comm_percentage_ps").value;
 		var commission_pp = document.getElementById("new_comm_percentage_pp").value;
 		var commission_chb = document.getElementById("new_comm_percentage_chb").value;
+		var commission_fpa = document.getElementById("new_comm_percentage_fpa").value;
+		var commission_fwd = document.getElementById("new_comm_percentage_fwd").value;
 		var customerId = location.search.split('id=')[1];
 		if(e.selectedIndex==0)
 			alert("Please select a Sales User to add.");
-		else if(commission_ps.value > 100 || commission_pp>100 || commission_chb>100)
+		else if(commission_ps.value > 100 || commission_pp>100 || commission_chb>100 || commission_fpa>100 || commission_fwd>100)
 			alert("Commission percentage cannot be more than 100");
 		else
 		{	// call the action.
-		 	document.customerform.action="add.new.customersales.action?SalesAgent="+salesagent+"&Commission_Percentage_PS="+commission_ps+"&Commission_Percentage_PP="+commission_pp+"&Commission_Percentage_CHB="+commission_chb+"&id="+customerId;
+			document.customerform.action="add.new.customersales.action?SalesAgent="+salesagent+"&Commission_Percentage_PS="+commission_ps+"&Commission_Percentage_PP="+commission_pp+"&Commission_Percentage_CHB="+commission_chb+"&Commission_Percentage_FPA="+commission_fpa+"&Commission_Percentage_FWD="+commission_fwd+"&id="+customerId;
 		 	document.customerform.submit();
 		}
 	}
@@ -272,45 +286,47 @@ var pslist = pslists.split(",");
 		
 	</script>
 					<script type="text/javascript">
-		function updateSalesUser(){
-			var deleteUserId = document.getElementsByName("salesUseCheckBox");
-			var i1,txt1 = 0;
-		   for (i1=0;i1<deleteUserId.length;i1++){
-			if (deleteUserId[i1].checked){
-			 txt1 += 1;      
-			}
-		   }
-		   if(txt1 < 1){
-			alert('Please check atleast one');
-		   }
-		    else if(txt1 > 1){
-			alert('Please check atmost one');
-		   }
-		   else{
-				var i,id;
-				for (i=0;i<deleteUserId.length;i++){
-					if (deleteUserId[i].checked){
-						id = deleteUserId[i].value ;					
-					}
-				}
-				var index = document.getElementById("index_" + id).value;
-				var ps=document.getElementById("csListSalesCommission[" + index + "]_comm_ps");
-		var cp_ps =ps.value;
-		var cp_pp=document.getElementById("csListSalesCommission[" + index + "]_comm_pp");
-		var valcp_pp = cp_pp.value;
-		var cp_chb=document.getElementById("csListSalesCommission[" + index + "]_comm_chb");
-		var valcp_chb = cp_chb.value;
-
-		if(cp_ps>100 || valcp_pp>100 || valcp_chb>100)
-			alert("Commission percentage cannot be more than 100");
-		else
-		{
-			document.customerform.action="update.customer.sales.agent.action?cs_id="+id+"&cp_ps="+cp_ps+"&cp_pp="+valcp_pp+"&cp_chb="+valcp_chb;
-			document.customerform.submit();
-		}
-			}
-			
-		}
+					function updateSalesUser(){
+													var deleteUserId = document.getElementsByName("salesUseCheckBox");
+													var i1,txt1 = 0;
+												   for (i1=0;i1<deleteUserId.length;i1++){
+													if (deleteUserId[i1].checked){
+													 txt1 += 1;      
+													}
+												   }
+												   if(txt1 < 1){
+													alert('Please check atleast one');
+												   }
+												    else if(txt1 > 1){
+													alert('Please check atmost one');
+												   }
+												   else{
+														var i,id;
+														for (i=0;i<deleteUserId.length;i++){
+															if (deleteUserId[i].checked){
+																id = deleteUserId[i].value ;					
+															}
+														}
+														var index = document.getElementById("index_" + id).value;
+														var ps=document.getElementById("csListSalesCommission[" + index + "]_comm_ps");
+												var cp_ps =ps.value;
+												var cp_pp=document.getElementById("csListSalesCommission[" + index + "]_comm_pp");
+												var valcp_pp = cp_pp.value;
+												var cp_chb=document.getElementById("csListSalesCommission[" + index + "]_comm_chb");
+												var valcp_chb = cp_chb.value;
+												var cp_fpa=document.getElementById("csListSalesCommission[" + index + "]_comm_fpa");
+												var valcp_fpa = cp_fpa.value;
+												var cp_fwd=document.getElementById("csListSalesCommission[" + index + "]_comm_fwd");
+												var valcp_fwd = cp_fwd.value;
+												if(cp_ps>100 || valcp_pp>100 || valcp_chb>100 || valcp_fpa>100 || valcp_fwd>100)
+													alert("Commission percentage cannot be more than 100");
+												else
+												{
+													document.customerform.action="update.customer.sales.agent.action?cs_id="+id+"&cp_ps="+cp_ps+"&cp_pp="+valcp_pp+"&cp_chb="+valcp_chb+"&cp_fwd="+valcp_fwd+"&cp_fpa="+valcp_fpa;
+													document.customerform.submit();
+												}
+													}
+											 }					
 		
 	</script>
 	<style>
@@ -367,8 +383,20 @@ var pslist = pslists.split(",");
            	<s:textfield id="new_comm_percentage_chb" name="new_comm_percentage_chb"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
            </div>
           </div>
-
-         </div>
+          <div class="fieldsvvs">
+           <label><mmr:message messageId="label.salesuser.fpa"/> %</label>
+           <div  class="controls"><span>:</span>
+           <s:textfield id="new_comm_percentage_fpa" name="new_comm_percentage_fpa"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
+           </div>
+          </div>
+          <div class="fieldsvvs">
+           <label><mmr:message messageId="label.salesuser.fwd"/> %</label>
+           <div class="controls"><span>:</span>
+           	<s:textfield id="new_comm_percentage_fwd" name="new_comm_percentage_fwd"  cssClass="text_02_tf_small" theme="simple" size="3" value="0.0" maxlength="5"/>
+           </div>
+          </div>
+          </div>
+          </div>
         </div>
        </div>
 	</div>
@@ -405,7 +433,9 @@ var pslist = pslists.split(",");
 	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesAgent"/></th>
 	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.spd"/> %</th>
 	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.ltl"/> %</th>
-	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.chb"/> %</th>	
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.chb"/> %</th>
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.fpa"/> %</th>
+	<th style="text-align:left; padding-left:10px;"><mmr:message messageId="label.salesuser.fwd"/> %</th>	
 	</tr>
 	</thead>	
 	<tbody>
@@ -422,6 +452,8 @@ var pslist = pslists.split(",");
 		        <td class="tablerow3" align="center"><s:textfield id="csListSalesCommission[%{#counterIndex.index}]_comm_ps" name="customerSalesCommissionPS"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{customer.CustomerSalesUser[#counterIndex.index].commissionPercentagePerSkidService}"/></td>
 		        <td class="tablerow3" align="center"><s:textfield id="csListSalesCommission[%{#counterIndex.index}]_comm_pp" name="customerSalesCommissionPP"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{customer.CustomerSalesUser[#counterIndex.index].commissionPercentagePerPalletService}"/></td>
 		        <td class="tablerow3" align="center"><s:textfield id="csListSalesCommission[%{#counterIndex.index}]_comm_chb" name=""  cssClass="text_02_tf_small" theme="simple" size="3" value="%{customer.CustomerSalesUser[#counterIndex.index].commisionPercentagePerCHB}"/></td>
+		        <td class="tablerow3" align="center"><s:textfield id="csListSalesCommission[%{#counterIndex.index}]_comm_fpa" name=""  cssClass="text_02_tf_small" theme="simple" size="3" value="%{customer.CustomerSalesUser[#counterIndex.index].commisionPercentagePerFPA}"/></td>
+		        <td class="tablerow3" align="center"><s:textfield id="csListSalesCommission[%{#counterIndex.index}]_comm_fwd" name=""  cssClass="text_02_tf_small" theme="simple" size="3" value="%{customer.CustomerSalesUser[#counterIndex.index].commisionPercentagePerFWD}"/></td>
 
 			</tr>	
 		</s:iterator>

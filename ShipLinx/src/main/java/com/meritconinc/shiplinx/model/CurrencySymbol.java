@@ -11,6 +11,7 @@ public class CurrencySymbol {
 	private String countryName;
 	private String currencyName;
 	
+	private String languageCode;
 	
 	
 	public int getId() {
@@ -48,6 +49,12 @@ public class CurrencySymbol {
 	}
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
+	}
+	public String getLanguageCode() {
+		return languageCode;
+	}
+	public void setLanguageCode(String languageCode) {
+		this.languageCode = languageCode;
 	}
 	
 	

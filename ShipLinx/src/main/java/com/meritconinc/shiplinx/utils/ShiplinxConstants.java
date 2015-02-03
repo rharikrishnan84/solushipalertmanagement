@@ -280,6 +280,7 @@ public class ShiplinxConstants {
 
 
 	public static final String GROUP_FUEL_CHARGE = "FUE";
+	public static final String GROUP_FUEL_SURCHARGE = "FSC";
 	public static final String GROUP_FREIGHT_CHARGE = "FRT";
 	
 	public static final Integer BILLING_STATUS_NOT_INVOICED = 0;//-1;

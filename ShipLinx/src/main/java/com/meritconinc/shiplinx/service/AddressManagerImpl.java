@@ -375,4 +375,8 @@ public class AddressManagerImpl implements AddressManager,Runnable  {
 	public Province getProvinceName(String provinceCode){
 				 return addressDAO.getProvinceName(provinceCode);
 			}
+	
+	public void setSendNotification(Long addressId){
+				  addressDAO.setSendNotification(addressId);
+			}
 }

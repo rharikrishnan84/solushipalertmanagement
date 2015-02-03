@@ -1152,7 +1152,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     String toAddress = null;
         if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
         	toAddress = "customsdistribution@integratedcarriers.com";
-        }else{
+        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()){
        		toAddress =  so.getToAddress().getEmailAddress();
         }
 
@@ -2513,6 +2513,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       // logger.debug("rates"+ratesThread+" for carrier ="+carrierServiceThread.getCarrierId());
       if (ratesThread != null) {
         log.debug("inside if rate!=null");
+        for(Rating rating : ratesThread){
+        	       rating.setAccountCountry(customerCarrierThread.getCountry());
+        	        }
         if(!(orderThread.getFromAddress().getCountryCode().equals(orderThread.getToAddress().getCountryCode()))&&carrierServiceThread.getCarrierId()==2){
         	        	if(customerCarrierThread.getCount()==0){ 
         	        	  	for (int x = 0; x < ratesThread.size(); x++) {
@@ -2915,7 +2918,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             freightCharge.setChargeCode(ShiplinxConstants.GROUP_FREIGHT_CHARGE);
             freightCharge.setName(ShiplinxConstants.FREIGHT_STRING);
             freightCharge.setCost(rate);
-            fuelCharge.setChargeCode(ShiplinxConstants.GROUP_FUEL_CHARGE);
+           // fuelCharge.setChargeCode(ShiplinxConstants.GROUP_FUEL_CHARGE);
+            fuelCharge.setChargeCode(ShiplinxConstants.GROUP_FUEL_SURCHARGE);
                         fuelCharge.setName(ShiplinxConstants.FUEL_SURCHARGE);
                         fuelCharge.setCost(rate * ltlSkidRate.getFscPercent().doubleValue() / 100);
                         double totalCost = freightCharge.getCost()+fuelCharge.getCost();

@@ -22,6 +22,8 @@
 		<result property="totalCHB"	column="chb_total"/>
 		<result property="totalLTL"	column="ltl_total"/>
 		<result property="totalSPD"	column="spd_total"/>
+		<result property="totalFWD"	column="fwd_total"/>
+		<result property="totalFPA"	column="fpa_total"/>
 		<result property="customer" column="customer_id" select="getCustomerInfoByCustomerId"/>
 		<result property="paymentStatusString" column="payment_status" select="getInvoiceStatusById"/>
 		<result property="salesRep" column="sales_username" />		
@@ -29,11 +31,11 @@
 
 	<resultMap id="salesRecordMap" class="com.meritconinc.shiplinx.model.SalesRecord">
 		<result property="totalCost"	column="total_cost"/>	
-		<result property="totalAmount"	column="total_amount"/>	
+		<result property="totalAmount"	column="total_charge"/>	
 		<result property="month"	column="month"/>
 		<result property="monthName"	column="month_name"/>
 		<result property="year"	column="year"/>
-		<result property="currency"	column="currency"/>		
+		<!-- <result property="currency"	column="currency"/> -->		
 	</resultMap>
 
 	<resultMap id="arTransactionMap" class="com.meritconinc.shiplinx.model.ARTransaction">
@@ -49,6 +51,14 @@
 	
 	</resultMap>
 	
+	<resultMap id="subtotalMap" class="com.meritconinc.shiplinx.model.SubTotal">
+		<result property="totalSPD"  column="sum_total_spd"/>	
+		<result property="totalLTL"  column="sum_total_ltl"/>
+		<result property="totalCHB"  column="sum_total_chb"/>
+		<result property="totalFPA"  column="sum_total_fpa"/>
+		<result property="totalFWD"  column="sum_total_fwd"/>
+	</resultMap>
+
 
 	<resultMap id="invoiceStatusList" class="com.meritconinc.shiplinx.model.InvoiceStatus">
 		<result property="id"	column="id"/>	
@@ -95,12 +105,15 @@
 		<result property="totalSPD" column="total_spd"/>
 		<result property="totalLTL" column="total_ltl"/>
 		<result property="totalCHB" column="total_chb"/>
+		<result property="totalFWD" column="total_fwd"/>
+		<result property="totalFPA" column="total_fpa"/>
 		<result property="invoiceCurrency" column="currency"/>
 	</resultMap>
 
 	<resultMap id="breakDownTotalsMap" class="com.meritconinc.shiplinx.model.Invoice">
 		<result property="breakdownTotal"/>
 		<result property="emailType"/>	
+		
 	</resultMap>
 
 	<resultMap id="exRateResult" class="com.meritconinc.shiplinx.model.Charge">
@@ -184,29 +197,51 @@
 	</select>
 	
 	<select id="getSalesReport" parameterClass="com.meritconinc.shiplinx.model.SalesRecord" resultMap="salesRecordMap">
-		 	SELECT i.currency,sum(invoice_amount) AS 'total_amount', sum(invoice_cost) AS 'total_cost', month(invoice_date) AS 'month', monthname(invoice_date) AS 'month_name', year(invoice_date) AS 'year' 
-		 	from invoice i left join customer c on (i.customer_id=c.customer_id) where i.business_id = #businessId#	
-		 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
-		 			i.customer_id = #customerId#
-		 		</isGreaterThan>	
-		 		
-		 		<isNotNull prepend="AND" property="year">
-		 			<![CDATA[year(i.invoice_date) = #year#]]>
-		 		</isNotNull>
-		 		<isGreaterThan prepend="and" property="month" compareValue="0">
-		 			<![CDATA[month(i.invoice_date) = #month#]]>
-		 		</isGreaterThan>
-				<isNotNull property = "branch">
-					<isNotEmpty prepend="and" property = "branch">
-						c.branch = #branch#
-					</isNotEmpty>
-				</isNotNull>						
-		 		<iterate prepend="AND" property="paymentStatusList" open="(" close=")" conjunction="OR">
-  					i.payment_status=#paymentStatusList[]#
-				</iterate>
-				group by month(i.invoice_date) , i.currency 
-				 
-	</select>
+select 	sum(res.cost * res.cost_exchange_rate) as total_cost,
+		sum(res.charge * res.charge_exchange_rate) as total_charge,
+		res.month, res.month_name as 'month_name', res.year 
+from   (select c.cost as cost, 
+		monthname(a.invoice_date) as month_name, 
+		year(a.invoice_date) as 'year',
+		month(a.invoice_date) as 'month',
+		COALESCE(	
+		   (select 	b1.exch_rate 
+			from 	currency_symbol a1, exchange_rate_currency b1
+			where 	a1.id = c.cost_currency 
+			and 	a1.currency_code = b1.cur_from
+			and 	b1.cur_to = #currency#), 1
+		) as cost_exchange_rate,
+		c.charge as charge, 
+		COALESCE(	
+		   (select 	b1.exch_rate 
+			from 	currency_symbol a1, exchange_rate_currency b1
+			where 	a1.id = c.charge_currency 
+			and 	a1.currency_code = b1.cur_from
+			and 	b1.cur_to = #currency#), 1
+		) as charge_exchange_rate
+from 	invoice a, invoice_charges b, charges c
+where 	1 = 1
+<isNotNull property="customerId">
+	<isNotEmpty property="customerId">
+		<isGreaterThan prepend="and" property="customerId" compareValue="0">
+			<![CDATA[ a.customer_id =  #customerId# ]]>
+		</isGreaterThan>
+	</isNotEmpty>
+</isNotNull>
+and 	year(a.invoice_date) = #year#
+<isNotNull property="month">
+	<isNotEmpty property="month">
+		<isGreaterThan prepend="and" property="month" compareValue="0">
+			<![CDATA[ month(a.invoice_date) =  #month# ]]>
+		</isGreaterThan>
+	</isNotEmpty>
+</isNotNull>
+and  	a.invoice_id = b.invoice_id
+and 	c.id = b.charge_id
+and 	c.status !=40
+) as res group by res.month
+
+ </select>
 
 	
 	<select id="getInvoiceStatuses" resultMap="invoiceStatusList">
@@ -435,7 +470,7 @@
 	</select>
  	
 	<select id="searchCommissions" parameterClass="com.meritconinc.shiplinx.model.Commission" resultMap="commissionResultMap">
-	select c.*,i.currency from commission c left join invoice_charges ic on (ic.invoice_id=c.invoice_id) left join invoice i on(i.invoice_id=ic.invoice_id) where  c.rep_paid=#repPaid#  and c.commission_payable != 0 and ic.cancelled_invoice='No'
+	select c.* from commission c where  c.rep_paid=#repPaid#  and c.commission_payable != 0
 		<isNotNull prepend="AND" property="fromDate">
 		 	<![CDATA[c.date_created >= #fromDate#]]>
 		</isNotNull>
@@ -445,7 +480,7 @@
 		 <isNotNull prepend="and" property="salesUser">
       		c.sales_user=#salesUser#
      	</isNotNull>
-     	group by c.invoice_id
+     	
 	</select>
 	<delete id = "deleteCommission">
 		    delete from commission where invoice_id=#invoiceId#
@@ -471,21 +506,55 @@
 	</select>
 
 	<select id="getInvoiceChargeDetailsById" resultMap="breakDownTotalsMap">
-		select sum(ch.charge), s.email_type
-		from 	invoice_charges ic ,
-				charges ch ,
-				shipping_order so ,
-				service s,charge_group cg
-		where 	ic.invoice_id=#invoiceId#
-				and ic.charge_id=ch.id
-				and ch.order_id=so.order_id
-				and so.service_id=s.service_id
-				and cg.group_code=ch.charge_code
-				and cg.is_tax=0
-		group by s.email_type
+	 select sum(charge),res.email_type
+		from(
+		SELECT 	s.email_type,
+		coalesce((
+			select 	cg.is_tax
+			from 	charge_group cg,
+					carrier_charge_code ccc
+			where	ccc.carrier_id = ch.carrier_id
+			and		ccc.charge_code = ch.charge_code
+			and		(SELECT IF((ch.charge_code_level_2 is NULL),true,(ccc.charge_code_level_2 = ch.charge_code_level_2)))
+			and		cg.id = ccc.charge_group_id
+			limit 1
+		),0) as is_tax,
+		ch.charge AS charge 
+FROM 	invoice_charges ic,
+		shipping_order so,
+		charges ch, service s
+WHERE 	ic.invoice_id = #invoiceId#
+and 	so.order_id = ic.order_id
+and 	ic.charge_id=ch.id
+and  	ic.cancelled_invoice='No'
+and 	ch.type = 1
+and 	ch.status !=40
+and 	s.service_id=so.service_id
+) as res
+where res.is_tax = 0
+group by res.email_type
 	</select>
 	
+	<select id="getInvoiceDetailsByEmailType" resultMap="breakDownTotalsMap">
+	select i.spd_total,i.chb_total,i.ltl_total,i.fwd_total,i.fpa_total from
+	invoice i where i.invoice_id=#invoiceId#
+	</select>
 	<select id="getChargeExchangeRateByInvoiceId" resultMap="exRateResult">
            select c.charge, c.cost, c.exchange_rate, c.charge_currency from charges c left join invoice_charges ic on(c.id=ic.charge_id) where ic.invoice_id=#invoiceId# group by c.id;
 		</select>	
+		<update id="updateInvoiceTotalByEMail">
+update invoice set spd_total=#totalSPD# ,ltl_total=#totalLTL# , chb_total=#totalCHB# ,fwd_total=#totalFWD# ,fpa_total=#totalFWD# where invoice_id=#invoiceId#
+ </update>
+ 
+ <select id="getcommissionbyIdd"  resultMap="subtotalMap">
+	     select sum(spd_total) as sum_total_spd, 
+	               sum(ltl_total) as sum_total_ltl,
+                      sum(chb_total) as sum_total_chb,
+                      sum(fwd_total) as sum_total_fwd,
+                      sum(fpa_total) as sum_total_fpa
+                      from invoice where invoice_id=#invoiceId#;
+                      
+                      
+                      
+ 	</select>
 </sqlMap>

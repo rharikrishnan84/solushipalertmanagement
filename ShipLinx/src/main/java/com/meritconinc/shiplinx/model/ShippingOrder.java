@@ -234,8 +234,8 @@ public class ShippingOrder implements Serializable {
 
   // for invoicing
   private String customerName;
-  private double totalToCharge;
-  private double totalToCost;
+  private Double totalToCharge;
+  private Double totalToCost;
   private double previouslyBilled;
 
   private String cancelledInvoice;
@@ -250,6 +250,12 @@ public class ShippingOrder implements Serializable {
   private List<Rating> toRatingList;
   private boolean addChargeFromAdmin = false;
   private int saveShipmet;
+  
+  private int customsInvoiceId;
+  private String masterCarrierName;
+  private String fromAddressLong;
+  private String toAddressLong;
+  private String purpose;
   public int getSaveShipmet() {
 	return saveShipmet;
 }
@@ -1884,19 +1890,19 @@ public void setToProvinceName(String toProvinceName) {
     this.customerName = customerName;
   }
 
-  public double getTotalToCharge() {
+  public Double getTotalToCharge() {
     return FormattingUtil.roundFigureRates(totalToCharge, 2);
   }
 
-  public void setTotalToCharge(double totalToCharge) {
+  public void setTotalToCharge(Double totalToCharge) {
     this.totalToCharge = totalToCharge;
   }
 
-  public double getTotalToCost() {
+  public Double getTotalToCost() {
     return FormattingUtil.roundFigureRates(totalToCost, 2);
   }
 
-  public void setTotalToCost(double totalToCost) {
+  public void setTotalToCost(Double totalToCost) {
     this.totalToCost = totalToCost;
   }
 
@@ -2008,6 +2014,46 @@ public static void getLocaleTimeByUser(String userTimeZone) throws Exception {
     }
 
   }
+
+public int getCustomsInvoiceId() {
+	return customsInvoiceId;
+}
+
+public void setCustomsInvoiceId(int customsInvoiceId) {
+	this.customsInvoiceId = customsInvoiceId;
+}
+
+public String getMasterCarrierName() {
+	return masterCarrierName;
+}
+
+public void setMasterCarrierName(String masterCarrierName) {
+	this.masterCarrierName = masterCarrierName;
+}
+
+public String getFromAddressLong() {
+	return fromAddressLong;
+}
+
+public void setFromAddressLong(String fromAddressLong) {
+	this.fromAddressLong = fromAddressLong;
+}
+
+public String getToAddressLong() {
+	return toAddressLong;
+}
+
+public void setToAddressLong(String toAddressLong) {
+	this.toAddressLong = toAddressLong;
+}
+
+public String getPurpose() {
+	return purpose;
+}
+
+public void setPurpose(String purpose) {
+	this.purpose = purpose;
+}
 
 
 }

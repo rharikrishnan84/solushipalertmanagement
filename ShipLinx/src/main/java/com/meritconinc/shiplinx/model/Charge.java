@@ -39,6 +39,8 @@ public class Charge implements Serializable {
   private boolean isTax;
   private int calculateTax;
 
+  private Double customerTarrifRate;
+  
 public int getCalculateTax() {
 	return calculateTax;
 }
@@ -413,4 +415,14 @@ public void setChargeGroupId(int chargeGroupId) {
 	  public void setTariffInLocalCurrency(Double tariffInLocalCurrency) {
 		  this.tariffInLocalCurrency = tariffInLocalCurrency;
 	  }
+
+	public Double getCustomerTarrifRate() {
+		return customerTarrifRate;
+	}
+
+	public void setCustomerTarrifRate(Double customerTarrifRate) {
+		this.customerTarrifRate = customerTarrifRate;
+	}
+	  
+	  
 }

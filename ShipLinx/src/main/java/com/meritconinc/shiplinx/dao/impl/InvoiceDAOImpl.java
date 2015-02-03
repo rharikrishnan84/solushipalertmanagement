@@ -1,5 +1,6 @@
 package com.meritconinc.shiplinx.dao.impl;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
 import com.meritconinc.shiplinx.model.SalesRecord;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.SubTotal;
 
 public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO {
 
@@ -243,4 +245,39 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 															
 															return (List<Charge>) getSqlMapClientTemplate().queryForList("getChargeExchangeRateByInvoiceId",invoiceId);
 														}
+							
+							@Override
+																					public void updateInvoiceTotalByEMail(
+																							double totalSPD, double totalLTL,
+																							double totalCHB, double totalFWD,
+																							double totalFPA, long invoiceId) {
+																						// TODO Auto-generated method stubMap<String, Object> paramObj = new HashMap<String, Object>();
+																									Map<String, Object> paramObj = new HashMap<String, Object>();
+														  
+																									try {
+																						 paramObj.put("totalSPD",totalSPD);
+																						 paramObj.put("totalLTL", totalLTL);
+																						 paramObj.put("totalCHB", totalCHB);
+																						 paramObj.put("totalFWD", totalFWD);
+																						 paramObj.put("totalFPA", totalFPA);
+																						 paramObj.put("invoiceId", invoiceId);
+																						getSqlMapClient().update("updateInvoiceTotalByEMail",paramObj);
+																						 } catch (SQLException e) {
+																						 // TODO Auto-generated catch block
+																						 e.printStackTrace();
+																						
+																						 }				}
+							
+							public SubTotal getcommissionbyIdd(long invoiceId){
+																Map<String,Object> paramObj= new HashMap<String, Object>();
+																paramObj.put("invoiceId", invoiceId);
+																return (SubTotal)getSqlMapClientTemplate().queryForObject("getcommissionbyIdd",paramObj);	 
+															   }
+							@Override
+							public List<Invoice> getInvoiceByEmailType(
+									Long invoiceId) {
+								Map<String,Object> paramObj= new HashMap<String, Object>();
+								paramObj.put("invoiceId", invoiceId);
+								return (List<Invoice>)getSqlMapClientTemplate().queryForList("getInvoiceDetailsByEmailType",paramObj);
+							}
 }

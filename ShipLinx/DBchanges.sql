@@ -1590,11 +1590,11 @@ CHANGE COLUMN `country_code` `country_code` VARCHAR(10) NULL DEFAULT NULL ;
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CAD', '$', 'Canada', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('USD', '$', 'United States', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ALL', 'Lek', 'Albania', 'Lek');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AFN', '؋', 'Afghanistan', 'Afghani');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AFN', 'Ø‹', 'Afghanistan', 'Afghani');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ARS', '$', 'Argentina', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AWG', 'ƒ', 'Aruba', 'Guilder');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AWG', 'Æ’', 'Aruba', 'Guilder');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AUD', '$', 'Australia', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AZN', 'ман', 'Azerbaijan', 'Manat');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('AZN', 'Ð¼Ð°Ð½', 'Azerbaijan', 'Manat');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BSD', '$', 'Bahamas', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BBD', '$', 'Barbados', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BYR', 'p.', 'Belarus', 'Ruble');
@@ -1603,103 +1603,103 @@ INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BOB', '$b', 'Bolivia', 'Boliviano');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BAM', 'KM', 'Bosnia and Herzegovina', 'Convertible Marka');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BWP', 'P', 'Botswana', 'Pula');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BGN', 'лв', 'Bulgaria', 'Lev');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BGN', 'Ð»Ð²', 'Bulgaria', 'Lev');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BRL', 'R$', 'Brazil', 'Real');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('BND', '$', 'Brunei', 'Darussalam Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KHR', '៛', 'Cambodia', 'Riel');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KHR', 'áŸ›', 'Cambodia', 'Riel');
 
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KYD', '$', 'Cayman', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CLP', '$', 'Chile', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CNY', '¥', 'China', 'Yuan Renminbi');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CNY', 'Â¥', 'China', 'Yuan Renminbi');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('COP', '$', 'Colombia', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CRC', '₡', 'Costa Rica', 'Colon');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CRC', 'â‚¡', 'Costa Rica', 'Colon');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('HRK', 'kn', 'Croatia', 'Kuna');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CUP', '₱', 'Cuba', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CZK', 'Kč', 'Czech Republic', 'Koruna');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CUP', 'â‚±', 'Cuba', 'Peso');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CZK', 'KÄ�', 'Czech Republic', 'Koruna');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('DKK', 'kr', 'Denmark', 'Krone');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('DOP', 'RD$', 'Dominican Republic', 'Peso');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('XCD', '$', 'East Caribbean', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('EGP', '£', 'Egypt', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('EGP', 'Â£', 'Egypt', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SVC', '$', 'El Salvador', 'Colon');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('EEK', 'kr', 'Estonia', 'Kroon');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('EUR', '€', 'Euro Member', 'Euro');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('FKP', '£', 'Falkland Islands', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('EUR', 'â‚¬', 'Euro Member', 'Euro');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('FKP', 'Â£', 'Falkland Islands', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('FJD', '$', 'Fiji', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GHC', '¢', 'Ghana', 'Cedis');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GIP', '£', 'Gibraltar', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GHC', 'Â¢', 'Ghana', 'Cedis');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GIP', 'Â£', 'Gibraltar', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GTQ', 'Q', 'Guatemala', 'Quetzal');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GGP', '£', 'Guernsey', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GGP', 'Â£', 'Guernsey', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GYD', '$', 'Guyana', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('HNL', 'L', 'Honduras', 'Lempira');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('HKD', '$', 'Hong Kong', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('HUF', 'Ft', 'Hungary', 'Forint');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ISK', 'kr', 'Iceland', 'Krona');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('INR', 'र', 'India', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('INR', 'à¤°', 'India', 'Rupee');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('IDR', 'Rp', 'Indonesia', 'Rupiah');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('IRR', '﷼', 'Iran', 'Rial');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('IMP', '£', 'Isle of Man', 'Pound');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ILS', '₪', 'Israel', 'Shekel');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('IRR', 'ï·¼', 'Iran', 'Rial');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('IMP', 'Â£', 'Isle of Man', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ILS', 'â‚ª', 'Israel', 'Shekel');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('JMD', 'J$', 'Jamaica', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('JPY', '¥', 'Japan', 'Yen');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('JEP', '£', 'Jersey', 'Pound');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KZT', 'лв', 'Kazakhstan', 'Tenge');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KPW', '₩', 'Korea (North)', 'Won');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KRW', '₩', 'Korea (South)', 'Won');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KGS', 'лв', 'Kyrgyzstan', 'Som');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LAK', '₭', 'Laos', 'Kip');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('JPY', 'Â¥', 'Japan', 'Yen');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('JEP', 'Â£', 'Jersey', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KZT', 'Ð»Ð²', 'Kazakhstan', 'Tenge');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KPW', 'â‚©', 'Korea (North)', 'Won');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KRW', 'â‚©', 'Korea (South)', 'Won');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('KGS', 'Ð»Ð²', 'Kyrgyzstan', 'Som');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LAK', 'â‚­', 'Laos', 'Kip');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LVL', 'Ls', 'Latvia', 'Lat');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LBP', '£', 'Lebanon', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LBP', 'Â£', 'Lebanon', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LRD', '$', 'Liberia', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LTL', 'Lt', 'Lithuania', 'Litas');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MKD', 'ден', 'Macedonia', 'Denar');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MKD', 'Ð´ÐµÐ½', 'Macedonia', 'Denar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MYR', 'RM', 'Malaysia', 'Ringgit');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MUR', '₨', 'Mauritius', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MUR', 'â‚¨', 'Mauritius', 'Rupee');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MXN', '$', 'Mexico', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MNT', '₮', 'Mongolia', 'Tughrik');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MNT', 'â‚®', 'Mongolia', 'Tughrik');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('MZN', 'MT', 'Mozambique', 'Metical');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NAD', '$', 'Namibia', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NPR', '₨', 'Nepal', 'Rupee');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ANG', 'ƒ', 'Netherlands', 'Antilles Guilder');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NPR', 'â‚¨', 'Nepal', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ANG', 'Æ’', 'Netherlands', 'Antilles Guilder');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NZD', '$', 'New Zealand', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NIO', 'C$', 'Nicaragua', 'Cordoba');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NGN', '₦', 'Nigeria', 'Naira');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NGN', 'â‚¦', 'Nigeria', 'Naira');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('NOK', 'kr', 'Norway', 'Krone');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('OMR', '﷼', 'Oman', 'Rial');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PKR', '₨', 'Pakistan', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('OMR', 'ï·¼', 'Oman', 'Rial');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PKR', 'â‚¨', 'Pakistan', 'Rupee');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PAB', 'B/.', 'Panama', 'Balboa');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PYG', 'Gs', 'Paraguay', 'Guarani');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PEN', 'S/.', 'Peru', 'Nuevo Sol');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PHP', '₱', 'Philippines', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PLN', 'zł', 'Poland', 'Zloty');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('QAR', '﷼', 'Qatar', 'Riyal');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PHP', 'â‚±', 'Philippines', 'Peso');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('PLN', 'zÅ‚', 'Poland', 'Zloty');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('QAR', 'ï·¼', 'Qatar', 'Riyal');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('RON', 'lei', 'Romania', 'New Leu');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('RUB', 'руб', 'Russia', 'Ruble');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SHP', '£', 'Saint Helena', 'Pound');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SAR', '﷼', 'Saudi Arabia', 'Riyal');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('RSD', 'Дин.', 'Serbia', 'Dinar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SCR', '₨', 'Seychelles', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('RUB', 'Ñ€ÑƒÐ±', 'Russia', 'Ruble');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SHP', 'Â£', 'Saint Helena', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SAR', 'ï·¼', 'Saudi Arabia', 'Riyal');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('RSD', 'Ð”Ð¸Ð½.', 'Serbia', 'Dinar');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SCR', 'â‚¨', 'Seychelles', 'Rupee');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SGD', '$', 'Singapore', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SBD', '$', 'Solomon Islands', 'Dollar');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SOS', 'S', 'Somalia', 'Shilling');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ZAR', 'S', 'South Africa', 'Rand');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LKR', '₨', 'Sri Lanka', 'Rupee');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('LKR', 'â‚¨', 'Sri Lanka', 'Rupee');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SEK', 'kr', 'Sweden', 'Krona');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('CHF', 'CHF', 'Switzerland', 'Franc');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SRD', '$', 'Suriname', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SYP', '£', 'Syria', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('SYP', 'Â£', 'Syria', 'Pound');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('TWD', 'NT$', 'Taiwan', 'New Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('THB', '฿', 'Thailand', 'Baht');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('THB', 'à¸¿', 'Thailand', 'Baht');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('TTD', 'TT$', 'Trinidad and Tobago', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('TRL', '₤', 'Turkey', 'Lira');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('TRL', 'â‚¤', 'Turkey', 'Lira');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('TVD', '$', 'Tuvalu', 'Dollar');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('UAH', '₴', 'Ukraine', 'Hryvna');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GBP', '£', 'United Kingdom', 'Pound');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('UAH', 'â‚´', 'Ukraine', 'Hryvna');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('GBP', 'Â£', 'United Kingdom', 'Pound');
 
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('UYU', '$U', 'Uruguay', 'Peso');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('UZS', 'лв', 'Uzbekistan', 'Som');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('UZS', 'Ð»Ð²', 'Uzbekistan', 'Som');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('VEF', 'Bs', 'Venezuela', 'Bolivar Fuerte');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('VND', '₫', 'Viet Nam', 'Dong');
-INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('YER', '﷼', 'Yemen', 'Rial');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('VND', 'â‚«', 'Viet Nam', 'Dong');
+INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('YER', 'ï·¼', 'Yemen', 'Rial');
 INSERT INTO `currency_symbol` (`currency_code`, `currency_symbol`, `country_name`, `currency_name`) VALUES ('ZWD', 'Z$', 'Zimbabwe', 'Dollar');
 
 UPDATE `currency_symbol` SET `country_code`='AF' WHERE `currency_code`='AFN';
@@ -1976,3 +1976,456 @@ UPDATE `business` SET `ship_order_notification_subject`='mail.shipment.notificat
 UPDATE `resourcebundle` SET `msg_id`='mail.shipment.notify.body' WHERE `msg_id`='mail.shipment.notification.body' and`locale`='en_CA' and`is_fmk`=0;
 
 
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.error.invalidquotedchargecurrency', 'Quoted charge currency is not matching with order currency. Please change it to Order\'s currency', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.error.invalidactualchargecurrency', 'Actual charge currency is not matching with order currency. Please change it to Order\'s currency', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.error.invalidchargecurrency', 'Empty currnecy value or multiple currencies are not allowed', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.alert.accept', 'Accept', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.alert.cancel', 'Cancel', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.alert.actualcurrencychange', 'This would replace order\'s currency with new actual charge\'s currency?', 'en_CA', b'0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipment.alert.quotedcurrencychange', 'This would replace order\'s currency with new quoted charge\'s currency?', 'en_CA', b'0');
+
+ALTER TABLE `commission` 
+ADD COLUMN `total_fpa` DOUBLE(10,2) NULL DEFAULT '0.00' AFTER `total_fwd`;
+
+
+
+CREATE TABLE `sp_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `level` varchar(45) NOT NULL DEFAULT 'INFO',
+  `message` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3517 DEFAULT CHARSET=latin1;
+
+ALTER TABLE `customer_sales` 
+ADD COLUMN `comm_perc_FPA` DOUBLE NULL DEFAULT '0' AFTER `commission_percentage`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.commission.totalfpa', 'Total FPA', 'en_CA', 0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.commission.totalfwd', 'Total FWD', 'en_CA', 0);
+
+ALTER TABLE `commission` 
+ADD COLUMN `currency` VARCHAR(10) NULL AFTER `total_fpa`;
+
+
+
+
+
+INSERT INTO resourcebundle (msg_id, msg_content, locale, is_fmk) VALUES ('label.salesuser.fwd', 'FWD', 'en_CA', 1);
+
+
+INSERT INTO resourcebundle (msg_id, msg_content, locale, is_fmk) VALUES ('label.salesuser.fpa', 'FPA', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.display.records', 'Display Records', 'en_CA', 1);
+
+UPDATE `carrier` SET `tracking_url`='http://www.dhl.co.uk/content/gb/en/express/tracking.shtml?AWB=*trackingnum&brand=DHL' WHERE `carrier_id`='3';
+
+UPDATE `carrier` SET `tracking_url`='http://wwwapps.ups.com/etracking/tracking.cgi?tracknums_displayed=25&TypeOfInquiryNumber=T&HTMLVersion=4.0&InquiryNumber=*trackingnum' WHERE `carrier_id`='5';
+
+UPDATE `carrier` SET `tracking_url`='http://shipnow.purolator.com/shiponline/track/purolatortrack.asp?pinno=*trackingnum' WHERE `carrier_id`='20';
+
+UPDATE `carrier` SET `tracking_url`='https://www.fedex.com/fedextrack/WTRK/index.html?action=track&action=track&tracknumbers=*trackingnum,&fdx=1490' WHERE `carrier_id`='1';
+
+
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values(' edifile.already.exist', '<div class=\"browseBox\">\r\n<h1>Unexpected Error</h1>\r\n</div>\r\n<p>If problem persists, please contact our support group. Thank you.</p>', 'en_CA', '1');
+
+ALTER TABLE `currency_symbol` 
+ADD COLUMN `language_code` VARCHAR(45) NULL AFTER `currency_name`;
+
+UPDATE `currency_symbol` SET `language_code`='en' WHERE `id`='1';
+UPDATE `currency_symbol` SET `language_code`='en' WHERE `id`='2';
+
+
+ALTER TABLE `invoice` 
+ADD COLUMN `fwd_total` DOUBLE NOT NULL DEFAULT '0' AFTER `ltl_total`,
+ADD COLUMN `fpa_total` DOUBLE NOT NULL DEFAULT '0' AFTER `fwd_total`;
+
+ALTER TABLE `charges` 
+CHANGE COLUMN `cost` `cost` DOUBLE(10,2) NULL DEFAULT '0' ,
+CHANGE COLUMN `charge` `charge` DOUBLE(10,2) NULL DEFAULT '0' ,
+CHANGE COLUMN `discount_amount` `discount_amount` DOUBLE(10,2) NOT NULL DEFAULT '0' ,
+CHANGE COLUMN `exchange_rate` `exchange_rate` DECIMAL(10,4) NULL DEFAULT '0.00' ;
+
+ALTER TABLE `charges` 
+CHANGE COLUMN `tariff_rate` `tariff_rate` DOUBLE(10,2) NULL DEFAULT '0' ;
+
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`soluship`@`%` PROCEDURE `insert_commission_amount`()
+BEGIN
+	DECLARE no_of_days INTEGER DEFAULT 150;
+	DECLARE no_record_found INTEGER DEFAULT 0;
+	DECLARE customer_id INTEGER;
+	DECLARE customer_name VARCHAR(255);
+    DECLARE invoice_id INTEGER;
+	DECLARE invoice_num VARCHAR(45);
+	DECLARE invoice_amount DOUBLE;
+	DECLARE invoice_amount1 DOUBLE;
+	DECLARE invoice_cost DOUBLE;
+	DECLARE invoice_cost1 DOUBLE;
+	DECLARE payment_status INTEGER;
+	DECLARE invoice_date DATETIME;
+	DECLARE chb_total DOUBLE;
+	DECLARE spd_total DOUBLE;
+	DECLARE ltl_total DOUBLE;
+	DECLARE fwd_total DOUBLE;
+	DECLARE fpa_total DOUBLE;
+	DECLARE inv_currency VARCHAR(45);
+	DECLARE cur_invoices CURSOR FOR
+		SELECT 	i.customer_id, c.name, i.invoice_id, i.invoice_num,
+				i.invoice_amount, i.invoice_cost, i.payment_status,
+				i.invoice_date, i.chb_total, i.spd_total, i.ltl_total, 
+				i.fwd_total, i.fpa_total, i.currency
+		FROM 	invoice i, customer c
+		WHERE	i.customer_id = c.customer_id
+		AND		i.commission_calculated = 0
+		AND		i.invoice_date BETWEEN DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL no_of_days DAY) 
+		AND 	CURRENT_TIMESTAMP();
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
+	DELETE FROM sp_log WHERE id <> -1;
+	OPEN cur_invoices;
+	GET_INVOICES: LOOP
+		FETCH cur_invoices INTO customer_id, customer_name, invoice_id, invoice_num, 
+							   invoice_amount, invoice_cost, payment_status,
+							   invoice_date, chb_total, spd_total, ltl_total,
+							   fwd_total, fpa_total, inv_currency;
+        IF no_record_found = 1 THEN
+			INSERT INTO sp_log (`level`, `message`) VALUES ('DEBUG', 'No Data found in cur_invoices');
+			LEAVE GET_INVOICES;
+        END IF;
+		INNERBLOCK1: BEGIN
+			DECLARE user_id INTEGER;
+			DECLARE sales_user VARCHAR(255);
+			DECLARE spd_percent DOUBLE;
+			DECLARE ltl_percent DOUBLE;
+			DECLARE chb_percent DOUBLE;
+			DECLARE fwd_percent DOUBLE;
+			DECLARE fpa_percent DOUBLE;
+			DECLARE usr_currency VARCHAR(45);
+			DECLARE cur_users CURSOR FOR
+				SELECT 	cs.id as user_id, cs.sales_user as sales_user,
+						COALESCE(cs.comm_perc_PS,0) as spd_percent, 
+						COALESCE(cs.comm_perc_PP,0) as ltl_percent, 
+						COALESCE(cs.comm_perc_CHB,0) as chb_percent,
+						COALESCE(cs.comm_perc_FWD,0) as fwd_percent, 
+						COALESCE(cs.comm_perc_FPA,0) as fpa_percent,
+						COALESCE(sy.currency_code,'CAD') as currency_code
+				FROM 	customer_sales cs left join user us on cs.sales_user = us.username
+						left join currency_symbol sy on 
+						(sy.country_code = SUBSTRING_INDEX(SUBSTRING_INDEX( us.locale , '_', 2 ),'_',-1) 
+						and sy.language_code = SUBSTRING_INDEX(us.locale , '_', 1 ))
+				WHERE 	cs.customer_id = customer_id;
+			OPEN cur_users;
+			GET_USERS: LOOP
+				FETCH cur_users INTO user_id, sales_user, spd_percent, ltl_percent,
+									 chb_percent, fwd_percent, fpa_percent, usr_currency;
+				IF no_record_found = 1 THEN
+					INSERT INTO sp_log (`level`, `message`) VALUES ('DEBUG', 'No Data found in cur_users');
+                    SET no_record_found = 0;
+					LEAVE GET_USERS;
+				END IF;
+				set @exchangeRate = 1;
+				IF (STRCMP(usr_currency, inv_currency) <> 0) THEN
+					INSERT INTO sp_log (`level`, `message`) VALUES ('INFO', 'Conversion Needed');
+					set @exchangeRate = (SELECT COALESCE(ex.exch_rate,1) FROM exchange_rate_currency ex WHERE cur_from = inv_currency AND cur_to = usr_currency);
+				END IF;
+				set @commissionSPD = 0;
+				set @commissionLTL = 0;
+				set @commissionCHB = 0;
+				set @commissionFWD = 0;
+				set @commissionFPA = 0;
+                INNERBLOCK2: BEGIN
+					DECLARE profit DOUBLE;
+                    DECLARE email_type VARCHAR(45);
+					DECLARE cur_charges CURSOR FOR
+						SELECT	sum(res.charge - (res.cost * res.conversion_rate)) as 							
+								profit, res.email_type
+						FROM 	(SELECT COALESCE(	(SELECT 	ex.exch_rate 
+													FROM 	exchange_rate_currency ex 
+													WHERE 	cur_from = cost_currency 
+													AND		cur_to = charge_currency),1) as conversion_rate, 
+										chs.cost, chs.charge, chs.email_type, chs.id, chs.is_tax
+								FROM	(SELECT	ch.id, ch.charge, cs1.currency_code as charge_currency,
+												ch.cost, cs2.currency_code as cost_currency, s.email_type,
+												COALESCE((
+													SELECT	cg.is_tax
+													FROM	charge_group cg, carrier_charge_code ccc
+													WHERE	ccc.carrier_id = ch.carrier_id
+													AND		ccc.charge_code = ch.charge_code
+													AND		(SELECT IF((ch.charge_code_level_2 is NULL),true,
+															(ccc.charge_code_level_2 = ch.charge_code_level_2)))
+													AND		cg.id = ccc.charge_group_id
+													LIMIT 1),0) as is_tax
+										FROM  	invoice_charges ic, shipping_order so, currency_symbol cs1, 
+												currency_symbol cs2, charges ch, service s
+										WHERE	ic.invoice_id = invoice_id
+										AND  	so.order_id = ic.order_id
+										AND  	ic.charge_id=ch.id
+										AND  	ic.cancelled_invoice='No'
+										AND  	ch.type = 1
+										AND  	ch.status !=40
+										AND  	s.service_id=so.service_id
+										AND  	cs1.id = ch.charge_currency
+										AND  	cs2.id = ch.cost_currency) as chs) as res
+						WHERE res.is_tax = 0
+						GROUP BY email_type;
+                    OPEN cur_charges;
+					GET_CHARGES: LOOP
+						FETCH cur_charges INTO profit, email_type;
+						IF no_record_found = 1 THEN
+							INSERT INTO sp_log (`level`, `message`) VALUES ('DEBUG', usr_currency);
+							SET no_record_found = 0;
+							LEAVE GET_CHARGES;
+						END IF;
+						IF (STRCMP(email_type, 'SPD') = 0)THEN
+                            SET @commissionSPD = (profit * (spd_percent / 100)) * @exchangeRate;
+						ELSEIF (STRCMP(email_type, 'CHB') = 0)THEN
+							SET @commissionCHB = (profit * (chb_percent / 100)) * @exchangeRate;
+						ELSEIF (STRCMP(email_type, 'LTL') = 0)THEN
+							SET @commissionLTL = (profit * (ltl_percent / 100)) * @exchangeRate;
+						ELSEIF (STRCMP(email_type, 'FWD') = 0)THEN
+							SET @commissionFWD = (profit * (fwd_percent / 100)) * @exchangeRate;
+						ELSEIF (STRCMP(email_type, 'FPA') = 0)THEN
+							SET @commissionFPA = (profit * (fpa_percent / 100)) * @exchangeRate;
+						END IF;
+                    END LOOP GET_CHARGES;
+                    CLOSE cur_charges;
+                END INNERBLOCK2;
+				set invoice_amount1 = invoice_amount*@exchangeRate;
+				set invoice_cost1 = invoice_cost*@exchangeRate;
+				set @commissionPayable = @commissionSPD + @commissionLTL + @commissionCHB + @commissionFWD + @commissionFPA;
+				INSERT INTO commission(`customer_id`,`customer_name`,`invoice_id`,`invoice_num`,`user_id`,`sales_user`,
+									   `invoice_total`,`cost_total`,`commission_payable`,`customer_paid`,`rep_paid`,
+									   `date_created`,`total_spd`,`total_ltl`,`total_chb`,`total_fwd`,`total_fpa`, `currency`)
+				VALUES				  (customer_id, customer_name, invoice_id, invoice_num, user_id, sales_user,
+									   invoice_amount1, invoice_cost1, @commissionPayable, payment_status, payment_status,
+									   invoice_date, @commissionSPD, @commissionLTL, @commissionCHB, @commissionFWD, @commissionFPA, usr_currency);
+			END LOOP GET_USERS;
+			CLOSE cur_users;
+		END INNERBLOCK1;
+    END LOOP GET_INVOICES;
+    CLOSE cur_invoices;
+END
+
+
+drop trigger total_quoted_charges_cost
+==========================================================================
+
+DELIMITER $$
+CREATE TRIGGER insert_cost_calculation AFTER INSERT ON charges FOR EACH ROW 
+BEGIN
+ DECLARE no_record_found INTEGER DEFAULT 0;
+ DECLARE header_currency VARCHAR(10);
+ DECLARE cost_currency VARCHAR(10);
+ DECLARE cost DOUBLE;
+ DECLARE charge DOUBLE;
+ DECLARE cost_cur_id INT;
+ DECLARE charge_cur_id INT;
+ DECLARE charge_type INT;
+ DECLARE cost_exchange DOUBLE default 1;
+ DECLARE quote_cost DOUBLE;
+ DECLARE actual_cost DOUBLE;
+ DECLARE quote_charge DOUBLE;
+ DECLARE actual_charge DOUBLE;
+ DECLARE order_id INTEGER;
+  DECLARE cur_charges CURSOR FOR 
+  SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
+  WHERE c.order_id=new.order_id;
+ DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
+ SET @quote_cost=0.0;
+ SET @actual_cost=0.0;
+ SET @quote_charge=0.0;
+ SET @actual_charge=0.0;
+ SET @order_id=new.order_id;
+ 
+DELETE FROM sp_log WHERE id <> -1;
+insert into sp_log (message) values('Insert_cost_trigger');
+OPEN cur_charges; 
+ GET_CHARGES: LOOP
+ 
+ FETCH cur_charges INTO cost,charge_type,cost_cur_id,charge;
+        IF no_record_found = 1 THEN
+   SET @exchangeRate = 0;	
+   LEAVE GET_CHARGES;
+        END IF;
+	SET @tcount = @tcount + 1;
+	SET @header_currency=(SELECT a1.currency FROM shipping_order a1 WHERE a1.order_id=@order_id);
+	SET @cost_currency=(SELECT c.currency_code FROM currency_symbol c  WHERE c.id=cost_cur_id); 
+    SET @cost_exchange=(SELECT COALESCE(
+	(SELECT ex.exch_rate FROM 
+		exchange_rate_currency ex 
+		WHERE	cur_from = @cost_currency 
+		AND		cur_to = @header_currency),1));
+  IF charge_type =1 then
+      SET @actual_cost =@actual_cost + (cost * @cost_exchange);
+	  SET @actual_charge=@actual_charge+charge;
+	 ELSEIF charge_type=0 THEN
+   SET @quote_cost= @quote_cost+ (cost* @cost_exchange);
+   SET @quote_charge=@quote_charge+charge;
+    END IF;  
+    END LOOP GET_CHARGES;
+  IF charge_type =1 then
+		-- SET @actual_cost =@actual_cost + (cost * @cost_exchange);
+		UPDATE shipping_order s SET s.actual_cost =@actual_cost,s.actual_total = @actual_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@actual_cost );
+	 ELSEIF charge_type=0 THEN
+		UPDATE shipping_order s SET s.quote_cost=@quote_cost,s.quote_total = @quote_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@quote_cost);
+    END IF; 	
+ CLOSE cur_charges;
+END;$$
+Delimiter ;
+
+====================================================================================================================
+
+
+========================================COST CALCULATION ON AFTER update===========================
+
+DELIMITER $$
+CREATE TRIGGER update_cost_calculation AFTER UPDATE ON charges FOR EACH ROW 
+BEGIN
+ DECLARE no_record_found INTEGER DEFAULT 0;
+ DECLARE header_currency VARCHAR(10);
+ DECLARE cost_currency VARCHAR(10);
+ DECLARE cost DOUBLE;
+  DECLARE charge DOUBLE;
+ DECLARE cost_cur_id INT;
+ DECLARE charge_cur_id INT;
+ DECLARE charge_type INT;
+ DECLARE cost_exchange DOUBLE default 1;
+ DECLARE quote_cost DOUBLE;
+ DECLARE actual_cost DOUBLE;
+  DECLARE quote_charge DOUBLE;
+ DECLARE actual_charge DOUBLE;
+ DECLARE order_id INTEGER;
+  DECLARE cur_charges CURSOR FOR 
+  SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
+  WHERE c.order_id=new.order_id;
+ DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
+ SET @quote_cost=0.0;
+ SET @actual_cost=0.0;
+  SET @quote_charge=0.0;
+ SET @actual_charge=0.0;
+ SET @order_id=new.order_id;
+ 
+
+insert into sp_log (message) values('update_cost_trigger');
+OPEN cur_charges; 
+ GET_CHARGES: LOOP
+ 
+ FETCH cur_charges INTO cost,charge_type,cost_cur_id,charge;
+        IF no_record_found = 1 THEN
+   SET @exchangeRate = 0;	
+   LEAVE GET_CHARGES;
+        END IF;
+	SET @tcount = @tcount + 1;
+	SET @header_currency=(SELECT a1.currency FROM shipping_order a1 WHERE a1.order_id=@order_id);
+	SET @cost_currency=(SELECT c.currency_code FROM currency_symbol c  WHERE c.id=cost_cur_id); 
+    SET @cost_exchange=(SELECT COALESCE(
+	(SELECT ex.exch_rate FROM 
+		exchange_rate_currency ex 
+		WHERE	cur_from = @cost_currency 
+		AND		cur_to = @header_currency),1));
+  IF charge_type =1 then
+      SET @actual_cost =@actual_cost + cost * @cost_exchange;
+	  SET @actual_charge=@actual_charge+charge;
+	 ELSEIF charge_type=0 THEN
+   SET @quote_cost= @quote_cost+ cost* @cost_exchange;
+   SET @quote_charge=@quote_charge+charge;
+    END IF;  
+    END LOOP GET_CHARGES;
+  IF charge_type =1 then
+		-- SET @actual_cost =@actual_cost + cost * @cost_exchange;
+		UPDATE shipping_order s SET s.actual_cost =@actual_cost,s.actual_total = @actual_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@actual_cost );
+	 ELSEIF charge_type=0 THEN
+		UPDATE shipping_order s SET s.quote_cost=@quote_cost,s.quote_total = @quote_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@quote_cost);
+    END IF; 	
+ CLOSE cur_charges;
+END;$$
+Delimiter ;
+
+==============================================================================================================
+
+========================================COST CALCULATION ON AFTER delete===========================
+
+DELIMITER $$
+CREATE TRIGGER delete_cost_calculation AFTER DELETE ON charges FOR EACH ROW 
+BEGIN
+ DECLARE no_record_found INTEGER DEFAULT 0;
+ DECLARE header_currency VARCHAR(10);
+ DECLARE cost_currency VARCHAR(10);
+ DECLARE cost DOUBLE;
+  DECLARE charge DOUBLE;
+ DECLARE cost_cur_id INT;
+ DECLARE charge_cur_id INT;
+ DECLARE charge_type INT;
+ DECLARE cost_exchange DOUBLE default 1;
+ DECLARE quote_cost DOUBLE;
+ DECLARE actual_cost DOUBLE;
+ DECLARE order_id INTEGER;
+  DECLARE cur_charges CURSOR FOR 
+  SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
+  WHERE c.order_id=OLD.order_id;
+ DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
+ SET @quote_cost=0.0;
+ SET @actual_cost=0.0;
+  SET @quote_charge=0.0;
+ SET @actual_charge=0.0;
+ SET @order_id=OLD.order_id;
+insert into sp_log (message) values('delete_cost_trigger');
+OPEN cur_charges; 
+ GET_CHARGES: LOOP
+ 
+ FETCH cur_charges INTO cost,charge_type,cost_cur_id,charge;
+        IF no_record_found = 1 THEN
+   SET @exchangeRate = 0;	
+   LEAVE GET_CHARGES;
+        END IF;
+	SET @tcount = @tcount + 1;
+	SET @header_currency=(SELECT a1.currency FROM shipping_order a1 WHERE a1.order_id=@order_id);
+	SET @cost_currency=(SELECT c.currency_code FROM currency_symbol c  WHERE c.id=cost_cur_id); 
+    SET @cost_exchange=(SELECT COALESCE(
+	(SELECT ex.exch_rate FROM 
+		exchange_rate_currency ex 
+		WHERE	cur_from = @cost_currency 
+		AND		cur_to = @header_currency),1));
+  IF charge_type =1 then
+      SET @actual_cost =@actual_cost + cost * @cost_exchange;
+	  SET @actual_charge=@actual_charge+charge;
+	 ELSEIF charge_type=0 THEN
+   SET @quote_cost= @quote_cost+ cost* @cost_exchange;
+   SET @quote_charge=@quote_charge+charge;
+    END IF;  
+    END LOOP GET_CHARGES;
+  IF charge_type =1 then
+		-- SET @actual_cost =@actual_cost + cost * @cost_exchange;
+		UPDATE shipping_order s SET s.actual_cost =@actual_cost,s.actual_total = @actual_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@actual_cost );
+	 ELSEIF charge_type=0 THEN
+		UPDATE shipping_order s SET s.quote_cost=@quote_cost,s.quote_total = @quote_charge WHERE s.order_id=@order_id;
+		insert into sp_log (message) values(@order_id);
+		insert into sp_log (message) values(@quote_cost);
+    END IF; 	
+ CLOSE cur_charges;
+END;$$
+Delimiter ;
+--------------------------------------END of LIVE SERVER COMMIT---------------------------------------

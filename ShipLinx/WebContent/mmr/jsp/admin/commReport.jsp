@@ -299,19 +299,19 @@
 	<div id="srchinv_result_tbl" >
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
     <thead>
-	<tr height="25px">
-			<th style="width:30px; text-align:left;"><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<th><mmr:message messageId="label.commission.inv" /></th>
-						<th ><span style=" width:100px; float:left;"><mmr:message messageId="label.commission.company" /></span></th>
-			<th ><span style="width: 120px !important;"><mmr:message messageId="label.commission.datecreated" /> </span></th>
-			<th ><span style="width: 120px !important;"><mmr:message messageId="label.currency" /> </span></th>
+	<tr height="30px">
+			<th style="width:20px; text-align:left;"><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
+			<th style="width:100px"><mmr:message messageId="label.commission.inv" /></th>
+			<th style=" width:10px;"><mmr:message messageId="label.commission.company" /></th>
+			<th style="text-align:center;padding-right:30px"><mmr:message messageId="label.commission.datecreated" /> </span></th>
+			<th style="text-align:right;padding-right:30px"><mmr:message messageId="label.currency" /> </span></th>
 			<th style="width: auto !important;text-align:right;padding-right:10px"> <span style="width: 120px !important; float:left;"><mmr:message messageId="label.commission.commission" /></span></th>
 			<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.commission.amount" /></th>
 			 <s:if test="%{#session.ROLE.contains('busadmin')}">
-			<th style="text-align:right;padding-right:10px"> <mmr:message messageId="label.commission.cost" /> </th>			
+			<th style="text-align:right;padding-right:20px"> <mmr:message messageId="label.commission.cost" /> </th>			
 			</s:if>
-			<th><span style="padding-right:5px; width:80px; float:left;"><mmr:message messageId="label.commission.status" /></span></th>
-			
+			<th style="width: 175px !important;text-align:left;padding-right:10px"><mmr:message messageId="label.commission.status" /></th>	
+					
 	</tr>
 	</thead>
 	<tbody>
@@ -324,6 +324,8 @@
 				<s:set var="totalSpd" value="0" />
 				<s:set var="totalLtl" value="0" />
 				<s:set var="totalChb" value="0" />
+				<s:set var="totalFpa" value="0" />
+				<s:set var="totalFwd" value="0" />
            <s:iterator id="invoicetable" value="commissions" status="rowstatus">
 			<s:if test="commissionPayable!=0">
              <tr>
@@ -337,7 +339,7 @@
 				-->
 				
 				
-					<td style="text-align:right;"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="commissionPayable" /></s:text></td>
+					<td style="text-align:right;right;padding-left:20px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="commissionPayable" /></s:text></td>
 				
 				<td style="text-align:right;"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="invoiceTotal" /></s:text></td>
 				<s:if test="%{#session.ROLE.contains('busadmin')}">
@@ -355,7 +357,8 @@
 				 <s:set var="totalLtl" value="%{#totalLtl+totalLTL}"/>
 				 <s:set var="totalSpd" value="%{#totalSpd+totalSPD}"/>
 				 <s:set var="totalChb" value="%{#totalChb+totalCHB}"/> 
-				 
+				 <s:set var="totalFpa" value="%{#totalFpa+totalFPA}"/>
+				 <s:set var="totalFwd" value="%{#totalFwd+totalFWD}"/>
 				 </s:if>
 			</s:iterator>
 
@@ -371,7 +374,7 @@
 	  <td style="text-align:right;"><b><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totals}" /></s:text></b></td>
      <td style="text-align:right;position: relative;right: 10px;"><b><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalAmt}" /></s:text></b></td>
     </tr>
-   <tr style="height:22px;background-color: #000;color: #fff;font-size:12px;">
+   <%-- <tr style="height:22px;background-color: #000;color: #fff;font-size:12px;">
     <td style="width:160px"></td>
  
     <td style="width:230px"><mmr:message messageId="label.commission.totalspd"/></td>
@@ -382,8 +385,31 @@
 	 <td style="width:160px"><mmr:message messageId="label.commission.totalchb"/></td>
 	  <td style="width:160px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalChb}" /></s:text></td>
        <td style="width:160px"></td>
-        
-    </tr>
+        <td style="width:160px"><mmr:message messageId="label.commission.totalfpa"/></td>
+	  <td style="width:160px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalFpa}" /></s:text></td>
+       <td style="width:160px"></td>
+       <td style="width:160px"><mmr:message messageId="label.commission.totalfwd"/></td>
+	  <td style="width:160px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalFwd}" /></s:text></td>
+       <td style="width:160px"></td>
+    </tr> --%>
+    <tr style="height:22px;background-color: #000;color: #fff;font-size:12px;">
+	<td colspan="10">
+		<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample2" width="100%">
+			<tr style="height:22px;background-color: #000;color: #fff;font-size:12px;">
+			    <td ><mmr:message messageId="label.commission.totalspd"/></td>
+			    <td ><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalSpd}" /></s:text></td>
+				<td ><mmr:message messageId="label.commission.totalltl"/>  </td>
+			    <td><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalLtl}" /></s:text></td>
+				<td ><mmr:message messageId="label.commission.totalchb"/></td>
+				<td><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalChb}" /></s:text></td>
+			    <td ><mmr:message messageId="label.commission.totalfpa"/></td>
+				<td ><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalFpa}" /></s:text></td>
+			    <td ><mmr:message messageId="label.commission.totalfwd"/></td>
+				<td ><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totalFwd}" /></s:text></td>
+			</tr>
+		</table>
+	</td>
+   </tr>
   </tfoot>
 </table>
 </div>

@@ -208,4 +208,10 @@ public interface ShippingDAO {
   
   public CurrencySymbol getSymbolByCurrencycode(String currencyCode);
   public CurrencySymbol getCurrencyCodeById(int id);
-}
+  public void updateShippingOrderCurrency(long orderId, String newCurrency);
+  
+  
+  public String getCurrencyByCountry(String accCountry);
+  
+  public int getCountryIdByCountryCode(String accCountry,String currencyCode);
+  }

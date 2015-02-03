@@ -62,6 +62,7 @@
 			<result property="billToAccountNum" column="billing_account" />	
 			<result property="unitmeasure" column="unitmeasure"/>	
 			<result property="saveShipmet" column="save_shipment"/>	
+			<result property="currency" column="currency"/>
 	</resultMap>
 	
 	<resultMap id="ShippingOrdersAllStatus" class="com.meritconinc.shiplinx.model.OrderStatus">
@@ -149,6 +150,78 @@
            <result property="saveShipmet" column="save_shipment"/>	
 	</resultMap>
 	
+	<resultMap id="SearchOrderResult1" class="com.meritconinc.shiplinx.model.ShippingOrder">
+			<result property="id" column="order_id" />
+			<result property="orderNum" column="order_num"/>
+			<result property="customsInvoiceId" column="customs_invoice_id"/>
+			<result property="customerName" column="customer_name"/>
+			<result property="masterTrackingNum" column="master_tracking_num" />
+			<result property="referenceCodeName" column="reference_code_name"/>
+			<result property="referenceCode" column="reference_code"/>
+			<result property="accountNum" column="account_num"/>
+			<result property="carrierReference" column="carrier_reference"/>
+			<result property="businessId" column="business_id"/>
+			<result property="statusId" column="status_id"/>
+			<result property="statusName" column="status_name"/>
+			<result property="serviceId" column="service_id"/>
+			<result property="slaveServiceId" column="slave_service_id"/>
+			<result property="originalServiceId" column="original_service_id"/>
+			<result property="carrierId" column="carrier_id"/>
+			<result property="trackingURL" column="tracking_url" />
+			<result property="dateCreated" column="date_created"/>
+			<result property="live" column="live_mode"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="markPercent" column="mark_percent"/>
+			<result property="markType" column="mark_type"/>	
+			<result property="fuelPercent" column="fuel_percent"/>
+			<result property="billingStatus" column="billing_status"/>
+			<result property="referenceOneName" column="reference1_name"/>
+			<result property="referenceOne" column="reference1"/>
+			<result property="referenceTwoName" column="reference2_name"/>
+			<result property="referenceTwo" column="reference2"/>
+			<result property="scheduledShipDate" column="scheduled_ship_date"/>
+			<result property="quantity" column="quantity"/>
+			<result property="fromZone" column="from_zone"/>
+			<result property="toZone" column="to_zone"/>
+			<result property="currency" column="currency"/>
+			<result property="paidAmount" column="paid_amount"/>
+			<result property="appliedAmount" column="applied_amount"/>
+			<result property="refundedAmount" column="refunded_amount"/>
+			<result property="quotedWeight" column="quoted_weight"/>
+			<result property="quotedWeightUOM" column="quoted_weight_uom"/>
+			<result property="billedWeight" column="billed_weight"/>
+			<result property="billedWeightUOM" column="billed_weight_uom"/>
+			<result property="fromInstructions" column="frominstructions"/>
+			<result property="toInstructions" column="toinstructions"/>
+			<result property="satDelivery" column="sat_delivery"/>
+			<result property="docsOnly" column="docs_only"/>
+			<result property="batchId" column="batch_id"/>
+			<result property="message" column="message"/>
+			<result property="ratedAsWeight" column="rated_as_weight" />
+			<result property="billToType" column="billing_type" />
+			<result property="billToAccountNum" column="billing_account" />
+			<result property="CODValue" column="cod_value"/>
+			<result property="CODPin" column="cod_pin"/>
+			<result property="tradeShowPickup" column="tradeshow_pickup"/>       
+            <result property="tradeShowDelivery" column="tradeshow_delivery"/>
+            <result property="insidePickup" column="inside_pickup"/>
+            <result property="appointmentPickup" column="appointment_pickup"/>
+            <result property="appointmentDelivery" column="appointment_delivery"/>
+            <result property="fromTailgate" column="fromtailgate"/>
+			<result property="toTailgate" column="totailgate"/>
+			<result property="holdForPickupRequired" column="hold"/>
+            <result property="insideDelivery" column="inside_delivery"/>
+			<result property="quoteTotalCharge" column="quote_total"/>
+            <result property="quoteTotalCost" column="quote_cost"/>
+            <result property="actualTotalCharge" column="actual_total"/>
+			<result property="actualTotalCost" column="actual_cost"/>
+			<result property="unitmeasure" column="unitmeasure"/>
+			<result property="saveShipmet" column="save_shipment"/>
+			<result property="serviceName" column="service_name"/>
+			<result property="masterCarrierName" column="master_carrier_name"/>
+			<result property="fromAddressLong" column="from_address_long"/>
+			<result property="toAddressLong" column="to_address_long"/>
+	</resultMap>
 	
 	<resultMap id="shippingPackageResultMap" class="com.meritconinc.shiplinx.model.PackageType">
 			<result property="packageTypeId"/>
@@ -523,8 +596,11 @@
 	</resultMap>
 	
 	<resultMap id="CurrencySymbolResult" class="com.meritconinc.shiplinx.model.CurrencySymbol">
+			<result property="id"/> 
 			<result property="currencySymbol" column="currency_symbol"/>
 			<result property="currencyCode" column="currency_code" />
+			<result property="countryCode" column="country_code" />
+			<result property="languageCode" column="language_code" />
 	</resultMap>
 	
 	<insert id="addPackage" parameterClass="com.meritconinc.shiplinx.model.Package">
@@ -788,10 +864,9 @@
 	</select>	
 	
 	<select id="searchLiveUnpaidShipments" resultMap="ShippingOrderResult">
-		select distinct s.* from shipping_order s left join invoice_charges i on (s.order_id=i.order_id) 
-		where i.order_id is null and s.paid_amount=0 and s.status_id!=#statusId#  
+		select so.* from shipping_order so where (so.status_id != 40 AND so.status_id !=80) AND so.billing_status !=50  
 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
-		 	s.customer_id = #customerId#
+		 	so.customer_id = #customerId#
 		</isGreaterThan>			
 	</select>	
 
@@ -818,7 +893,7 @@
 	</select>	
 	
 	<select id="searchUnbilledShipments2" resultMap="ShippingOrderInvoicingResult">
-  select cus.name, s.order_id, s.date_created, sum(IF(c.status=#statusId#, c.charge, 0)) AS 'charge', sum(IF(c.status=#statusId#, c.cost, 0)) as 'cost', sum(IF(c.status=30, c.charge, 0)) AS 'billed'
+  select cus.name, s.order_id, s.date_created, s.actual_total AS 'charge', s.actual_cost as 'cost', sum(IF(c.status=30, c.charge, 0)) AS 'billed'
      from shipping_order s left join charges c on (s.order_id=c.order_id and c.type=1 )
      left join customer cus on (s.customer_id=cus.customer_id)
    where s.order_id in (select distinct(c.order_id) from charges c left join shipping_order s on (c.order_id=s.order_id) where status=#statusId# and s.status_id!=40 and type=1 and c.charge>0)
@@ -928,7 +1003,102 @@
 		where package_id=#packageId#
 	</update>
 
-	<select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" resultMap="SearchOrderResult">
+<select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" resultMap="SearchOrderResult1">
+		select distinct o.*, COALESCE(ci.id,0) as customs_invoice_id, COALESCE(cu.name,'') as customer_name, 
+			sr.name as service_name, cr.name as master_carrier_name,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
+			concat(COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
+			concat(COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
+			os.name as status_name
+			from order_status os, address ad1, address ad2, shipping_order o 
+			left join package p on (o.order_id=p.order_id) 
+			left join charges c on (o.order_id=c.order_id)
+			left join customer cu on (o.customer_id = cu.customer_id)
+			left join customer_sales cs on (o.customer_id = cs.customer_id)
+			left join customs_invoice ci on (ci.order_id = o.order_id)
+			left join service sr on (sr.service_id = o.service_id)
+			left join carrier cr on (cr.carrier_id = sr.master_carrier_id)
+		<dynamic prepend="where">
+			o.order_id&gt;0 and ad1.address_id=o.ship_from_id and ad2.address_id=o.ship_to_id and os.status_id = o.status_id
+			<isNotNull  property="id">
+				 and o.order_id=#id#
+			</isNotNull>	
+			<isNotNull  property="batchId">
+				 <isNotEmpty property="batchId">
+				 	and o.batch_id=#batchId#
+				 </isNotEmpty>
+			</isNotNull>	
+			<isNotNull  property="statusId">
+				 <isNotEmpty property="statusId">
+				 	and o.status_id=#statusId#
+				 </isNotEmpty>
+			</isNotNull>
+			<isNull  property="statusId">
+				<isNotNull property="cancelledShipments">
+					<isEqual property="cancelledShipments" compareValue="N">
+						and (o.status_id != 40 or o.status_id is null)
+					</isEqual>
+				</isNotNull>
+			</isNull>
+			<isNotNull  property="orderNum">
+				 <isNotEmpty property="orderNum">
+				 and o.order_num=#orderNum#
+				 </isNotEmpty>
+			</isNotNull>			
+			<isNotNull property="customerId">
+				and o.customer_id=#customerId#
+			</isNotNull>	
+			<isGreaterThan property="businessId" compareValue="0">
+				and o.business_id=#businessId#
+			</isGreaterThan>	
+			<isNotNull  property="carrierId">
+				 and o.carrier_id=#carrierId#
+			</isNotNull>			
+			<isNotNull  property="serviceId">
+				 and o.service_id=#serviceId#
+			</isNotNull>
+			<isNotNull property="masterTrackingNum">
+				and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#)
+			</isNotNull>
+		 	<isNotNull property="fromDateTime">
+		 		<![CDATA[and scheduled_ship_date >= #fromDateTime#]]>
+		 	</isNotNull>
+		 	<isNotNull property="toDateTime">
+		 		<![CDATA[and scheduled_ship_date <= #toDateTime#]]>
+		 	</isNotNull>
+			<isGreaterEqual property="billingStatus" compareValue="0">
+				and o.billing_status=#billingStatus#
+			</isGreaterEqual>	
+			<isNotNull property="ediInvoiceNumber">
+				<isNotEmpty property="ediInvoiceNumber">
+					and c.edi_invoice_number=#ediInvoiceNumber#
+				</isNotEmpty>
+			</isNotNull>	
+			<isNotNull property="referenceCode">
+				<isNotEmpty property="referenceCode">
+					and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
+				</isNotEmpty>
+			</isNotNull>	
+			 <isNotNull property="salesAgentUsername">
+	   			<isNotEmpty property="salesAgentUsername">
+	     		and (cs.sales_user=#salesAgentUsername#)
+	      		</isNotEmpty>
+     		</isNotNull>
+     		<isNotNull property="createdBy">
+	   			<isNotEmpty property="createdBy">
+	     		and (o.created_by=#createdBy#)
+	      		</isNotEmpty>
+     		</isNotNull>	
+     		<isNotNull property="branch">
+	   			<isNotEmpty property="branch">
+	     		and (cs.branch=#branch#)
+	      		</isNotEmpty>
+     		</isNotNull>
+		</dynamic>                 
+		order by $orderBy$ $order$                
+	</select>
+	
+	<select id="findShipments1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" resultMap="SearchOrderResult">
 		select distinct o.* 
 			from shipping_order o
 			left join package p on (o.order_id=p.order_id) 
@@ -1122,15 +1292,15 @@
     
     <update id = "updateTotalCharges" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
    update shipping_order set order_id=#id#
-             <isNotNull prepend="," property="quoteTotalCharge">
+             <!-- <isNotNull prepend="," property="quoteTotalCharge">
                quote_total=#quoteTotalCharge#
-               </isNotNull>
+               </isNotNull> -->
                <isNotNull prepend="," property="quoteTotalCost">
                quote_cost=#quoteTotalCost#
                </isNotNull>
-               <isNotNull prepend="," property="actualTotalCharge">
+              <!--  <isNotNull prepend="," property="actualTotalCharge">
                actual_total=#actualTotalCharge#
-               </isNotNull>
+               </isNotNull> -->
                <isNotNull prepend="," property="actualTotalCost">
                actual_cost=#actualTotalCost# 
                </isNotNull>
@@ -1142,7 +1312,102 @@
   <delete id="deleteChargesByOrderId">
        delete from charges where order_id = #orderId# 
    </delete>
-   <select id="findShipmentsAdmin" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+   <select id="findShipmentsAdmin" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult1">
+       select distinct o.*, COALESCE(ci.id,0) as customs_invoice_id, cu.name as customer_name, 
+			sr.name as service_name, cr.name as master_carrier_name,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
+			concat(COALESCE(ad1.abbreviation_name,''),',', COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
+			concat(COALESCE(ad2.abbreviation_name,''),',', COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
+			os.name as status_name 
+	   from order_status os, address ad1, address ad2, shipping_order o 
+	   left join charges c on(c.order_id=o.order_id) 
+	   left join package p on (o.order_id=p.order_id) 
+	   left join customer cu on (o.customer_id = cu.customer_id)
+	   left join customer_sales cs on (o.customer_id = cs.customer_id)
+	   left join customs_invoice ci on (ci.order_id = o.order_id)
+	   left join service sr on (sr.service_id = o.service_id)
+	   left join carrier cr on (cr.carrier_id = sr.master_carrier_id)
+      <dynamic prepend="where">
+          c.order_id&gt;0 and ad1.address_id=o.ship_from_id and ad2.address_id=o.ship_to_id and os.status_id = o.status_id
+          <isNotNull  property="id">
+                and o.order_id=#id#
+           </isNotNull>    
+         <isNotNull  property="batchId">
+               <isNotEmpty property="batchId">
+                   and o.batch_id=#batchId#
+               </isNotEmpty>
+          </isNotNull>    
+          <isNotNull  property="statusId">
+              <isNotEmpty property="statusId">
+                 and o.status_id=#statusId#
+              </isNotEmpty>
+          </isNotNull>
+          <isNull  property="statusId">
+              <isNotNull property="cancelledShipments">
+                  <isEqual property="cancelledShipments" compareValue="N">
+                       and (o.status_id != 40 or o.status_id is null)
+                   </isEqual>
+              </isNotNull>
+           </isNull>
+          <isNotNull  property="orderNum">
+               <isNotEmpty property="orderNum">
+               and o.order_num=#orderNum#
+               </isNotEmpty>
+           </isNotNull>            
+           <isNotNull property="customerId">
+               and o.customer_id=#customerId#
+           </isNotNull>    
+           <isGreaterThan property="businessId" compareValue="0">
+               and o.business_id=#businessId#
+           </isGreaterThan>    
+           <isNotNull  property="carrierId">
+                and c.carrier_id=#carrierId#
+           </isNotNull>            
+          <isNotNull  property="serviceId">
+                and o.service_id=#serviceId#
+           </isNotNull>
+           <isNotNull property="masterTrackingNum">
+              and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#)
+          </isNotNull>
+          <isNotNull property="fromDateTime">
+              <![CDATA[and scheduled_ship_date >= #fromDateTime#]]>
+          </isNotNull>
+          <isNotNull property="toDateTime">
+               <![CDATA[and scheduled_ship_date <= #toDateTime#]]>
+           </isNotNull>
+           <isGreaterEqual property="billingStatus" compareValue="0">
+               and o.billing_status=#billingStatus#
+           </isGreaterEqual>   
+           <isNotNull property="ediInvoiceNumber">
+               <isNotEmpty property="ediInvoiceNumber">
+                   and c.edi_invoice_number=#ediInvoiceNumber#
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="referenceCode">
+               <isNotEmpty property="referenceCode">
+                  and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="salesAgentUsername">
+               <isNotEmpty property="salesAgentUsername">
+               and (cs.sales_user=#salesAgentUsername#)
+              </isNotEmpty>
+
+           </isNotNull>
+          <isNotNull property="createdBy">
+               <isNotEmpty property="createdBy">
+               and (o.created_by=#createdBy#)
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="branch">
+               <isNotEmpty property="branch">
+               and (cs.branch=#branch#)
+               </isNotEmpty>
+           </isNotNull>
+       </dynamic> 
+           order by $orderBy$ $order$ 
+   </select>
+   <select id="findShipmentsAdmin1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
        select distinct o.* from shipping_order o left join charges c on(c.order_id=o.order_id) left join package p on (o.order_id=p.order_id) left join customer cu on (o.customer_id = cu.customer_id)
            left join customer_sales cs on (o.customer_id = cs.customer_id)
       <dynamic prepend="where">
@@ -1290,7 +1555,24 @@
 	<select id="getOrderFromPackageUsingPin" resultClass="long">
 	    select distinct p.order_id from package p left join shipping_order s on(p.order_id=s.order_id) where p.tracking_number=#trackingNo# order by order_id desc limit 1
 	</select>
-	<select id="findShipmentsAdminById" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
+	<select id="findShipmentsAdminById" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult1">
+	select 	o.*, COALESCE(ci.id,0) as customs_invoice_id, cu.name as customer_name, 
+			sr.name as service_name, cr.name as master_carrier_name,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
+			concat(COALESCE(ad1.abbreviation_name,''),',', COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
+			concat(COALESCE(ad2.abbreviation_name,''),',', COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
+			os.name as status_name 
+	from 	order_status os, address ad1, address ad2, shipping_order o 
+	left 	join customer cu on (o.customer_id = cu.customer_id)
+	left 	join customs_invoice ci on (ci.order_id = o.order_id)
+	left 	join service sr on (sr.service_id = o.service_id)
+	left 	join carrier cr on (cr.carrier_id = sr.master_carrier_id)
+	where 	o.order_id=#id#
+	and 	ad1.address_id=o.ship_from_id 
+	and 	ad2.address_id=o.ship_to_id 
+	and 	os.status_id = o.status_id
+	</select>
+	<select id="findShipmentsAdminById1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
 	select * from shipping_order where order_id=#id#
 	</select>
 	
@@ -1316,11 +1598,22 @@
 	</select>
 	
 	<select id="getSymbolByCurrencycode"  resultMap="CurrencySymbolResult">
-		select currency_symbol,currency_code from currency_symbol where currency_code=#currencyCode#
+		select id,currency_symbol, currency_code, country_code, language_code from currency_symbol where currency_code=#currencyCode#
 	</select>
 	
 	<select id="getCurrencyCodeById"  resultMap="CurrencySymbolResult">
-		select currency_symbol,currency_code from currency_symbol where id=#id#
+		select id,currency_symbol,currency_code, country_code, language_code from currency_symbol where id=#id#
 	</select>
+	<update id = "updateShippingOrderCurrency">
+  update shipping_order set currency=#newCurrency# where order_id=#orderId#
+ </update>
+ 
+ <select id="getCurrencyByCountry" resultClass="java.lang.String">
+	SELECT currency_code FROM currency_symbol where country_code=#acccountry#
+	</select>
+	<select id="getCountryIdByCountryCode" resultClass="java.lang.Integer">
+		SELECT id FROM currency_symbol where country_code=#acccountry# or currency_code=#currencyCode#
+	</select>
+
 </sqlMap>
 

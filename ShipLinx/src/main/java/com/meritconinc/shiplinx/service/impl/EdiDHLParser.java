@@ -15,6 +15,8 @@ import com.meritconinc.shiplinx.carrier.dhl.model.DHLTariff;
 import com.meritconinc.shiplinx.carrier.dhl.model.DHLZone;
 import com.meritconinc.shiplinx.dao.AddressDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
+import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.dao.EdiDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
@@ -190,7 +192,10 @@ public class EdiDHLParser extends EdiParser {
 		
 		populateCharges(shipment, item);
 		
-		
+		if(shipment.getCharges()!=null && shipment.getCharges().size()>0)
+					{
+						shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
+					}
 		
 		return shipment;
 	}	
@@ -382,22 +387,77 @@ public class EdiDHLParser extends EdiParser {
 			charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 			charge.setCarrierId((long)ShiplinxConstants.CARRIER_DHL);
 			charge.setCarrierName(ShiplinxConstants.CARRIER_DHL_STRING);
-//			if (chargeGroupCode != null && 
-//					(chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
-//					chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {
-//				if (chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) 
-//					populateTariffRate(shipment, charge);
-//				charge.setCharge( applyMarkup(shipment, charge, item) );
-//			} else {
-//				charge.setCharge(charge.getCost());
-//			}	
-			if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
-				populateTariffRate(shipment, charge, item.getAccountCountry());
-				charge.setCharge( applyMarkup(shipment, charge, item) );
-			} else {
-				charge.setTariffRate(charge.getCost());
-				charge.setCharge(charge.getCost());
-			}	
+			//COST CURRENCY CODE FIX STARTS HERE
+			String currencyCode=null;
+			if(shipment.getCurrency()!=null && !(shipment.getCurrency()).equals("")){
+				CurrencySymbol costCurrency = shippingService.getSymbolByCurrencycode(shipment.getCurrency());
+				charge.setCostcurrency(costCurrency.getId());
+			}else{
+				String currency=shippingService.getCurrencyByAccountNumber(item.getAccountNumber());
+				CurrencySymbol CurrencySymbol = shippingService.getSymbolByCurrencycode(currency);
+				charge.setCostcurrency(CurrencySymbol.getId());
+				charge.setCurrency(CurrencySymbol.getCurrencyCode());
+				shipment.setCurrency(CurrencySymbol.getCurrencyCode());
+			}
+//COST CURRENCY CODE FIX ENDED HERE			
+			
+//CHARGE CURRENCY CODE FIX STARTS HERE
+			if(shipment.getCustomer()!=null){
+				currencyCode=shipment.getDbShipment().getCustomer().getDefaultCurrency();
+				}
+			if((currencyCode ==null || ("").equals(currencyCode)) && shipment.getCustomerId()!=null){
+				Customer customerInfo=customerDAO.getCustomerInfoByCustomerId(shipment.getCustomerId(), shipment.getBusinessId());
+				currencyCode=customerInfo.getDefaultCurrency();
+				}
+			if(currencyCode!=null && !currencyCode.isEmpty()){
+				CurrencySymbol Currency = shippingService.getSymbolByCurrencycode(currencyCode);
+				charge.setChargecurrency(Currency.getId());
+				charge.setCurrency(currencyCode);
+				}
+				else{
+					charge.setChargecurrency(charge.getCostcurrency());
+					currencyCode=shipment.getCurrency();
+					charge.setCurrency(currencyCode);
+					}
+			
+			if(currencyCode == null || ("").equals(currencyCode)){
+				currencyCode = "CAD";
+				charge.setCurrency("CAD");
+			}
+//CHARGE CURRENCY CODE FIX ENDED HERE
+						if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
+							if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									populateTariffRate(shipment, charge, item.getAccountCountry());
+									charge.setCharge( applyMarkup(shipment, charge, item) );
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									populateTariffRate(shipment, charge, item.getAccountCountry());
+									charge.setCharge( applyMarkup(shipment, charge, item)*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setTariffRate(charge.getTariffRate()*exchangeRate);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
+							
+						} 
+						else {
+							if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									charge.setCharge(charge.getCost());
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									charge.setCharge(charge.getCost()*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
+						}
+			
 			charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
 			return charge;
 		}
@@ -525,6 +585,7 @@ public class EdiDHLParser extends EdiParser {
 		}
 		
 		shippingService.updateShippingOrder(dbShipment);
+//		shippingService.updateShippingOrderCurrency(ediShipment);
 
 	}
 

@@ -35,22 +35,182 @@ var product_id=0;
 			//window.open('getShippingLabel.action?id='+document.viewform.orderId.value);
 		}	
 	}
-		function addActualCharge() {
-			document.viewform.action = "add.actual.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newActualCharge_chargeId').value;
-			document.viewform.submit();
-		}
-		function addQuotedCharge() {
-			document.viewform.action = "add.quoted.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newQuotedCharge_chargeId').value;
-			document.viewform.submit();
-		}		
-		function updateActualCharge() {
-			document.viewform.action = "update.actual.charge.shipment.action";
-			document.viewform.submit();
-		}	
-		function updateQuotedCharge() {
-			document.viewform.action = "update.quoted.charge.shipment.action";
-			document.viewform.submit();
-		}	
+	
+	 function getSelectedText(elementId) {
+	      var elt = document.getElementById(elementId);
+	      if (elt.selectedIndex == -1)
+	          return null;
+	      return elt.options[elt.selectedIndex].text;
+	  }
+	  function isCurrencyDifferent(elementId){
+	   var main_currency = document.getElementById('ordCurrency').value;
+	   var line_currency = getSelectedText(elementId);
+	   return main_currency === line_currency;
+	  }
+	  
+	  
+	  function addActualCharge() {
+		   if(isCurrencyDifferent('viewform_newActualCharge_chargecurrency')){
+		    document.viewform.action = "add.actual.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newActualCharge_chargeId').value;
+		    document.viewform.submit();
+		   }else{
+		    var main_currency = document.getElementById('ordCurrency').value;
+		    alert("<mmr:message messageId='shipment.error.invalidactualchargecurrency'/>");
+		   }
+		 }
+	  function addQuotedCharge() {
+		   if(isCurrencyDifferent('viewform_newQuotedCharge_chargecurrency')){
+		    document.viewform.action = "add.quoted.charge.shipment.action?carrierChargeCodeId="+document.getElementById('newQuotedCharge_chargeId').value;
+		    document.viewform.submit();
+		   }else{
+		    var main_currency = document.getElementById('ordCurrency').value;
+		    alert("<mmr:message messageId='shipment.error.invalidquotedchargecurrency'/>");
+		   }
+		  }
+		  function isCurrenciesDifferent(elementName){
+		   var bcurncy = "";
+		   var actcharge = document.getElementsByName(elementName);
+		   var length = actcharge.length;
+		   for (i = 0; i < length; i++) {
+		    selobj = actcharge[i];
+		    if ((selobj.selectedIndex > 0)){
+		     if (bcurncy == "" || bcurncy == selobj.options[selobj.selectedIndex].text){
+		      bcurncy = selobj.options[selobj.selectedIndex].text;
+		     }else{
+		      return false;
+		     }
+		    }else{
+		     return false;
+		    }
+		   }
+		   return bcurncy;
+		  }
+		  function updateActualCharge() {
+		   var rest = isCurrenciesDifferent("actualchargecurrency");
+		   if (typeof rest === 'boolean'){
+		    if (rest){
+		     document.viewform.action = "update.actual.charge.shipment.action";
+		     document.viewform.submit();
+		    }else{
+		     alert("<mmr:message messageId='shipment.error.invalidchargecurrency'/>");
+		    }
+		   }else if (typeof rest === 'string'){
+		    var main_currency = document.getElementById('ordCurrency').value;
+		    if (main_currency === rest){
+		     document.viewform.action = "update.actual.charge.shipment.action";
+		     document.viewform.submit();
+		    }else{
+		     var ALERT_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.accept'/>";
+		     var CANCEL_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.cancel'/>";
+		     d = document;
+		     if(d.getElementById("modalContainer")) return;
+		     mObj = d.getElementsByTagName("body")[0].appendChild(d.createElement("div"));
+		     mObj.id = "modalContainer";
+		     mObj.style.height = d.documentElement.scrollHeight + "px";
+		     alertObj = mObj.appendChild(d.createElement("div"));
+		     alertObj.id = "alertBox";
+		     if(d.all && !window.opera) alertObj.style.top = document.documentElement.scrollTop + "px";
+		     var leftMargin = (d.documentElement.scrollWidth - alertObj.offsetWidth)/2;
+		     alertObj.style.left = (leftMargin-40) + "px";
+		     alertObj.style.visiblity="visible";
+		     msg = alertObj.appendChild(d.createElement("p"));
+		     msg.innerHTML = "<mmr:message messageId='shipment.alert.actualcurrencychange'/>";
+		     btnbodyObj = alertObj.appendChild(d.createElement("div"));
+		     btnbodyObj.id = "btnBody";
+		     
+		     btnconfirm = btnbodyObj.appendChild(d.createElement("a"));
+		     btnconfirm.id = "confirmBtn";
+		     btnconfirm.appendChild(d.createTextNode(ALERT_BUTTON_TEXT));
+		     btnconfirm.href = "#";
+		     btnconfirm.focus();
+		     $('#confirmBtn').css('margin-left','91px');
+		     
+		     btnconfirmCancel = btnbodyObj.appendChild(d.createElement("a"));
+		     btnconfirmCancel.id = "confirmCancelBtn";
+		     btnconfirmCancel.appendChild(d.createTextNode(CANCEL_BUTTON_TEXT));
+		     btnconfirmCancel.href = "#";
+		     btnconfirmCancel.focus();
+		     $('#confirmCancelBtn').css('margin-right','66px');
+		     
+		     $('#confirmBtn').click(function(){
+			  document.getElementById('ordCurrency').value = rest;
+		      removeCustomConfirm();
+		      document.viewform.action = "update.actual.charge.shipment.action";
+		      document.viewform.submit();
+		     });
+		     $('#confirmCancelBtn').click(function(){
+		      removeCustomConfirm();
+		     });
+		     alertObj.style.display = "block";
+		     function removeCustomConfirm() {
+		     document.getElementsByTagName("body")[0].removeChild(document.getElementById("modalContainer"));
+		     }
+		    }
+		   }
+		  } 
+		  function updateQuotedCharge() {
+		   var rest = isCurrenciesDifferent("quotedchargecurrency");
+		   if (typeof rest === 'boolean'){
+		    if (rest){
+		     document.viewform.action = "update.quoted.charge.shipment.action";
+		     document.viewform.submit();
+		    }else{
+		     alert("<mmr:message messageId='shipment.error.invalidchargecurrency'/>");
+		    }
+		   }else if (typeof rest === 'string'){
+		    var main_currency = document.getElementById('ordCurrency').value;
+		    if (main_currency === rest){
+		     document.viewform.action = "update.quoted.charge.shipment.action";
+		     document.viewform.submit();
+		    }else{
+		     var ALERT_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.accept'/>";
+		     var CANCEL_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.cancel'/>";
+		     d = document;
+		     if(d.getElementById("modalContainer")) return;
+		     mObj = d.getElementsByTagName("body")[0].appendChild(d.createElement("div"));
+		     mObj.id = "modalContainer";
+		     mObj.style.height = d.documentElement.scrollHeight + "px";
+		     alertObj = mObj.appendChild(d.createElement("div"));
+		     alertObj.id = "alertBox";
+		     if(d.all && !window.opera) alertObj.style.top = document.documentElement.scrollTop + "px";
+		     var leftMargin = (d.documentElement.scrollWidth - alertObj.offsetWidth)/2;
+		     alertObj.style.left = (leftMargin-40) + "px";
+		     alertObj.style.visiblity="visible";
+		     msg = alertObj.appendChild(d.createElement("p"));
+		     msg.innerHTML = "<mmr:message messageId='shipment.alert.quotedcurrencychange'/>";
+		     btnbodyObj = alertObj.appendChild(d.createElement("div"));
+		     btnbodyObj.id = "btnBody";
+		     
+		     btnconfirm = btnbodyObj.appendChild(d.createElement("a"));
+		     btnconfirm.id = "confirmBtn";
+		     btnconfirm.appendChild(d.createTextNode(ALERT_BUTTON_TEXT));
+		     btnconfirm.href = "#";
+		     btnconfirm.focus();
+		     $('#confirmBtn').css('margin-left','91px');
+		     
+		     btnconfirmCancel = btnbodyObj.appendChild(d.createElement("a"));
+		     btnconfirmCancel.id = "confirmCancelBtn";
+		     btnconfirmCancel.appendChild(d.createTextNode(CANCEL_BUTTON_TEXT));
+		     btnconfirmCancel.href = "#";
+		     btnconfirmCancel.focus();
+		     $('#confirmCancelBtn').css('margin-right','66px');
+		     
+		     $('#confirmBtn').click(function(){
+		      document.getElementById('ordCurrency').value = rest;
+		      removeCustomConfirm();
+		      document.viewform.action = "update.quoted.charge.shipment.action";
+		      document.viewform.submit();
+		     });
+		     $('#confirmCancelBtn').click(function(){
+		      removeCustomConfirm();
+		     });
+		     alertObj.style.display = "block";
+		     function removeCustomConfirm() {
+		     document.getElementsByTagName("body")[0].removeChild(document.getElementById("modalContainer"));
+		     }
+		    }
+		   }
+		  }
 		function clearExceptionStatus() {
 			document.viewform.action = "clear.exception.status.action";
 			document.viewform.submit();
@@ -71,6 +231,8 @@ var product_id=0;
 			{
 				document.viewform.action = "processPayment.action";
 				document.viewform.submit();
+				$('#loader').css('display','block');
+				$('#loaderImg').css('display','block');
 			}
 		}		
 		function generateLabel(id){
@@ -579,6 +741,10 @@ function deletecharge(action){
   $('#wrapper_new').css('min-height',wndo);
   });
 	</script>
+	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+</div>
 			<style> 
 				.srchshipmnt_text_04{color:#fff; font-size:12px;padding-left:5px;}
 				#cancel_shipment,#back_shipment_list{ 
@@ -608,6 +774,7 @@ function deletecharge(action){
 <div class="form-container"><s:form id="viewform"
 	action="update.charge.shipment.action" name="viewform">
 	<s:hidden name="cid" value="%{selectedOrder.customer.id}"/>
+	<s:hidden name="ordCurrency" id="ordCurrency" value="%{selectedOrder.currency}" />
 	<s:token/>
 					<div class="content">
 					<div class="content_body" >	
@@ -637,7 +804,7 @@ function deletecharge(action){
 							<!-- <div id="payment_rqd_top" style=" color:#FFF; width:200px; font-size:12px; font-weight:bold; margin:6px 0px 0px 400px;">Payment Required:-->
 								<div id="payment_actions">
 									<div class="form_buttons">
-											<a href="javascript: processPayment()"><mmr:message messageId="label.pay.now" /></a>
+											<div align="left" style="float:left !important;" id="process_Payment_td"><a href="javascript: processPayment()"><mmr:message messageId="label.pay.now" /></a></div>
 											<a href="backToShipment.action"><mmr:message messageId="label.shipment.edit" /></a>
 									</div>
 								</div>
@@ -698,7 +865,7 @@ function deletecharge(action){
 										<label><mmr:message messageId="label.creditcard.nameOnCard"/></label>
 										<div class="controls">
 											<span>:</span>
-											<p><s:select list="#{'American Express':'American Express', 'Master Card':'Master Card', 'Visa':'Visa'}"
+											<p><s:select list="#{'Master Card':'Master Card', 'Visa':'Visa'}"
 key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.creditCard.billingAddress.contactName" cssClass="text_01_combo_medium" /></p>
 										</div>
 									</div>
@@ -1400,7 +1567,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 									<!-- this is to hide the charge for customer_shipper user-->
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
- 								 <td class="ordrdtl_title"><strong style="width:85px !important; float:left;"><mmr:message messageId="label.ghead.exrate"/> :</strong></td>
+ 								 <td class="ordrdtl_title"><strong style="width:85px !important; float:left;"><mmr:message messageId="label.ghead.charge"/> :</strong></td>
 								</s:if>
 									</s:if>
 									<td class="ordrdtl_title" width="12"><strong><mmr:message messageId="label.ghead.cur"/> :</strong></td>
@@ -1940,9 +2107,9 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<span>:</span>
 											<p><s:property
 							value="getText('{0,number,#,##0.0}',{selectedOrder.packages[#counterIndex.index].height})" />
-						x <s:property
+						 <s:property
 							value="getText('{0,number,#,##0.0}',{selectedOrder.packages[#counterIndex.index].width})" />
-						x <s:property
+						 <s:property
 							value="getText('{0,number,#,##0.0}',{selectedOrder.packages[#counterIndex.index].length})" /></p>
 							</div>
 							</div>

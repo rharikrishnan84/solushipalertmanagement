@@ -368,6 +368,7 @@ public abstract class EdiParser {
 					pins.add(ediShipment.getMasterTrackingNum());
 			} else {
 				updateShipment(ediShipment, dbShipment);
+				shippingService.updateShippingOrderCurrency(ediShipment);
 				if(ediShipment.getMasterTrackingNum() !=null && ediShipment.getCarrierId()!=null && ediShipment.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR)
 					pins.add(ediShipment.getMasterTrackingNum());
 			}

@@ -9,6 +9,7 @@ import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
 import com.meritconinc.shiplinx.model.SalesRecord;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.SubTotal;
 
 public interface InvoiceDAO {
 
@@ -55,4 +56,9 @@ public interface InvoiceDAO {
      public List<Invoice> getInvoiceChargeDetails(Long invoiceId);
      public List<Charge> getChargeExchangeRateByInvoiceId(long invoiceId);
      public List<Invoice> searchInvoicesBreakdownIncludeCanceledInvoice(Commission commission);
+     void updateInvoiceTotalByEMail(double totalSPD, double totalLTL,
+    		 			double totalCHB, double totalFWD, double totalFPA, long invoiceId);
+     public SubTotal getcommissionbyIdd(long invoiceId);
+     public List<Invoice> getInvoiceByEmailType(Long invoiceId);
+     
 }

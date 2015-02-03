@@ -77,6 +77,9 @@ public class User implements Serializable {
   private double commissionPercentagePP = 0;
   private double commissionPercentagePS = 0;
   private double commissionPercentageCHB = 0;
+  
+  private double commissionPercentageFPA = 0;
+  private double commissionPercentageFWD = 0;
 
   /**
    * Added properties for print configuration fpr a User
@@ -767,6 +770,22 @@ public double getCommissionPercentageCHB() {
 
 public void setCommissionPercentageCHB(double commissionPercentageCHB) {
 	this.commissionPercentageCHB = commissionPercentageCHB;
+}
+
+public double getCommissionPercentageFPA() {
+	return commissionPercentageFPA;
+}
+
+public void setCommissionPercentageFPA(double commissionPercentageFPA) {
+	this.commissionPercentageFPA = commissionPercentageFPA;
+}
+
+public double getCommissionPercentageFWD() {
+	return commissionPercentageFWD;
+}
+
+public void setCommissionPercentageFWD(double commissionPercentageFWD) {
+	this.commissionPercentageFWD = commissionPercentageFWD;
 }
 
 }

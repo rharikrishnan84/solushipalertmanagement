@@ -13,6 +13,8 @@ public class SalesRecord {
 	private int[] paymentStatusList = new int[10];
 	
 	private String monthName="0";
+	private String totalCostDisplay;
+	private String totalAmountDisplay;
 
 	//web only
 	private String branch;
@@ -111,5 +113,22 @@ public class SalesRecord {
 		this.branch = branch;
 	}
 
+	public String getTotalCostDisplay() {
+		return totalCostDisplay;
+	}
+
+	public void setTotalCostDisplay(String totalCostDisplay) {
+		this.totalCostDisplay = totalCostDisplay;
+	}
+
+	public String getTotalAmountDisplay() {
+		return totalAmountDisplay;
+	}
+
+	public void setTotalAmountDisplay(String totalAmountDisplay) {
+		this.totalAmountDisplay = totalAmountDisplay;
+	}
+
+	
 	
 }

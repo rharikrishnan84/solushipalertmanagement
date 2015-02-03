@@ -24,6 +24,8 @@ public class Commission {
 		private double totalSPD;
 		private double totalLTL;
 		private double totalCHB;
+		private double totalFWD;
+		private double totalFPA;
 		private String currency;
 		private String invoiceCurrency;
 		public double getTotalSPD() {
@@ -158,5 +160,18 @@ public class Commission {
 		public void setInvoiceCurrency(String invoiceCurrency) {
 			this.invoiceCurrency = invoiceCurrency;
 		}
+		public double getTotalFWD() {
+			return totalFWD;
+		}
+		public void setTotalFWD(double totalFWD) {
+			this.totalFWD = totalFWD;
+		}
+		public double getTotalFPA() {
+			return totalFPA;
+		}
+		public void setTotalFPA(double totalFPA) {
+			this.totalFPA = totalFPA;
+		}
+		
 		
 }

@@ -369,6 +369,25 @@ public List<Billduty> getBilldutyList(String locale) {
 	return getSqlMapClientTemplate().queryForList("getBilldutyList",locale);
 }
 
+public int findUnpaidInvoiceDuration(long customerId){
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	    paramObj.put("customerId", customerId);
+	    Object obj=getSqlMapClientTemplate().queryForObject("findUnpaidInvoiceDuration", paramObj);
+	    if(obj!=null)
+	    {
+			return (Integer)obj;
+	    }
+	    return 0;
+	}
 
-
+	@Override
+	public String getCustomerCurrencyById(Long customerId) {
+		// TODO Auto-generated method stub
+		
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	    paramObj.put("customerId", customerId);
+	    String currency=(String) getSqlMapClientTemplate().queryForObject("getCustomerCurrencyById", paramObj);
+	    return currency;
+	}  
 }
+

@@ -5,7 +5,7 @@ import java.util.Date;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 
-public class EdiItem {
+public class EdiItem implements Comparable<EdiItem>{
 	private Long id;
 	private Long carrierId;
 	private Long businessId;
@@ -168,6 +168,11 @@ public class EdiItem {
 	}
 	public void setExactMatch(String exactMatch) {
 		this.exactMatch = exactMatch;
+	}
+	@Override
+	public int compareTo(EdiItem o) {
+		// TODO Auto-generated method stub
+		return (int)(o.id - this.id);
 	}
 	
 	

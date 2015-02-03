@@ -135,8 +135,8 @@ display:none;
 										<label><mmr:message messageId="label.commission.customername"/> </label>
 										<s:url id="customerList" action="listCustomers" />
 										<div class="controls">
-											<input id="custId" type="hidden" value="" name="salesRecord.customerId">
-<input id="customersautocomplete" type="text"  value="" name="customerName" style="width:300px;background-position: 286px 4px;"autocomplete="off">
+											<input id="custId" type="hidden" value="<s:property value="salesRecord.customerId"/>" name="salesRecord.customerId">
+<input id="customersautocomplete" type="text"  value="<s:property value="salesRecord.customerName"/>" name="salesRecord.customerName" style="width:300px;background-position: 286px 4px;"autocomplete="off">
 										</div>
 									</div>
 				</div>		
@@ -171,11 +171,21 @@ display:none;
 	             <td style="width:20px; text-align:center;"> <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/> </td>	   
 	            <td><s:property value="year"/></td>
 	            <td><s:property value="monthName"/></td>
-	            <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="totalCost" /></s:text></td>
-				<td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="totalAmount" /></s:text></td>		 
+	            <td style="text-align:right;">
+	            <s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:property value="totalCostDisplay"/>
+	            </td>
+				<td style="text-align:right;">
+				<s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:property value="totalAmountDisplay"/>
+				</td>		 
 				</tr>
-				 <s:set var="total" value="%{#total+totalCost}"/> 
+				 <s:if test="%{exchangeInvoiceAmount>0}">
+				<s:set var="total" value="%{#total+exchangeInvoiceCost}"/> 
+				  <s:set var="totals" value="%{#totals+exchangeInvoiceAmount}"/> 
+				</s:if>
+				<s:else>
+				 <s:set var="total" value="%{#total+totalCost}"/> 	
 				  <s:set var="totals" value="%{#totals+totalAmount}"/> 
+				  </s:else> 
             </s:iterator>
 			</tbody>
 			<tfoot>
@@ -183,9 +193,8 @@ display:none;
       <td><span style="float:left; width:65px;"><mmr:message messageId="label.commission.total"/>:</span></td>
       <td></td>
       <td></td>
-	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#total}" /></s:text></td>
-	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{#totals}" /></s:text></td>
-     
+	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:label name="curr" value="%{#session.totalCost}"/></td>
+	  <td style="text-align:right;"><s:label name="curr" value="%{#session.salesCurrencySymbol}"/><s:label name="curr" value="%{#session.totalCharge}"/></td>     
     </tr>
   </tfoot>
 			

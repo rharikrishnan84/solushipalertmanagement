@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import com.meritconinc.shiplinx.model.EdiItem;
 import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.EdiManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+
 import com.opensymphony.xwork2.Preparable;
 
 public class EdiManagerAction extends BaseAction implements Preparable,
@@ -200,7 +202,8 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 				item = init();
 			
 			if (this.ediManagerService != null && method==null) {
-				ediItemList = this.ediManagerService.findEdiItems(item);		
+				ediItemList = this.ediManagerService.findEdiItems(item);
+				Collections.sort(ediItemList);		
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -235,6 +238,12 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 	public String uploadAndProcess() throws Exception {
 		try {
 			EdiInfo ediInfo = this.getEdiInfo();
+			List<EdiItem> file=ediManagerService.searchFileInEdiItem(uploadFileName);
+						if(!file.isEmpty()){
+							log.error("File already exist");
+							addActionError(getText("edifile.already.exist"));
+							//return null;
+						}else{
 			if (ediInfo != null && ediInfo.getCarrierId() > 0 && this.getUpload() != null && this.getUploadFileName() != null) {
 				InputStream is = new DataInputStream(new FileInputStream(this.getUpload()));
 				if (is != null) {
@@ -247,6 +256,7 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 						addActionMessage(getText("edifile.uploaded.successfully.process.started"));
 					}
 				}
+			}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

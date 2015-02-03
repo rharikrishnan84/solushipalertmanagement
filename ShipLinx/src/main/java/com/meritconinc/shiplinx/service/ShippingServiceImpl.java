@@ -2156,4 +2156,39 @@ public CurrencySymbol getSymbolByCurrencycode(String currencyCode) {
 	
 	return this.shippingDAO.getSymbolByCurrencycode(currencyCode);
 }
+
+@Override
+public String getCurrencyByCountry(String accCountry) {
+	// TODO Auto-generated method stub
+	return this.shippingDAO.getCurrencyByCountry(accCountry);
+}
+
+@Override
+public int getCountryIdByCountryCode(String accCountry,String currencyCode) {
+	// TODO Auto-generated method stub
+	
+	return this.shippingDAO.getCountryIdByCountryCode(accCountry,currencyCode);
+}
+
+@Override
+public String getCurrencyByAccountNumber(String accountNumber) {
+	// TODO Auto-generated method stub
+	return carrierServiceDAO.getCurrencyByAccount(accountNumber);
+}
+
+@Override
+public CurrencySymbol getCurrencyCodeById(int id) {
+	return this.shippingDAO.getCurrencyCodeById(id);
+}
+
+@Override
+public void updateShippingOrderCurrency(ShippingOrder ediShipment) {
+	// TODO Auto-generated method stub
+	if(ediShipment.getDbShipment()!=null && !ediShipment.getDbShipment().equals("") && ediShipment.getDbShipment().getCharges().size()>0){
+	shippingDAO.updateShippingOrderCurrency(ediShipment.getDbShipment().getCharges().get(0).getOrderId(), ediShipment.getCurrency());
+	}
+	else if(ediShipment.getCharges()!=null && ediShipment.getCharges().size()>0){
+		shippingDAO.updateShippingOrderCurrency(ediShipment.getCharges().get(0).getOrderId(), ediShipment.getCurrency());
+	}
+}
 }

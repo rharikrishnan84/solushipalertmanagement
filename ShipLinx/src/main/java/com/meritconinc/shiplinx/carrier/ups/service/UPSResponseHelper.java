@@ -169,7 +169,8 @@ public class UPSResponseHelper {
 			try{
 				if(rated_shipment.getGuaranteedDaysToDelivery() != null){
 					logger.debug("Guaranteed Days to delivery for " + service.getDescription() + " is " + rated_shipment.getGuaranteedDaysToDelivery());
-					rate.setTransitDays(Integer.valueOf(rated_shipment.getGuaranteedDaysToDelivery()));
+					//rate.setTransitDays(Integer.valueOf(rated_shipment.getGuaranteedDaysToDelivery()));
+					rate.setTransitDays(Integer.valueOf(0));
 				}
 				else{ //if it is null					
 					//As per ticket UDK Support | Case 28800287 | Saturday Delivery [Request: 110203-016064], if Sat delivery is requested, then the Guaranteed Delivery Days must be set.

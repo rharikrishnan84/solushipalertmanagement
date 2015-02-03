@@ -724,7 +724,8 @@ public class GenericCarrierAPI implements CarrierService {
     log.debug(c.getTariffRate());
     log.debug(c.getCost());
     log.debug(c.getCharge());
-    c.setChargeCode(ShiplinxConstants.GROUP_FUEL_CHARGE);
+    //c.setChargeCode(ShiplinxConstants.GROUP_FUEL_CHARGE);
+    c.setChargeCode(ShiplinxConstants.GROUP_FUEL_SURCHARGE);
     //Written By Mohan R
     c.setChargeGroupId(3);
     //END

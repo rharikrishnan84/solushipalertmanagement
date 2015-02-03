@@ -15,6 +15,8 @@ import com.meritconinc.shiplinx.model.EdiInfo;
 import com.meritconinc.shiplinx.model.EdiItem;
 import com.meritconinc.shiplinx.model.LoggedEvent;
 import com.meritconinc.shiplinx.model.Package;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.PackageType;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.LoggedEventService;
@@ -277,7 +279,10 @@ public class EdiFedexParser extends EdiParser {
 		shipment.getPackages().add(pkg);
 		
 		populateCharges(shipment, item);
-		
+		if(shipment.getCharges()!=null && shipment.getCharges().size()>0)
+					{
+						shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
+					}
 		return shipment;
 	}
 	
@@ -354,13 +359,83 @@ public class EdiFedexParser extends EdiParser {
 			charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 			charge.setCarrierId(shipment.getCarrierId());
 			charge.setCarrierName(ShiplinxConstants.CARRIER_FEDEX_STRING);
-			if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
+			/*if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
 				charge.setTariffRate(tariff);
 				charge.setCharge( applyMarkup(shipment, charge, item) );
 			} else {
 				charge.setCharge(charge.getCost());
 				charge.setTariffRate(charge.getCost());
-			}	
+			}	*/
+			
+			//COST CURRENCY CODE FIX STARTS HERE
+			String currencyCode=null;
+			if(shipment.getCurrency()!=null && !(shipment.getCurrency()).equals("")){
+				CurrencySymbol costCurrency = shippingService.getSymbolByCurrencycode(shipment.getCurrency());
+				charge.setCostcurrency(costCurrency.getId());
+			}else{
+				String currency=shippingService.getCurrencyByAccountNumber(item.getAccountNumber());
+				CurrencySymbol CurrencySymbol = shippingService.getSymbolByCurrencycode(currency);
+				charge.setCostcurrency(CurrencySymbol.getId());
+				charge.setCurrency(CurrencySymbol.getCurrencyCode());
+				shipment.setCurrency(CurrencySymbol.getCurrencyCode());
+			}
+//COST CURRENCY CODE FIX ENDED HERE			
+			
+//CHARGE CURRENCY CODE FIX STARTS HERE
+			if(shipment.getCustomer()!=null){
+				currencyCode=shipment.getDbShipment().getCustomer().getDefaultCurrency();
+				}
+			if((currencyCode ==null || ("").equals(currencyCode)) && shipment.getCustomerId()!=null){
+				Customer customerInfo=customerDAO.getCustomerInfoByCustomerId(shipment.getCustomerId(), shipment.getBusinessId());
+				currencyCode=customerInfo.getDefaultCurrency();
+				}
+			if(currencyCode!=null && !currencyCode.isEmpty()){
+				CurrencySymbol Currency = shippingService.getSymbolByCurrencycode(currencyCode);
+				charge.setChargecurrency(Currency.getId());
+				charge.setCurrency(currencyCode);
+				}
+				else{
+					charge.setChargecurrency(charge.getCostcurrency());
+					currencyCode=shipment.getCurrency();
+					charge.setCurrency(currencyCode);
+					}
+			if(currencyCode == null || ("").equals(currencyCode)){
+				currencyCode = "CAD";
+				charge.setCurrency("CAD");
+			}
+//CHARGE CURRENCY CODE FIX ENDED HERE	
+
+//cHARGE AND TARIF CALCULATION STARTS HERE
+			if (chargeGroupCode != null && chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)) {
+				if(currencyCode!=null && !currencyCode.isEmpty()){
+					if(shipment.getCurrency().equals(currencyCode)){
+						charge.setTariffRate(tariff);
+						charge.setCharge(applyMarkup(shipment, charge, item) );
+						}
+						else{
+							Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+							charge.setTariffRate(tariff*exchangeRate);
+							charge.setCharge( applyMarkup(shipment, charge, item)*exchangeRate );
+							charge.setCurrency(currencyCode);
+							}
+					}
+				} 
+				else{
+					if(currencyCode!=null && !currencyCode.isEmpty()){
+						if(shipment.getCurrency().equals(currencyCode)){
+							charge.setCharge(charge.getCost());
+							charge.setTariffRate(charge.getCost());
+							}
+							else{
+								Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+								charge.setCharge(charge.getCost()*exchangeRate);
+								charge.setTariffRate(charge.getCost()*exchangeRate);
+								charge.setCurrency(currencyCode);
+								}
+						}
+					}
+//CHARGE AND TARIF CALCULATION ENDED HERE
+			
 			charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
 			return charge;
 		}

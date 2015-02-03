@@ -50,6 +50,8 @@
 			<result property="commissionPercentagePerPalletService" column="comm_perc_PP"/>
 			<result property="commissionPercentagePerSkidService" column="comm_perc_PS"/>
 			<result property="commisionPercentagePerCHB" column="comm_perc_CHB"/>
+			<result property="commisionPercentagePerFWD" column="comm_perc_FWD"/>
+			<result property="commisionPercentagePerFPA" column="comm_perc_FPA"/>
 	</resultMap>
 	
 	<resultMap id="CustomerSalesMapEmail" class="com.meritconinc.shiplinx.model.CustomerSalesUser">	
@@ -87,7 +89,7 @@
 	</insert>
 	
 	<insert id="addCustomerSales" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser">
-			 insert into customer_sales (customer_id,sales_user,comm_perc_ps, comm_perc_pp, comm_perc_chb) values (#customerId#,#salesAgent#,#commissionPercentagePerSkidService#, #commissionPercentagePerPalletService#, #commisionPercentagePerCHB#)
+			 insert into customer_sales (customer_id,sales_user,comm_perc_ps, comm_perc_pp, comm_perc_chb,comm_perc_FWD,comm_perc_FPA) values (#customerId#,#salesAgent#,#commissionPercentagePerSkidService#, #commissionPercentagePerPalletService#, #commisionPercentagePerCHB#,#commisionPercentagePerFWD#,#commisionPercentagePerFPA#)
 			<selectKey resultClass="long" type="post" keyProperty="customerId" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -159,7 +161,7 @@
 	</delete>
 	
 	<update id = "updateCustomerSalesUser" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser">
-		update customer_sales set comm_perc_ps=#commissionPercentagePerSkidService#, comm_perc_pp=#commissionPercentagePerPalletService#, comm_perc_chb=#commisionPercentagePerCHB# where id=#id#
+		update customer_sales set comm_perc_ps=#commissionPercentagePerSkidService#, comm_perc_pp=#commissionPercentagePerPalletService#, comm_perc_chb=#commisionPercentagePerCHB#,comm_perc_fwd=#commisionPercentagePerFWD#,comm_perc_FPA=#commisionPercentagePerFPA# where id=#id#
 	</update>
 	
 	<select id="getCustomerTierInfo" parameterClass="com.meritconinc.shiplinx.model.Customer" resultMap="CustomerTierMap">
@@ -182,5 +184,8 @@
 	</select>
 	<select id="getBilldutyList" resultMap="billdutyResult">
 		select * from bill_duty where locale=#locale#
+	</select>
+	<select id="getCustomerCurrencyById" resultClass="String">
+		SELECT default_currency from customer where customer_id=#customerId#;
 	</select>
 </sqlMap>

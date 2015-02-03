@@ -197,4 +197,15 @@ public interface ShippingService {
 
   public List<CurrencySymbol> getallCurrencySymbol();
   public CurrencySymbol getSymbolByCurrencycode(String currencyCode); 
+  
+  public String getCurrencyByCountry(String accCountry);
+  
+  public int getCountryIdByCountryCode(String accCountry,String currencyCode);
+  
+  public String getCurrencyByAccountNumber(String accountNumber);
+  
+  public CurrencySymbol getCurrencyCodeById(int id);
+
+public void updateShippingOrderCurrency(ShippingOrder ediShipment);
+  
 }

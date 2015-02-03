@@ -14,4 +14,5 @@ public interface EdiDAO {
 	public void updateEdiItemStatus(long ediItemId, int status);
 	public List<EdiItem> getMatchingEdiItemList(EdiItem item);
 	public List<EdiItem> findEdiItems(EdiItem item);
+	public List<EdiItem> searchFileInEdiItem(String uploadFileName);
 } 

@@ -154,6 +154,7 @@ public class FedEx implements CarrierService {
 		if(order.getPackages().size()>1)
 		{
 			ProcessShipmentReply reply=shipWebServiceClient.sendRequest(request,"1");
+			
 			if (!isResponseOk(reply.getHighestSeverity())) // check if the call was successful
 			{
 				log.debug("ERROR FedEx ShipOrder::"+reply.getNotifications()[0].getMessage());

@@ -247,4 +247,15 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
   	  }
   	  return null;
     }
+  
+  @Override
+  public String getCurrencyByAccount(String accountNumber1) {
+  	// TODO Auto-generated method stub
+  	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+  	    paramObj.put("accountNumber1", accountNumber1);
+  	
+  	String currency=(String)getSqlMapClientTemplate().queryForObject("getCurrencyByAccount", paramObj);
+  	return currency;
+  }
+  
 }

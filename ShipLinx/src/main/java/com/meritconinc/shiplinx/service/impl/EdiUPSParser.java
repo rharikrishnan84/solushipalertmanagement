@@ -14,6 +14,8 @@ import com.meritconinc.shiplinx.dao.AddressDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.EdiDAO;
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.EdiInfo;
@@ -187,8 +189,10 @@ public class EdiUPSParser extends EdiParser {
 		if(charge!=null && charge.getCost()>0) //if cost is 0, then don't add charge. Example: Freight Collect
 			shipment.getCharges().add(charge); 
 
-		
-		
+		if(shipment.getCharges()!=null && shipment.getCharges().size()>0)
+					 {
+		shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
+					 }
 		//trying to determine the billed weight
 		if(getEdiField(BILLED_WEIGHT_UOM)!=null && getEdiField(BILLED_WEIGHT_UOM).length()>0){
 			if(getEdiField(BILLED_WEIGHT_UOM).equalsIgnoreCase("L"))
@@ -319,11 +323,76 @@ public class EdiUPSParser extends EdiParser {
 		charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
 		charge.setCarrierId(shipment.getCarrierId());
 		charge.setCarrierName(ShiplinxConstants.CARRIER_UPS_STRING);
+		//COST CURRENCY CODE FIX STARTS HERE
+		String currencyCode=null;
+		if(shipment.getCurrency()!=null && !(shipment.getCurrency()).equals("")){
+			CurrencySymbol costCurrency = shippingService.getSymbolByCurrencycode(shipment.getCurrency());
+			charge.setCostcurrency(costCurrency.getId());
+		}else{
+			String currency=shippingService.getCurrencyByAccountNumber(item.getAccountNumber());
+			CurrencySymbol CurrencySymbol = shippingService.getSymbolByCurrencycode(currency);
+			charge.setCostcurrency(CurrencySymbol.getId());
+			charge.setCurrency(CurrencySymbol.getCurrencyCode());
+			shipment.setCurrency(CurrencySymbol.getCurrencyCode());
+		}
+//COST CURRENCY CODE FIX ENDED HERE			
+		
+//CHARGE CURRENCY CODE FIX STARTS HERE
+		if(shipment.getCustomer()!=null){
+			currencyCode=shipment.getDbShipment().getCustomer().getDefaultCurrency();
+			}
+		if((currencyCode ==null || ("").equals(currencyCode)) && shipment.getCustomerId()!=null){
+			Customer customerInfo=customerDAO.getCustomerInfoByCustomerId(shipment.getCustomerId(), shipment.getBusinessId());
+			currencyCode=customerInfo.getDefaultCurrency();
+			}
+		if(currencyCode!=null && !currencyCode.isEmpty()){
+			CurrencySymbol Currency = shippingService.getSymbolByCurrencycode(currencyCode);
+			charge.setChargecurrency(Currency.getId());
+			charge.setCurrency(currencyCode);
+			}
+			else{
+				charge.setChargecurrency(charge.getCostcurrency());
+				currencyCode=shipment.getCurrency();
+				charge.setCurrency(currencyCode);
+				}
+		if(currencyCode == null || ("").equals(currencyCode)){
+			currencyCode = "CAD";
+			charge.setCurrency("CAD");
+		}
+//CHARGE CURRENCY CODE FIX ENDED HERE	
+
 		if (chargeGroupCode != null && (chargeGroupCode.equals(ShiplinxConstants.GROUP_FUEL_CHARGE) ||
 										chargeGroupCode.equals(ShiplinxConstants.GROUP_FREIGHT_CHARGE)	)) {
-			charge.setCharge( applyMarkup(shipment, charge, item) );
+			/*charge.setCharge( applyMarkup(shipment, charge, item) );
 		} else {
-			charge.setCharge(charge.getCost());
+			charge.setCharge(charge.getCost());*/
+			if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									charge.setCharge( applyMarkup(shipment, charge, item) );
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									charge.setCharge( applyMarkup(shipment, charge, item)*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
+							
+						} 
+						else {
+							if(currencyCode!=null && !currencyCode.isEmpty()){
+								if(shipment.getCurrency().equals(currencyCode)){
+									charge.setCharge(charge.getCost());
+									charge.setExchangerate(BigDecimal.valueOf(1));
+								}
+								else{
+									Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
+									charge.setCharge(charge.getCost()*exchangeRate );
+									charge.setCurrency(currencyCode);
+									charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
+								}
+							}
 		}
 		charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
 		return charge;

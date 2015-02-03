@@ -832,15 +832,21 @@ public String execute() throws Exception {
 	    List comm_chbList = new ArrayList();
 	    List comm_psList = new ArrayList();
 	    List comm_ppList = new ArrayList();
+	    List comm_fpaList = new ArrayList();
+	    List comm_fwdList = new ArrayList();
 	    for (com.meritconinc.mmr.model.security.User user : salesUsers) {
 	      comm_chbList.add(user.getCommissionPercentageCHB());
 	      comm_ppList.add(user.getCommissionPercentagePP());
 	      comm_psList.add(user.getCommissionPercentagePS());
+	      comm_fpaList.add(user.getCommissionPercentageFPA());
+	      comm_fwdList.add(user.getCommissionPercentageFWD());
 	    }
 	    customer.setCustomerSalesUser(customerSalesList);
 	    request.setAttribute("ppList", comm_ppList);
 	    request.setAttribute("chbList", comm_chbList);
 	    request.setAttribute("psList", comm_psList);
+	    request.setAttribute("fpaList", comm_fpaList);
+	    request.setAttribute("fwdList", comm_fwdList);
 	    return SUCCESS;
 	  }
 	
@@ -859,10 +865,16 @@ public String execute() throws Exception {
 	        "Commission_Percentage_PP").toString());
 	    Double dCommissionPercentage_chb = Double.parseDouble(request.getParameter(
 	        "Commission_Percentage_CHB").toString());
+	    Double dCommissionPercentage_fpa = Double.parseDouble(request.getParameter(
+	    				        "Commission_Percentage_FPA").toString());
+	    Double dCommissionPercentage_fwd = Double.parseDouble(request.getParameter(
+	    				        "Commission_Percentage_FWD").toString());
 	    Long customerId = Long.valueOf(request.getParameter("id").toString());
 	    customerSalesUser.setCommissionPercentagePerSkidService(dCommissionPercentage);
 	    customerSalesUser.setCommissionPercentagePerPalletService(dCommissionPercentage_pp);
 	    customerSalesUser.setCommisionPercentagePerCHB(dCommissionPercentage_chb);
+	    customerSalesUser.setCommisionPercentagePerFPA(dCommissionPercentage_fpa);
+	    customerSalesUser.setCommisionPercentagePerFWD(dCommissionPercentage_fwd);
 	    customerSalesUser.setSalesAgent(strSalesAgent);
 	    customerSalesUser.setCustomerId(customerId);   
 	    retval = getService().addCustomerSales(customerSalesUser);
@@ -904,6 +916,8 @@ public String execute() throws Exception {
 
 	    CustomerSalesUser customerSalesUser = new CustomerSalesUser();
 	    Double dcommissionpercentage_ps = 0.0, dcommissionpercentage_pp = 0.0, dcommissionpercentage_chb = 0.0;
+	    Double dcommissionpercentage_fpa = 0.0;
+	    Double dcommissionpercentage_fwd = 0.0;
 	    boolean retval = false;
 
 	    String csId = request.getParameter("cs_id");
@@ -913,12 +927,16 @@ public String execute() throws Exception {
 	    dcommissionpercentage_ps = Double.parseDouble(request.getParameter("cp_ps"));
 	    dcommissionpercentage_pp = Double.parseDouble(request.getParameter("cp_pp"));
 	    dcommissionpercentage_chb = Double.parseDouble(request.getParameter("cp_chb"));
+	    dcommissionpercentage_fpa = Double.parseDouble(request.getParameter("cp_fpa"));
+	    dcommissionpercentage_fwd = Double.parseDouble(request.getParameter("cp_fwd"));
 	   
 	    customerSalesUser.setCustomerId(custSalesUser.getCustomerId());
 	    customerSalesUser.setId(Integer.parseInt(csId));
 	    customerSalesUser.setCommissionPercentagePerSkidService(dcommissionpercentage_ps);
 	    customerSalesUser.setCommissionPercentagePerPalletService(dcommissionpercentage_pp);
 	    customerSalesUser.setCommisionPercentagePerCHB(dcommissionpercentage_chb);
+	    customerSalesUser.setCommisionPercentagePerFPA(dcommissionpercentage_fpa);
+	    customerSalesUser.setCommisionPercentagePerFWD(dcommissionpercentage_fwd);
 
 	    retval = getService().updateCustomerSales(customerSalesUser);
 

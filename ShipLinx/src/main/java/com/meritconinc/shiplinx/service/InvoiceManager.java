@@ -56,4 +56,9 @@ public interface InvoiceManager {
 			public List<Invoice> getInvoiceChargeDetails(Long invoiceId);
 			public List<Charge> getChargeExchangeRateByInvoiceId(long invoiceId);
 			public List<Invoice> searchInvoicesBreakdownIncludeCanceledInvoice(Commission commission);
+			
+			public Double currencyConversion(String fromCurrency, String toCurrency, double amount);
+			public Double currencyConversionToId(String fromCurrency, int toCurrency, double amount);
+			public List<Invoice> getInvoiceByEmailType(Long invoiceId);
+			
 }

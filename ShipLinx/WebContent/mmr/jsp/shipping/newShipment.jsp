@@ -296,18 +296,26 @@ var count=parseInt(prevQuantity);
 						} */
 						var myParam = location.search.split('customsinvoice=')[1];
 		     			var carrier = document.getElementById("firstBoxCarrier").value;
+		     			var emailNotify = "false";
+		     						var emailNotify2 = "false";
+		     					     			if( document.getElementsByName("shippingOrder.fromAddress.sendNotification")[0].checked){ 
+		     					     				emailNotify = "true";
+		     					     			}
+		     					     			if( document.getElementsByName("shippingOrder.toAddress.sendNotification")[0].checked){
+		     					     				emailNotify2 = "true";
+		     					     			}
 						if(carrier != -1){
 								if(myParam=="true"){
 									var wait = false;
 									jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
 										if(confirmationMessage==true){
 											wait = true;
-											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true";
+											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
 											document.userform.submit();
 											$('#loader').css('display','block');
 											$('#loaderImg').css('display','block');
 										}else{
-											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";
+											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
 											document.userform.submit();
 											$('#loader').css('display','block');
 											$('#loaderImg').css('display','block');
@@ -317,12 +325,12 @@ var count=parseInt(prevQuantity);
 										jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
 											if(confirmationMessage==true){
 												wait = true;
-												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true";	
+												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true"+"&emailNotify="+emailNotify+"&emailNotify2"+emailNotify2;	
 												document.userform.submit();
 												$('#loader').css('display','block');
 												$('#loaderImg').css('display','block');
 											}else{
-												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";	
+												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
 												document.userform.submit();
 												$('#loader').css('display','block');
 												$('#loaderImg').css('display','block');
@@ -332,7 +340,7 @@ var count=parseInt(prevQuantity);
 									}
 										}
 										else{
-										document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false";
+											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
 									 	document.userform.submit();
 									 	$('#loader').css('display','block');
 										$('#loaderImg').css('display','block');
