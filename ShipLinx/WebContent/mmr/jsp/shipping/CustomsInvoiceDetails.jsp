@@ -534,7 +534,7 @@ function toShoworHide(checked)
 								<div id="loading-billto"><img id="loading-img-billto" style="display:none;" src="<s:url value="/mmr/images/loading.gif" includeContext="true" />" border="0"></div>
 				
 									<div class="form_buttons_radio">
-										<s:radio id="radio_address" list="billduty" listKey="code" listValue="name" value="%{shippingOrder.customsInvoice.billTo}" onclick="changeBillTo(this.value);"  name="shippingOrder.customsInvoice.billTo"  />				
+										<s:radio id="radio_address" list="#session.billduty" listKey="code" listValue="name" value="%{shippingOrder.customsInvoice.billTo}" onclick="changeBillTo(this.value);"  name="shippingOrder.customsInvoice.billTo"  />				
 									</div>
 							</div>
 					</div>

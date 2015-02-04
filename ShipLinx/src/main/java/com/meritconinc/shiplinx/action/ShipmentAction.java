@@ -2209,8 +2209,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    displayTextLocale = userDAO.getDisplayTextByLocale(UserUtil.getMmrUser().getLocale()).getDisplayText();
 	    if(displayTextLocale != null && !displayTextLocale.isEmpty()){
 	    	billduty = customerService.getBilldutyList(displayTextLocale);
+	    	getSession().put("billduty", billduty);
 	    }else{
 	    	billduty = customerService.getBilldutyList(UserUtil.getMmrUser().getLocale());
+	    	getSession().put("billduty", billduty);
 	    }
 	    Package packageArray[] = shippingOrder.getPackageArray();
 	    log.debug("packageArray.length::::" + packageArray.length);
@@ -2690,10 +2692,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	          shippingOrder.getBillToType() + " - " + shippingOrder.getBillToAccountNum());
 	    
 	    	    this.addresslist();
-	    	    if(emailNotification.equalsIgnoreCase("true")){
+	    	    if(emailNotification!=null && emailNotification.equalsIgnoreCase("true")){
 	    	    				addressService.setSendNotification(shippingOrder.getFromAddress().getAddressId());
 	    	    			}
-	    	    		    if(emailNotification2.equalsIgnoreCase("true")){
+	    	    		    if(emailNotification2!=null && emailNotification2.equalsIgnoreCase("true")){
 	    	    				addressService.setSendNotification(shippingOrder.getToAddress().getAddressId());
 	    	    			}
 	    return SUCCESS;
