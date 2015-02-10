@@ -258,4 +258,23 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
   	return currency;
   }
   
+  @Override
+  public boolean getSchdulerFlagByDomain(String domain) {
+  	// TODO Auto-generated method stub
+  	
+  boolean reval=false;
+  Map<String, Object> paramObj = new HashMap<String, Object>(1);
+  paramObj.put("domain", domain);
+  Integer flag = (Integer) getSqlMapClientTemplate().queryForObject("getSchdulerFlagByDomain", paramObj);
+  
+  if (flag==0){
+  	reval=false;
+  }
+  else{
+  	reval=true;
+  }
+  return reval;
+  	
+  }
+  
 }

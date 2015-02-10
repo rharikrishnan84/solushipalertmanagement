@@ -12,8 +12,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
-import com.meritconinc.shiplinx.carrier.midland.MidlandAPI;
-
 public class QuartzInitializerListener implements ServletContextListener {
 
 	private static final Logger log = Logger.getLogger(QuartzInitializerListener.class);
@@ -39,7 +37,7 @@ public class QuartzInitializerListener implements ServletContextListener {
 			crt.setName("Trigger"); 
 			//0 m H
 			
-			crt.setCronExpression("0 55 19 * * ?");
+			crt.setCronExpression("0 0/5 * * * ?");
 			crt.setTimeZone(TimeZone.getTimeZone("EST"));
 			//crt.setCronExpression("0 11 15 * * ?");
 			log.debug("TIME "+crt.getTimeZone().getDisplayName());

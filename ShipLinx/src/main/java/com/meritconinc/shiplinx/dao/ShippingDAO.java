@@ -214,4 +214,5 @@ public interface ShippingDAO {
   public String getCurrencyByCountry(String accCountry);
   
   public int getCountryIdByCountryCode(String accCountry,String currencyCode);
+  public List<ShippingOrder> getShippingOrders(List<Long> soluShipOrderIds);
   }

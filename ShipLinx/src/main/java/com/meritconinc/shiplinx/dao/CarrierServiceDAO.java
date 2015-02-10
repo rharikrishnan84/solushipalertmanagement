@@ -58,5 +58,7 @@ public interface CarrierServiceDAO {
   public List<Service> getAllServices();
   
   public String getCurrencyByAccount(String accountNumber1);
+  
+  boolean getSchdulerFlagByDomain(String domain);
 
 }

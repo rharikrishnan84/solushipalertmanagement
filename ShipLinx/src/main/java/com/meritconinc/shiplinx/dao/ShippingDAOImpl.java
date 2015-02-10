@@ -754,8 +754,16 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
           ShiplinxConstants.BILLING_STATUS_AWAITING_CONFIRMATION);
       paramObj.put("statusChargeInvoice", ShiplinxConstants.CHARGE_INVOICED);
 
-      getSqlMapClientTemplate().update("releaseCharges", paramObj);
-    } catch (Exception e) {
+      List<ShippingOrder> orderList = getSqlMapClientTemplate().queryForList("selectOrderIdForEdiInvoiceNumber", paramObj);
+            
+            for(ShippingOrder s:orderList){
+          	 if(s.getId()!=null){
+          	  paramObj.put("order_id", s.getId());  
+          	  getSqlMapClientTemplate().update("releaseCharges", paramObj);
+          	  log.debug("ORDER_ID :"+s.getId()+" is updated with status 20");
+            }
+            } 
+          }catch (Exception e) {
       e.printStackTrace();
     }
   }
@@ -1389,4 +1397,14 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 										return 1;
 									}
 								}
+								
+								@Override
+																public List<ShippingOrder> getShippingOrders(
+																		List<Long> soluShipOrderIds) {
+																		    List<ShippingOrder> shipOrders=null;
+																		    shipOrders = getSqlMapClientTemplate().queryForList("getShippingOrderByIds", soluShipOrderIds);
+																		    return shipOrders;    
+																		  }
+								
+																
 }

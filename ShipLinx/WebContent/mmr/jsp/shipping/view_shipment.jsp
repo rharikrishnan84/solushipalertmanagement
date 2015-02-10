@@ -538,8 +538,20 @@ var product_id=0;
 	</SCRIPT>
 					<script>
 						$(document).ready(function(){
+							<%
+														 String isLTL=(String)request.getAttribute("isLTL");
+														 %>
+														var isLTL = <%=isLTL%>;
+														if(isLTL == "1"){
+															$('#box3').css('display','block');
+									   						$('#box1,#box2').css('display','none');
+									   						$('#box3').css('background-color','#990000');
+									   						$('.navi4 ul li:last-child').css('background-color','#990000');
+														}
+														else{
 							$('.navi4 ul li:first-child').css('background-color','#990000');
 							$('#box2,#box3').css('display','none');
+														}
 							$('.navi4 ul li').click(function(){
 								$(this).css('background-color','#990000');
 								$(this).siblings().css('background-color','#000000');

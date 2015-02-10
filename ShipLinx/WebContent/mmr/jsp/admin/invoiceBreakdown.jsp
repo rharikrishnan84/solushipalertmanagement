@@ -254,8 +254,8 @@
 			<th style="width: 70px !important;text-align:right;padding-right:10px"><mmr:message messageId="invoice.breakedown.SPD"/></th>
 			<th style="width: 100px !important;text-align:right;padding-right:10px"><mmr:message messageId="invoice.breakedown.LTL"/></th>
 			<th style="width: 100px !important;text-align:left;padding-right:10px;"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.CHB"/></span></th>
- 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FWD"/></th>
- 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FPA"/></th>
+ 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FWD"/></span></th>
+ 		    <th style="width: 100px !important;text-align:right;padding-right:10px"><span style=" padding-left:70px;"><mmr:message messageId="invoice.breakedown.FPA"/></span></th>
  		
 			<!-- <th style="width: 155px !important;text-align:center;padding-right:10px"></th> -->
 	</tr>

@@ -2428,4 +2428,100 @@ OPEN cur_charges;
  CLOSE cur_charges;
 END;$$
 Delimiter ;
+
+insert into resourcebundle (msg_id,msg_content,locale,is_fmk)
+values('invoice.breakedown.FWD','FWD','en_CA',0);
+insert into resourcebundle (msg_id,msg_content,locale,is_fmk)
+values('invoice.breakedown.FPA','FPA','en_CA',0);
+UPDATE carrier SET tracking_url='https://onlineservices.midlandcourier.com/cgi-bin/wspd_cgi.sh/reftrace.htm?wbill-no=*trackingnum' WHERE carrier_id='80';
+
+create table schedular(id int(5),host varchar(100),scheduler_flag tinyint(1));
+
+insert into schedular values(1,'localhost',0);
+insert into schedular values(2,'live',1);
+insert into schedular values(3,'test',0);
+insert into schedular values(4,'test1',0);
+insert into schedular values(5,'zipdandy',0);
+
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `sp_for_old_records`(
+			IN start_date DATE,
+ 			IN end_date   DATE)
+BEGIN
+
+			DECLARE cur_invoiceId  INT(10);
+			DECLARE temp_invoiceId INT(10);
+			DECLARE emailtype      VARCHAR(5);
+			DECLARE cur_emailtype  VARCHAR(5);
+			DECLARE done           INT(1);
+			DECLARE totcharge      DOUBLE(10,2);
+			DECLARE cur_charge     DOUBLE(10,2);
+			DECLARE second_done    INT(1);
+
+			DECLARE invoice_cursor CURSOR FOR SELECT invoice_id from invoice where date_created between start_date and end_date;
+			DECLARE continue handler for not found set done=1;
+				SET done = 0;
+				OPEN invoice_cursor;
+					igmLoop: loop
+						FETCH invoice_cursor into cur_invoiceId;
+						IF done = 1 then leave igmLoop; end if;
+							SET @temp_invoiceId = (select invoice_id from invoice where invoice_id = cur_invoiceId);
+								BLOCK2: BEGIN
+								DECLARE invoice_cursortwo CURSOR FOR select sum(charge),res.email_type 
+									from(
+										SELECT 	s.email_type,
+										coalesce((
+											select 	cg.is_tax
+											from 	charge_group cg,
+													carrier_charge_code ccc
+											where	ccc.carrier_id = ch.carrier_id
+											and		ccc.charge_code = ch.charge_code
+											and		(SELECT IF((ch.charge_code_level_2 is NULL),true,(ccc.charge_code_level_2 = ch.charge_code_level_2)))
+											and		cg.id = ccc.charge_group_id
+											limit 1
+										),0) as is_tax,
+										ch.charge AS charge 
+								FROM 	invoice_charges ic,
+										shipping_order so,
+										charges ch, service s
+								WHERE 	ic.invoice_id = @temp_invoiceId
+								and 	so.order_id = ic.order_id
+								and 	ic.charge_id=ch.id
+								and  	ic.cancelled_invoice='No'
+								and 	ch.type = 1    
+								and 	s.service_id=so.service_id
+								) as res
+								 where res.is_tax = 0
+								group by res.email_type ;
+
+			DECLARE continue handler for not found set second_done=1;
+			SET second_done = 0;
+				OPEN invoice_cursortwo;
+					second_igmLoop: loop
+						FETCH invoice_cursortwo into cur_charge,cur_emailtype;
+						IF second_done = 1 then leave second_igmLoop; end if;
+								SET @totcharge = cur_charge; 
+								SET @emailtype = cur_emailtype;
+									IF @emailtype='SPD' THEN
+										UPDATE invoice SET spd_total=@totcharge where invoice_id =@temp_invoiceId;
+										ELSEIF @emailtype='LTL' THEN
+										UPDATE invoice SET ltl_total=@totcharge where invoice_id =@temp_invoiceId;
+										ELSEIF  @emailtype='CHB' THEN
+										UPDATE invoice SET chb_total=@totcharge where invoice_id =@temp_invoiceId;
+										ELSEIF  @emailtype='FWD' THEN
+										UPDATE invoice SET fwd_total=@totcharge where invoice_id =@temp_invoiceId;
+										ELSE
+										UPDATE invoice SET fpa_total=@totcharge where invoice_id =@temp_invoiceId;
+									END IF;
+					END loop second_igmLoop;
+			   CLOSE invoice_cursortwo;
+			END BLOCK2;
+    	END loop igmLoop;
+	CLOSE invoice_cursor;
+END
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------

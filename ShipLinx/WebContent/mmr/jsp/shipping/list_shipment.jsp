@@ -386,22 +386,29 @@ function loadTrackingURL(url){
 				</td>
 				
 				<td style="width:100px !important;height:30px;overflow:hidden;text-overflow: ellipsis">
-				<s:if test="%{trackingURL!=null}">
+				<s:if test="%{trackingURL!=null && trackingURL.length()!=0 }">
 					<a href="javascript:loadTrackingURL('<s:property value="trackingURL"/>')"><s:property value="masterTrackingNum"/> </a>
 				</s:if>
+				<s:elseif test="%{masterTrackingNum ==id}">
+				    <s:a href="view.shipment.action?notrackurl='true'&viewShipmentId=%{id}&ltLState='true'"> 
+				<s:if test="%{masterTrackingNum!=null}">
+								<s:property value="masterTrackingNum"/>
+							</s:if>
+					</s:a>
+				</s:elseif>
 				<s:else>
 					<s:a href="view.shipment.action?notrackurl='true'&viewShipmentId=%{id}"> 
 					<s:if test="%{masterTrackingNum!=null}">
 							<s:if test="%{masterTrackingNum.length()!=0}">
 								<s:property value="masterTrackingNum"/>
 							</s:if>
-							<s:else>
+							<%-- <s:else>
 								<s:property value="id"/>
-							</s:else>
+							</s:else> --%>
 						</s:if>
-						<s:else>
+						<%-- <s:else>
 							<s:property value="id"/>
-						</s:else>
+						</s:else> --%>
 					</s:a>
 				</s:else>
 				</td>

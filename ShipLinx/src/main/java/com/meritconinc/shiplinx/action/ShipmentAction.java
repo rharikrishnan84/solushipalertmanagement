@@ -4660,8 +4660,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    try {
 	      log.debug("Inside----------------------viewShipment()---------------------");
 	      String shipmentId = request.getParameter("viewShipmentId");
+	      String ltLState = request.getParameter("ltLState");
+	      	      if(ltLState != null){
+	      	      ltLState = ltLState.replace("'", "");
+	      	      }
 	      ShippingOrder selectedOrder;
 
+	      if (ltLState != null && !ltLState.isEmpty()) {
+	    	  	    	  boolean isLTL = Boolean.parseBoolean(ltLState);
+	    	  	    	  if(isLTL)
+	    	  	    	  {
+	    	  	    		  request.setAttribute("isLTL", "1");
+	    	  //	    		  getSession().put("isLTL", "1");
+	    	  	    	  }
+	    	  	      }
 	      if (shipmentId != null && !shipmentId.isEmpty()) {
 	        long id = Long.valueOf(shipmentId);
 	        selectedOrder = this.shippingService.getShippingOrder(id);

@@ -467,7 +467,10 @@ public class MidlandAPI implements CarrierService{
 			URL logo = (InvoiceManagerImpl.class.getResource(logoPath));
 			parameters.put("logo",logo);
 			parameters.put("Order", order);
-			parameters.put("barcodenumber", listOfPackageID);					
+			parameters.put("barcodenumber", listOfPackageID);
+						if(("Collect").equals(order.getBillToType())){
+											parameters.put("bill_type","C");
+										}					
 			JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(order.getPackages());			
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,parameters,ds);
 			jasperPrint.setPageHeight(6*72);
