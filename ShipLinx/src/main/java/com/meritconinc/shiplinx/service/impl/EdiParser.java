@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.meritconinc.mmr.utilities.StringUtil;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -61,7 +62,9 @@ public abstract class EdiParser {
 	protected ShippingOrder currentDBShipment = null;
 	private List<EdiItem> ediItems = null;
 	private static Boolean isApplyEdiExceptions = null;
+	private static Boolean isApplyEdiConstrains = true;
 	private List<String>pins=new ArrayList<String>();
+	private boolean status;
 	public EdiParser(EdiInfo ediInfo, EdiDAO ediDAO, ShippingService shippingService,
 			CustomerDAO customerDAO, AddressDAO addressDAO, MarkupManager markupService, 
 			LoggedEventService loggedService) {
@@ -387,7 +390,8 @@ public abstract class EdiParser {
 //			Logged Event message will indicate that the shipment was cancelled but billed 
 //			(lets create some generic static messages for each rule).
 		
-		if (dbShipment.getStatusId()!=null && dbShipment.getStatusId().longValue() == ShiplinxConstants.STATUS_CANCELLED) {
+		if(status){
+			if (dbShipment.getStatusId()!=null && dbShipment.getStatusId().longValue() == ShiplinxConstants.STATUS_CANCELLED) {
 			logMsg = "This shipment was cancelled but billed.";
 			events.add(getLoggedEvent(dbShipment.getId().longValue(), logMsg));
 		}
@@ -399,6 +403,47 @@ public abstract class EdiParser {
 		}
 		// apply generic rules
 		applyCustomExceptionRules(ediShipment, dbShipment, events);
+		}
+		//+++++++++++++++++++AddressCorrectionStutusUpdate++++++++++++++++++++++++++++++++++++++++++++++++++		
+				
+		//      1.If the charge comes with address correction then such a order will be updated with following code "logMsg" in logged_event table  			
+				if(ediShipment.getCharges()!=null && ediShipment.getCharges().size()>0){
+					StringBuilder msg;
+					for(int i=0;ediShipment.getCharges().size()>i;i++){
+						 msg=new StringBuilder();
+						if(ediShipment.getCharges().get(0).getName().equals("Address Correction")){
+							if(dbShipment!=null){
+							if(!dbShipment.getFromAddress().getAddress1().equals(ediShipment.getFromAddress().getAddress1())){
+								msg.append("Address correction for address takes place in this order.The corrected 'From-address' is '");
+								msg.append(ediShipment.getFromAddress().getAddress1());
+								msg.append("'.");
+								//logMsg="Address correction for address takes place in this order.The corrected 'From-address' is '"+ediShipment.getFromAddress().getAddress1()+"'.";
+								}
+							if(!dbShipment.getToAddress().getAddress1().equals(ediShipment.getToAddress().getAddress1())){
+								msg.append("& 'To-Address' is '");
+								msg.append(ediShipment.getToAddress().getAddress1());
+								msg.append("'.");
+								//logMsg=logMsg.concat("& 'To-Address' is '"+ediShipment.getToAddress().getAddress1()+"'.");
+								}
+							}
+							if(StringUtil.isEmpty(msg.toString())){
+								msg.append("Address correction takes place in this record.From & To address in file is");
+								msg.append(ediShipment.getFromAddress().getAddress1());
+								msg.append("&");
+								msg.append(ediShipment.getToAddress().getAddress1());
+							}
+							logMsg=msg.toString();
+								if(ediShipment.getCharges().get(0).getOrderId()!=null && !ediShipment.getCharges().get(0).getOrderId().equals("")){
+									events.add(getLoggedEvent(ediShipment.getCharges().get(0).getOrderId().longValue(),logMsg));
+								}
+								else{
+									events.add(getLoggedEvent(ediShipment.getDbShipment().getCharges().get(0).getOrderId().longValue(),logMsg));
+									}
+							}
+						} 
+					}
+				
+				// apply generic rules
 		if (events.size() > 0)
 			return events;
 		return null;
@@ -416,6 +461,9 @@ public abstract class EdiParser {
 //		loggedEvent.setEventUsername(UserUtil.getMmrUser().getUsername()); //Current User
 		loggedEvent.setEventUsername(ShiplinxConstants.SYSTEM); // User SYSTEM 
 		String systemLog = MessageUtil.getMessage("label.system.log.edi.exceptions");
+		if(isApplyEdiConstrains){
+			systemLog = MessageUtil.getMessage("label.system.log.edi.message");
+		}
 		loggedEvent.setSystemLog(systemLog); //System generated Message Log
 //		if(UserUtil.getMmrUser().getUserRole().equals("busadmin"))
 			loggedEvent.setPrivateMessage(true);
@@ -605,10 +653,13 @@ public abstract class EdiParser {
 	}
 
 	protected boolean applyExceptionsRules(ShippingOrder ediShipment, ShippingOrder dbShipment) {
-		if (isApplyEdiExceptions()) {
+		status=isApplyEdiExceptions();
+		if (status || isApplyEdiConstrains) {
 			List<LoggedEvent> loggedEvents = checkExceptionRules(ediShipment, dbShipment);
 			if (loggedEvents != null) {
-				dbShipment.setStatusId(Long.valueOf(ShiplinxConstants.STATUS_EXCEPTION));
+				if(status){
+					dbShipment.setStatusId(Long.valueOf(ShiplinxConstants.STATUS_EXCEPTION));
+				}
 				for (LoggedEvent event:loggedEvents)
 					loggedEventService.addLoggedEventInfo(event);
 				return true;

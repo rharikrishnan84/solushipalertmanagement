@@ -379,4 +379,9 @@ public class AddressManagerImpl implements AddressManager,Runnable  {
 	public void setSendNotification(Long addressId){
 				  addressDAO.setSendNotification(addressId);
 			}
+	@Override
+	public Long findAddressId(long id) {
+		// TODO Auto-generated method stub
+		return addressDAO.findAddressId(id);
+	}
 }

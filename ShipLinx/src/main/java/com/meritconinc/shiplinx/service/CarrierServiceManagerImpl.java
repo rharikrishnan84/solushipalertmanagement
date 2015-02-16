@@ -586,7 +586,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
     try {
       boolean genericCarrierInListAlready = false;
+      boolean quickShipWithGenericCarrier = true;
       if (ratingList.size() > 0) {
+    	  quickShipWithGenericCarrier = false;
         for (int i = 0; i < ratingList.size(); i++) {
           if (ratingList.get(i).getCarrierId() == ShiplinxConstants.CARRIER_GENERIC) {
             genericCarrierInListAlready = true;
@@ -597,15 +599,23 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         }
 
       }
-      if (addDummyRateForLTL == true
+      if ((addDummyRateForLTL == true || quickShipWithGenericCarrier == true)
           && order.getPackageTypeId().getName().equals(ShiplinxConstants.PACKAGE_PALLET_STRING)
           && !genericCarrierInListAlready) {
         Double defaultValue = 0.0;
         Integer defaultPercentage = 0;
         Rating EmptyRate = new Rating();
         EmptyRate.setCarrierId(ShiplinxConstants.CARRIER_GENERIC);
-        EmptyRate.setServiceId(ShiplinxConstants.DEFAULT_IC_SERVICE_ID);
-        EmptyRate.setServiceName(ShiplinxConstants.DEFAULT_IC_SERVICE);
+        /*EmptyRate.setServiceId(ShiplinxConstants.DEFAULT_IC_SERVICE_ID);
+        EmptyRate.setServiceName(ShiplinxConstants.DEFAULT_IC_SERVICE);*/
+        if(order.getServiceId_web() != null && order.getServiceId_web() > 0){
+        	
+        	EmptyRate.setServiceName(this.getService(order.getServiceId_web()).getName());
+            EmptyRate.setServiceId(order.getServiceId_web());
+        } else{
+        	EmptyRate.setServiceId(ShiplinxConstants.DEFAULT_IC_SERVICE_ID);
+        	EmptyRate.setServiceName(ShiplinxConstants.DEFAULT_IC_SERVICE);
+        }
         EmptyRate.setCarrierName(order.getBusiness().getName());
         EmptyRate.setTotal(defaultValue);
         EmptyRate.setTotalCost(defaultValue);

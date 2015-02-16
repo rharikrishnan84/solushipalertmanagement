@@ -69,7 +69,9 @@
 			<result property="id"/>
 			<result property="name" />
 	</resultMap>
-	
+	<resultMap id="releaseChargeOrderId" class="com.meritconinc.shiplinx.model.ShippingOrder">
+			<result property="id" column="order_id" />
+	</resultMap>
 	<resultMap id="SearchOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
 			<result property="id" column="order_id" />
 			<result property="orderNum" column="order_num"/>
@@ -167,7 +169,7 @@
 			<result property="slaveServiceId" column="slave_service_id"/>
 			<result property="originalServiceId" column="original_service_id"/>
 			<result property="carrierId" column="carrier_id"/>
-			<result property="trackingURL" column="tracking_url" />
+			<result property="trackingURL" column="tracking_url1" />
 			<result property="dateCreated" column="date_created"/>
 			<result property="live" column="live_mode"/>
 			<result property="customerId" column="customer_id"/>
@@ -1006,9 +1008,9 @@
 <select id="findShipments" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" resultMap="SearchOrderResult1">
 		select distinct o.*, COALESCE(ci.id,0) as customs_invoice_id, COALESCE(cu.name,'') as customer_name, 
 			sr.name as service_name, cr.name as master_carrier_name,
-			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
-			concat(COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
-			concat(COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url1,
+			concat(COALESCE(ad1.abbreviation_name,''),',',COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
+			concat(COALESCE(ad2.abbreviation_name,''),',',COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
 			os.name as status_name
 			from order_status os, address ad1, address ad2, shipping_order o 
 			left join package p on (o.order_id=p.order_id) 
@@ -1186,12 +1188,17 @@
 		order by $orderBy$ $order$                
 	</select>
 	
-	<update id="releaseCharges">
-		update charges c left join shipping_order so on  (c.order_id=so.order_id)
-    		set c.status=#statusReadyToInvoice#
-			where c.edi_invoice_number=#ediInvoiceNumber# and 
+	<select id="selectOrderIdForEdiInvoiceNumber" resultMap="releaseChargeOrderId">
+		select distinct(c.order_id) from charges c left join shipping_order so on  (c.order_id=so.order_id)
+    				where c.edi_invoice_number=#ediInvoiceNumber# and 
 					(c.status=#statusPendingRelease# or c.status=#statusChargeInvoice#) and 
 					so.billing_status!=#billingStatusAwaitingConfirmation#
+	</select>
+	
+	<update id="releaseCharges">
+		update charges c set c.status=#statusReadyToInvoice#
+			where c.edi_invoice_number=#ediInvoiceNumber# and 
+					(c.status=#statusPendingRelease# or c.status=#statusChargeInvoice#) and order_id=#order_id#
 	</update>
 	
 	<update id = "updateShippingOrderCustomerBilling">
@@ -1315,7 +1322,7 @@
    <select id="findShipmentsAdmin" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult1">
        select distinct o.*, COALESCE(ci.id,0) as customs_invoice_id, cu.name as customer_name, 
 			sr.name as service_name, cr.name as master_carrier_name,
-			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url1,
 			concat(COALESCE(ad1.abbreviation_name,''),',', COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
 			concat(COALESCE(ad2.abbreviation_name,''),',', COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
 			os.name as status_name 
@@ -1558,7 +1565,7 @@
 	<select id="findShipmentsAdminById" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult1">
 	select 	o.*, COALESCE(ci.id,0) as customs_invoice_id, cu.name as customer_name, 
 			sr.name as service_name, cr.name as master_carrier_name,
-			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url1,
 			concat(COALESCE(ad1.abbreviation_name,''),',', COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
 			concat(COALESCE(ad2.abbreviation_name,''),',', COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
 			os.name as status_name 
@@ -1614,6 +1621,13 @@
 	<select id="getCountryIdByCountryCode" resultClass="java.lang.Integer">
 		SELECT id FROM currency_symbol where country_code=#acccountry# or currency_code=#currencyCode#
 	</select>
-
+<select id="getShippingOrderByIds" resultMap="ShippingOrderResult">
+		select * from shipping_order s  
+		 <dynamic prepend="where s.order_id IN ">
+           <iterate open="(" close=")" conjunction=","> 
+              #[]#
+		   </iterate>
+		</dynamic>
+	</select>
 </sqlMap>
 

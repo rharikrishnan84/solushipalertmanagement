@@ -949,6 +949,7 @@ var radioselected = 0;
 													<div class="popup_text"
 														id="popup_<s:property value="%{#index}"/>">
 														<s:iterator value="charges">
+														
 															<s:property value="%{name}" /> :<s:label name="curr"
 																value="%{#session.LocalCurrencySymbol}" />
 															<s:text name="format.customMoney">
@@ -994,13 +995,19 @@ var radioselected = 0;
 				    <td style="position:relative;"> 
 					<div style="position:relative;" class="popup_div">
 						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label><mmr:message messageId="label.ratelist.total" /> :</label> 
-						<s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text></b></div>
+						<%-- <s:text name="format.money" ><s:param name="value" value="%{total}" /></s:text> --%>
+						<s:text name="format.customMoney" ><s:param name="value" value="%{totalChargeLocalCurrency}" /></s:text></b></div>
 						<div class="popup_text" id="popup_<s:property value="%{#index}"/>">
 							<s:iterator  value="charges">
 							<s:property value="%{name}"/> 		<s:set var="tariff" value="%{customerTarrifRate}"></s:set>
        <s:set var="charge" value="%{charge}"></s:set>
        <s:if test="#tariff > charge">
-       :<s:text name="format.money"><br/><s:param name="value" value="tariff" /></s:text> 
+       :<%-- <s:text name="format.money"><br/><s:param name="value" value="tariff" /></s:text>  --%>
+       <s:label name="curr" value="%{#session.LocalCurrencySymbol}" />
+       <s:text name="format.customMoney">
+       	<br />
+       	<s:param name="value" value="%{tariffInLocalCurrency}" />
+       </s:text>
        </s:if>
        :<s:text name="format.money" ><br/><s:param name="value" value="%{charge}" /></s:text> <br/>
 							</s:iterator>

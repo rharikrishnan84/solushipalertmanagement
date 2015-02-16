@@ -2524,4 +2524,8 @@ BEGIN
     	END loop igmLoop;
 	CLOSE invoice_cursor;
 END
+
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk) values ('label.system.log.edi.message','EDI Upload Processing - Address correction occured!','en_CA',1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
+

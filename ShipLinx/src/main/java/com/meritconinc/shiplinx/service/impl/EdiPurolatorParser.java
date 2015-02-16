@@ -399,9 +399,11 @@ public class EdiPurolatorParser extends EdiParser {
 		// If charge code is "OTH" then charge name should be the name of the field
 		if (chargeCode.equals(ShiplinxConstants.CHARGE_CODE_PURO_ACC))
 			chargeName = chargeCodeMapInfo[0];
-		// If it's address correction and charge name is freight, then change the charge name to "Address Correction"
-		if (isAddressCorrection && chargeName.equals(CHARGE_NAME_FREIGHT))
+		// If it's address correction and charge name is freight, then change the charge name to "Address Correction" and charge code to "OTH"
+		if (isAddressCorrection && chargeName.equals(CHARGE_NAME_FREIGHT)){
 			chargeName = CHARGE_ADDRESS_CORRECTION;
+			charge.setChargeCode(ShiplinxConstants.CHARGE_CODE_PURO_ACC);
+		}
 		charge.setName(chargeName);
 		charge.setCurrency(shipment.getCurrency());
 		charge.setDiscountAmount(new Double(0.0)); 

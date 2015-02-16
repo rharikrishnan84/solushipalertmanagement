@@ -198,10 +198,24 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 	
 	
 	public String delete(){
-		
+		Long address_ret;
 		String id=request.getParameter("addressid");
-		addressService.delete(id);
-		addActionMessage(getText("address.info.delete.successfully"));
+		/*addressService.delete(id);
+		addActionMessage(getText("address.info.delete.successfully"));*/
+		long address_id=Long.parseLong(id);
+				
+		address_ret=addressService.findAddressId(address_id);
+		if(address_ret==0){
+			try{
+				addressService.delete(id);
+				addActionMessage(getText("address.info.delete.successfully"));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+				
+		}else{
+				addActionMessage(getText("address.info.update.unsuccessfully"));
+		}
 		return SUCCESS;
 	}
 	

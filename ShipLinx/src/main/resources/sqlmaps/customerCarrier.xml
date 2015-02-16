@@ -284,6 +284,10 @@
 		select max(service_id) from service where carrier_id=#carrierId#
 	</select>
 
+	<select id="getSchdulerFlagByDomain" resultClass="Integer">
+		select scheduler_flag from schedular  where host=#domain#
+	</select>
+
 	<insert id="addService" parameterClass="com.meritconinc.shiplinx.model.Service">
 	    insert into service(service_id, name,	carrier_id, description, code, transit_code, mode) 
 			 values (#id#, #name#, #carrierId#, #description#, #code#, #transitCode#, #mode# ) 

@@ -411,12 +411,14 @@ public class EdiFedexParser extends EdiParser {
 					if(shipment.getCurrency().equals(currencyCode)){
 						charge.setTariffRate(tariff);
 						charge.setCharge(applyMarkup(shipment, charge, item) );
+						charge.setExchangerate(BigDecimal.valueOf(1));
 						}
 						else{
 							Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
 							charge.setTariffRate(tariff*exchangeRate);
 							charge.setCharge( applyMarkup(shipment, charge, item)*exchangeRate );
 							charge.setCurrency(currencyCode);
+							charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
 							}
 					}
 				} 
@@ -425,12 +427,14 @@ public class EdiFedexParser extends EdiParser {
 						if(shipment.getCurrency().equals(currencyCode)){
 							charge.setCharge(charge.getCost());
 							charge.setTariffRate(charge.getCost());
+							charge.setExchangerate(BigDecimal.valueOf(1));
 							}
 							else{
 								Double exchangeRate=shippingService.getExchangeRate(shipment.getCurrency(), currencyCode);
 								charge.setCharge(charge.getCost()*exchangeRate);
 								charge.setTariffRate(charge.getCost()*exchangeRate);
 								charge.setCurrency(currencyCode);
+								charge.setExchangerate(BigDecimal.valueOf(exchangeRate));
 								}
 						}
 					}

@@ -25,14 +25,26 @@ public class ManifestCreator implements Job {
 			String	domain = System.getProperty("DOMAIN_NAME");
 			logger.info("DOMAIN NAME :" + " " + domain);
 			if (domain != null) {
-				if (carrierDAO.getSchdulerFlagByDomain(domain)) {
-					logger.info("Sucessfully Job Executed");
-					EODManifestCreator eodManifestCreator = new EODManifestCreator();
-					eodManifestCreator.generateEManifestFile();
-				}
+				boolean flag = carrierDAO.getSchdulerFlagByDomain(domain);
+				synchronized(this){
+				    logger.info("Flag : " + flag);
+				    if (flag)
+				    {
+				   logger.info("-------Flag is False");
+				   EODManifestCreator eodManifestCreator = new EODManifestCreator();
+				   eodManifestCreator.generateEManifestFile();
+				   logger.info("Successfully job Executed but Flag is false");
+
+				    }
+				   }
 			}
 
 
+	}
+
+	private void synchronize(ManifestCreator manifestCreator) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

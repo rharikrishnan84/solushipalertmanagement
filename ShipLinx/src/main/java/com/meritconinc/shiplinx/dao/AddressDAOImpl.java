@@ -338,4 +338,21 @@ public class AddressDAOImpl extends SqlMapClientDaoSupport implements
 		 		 }
 		 	 }	 
 	 
+	 @Override
+  	public Long findAddressId(long id) {
+ 		// TODO Auto-generated method stub
+ 		Map<String, Object> paramObj = new HashMap<String, Object>(2);
+ 		paramObj.put("addressId",id );
+ 		long addressId=0;
+ 		try{
+ 			addressId= (Long) getSqlMapClientTemplate().queryForObject("getAddressId",paramObj);
+ 			
+ 		}catch(NullPointerException e){
+ 			e.printStackTrace();
+ 		}
+ 		
+ 		return addressId;
+ 	 		
+ 	 }
+	 
 }

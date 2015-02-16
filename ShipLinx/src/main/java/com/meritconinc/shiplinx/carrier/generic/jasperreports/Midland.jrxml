@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Generic_BOL" pageWidth="288" pageHeight="432" columnWidth="248" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="520"/>
+	<property name="ireport.x" value="121"/>
+	<property name="ireport.y" value="480"/>
 	<parameter name="logo" class="java.lang.Object" isForPrompting="false"/>
 	<parameter name="barcodenumber" class="java.util.List" isForPrompting="false"/>
 	<parameter name="Order" class="com.meritconinc.shiplinx.model.ShippingOrder" isForPrompting="false"/>
+	<parameter name="bill_type" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -228,6 +229,13 @@
 					<jr:codeExpression><![CDATA[(String)$P{barcodenumber}.get($V{REPORT_COUNT}-1)]]></jr:codeExpression>
 				</jr:barbecue>
 			</componentElement>
+			<textField isBlankWhenNull="true">
+				<reportElement x="205" y="271" width="29" height="26"/>
+				<textElement>
+					<font size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{bill_type}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

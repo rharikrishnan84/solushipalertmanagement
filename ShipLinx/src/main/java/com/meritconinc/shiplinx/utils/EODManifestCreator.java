@@ -53,6 +53,7 @@ public class EODManifestCreator implements BinaryExportView {
   private Connection connection = null;
 
   public EODManifestCreator() {
+	Thread.currentThread().dumpStack();
     shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
     carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance().findBean(
         "carrierServiceDAO");
@@ -70,6 +71,7 @@ public class EODManifestCreator implements BinaryExportView {
    */
 
   public void generateEManifestFile() {
+	Thread.currentThread().dumpStack();
     List<ShippingOrder> shippingOrder = shippingDAO.getShippingOrderByCurrentShipDate();
     FTPClient client = new FTPClient();
     FileInputStream txtFileInputStream = null;

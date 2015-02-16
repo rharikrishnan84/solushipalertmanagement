@@ -52,5 +52,6 @@ public interface AddressManager{
 	public Province getProvinceName(String provinceCode);
 	
 	public void setSendNotification(Long addressId);
+	public Long findAddressId(long id);
 	
 }

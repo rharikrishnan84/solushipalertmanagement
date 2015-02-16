@@ -356,7 +356,7 @@ var count=parseInt(prevQuantity);
 		var quick = document.getElementById("qkship_fastest").checked;
 		if(carrierId==10 && serviceId>0){
 	    var key="1";	
-		document.userform.action = "shipment.stageThree.action?key="+key;
+	    document.userform.action = "shipment.stageThree.action?key="+key+"&getrates=false";
 	 	document.userform.submit();
 		}else if(carrierId!= 10){
 			alert("Quick Ship Only for Generic Carrier");

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InvoiceMain" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="552" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" isFloatColumnFooter="true">
 	<property name="ireport.zoom" value="1.9487171000000014"/>
-	<property name="ireport.x" value="574"/>
-	<property name="ireport.y" value="655"/>
+	<property name="ireport.x" value="158"/>
+	<property name="ireport.y" value="444"/>
 	<property name="ireport.scriptlethandling" value="0"/>
 	<property name="ireport.encoding" value="UTF-8"/>
 	<import value="net.sf.jasperreports.engine.*"/>
@@ -512,7 +512,7 @@
 				<text><![CDATA[REFERENCES	]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="staticText-7" x="79" y="8" width="94" height="26" forecolor="#981C1E"/>
+				<reportElement key="staticText-7" x="79" y="8" width="82" height="26" forecolor="#981C1E"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -591,17 +591,17 @@ CONSIGNEE]]></text>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement key="staticText-7" x="168" y="8" width="102" height="26" forecolor="#981C1E"/>
+				<reportElement key="staticText-7" x="168" y="8" width="107" height="26" forecolor="#981C1E"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement>
+				<textElement textAlignment="Left">
 					<font fontName="SansSerif" size="10" isBold="true" isItalic="true" isUnderline="false"/>
 				</textElement>
-				<text><![CDATA[Quoted PC/WT / BILLED PC/WT]]></text>
+				<text><![CDATA[Quoted PC/WT/ BILLED PC/WT]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="staticText-7" x="390" y="8" width="34" height="14" forecolor="#981C1E"/>
@@ -776,28 +776,28 @@ CONSIGNEE]]></text>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{toAddress.countryCode}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement key="textField" x="210" y="2" width="20" height="12"/>
+			<textField isStretchWithOverflow="true" pattern="###0" isBlankWhenNull="true">
+				<reportElement key="textField" stretchType="RelativeToBandHeight" x="201" y="3" width="50" height="11"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left">
+				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Float"><![CDATA[Math.round($F{quotedWeight})]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement key="textField" x="210" y="14" width="20" height="13"/>
+				<reportElement key="textField" x="201" y="14" width="50" height="12"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left">
+				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[Math.round($F{billedWeight})]]></textFieldExpression>
@@ -975,7 +975,7 @@ CONSIGNEE]]></text>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00" isBlankWhenNull="true">
-				<reportElement key="textField" x="230" y="15" width="26" height="12">
+				<reportElement key="textField" x="251" y="14" width="24" height="12">
 					<printWhenExpression><![CDATA[$F{billedWeight}!=null && $F{billedWeight}.floatValue()>0]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -984,7 +984,7 @@ CONSIGNEE]]></text>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left">
+				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{billedWeightUOM}]]></textFieldExpression>
@@ -1068,30 +1068,30 @@ $P{PackageWidth}.get($V{REPORT_COUNT}-1)+" X "+
 $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="textField" x="168" y="3" width="15" height="12"/>
+				<reportElement key="textField" x="164" y="3" width="15" height="11"/>
 				<textElement>
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="183" y="3" width="22" height="12"/>
-				<textElement>
+				<reportElement x="179" y="3" width="22" height="11"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[PCS]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="183" y="14" width="22" height="12">
+				<reportElement x="179" y="14" width="22" height="12">
 					<printWhenExpression><![CDATA[$F{billedWeight}.equals("0") ? Boolean.FALSE : Boolean.TRUE]]></printWhenExpression>
 				</reportElement>
-				<textElement>
+				<textElement textAlignment="Left">
 					<font size="9"/>
 				</textElement>
 				<text><![CDATA[PCS]]></text>
 			</staticText>
 			<textField>
-				<reportElement key="textField" x="168" y="14" width="16" height="12">
+				<reportElement key="textField" x="164" y="14" width="15" height="12">
 					<printWhenExpression><![CDATA[$F{billedWeight}.equals("0") ? Boolean.FALSE : Boolean.TRUE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -1100,7 +1100,7 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0" isBlankWhenNull="true">
-				<reportElement key="textField" x="230" y="2" width="26" height="12">
+				<reportElement key="textField" x="251" y="3" width="24" height="11">
 					<printWhenExpression><![CDATA[$F{quotedWeight}!=null && $F{quotedWeight}.floatValue()>0]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -1109,7 +1109,7 @@ $P{PackageLength}.get($V{REPORT_COUNT}-1)]]></textFieldExpression>
 					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<textElement textAlignment="Left">
+				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{quotedWeightUOM}]]></textFieldExpression>

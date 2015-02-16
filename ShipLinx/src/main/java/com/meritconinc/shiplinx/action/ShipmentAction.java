@@ -2630,7 +2630,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    				  log.debug("Exchage Rate for Currency Convertion =======================>"+exchRate);
 	    			  }
 	    			  if(charge.getTariffRate()!=null){
-	    				  charge.setTariffInLocalCurrency(charge.getTariffRate());
+	    				  charge.setTariffInLocalCurrency(charge.getTariffRate()*exchRate);
 	    				  charge.setCustomerTarrifRate(charge.getTariffRate()*exchRate);
 	    			  }
 	    			  charge.setChargecurrency(toCurrencysymbol1);

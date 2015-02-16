@@ -391,6 +391,10 @@ public class ShippingServiceImpl implements ShippingService {
         if (shippingCharge != null && shippingCharge.getStatus() == null) {
           shippingCharge.setStatus(0);
         }
+        
+        if(shippingCharge.getTariffInLocalCurrency()!=null && shippingCharge.getTariffInLocalCurrency()!=0){
+        	shippingCharge.setTariffRate(shippingCharge.getTariffInLocalCurrency());
+        }
         // Start Issue No:44
         /*
          * if(shippingCharge!=null && shippingCharge.getChargeCode()==null &&
@@ -2184,11 +2188,13 @@ public CurrencySymbol getCurrencyCodeById(int id) {
 @Override
 public void updateShippingOrderCurrency(ShippingOrder ediShipment) {
 	// TODO Auto-generated method stub
-	if(ediShipment.getDbShipment()!=null && !ediShipment.getDbShipment().equals("") && ediShipment.getDbShipment().getCharges().size()>0){
-	shippingDAO.updateShippingOrderCurrency(ediShipment.getDbShipment().getCharges().get(0).getOrderId(), ediShipment.getCurrency());
-	}
-	else if(ediShipment.getCharges()!=null && ediShipment.getCharges().size()>0){
-		shippingDAO.updateShippingOrderCurrency(ediShipment.getCharges().get(0).getOrderId(), ediShipment.getCurrency());
+	if(ediShipment!=null && ediShipment.getPackages()!=null && ediShipment.getPackages().size() == 0){
+		if(ediShipment.getDbShipment()!=null && !ediShipment.getDbShipment().equals("") && ediShipment.getDbShipment().getCharges().size()>0){
+		shippingDAO.updateShippingOrderCurrency(ediShipment.getDbShipment().getCharges().get(0).getOrderId(), ediShipment.getCurrency());
+		}
+		else if(ediShipment.getCharges()!=null && ediShipment.getCharges().size()>0){
+			shippingDAO.updateShippingOrderCurrency(ediShipment.getCharges().get(0).getOrderId(), ediShipment.getCurrency());
+		}
 	}
 }
 }

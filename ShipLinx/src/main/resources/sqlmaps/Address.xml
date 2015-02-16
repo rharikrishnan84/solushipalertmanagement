@@ -269,4 +269,7 @@
 <update id="setSendNotification">
    		update address set send_notification = !send_notification where address_id=#addressId#
    </update>
+   <select id="getAddressId" resultClass="long">
+        select address_id from customer where address_id=#addressId#
+   </select>
 </sqlMap>
