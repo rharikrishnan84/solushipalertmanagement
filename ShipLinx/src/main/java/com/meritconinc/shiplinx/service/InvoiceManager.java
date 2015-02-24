@@ -60,5 +60,6 @@ public interface InvoiceManager {
 			public Double currencyConversion(String fromCurrency, String toCurrency, double amount);
 			public Double currencyConversionToId(String fromCurrency, int toCurrency, double amount);
 			public List<Invoice> getInvoiceByEmailType(Long invoiceId);
+			public void updateBilledUOM(long id1);
 			
 }

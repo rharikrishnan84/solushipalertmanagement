@@ -1270,7 +1270,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		    getSession().put("Toprovinces", toProvinces);
 		    getSession().put("ToCountry", toCountry);
 		    getSession().put("FromCountry", fromCountry);
-
+		    if(shippingOrder.getFromAddress() != null){
+		    	addressService.updateCustomerId(Long.valueOf(customerId),
+		    				    shippingOrder.getFromAddress().getAddressId()); 
+		    }
+		    if(shippingOrder.getToAddress() != null){
+		    	addressService.updateCustomerId(Long.valueOf(customerId),
+		    				    shippingOrder.getToAddress().getAddressId());
+		    }
 		    return SUCCESS;
 
 		  }

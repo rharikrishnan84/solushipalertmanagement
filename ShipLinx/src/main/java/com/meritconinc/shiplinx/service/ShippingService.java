@@ -207,5 +207,7 @@ public interface ShippingService {
   public CurrencySymbol getCurrencyCodeById(int id);
 
 public void updateShippingOrderCurrency(ShippingOrder ediShipment);
+
+public List<ShippingOrder> getOrdersByAddressId(long fromAddressId);
   
 }

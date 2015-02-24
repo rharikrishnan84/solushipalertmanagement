@@ -649,6 +649,12 @@ public class ShippingServiceImpl implements ShippingService {
     if (shipmentIds != null && shipmentIds.size() > 0 && customerId != null) {
       for (Long id : shipmentIds) {
         ShippingOrder shipment = shippingDAO.getShippingOrder(id);
+        if(shipment.getFromAddress().getAddressId() > 0 ){
+    	    addressDAO.updateCustomerIdInAddress(customerId, shipment.getFromAddress().getAddressId());
+        }
+        if(shipment.getFromAddress().getAddressId() > 0 ){
+    	    addressDAO.updateCustomerIdInAddress(customerId, shipment.getToAddress().getAddressId());
+        }
         assignCustomerToShipment(shipment, customerId);
       }
     }
@@ -2197,4 +2203,8 @@ public void updateShippingOrderCurrency(ShippingOrder ediShipment) {
 		}
 	}
 }
+
+	public List<ShippingOrder> getOrdersByAddressId(long fromAddressId){
+		return this.shippingDAO.getOrdersByAddressId(fromAddressId);
+	}
 }

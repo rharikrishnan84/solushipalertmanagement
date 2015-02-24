@@ -2454,4 +2454,10 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 				}
 			}
 		}
+		
+		@Override
+		public void updateBilledUOM(long id1) {
+			// TODO Auto-generated method stub
+			shippingDAO.updateBilledUOM(id1);
+		}
 }

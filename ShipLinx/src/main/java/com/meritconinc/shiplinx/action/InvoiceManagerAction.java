@@ -512,6 +512,7 @@ public String getSalesRep() {
   public String createInvoice() {
 
 	    log.debug("In createInvoice");
+	    ShippingOrder order = new ShippingOrder();
 	    Invoice invoice = this.getInvoice();
 	    List<Long> orderIds = new ArrayList<Long>();
 	    String id = request.getParameter("InvoiceIdList");
@@ -537,14 +538,37 @@ public String getSalesRep() {
 	    addActionMessage(getText("invoice.created", new String[] { args[0] }));
 	    this.statusList = invoiceManager.getInvoiceStatusList();
 	    getSession().put("customerDefaultCurrency", invoices.get(0).getInvoiceCurrencySymbol());
+	    for (int i = 0; i < ids.length; i++) {
+			long id1 = Long.valueOf(ids[i]);
+			order = this.shippingService.getShippingOrder(id1);
+			int unitOfMeasure;
+	
+			unitOfMeasure = order.getUnitmeasure();
+			if (order!=null && order.getCarrierId() == 3
+					&& (order.getServiceId() == 306
+							|| order.getServiceId() == 308 || order
+							.getServiceId() == 309)) {
+				
+						
+	
+						invoiceManager.updateBilledUOM(id1);
+    				}
+    	
+    			}
 	    return SUCCESS;
 	  }
 
   public String autoGenInvoices() {
 
     log.debug("In autogen Invoices");
+    ShippingOrder order = new ShippingOrder();
+    List<Long> orderIds = new ArrayList<Long>();
     Invoice invoice = this.getInvoice();
-
+    String id = request.getParameter("InvoiceIdList1");
+    String[] ids = id.split(",");
+    for (int i = 0; i < ids.length; i++) {
+    	orderIds.add(Long.valueOf(ids[i]));
+    }
     try {
       invoices = invoiceManager.autoGenInvoicesForBusiness(UserUtil.getMmrUser().getBusinessId(),
           invoice, UserUtil.getMmrUser().getBranch());
@@ -555,6 +579,22 @@ public String getSalesRep() {
     this.statusList = invoiceManager.getInvoiceStatusList();
     String args[] = new String[1];
     args[0] = String.valueOf(invoices.size());
+    for (int i = 0; i < ids.length; i++) {
+    			long id1 = Long.valueOf(ids[i]);
+    			order = this.shippingService.getShippingOrder(id1);
+    			int unitOfMeasure;
+    	
+    			unitOfMeasure = order.getUnitmeasure();
+    			if (order!=null && order.getCarrierId() == 3
+    					&& (order.getServiceId() == 306
+    							|| order.getServiceId() == 308 || order
+    							.getServiceId() == 309)) {
+    				
+    						
+    						invoiceManager.updateBilledUOM(id1);
+    			}
+    	
+    		}
     this.addActionMessage(getText("invoice.created"));
 
     return SUCCESS;

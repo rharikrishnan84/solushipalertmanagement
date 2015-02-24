@@ -93,7 +93,16 @@
 			
 		   else{
 		if(confirm("Would you like to run the auto-gen process?")) {
-			 document.generateInvoiceForm.action = "invoice.autogen.action";
+			var i1,shipmentid,value_checked,stored_value="";
+			 for (i1=0;i1<uploadMarkupId.length;i1++){
+		   if (uploadMarkupId[i1].checked){
+			shipmentid = uploadMarkupId[i1].value ;
+			value_checked = document.getElementsByName("shipmentcheckbox"+shipmentid)[0].value;
+			stored_value = stored_value  + value_checked+ "," ;
+		     }
+			 }
+			 document.generateInvoiceForm.action = "invoice.autogen.action?InvoiceIdList1="+stored_value;
+			// document.generateInvoiceForm.action = "invoice.autogen.action";
 			 document.generateInvoiceForm.submit();
 		}
 		}

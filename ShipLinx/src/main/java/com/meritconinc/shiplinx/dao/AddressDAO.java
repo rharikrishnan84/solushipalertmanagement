@@ -6,6 +6,7 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.AddressType;
 import com.meritconinc.shiplinx.model.Country;
 import com.meritconinc.shiplinx.model.Province;
+import com.meritconinc.shiplinx.model.ShippingOrder;
 
 public interface AddressDAO {
 
@@ -60,4 +61,9 @@ public interface AddressDAO {
   public Province getProvinceName(String provinceCode);
   public void setSendNotification(Long addressId);
   public Long findAddressId(long id);
+  public List<Address> searchAddressMatch ( String address, String countryCode, String postalCode, String abbreviationName);
+  public void updateCustomerIdInAddress(Long customerId, Long addressId);
+  public long getCustomerIdByAddressMatch (ShippingOrder shipment);
+   public long getCustomerIdForFromAddress (ShippingOrder shipment);
+   public long getCustomerIdForToAddress (ShippingOrder shipment);
 }

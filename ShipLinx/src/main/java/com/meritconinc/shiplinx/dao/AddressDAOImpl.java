@@ -13,6 +13,7 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.AddressType;
 import com.meritconinc.shiplinx.model.Country;
 import com.meritconinc.shiplinx.model.Province;
+import com.meritconinc.shiplinx.model.ShippingOrder;
 
 public class AddressDAOImpl extends SqlMapClientDaoSupport implements
 		AddressDAO {
@@ -355,4 +356,92 @@ public class AddressDAOImpl extends SqlMapClientDaoSupport implements
  	 		
  	 }
 	 
+	 public List<Address> searchAddressMatch ( String address, String countryCode, String postalCode, String abbreviationName){
+		 		 		 		 		 
+ 		 List<Address> address1 = new ArrayList<Address>();
+ 		 try {
+ 		 	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		 	paramObj.put("address", address);
+ 		 	paramObj.put("countryCode", countryCode);
+ 		 	paramObj.put("postalCode", postalCode);
+ 		 	paramObj.put("abbreviationName", abbreviationName);
+ 		 	address1 = (List<Address>) getSqlMapClientTemplate().queryForList(
+ 		 		 			"searchAddressMatch", paramObj);
+ 		 } catch (Exception e) {
+ 		 		 e.printStackTrace();
+ 	       }
+ 		 return address1;
+ 	 }
+		 	 
+ 	 public void updateCustomerIdInAddress(Long customerId, Long addressId){
+ 		 		  Map<String, Long> paramObj = new HashMap<String, Long>();
+ 		 		  paramObj.put("customerId", customerId);
+ 		 	      paramObj.put("addressId", addressId);
+ 		 		  try {
+ 		 			    getSqlMapClientTemplate().update("updateCustomerIdInAddress", paramObj);
+ 		 	      } catch (Exception e) {
+ 		 			   e.printStackTrace();
+ 		 		    }
+ 	 }
+ 	 
+ 	public long getCustomerIdByAddressMatch (ShippingOrder shipment ){
+ 		long cusId = 0;
+		try {
+ 		 	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		 	paramObj.put("fromAddress", shipment.getFromAddress().getAddress1());
+ 		 	paramObj.put("fromCountryCode", shipment.getFromAddress().getCountryCode());
+ 		 	paramObj.put("fromPostalCode", shipment.getFromAddress().getPostalCode());
+ 		 	paramObj.put("fromAbbreviationName",shipment.getFromAddress().getAbbreviationName());
+ 		 	paramObj.put("toAddress", shipment.getToAddress().getAddress1());
+ 		 	paramObj.put("toCountryCode", shipment.getToAddress().getCountryCode());
+ 		 	paramObj.put("toPostalCode", shipment.getToAddress().getPostalCode());
+ 		 	paramObj.put("toAbbreviationName", shipment.getToAddress().getAbbreviationName());
+ 		 	Object obj = (Object) getSqlMapClientTemplate().queryForObject("searchAddressMatch", paramObj);
+ 		 	if(obj != null){
+ 		 		cusId = (Long)obj;
+ 		 		return cusId;
+ 		 	}
+		} catch (Exception e) {
+ 		 		 e.printStackTrace();
+ 	       }
+		return  cusId;
+ }
+ 
+ public long getCustomerIdForFromAddress (ShippingOrder shipment ){
+	 long cusId = 0;
+		try {
+ 		 	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		 	paramObj.put("fromAddress", shipment.getFromAddress().getAddress1());
+ 		 	paramObj.put("fromCountryCode", shipment.getFromAddress().getCountryCode());
+ 		 	paramObj.put("fromPostalCode", shipment.getFromAddress().getPostalCode());
+ 		 	paramObj.put("fromAbbreviationName",shipment.getFromAddress().getAbbreviationName());
+ 		 	Object obj = (Object) getSqlMapClientTemplate().queryForObject("getCustomerIdForFromAddress", paramObj);
+ 		 	if(obj != null){
+ 		 		cusId = (Long)obj;
+ 		 		return cusId;
+ 		 	}
+		} catch (Exception e) {
+	 		 e.printStackTrace();
+       }
+	return  cusId;
+ }
+ 
+ public long getCustomerIdForToAddress (ShippingOrder shipment ){
+	 long cusId = 0;
+		try {
+ 		 	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		 	paramObj.put("toAddress", shipment.getFromAddress().getAddress1());
+ 		 	paramObj.put("toCountryCode", shipment.getFromAddress().getCountryCode());
+ 		 	paramObj.put("toPostalCode", shipment.getFromAddress().getPostalCode());
+ 		 	paramObj.put("toAbbreviationName",shipment.getFromAddress().getAbbreviationName());
+ 		 	Object obj = (Object) getSqlMapClientTemplate().queryForObject("getCustomerIdForToAddress", paramObj);
+ 		 	if(obj != null){
+ 		 		cusId = (Long)obj;
+ 		 		return cusId;
+ 		 	}
+		} catch (Exception e) {
+	 		 e.printStackTrace();
+       }
+	return  cusId;
+ }
 }

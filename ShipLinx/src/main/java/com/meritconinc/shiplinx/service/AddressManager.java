@@ -53,5 +53,6 @@ public interface AddressManager{
 	
 	public void setSendNotification(Long addressId);
 	public Long findAddressId(long id);
+	public void updateCustomerId(Long customerId, Long addressId);
 	
 }

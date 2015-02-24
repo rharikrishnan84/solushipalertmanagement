@@ -1629,5 +1629,13 @@
 		   </iterate>
 		</dynamic>
 	</select>
+	
+	<select id="getOrdersByAddressId"  resultMap="SearchOrderResult">
+		select * from shipping_order where ship_from_id=#fromAddressId# 
+	</select>
+	
+	<update id = "updateBilledUOM">
+		update shipping_order set billed_weight_uom="KGS" where order_id=#id#
+	</update>
 </sqlMap>
 

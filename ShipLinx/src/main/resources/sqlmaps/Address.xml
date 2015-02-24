@@ -55,6 +55,10 @@
 	</resultMap>
 
 
+	<resultMap id="AddressMap1" class="com.meritconinc.shiplinx.model.Address">
+		<result property="addressId" column="address_id" />
+		<result property="customerId" column="customer_id" />
+	</resultMap>
 
 	<resultMap id="DistributionResult" class="com.meritconinc.shiplinx.model.Address">
 		<result property="distributionName" column="distribution_name" />
@@ -266,10 +270,29 @@
 		select * from
 		province where name=#province_code#    
    </select>
-<update id="setSendNotification">
+	<update id="setSendNotification">
    		update address set send_notification = !send_notification where address_id=#addressId#
    </update>
    <select id="getAddressId" resultClass="long">
         select address_id from customer where address_id=#addressId#
    </select>
+	<update id = "updateCustomerIdInAddress">
+		UPDATE address SET customer_id=#customerId# WHERE address_id=#addressId#
+	</update>
+	
+	<select id="searchAddressMatch" resultClass="long">
+		select distinct so.customer_id from shipping_order so where so.ship_from_id in (select a.address_id from address a where a.address1 like '%$fromAddress$%' and (a.postal_code like '%$fromPostalCode$%')  
+		and (a.country_code like '%$fromCountryCode$%') and (a.abbreviation_name like '%$fromAbbreviationName$%')) and so.ship_to_id in (select a.address_id from address a where a.address1 like '%$toAddress$%' and (a.postal_code like '%$toPostalCode$%')  
+		and (a.country_code like '%$toCountryCode$%') and (a.abbreviation_name like '%$toAbbreviationName$%')) and so.customer_id > 0  limit 1
+	</select>
+	
+	<select id="getCustomerIdForFromAddress" resultClass="long">
+		select distinct a.customer_id from address a where a.address1 like '%$fromAddress$%' and (a.postal_code like '%$fromPostalCode$%')  
+		and (a.country_code like '%$fromCountryCode$%') and (a.abbreviation_name like '%$fromAbbreviationName$%' and customer_id > 0) limit 1
+	</select>
+	
+	<select id="getCustomerIdForToAddress" resultClass="long">
+		select distinct a.customer_id from address a where a.address1 like '%$toAddress$%' and (a.postal_code like '%$toPostalCode$%')  
+		and (a.country_code like '%$toCountryCode$%') and (a.abbreviation_name like '%$toAbbreviationName$%' and customer_id > 0) limit 1
+	</select>
 </sqlMap>

@@ -215,4 +215,6 @@ public interface ShippingDAO {
   
   public int getCountryIdByCountryCode(String accCountry,String currencyCode);
   public List<ShippingOrder> getShippingOrders(List<Long> soluShipOrderIds);
+  public List<ShippingOrder> getOrdersByAddressId(long fromAddressId);
+  public void updateBilledUOM(long id1);
   }

@@ -2242,7 +2242,7 @@ BEGIN
  DECLARE order_id INTEGER;
   DECLARE cur_charges CURSOR FOR 
   SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
-  WHERE c.order_id=new.order_id;
+  WHERE c.order_id=new.order_id and c.status !=40;
  DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
  SET @quote_cost=0.0;
  SET @actual_cost=0.0;
@@ -2314,7 +2314,7 @@ BEGIN
  DECLARE order_id INTEGER;
   DECLARE cur_charges CURSOR FOR 
   SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
-  WHERE c.order_id=new.order_id;
+  WHERE c.order_id=new.order_id and c.status !=40;
  DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
  SET @quote_cost=0.0;
  SET @actual_cost=0.0;
@@ -2383,7 +2383,7 @@ BEGIN
  DECLARE order_id INTEGER;
   DECLARE cur_charges CURSOR FOR 
   SELECT c.cost,c.type,c.cost_currency,c.charge FROM charges c 
-  WHERE c.order_id=OLD.order_id;
+  WHERE c.order_id=OLD.order_id and c.status !=40;
  DECLARE CONTINUE HANDLER FOR NOT FOUND SET no_record_found = 1;
  SET @quote_cost=0.0;
  SET @actual_cost=0.0;

@@ -553,9 +553,26 @@ public abstract class EdiParser {
 		if(shipment.getDbShipment()!=null && shipment.getDbShipment().getCustomerId()!=null && shipment.getDbShipment().getCustomerId()>0){
 			shipment.setCustomerId(shipment.getDbShipment().getCustomerId());
 			shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
-			return;			
-		}
-		
+			return;
+		}else{
+			// TODO check if address already exists
+			long customerId = this.addressDAO.getCustomerIdByAddressMatch(shipment);  
+			if(customerId > 0){
+				shipment.setCustomerId(customerId);
+				shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
+				return;
+			}else {
+				long fromCustomerId = this.addressDAO.getCustomerIdForFromAddress(shipment);
+				if(fromCustomerId > 0){
+					long toCustomerId = this.addressDAO.getCustomerIdForToAddress(shipment);
+					if(toCustomerId > 0 && fromCustomerId == toCustomerId){
+						shipment.setCustomerId(fromCustomerId);
+						shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
+						return;
+					}
+				}
+			}
+		}		
 		Long cusId = getCustomerIdByAccountNumber(accountNumber);
 		if (cusId != null && cusId>0) {
 			shipment.setCustomerId(cusId);

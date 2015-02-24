@@ -1399,12 +1399,28 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 								}
 								
 								@Override
-																public List<ShippingOrder> getShippingOrders(
-																		List<Long> soluShipOrderIds) {
-																		    List<ShippingOrder> shipOrders=null;
-																		    shipOrders = getSqlMapClientTemplate().queryForList("getShippingOrderByIds", soluShipOrderIds);
-																		    return shipOrders;    
-																		  }
+		public List<ShippingOrder> getShippingOrders(
+				List<Long> soluShipOrderIds) {
+				    List<ShippingOrder> shipOrders=null;
+				    shipOrders = getSqlMapClientTemplate().queryForList("getShippingOrderByIds", soluShipOrderIds);
+				    return shipOrders;    
+				  }
 								
-																
+		public List<ShippingOrder> getOrdersByAddressId(long fromAddressId){
+			 List<ShippingOrder> searchResult = null;
+			 try{
+				Map<String, Object> paramObj=new HashMap<String, Object>();
+				paramObj.put("fromAddressId", fromAddressId);
+				searchResult = (List<ShippingOrder>)getSqlMapClientTemplate().queryForList("getOrdersByAddressId", paramObj);
+   			 } catch(Exception e){
+						e.printStackTrace();
+			   }
+			return searchResult;
+		}
+								
+		@Override
+		public void updateBilledUOM(long id1) {
+			// TODO Auto-generated method stub
+			getSqlMapClientTemplate().update("updateBilledUOM", id1);	
+		}													
 }

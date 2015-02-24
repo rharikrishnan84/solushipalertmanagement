@@ -568,7 +568,7 @@ public class EdiDHLParser extends EdiParser {
 		}
 		
 		//update the shipment to include new billed weight
-		if(dbShipment.getBilledWeight()==null || dbShipment.getBilledWeight() < ediShipment.getBilledWeight())
+		//if(dbShipment.getBilledWeight()==null || dbShipment.getBilledWeight() < ediShipment.getBilledWeight())
 			dbShipment.setBilledWeight(ediShipment.getBilledWeight());
 		if(getEdiField(PRICING_WEIGHT_UOM)!=null){
 			if(getEdiField(PRICING_WEIGHT_UOM).equalsIgnoreCase("M"))

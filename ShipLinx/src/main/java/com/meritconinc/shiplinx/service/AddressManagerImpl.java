@@ -384,4 +384,8 @@ public class AddressManagerImpl implements AddressManager,Runnable  {
 		// TODO Auto-generated method stub
 		return addressDAO.findAddressId(id);
 	}
+	
+	public void updateCustomerId(Long customerId, Long addressId){
+		 addressDAO.updateCustomerIdInAddress(customerId, addressId);
+	}
 }
