@@ -59,9 +59,12 @@ public class PurolatorAPI implements CarrierService{
 	public static final String TEST_URL_PICKUP = "https://devwebservices.purolator.com/EWS/V1/PickUp/PickUpService.asmx";
 	public static final String TEST_URL_ZIPVALIDATION = "https://devwebservices.purolator.com/PWS/V1/ServiceAvailability/ServiceAvailabilityService.asmx";
 	public static final String LIVE_URL_ZIPVALIDATION = "https://webservices.purolator.com/PWS/V1/ServiceAvailability/ServiceAvailabilityService.asmx";
-	public static final String Domestic_Bill_of_Lading= "DomesticBillOfLadingThermal";
-	public static final String Intl_Bill_of_Lading= "InternationalBillOfLadingThermal";
-	public static final String Express_Cheque_Receipt= "ExpressChequeReceiptThermal";
+	public static final String Domestic_Bill_of_Lading= "DomesticBillOfLading";
+	public static final String Domestic_Bill_of_Lading_Thermal= "DomesticBillOfLadingThermal";
+	public static final String Intl_Bill_of_Lading= "InternationalBillOfLading";
+	public static final String Intl_Bill_of_Lading_Thermal= "InternationalBillOfLadingThermal";
+	public static final String Express_Cheque_Receipt= "ExpressChequeReceipt";
+	public static final String Express_Cheque_Receipt_Thermal= "ExpressChequeReceiptThermal";
 	public static String URL_RATE = "";
 	public static String URL_SHIP = "";
 	public static String URL_DOC = "";

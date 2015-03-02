@@ -44,6 +44,9 @@ import com.meritconinc.shiplinx.carrier.utils.PurolatorException;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.cwsi.eshipper.carrier.ups.rate.ResponseDocument.Response;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.security.UserUtil;
 
 public class ShippingDocumentsServiceClient{
 
@@ -81,6 +84,7 @@ public class ShippingDocumentsServiceClient{
 			int numOfCriteria = 1;
 			
 			PIN pin = new PIN();
+			User user = UserUtil.getMmrUser();
 			pin.setValue(order.getMasterTrackingNum());
 			
 			//logger.debug("--packages-pin.getValue()-"+pin.getValue());
@@ -96,15 +100,27 @@ public class ShippingDocumentsServiceClient{
 			}
 			if(!PurolatorAPI.isDomesticShipment(order))
 			{
-				documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading);
+				if(user.getPreferredLabelSize()!=null && user.getPreferredLabelSize().equals("8 x 11")){	
+					documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading);
+				}else{
+					documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading_Thermal);
+				}
 			}
 			else
 			{
-				documenttypes.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading);
+				if(user.getPreferredLabelSize()!=null && user.getPreferredLabelSize().equals("8 x 11")){
+					documenttypes.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading);
+				}else{
+					documenttypes.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading_Thermal);
+				}
 			}
 			if(codSelected)
 			{
-				documenttypes.getDocumentType().add(PurolatorAPI.Express_Cheque_Receipt);
+				if(user.getPreferredLabelSize()!=null && user.getPreferredLabelSize().equals("8 x 11")){
+					documenttypes.getDocumentType().add(PurolatorAPI.Express_Cheque_Receipt);	
+				}else{
+					documenttypes.getDocumentType().add(PurolatorAPI.Express_Cheque_Receipt_Thermal);
+				}
 			}
 
 			documentCriteria.setDocumentTypes(objectFactory.createDocumentCriteriaDocumentTypes(documenttypes));
@@ -115,7 +131,11 @@ public class ShippingDocumentsServiceClient{
 				pin2.setValue(order.getCODPin());
 				documentCriteria2.setPIN(pin2);
 				DocumentTypes documenttypes2 = new DocumentTypes();
-				documenttypes2.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading);
+				if(user.getPreferredLabelSize()!=null && user.getPreferredLabelSize().equals("8 x 11")){	
+					documenttypes.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading);
+				}else{
+					documenttypes.getDocumentType().add(PurolatorAPI.Domestic_Bill_of_Lading_Thermal);
+				}
 				documentCriteria2.setDocumentTypes(objectFactory.createDocumentCriteriaDocumentTypes(documenttypes2));
 				numOfCriteria=2;
 			}

@@ -219,12 +219,13 @@ public class InvoiceManagerImpl implements InvoiceManager {
           // Need to include charges where the charge is 0 but cost is
           // greater than 0 as it affects commissions which is based
           // on invoice amounts
-          if (c.getCharge() == 0 && c.getCost() == 0) // do not
+        	if ((c.getCharge() == 0 && c.getCost() == 0) || (c.getCharge() != 0 && c.getCost() == 0)){ // do not
             // include
             // charges that
             // have no value
             // in invoice.
-            continue;
+        		c.setEdiInvoiceNumber("Auto Invoiced");
+        	}
           allChargesForInvoice.add(c);
           if (!added) {
             ordersInInvoice.add(o);

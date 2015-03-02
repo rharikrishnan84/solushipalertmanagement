@@ -17,6 +17,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI;
 import com.meritconinc.shiplinx.carrier.ups.dao.UPSCanadaTariffDAO;
 import com.meritconinc.shiplinx.dao.AddressDAO;
@@ -563,9 +564,10 @@ public abstract class EdiParser {
 				return;
 			}else {
 				long fromCustomerId = this.addressDAO.getCustomerIdForFromAddress(shipment);
+				Customer customerInfo=this.customerDAO.getCustomerInfoByCustomerId(fromCustomerId, shipment.getBusinessId());
 				if(fromCustomerId > 0){
 					long toCustomerId = this.addressDAO.getCustomerIdForToAddress(shipment);
-					if(toCustomerId > 0 && fromCustomerId == toCustomerId){
+					if(toCustomerId > 0 && fromCustomerId == toCustomerId && customerInfo!=null){
 						shipment.setCustomerId(fromCustomerId);
 						shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
 						return;

@@ -348,7 +348,7 @@ public class MarkupManagerImpl implements MarkupManager {
       m.setToWeight(weight);
     }
 
-    m.setServiceId(shipment.getServiceId());
+  //  m.setServiceId(shipment.getServiceId());
 
     return m;
   }

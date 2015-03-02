@@ -236,6 +236,10 @@ public class GenericCarrierAPI implements CarrierService {
       return null;
     }
 
+    if(shippingOrder.getBilledWeight() != null){
+    	    	shippingOrder.setBilledWeight(null);
+    	    }
+    
     List<Rating> ratingList = new ArrayList<Rating>();
     List<Rating> ratingListSubstitute = new ArrayList<Rating>();
     for (Service s : services) {

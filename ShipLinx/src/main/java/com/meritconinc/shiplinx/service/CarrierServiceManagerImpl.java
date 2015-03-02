@@ -3355,16 +3355,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           LtlPoundRate ltlPoundRateTobeSearched = null;
           if (poundRateTobeSearched != null) {
             ltlPoundRateTobeSearched = markupManagerService.getPoundRate(poundRateTobeSearched,
-                order.getTotalWeight());
+            		ratingList.get(i).getBillWeight());
           }
           if (ltlPoundRateTobeSearched == null) {
             poundRateTobeSearched.setCustomerId(0L);
             ltlPoundRateTobeSearched = markupManagerService.getPoundRate(poundRateTobeSearched,
-                order.getTotalWeight());
+            		ratingList.get(i).getBillWeight());
             if (ltlPoundRateTobeSearched != null
-                && order.getTotalWeight() >= order
+            		&& ratingList.get(i).getBillWeight() >= order
                     .getTotalWeightWithDimFactor(ltlPoundRateTobeSearched.getDimFactor())) {
-              totalWeight = order.getTotalWeight();
+            	totalWeight = ratingList.get(i).getBillWeight();
             } else if (ltlPoundRateTobeSearched != null) {
               totalWeight = order.getTotalWeightWithDimFactor(ltlPoundRateTobeSearched
                   .getDimFactor());
@@ -3372,7 +3372,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             }
 
             ltlPoundRateTobeSearched = markupManagerService.getPoundRate(poundRateTobeSearched,
-                order.getTotalWeight());
+            		ratingList.get(i).getBillWeight());
           }
           if (ltlPoundRateTobeSearched != null) {
             ltlPoundRateTobeSearched.setFreightClass(fClass);
@@ -3402,15 +3402,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             }
 
             double rate = 0;
-            Double totWeight = order.getTotalWeight();
+            Double totWeight = ratingList.get(i).getBillWeight();
 
             if (ltlPoundRate != null) {
               if (ltlPoundRate.getDimFactor() != null && ltlPoundRate.getDimFactor().signum() != 0) {
                 if (ltlPoundRate.getDimFactor() != null) {
                   if (ltlPoundRate.getDimFactor().signum() != 0) {
-                    if (order.getTotalWeight() >= order.getTotalWeightWithDimFactor(ltlPoundRate
+                	  if (ratingList.get(i).getBillWeight() >= order.getTotalWeightWithDimFactor(ltlPoundRate
                         .getDimFactor())) {
-                      totWeight = order.getTotalWeight();
+                		  totWeight = ratingList.get(i).getBillWeight();
                     } else {
                       totWeight = order.getTotalWeightWithDimFactor(ltlPoundRate.getDimFactor());
                     }

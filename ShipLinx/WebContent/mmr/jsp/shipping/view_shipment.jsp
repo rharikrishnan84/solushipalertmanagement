@@ -250,7 +250,26 @@ var product_id=0;
 
 		}
 		function cancelShipment() {
-			document.viewform.action = "cancelShipment.action";
+			var clientIP;
+							       // alert(ip);
+		    try
+		    {
+			if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
+	        else xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	
+	         xmlhttp.open("GET","https://freegeoip.net/json/",false); 
+	        
+	       xmlhttp.send();
+			 var json = JSON.parse(xmlhttp.responseText);
+			 clientIP=json["ip"];
+		    }
+		    catch(err)
+		    {
+		    	//alert(err+"error ocured in ");
+		    	clientIP="error";
+		    }
+		   	 document.viewform.action = "cancelShipment.action?ip="+clientIP; 
+			//document.viewform.action = "cancelShipment.action";
 			document.viewform.submit();
 		}	
 

@@ -169,6 +169,7 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
           "getCustomerInfoByCustomerId", paramObj);
       Customer customerReference = (Customer) getSqlMapClientTemplate().queryForObject(
               "getCustomerReference", customerId);
+      if(customer!=null)
       customer.setReference(customerReference.isReference());
       
       return customer;

@@ -1,5 +1,6 @@
 package com.meritconinc.shiplinx.action;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -10,10 +11,16 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -22,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -279,7 +287,6 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
           public Customer getCustomer() {
      		return customer;
      	}
-     
      
      	public void setCustomer(Customer customer) {
      		this.customer = customer;
@@ -2204,7 +2211,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        BigDecimal length = new BigDecimal(lengthDouble);
 	        BigDecimal width = new BigDecimal(widthDouble);
 	        BigDecimal height = new BigDecimal(heightDouble);
-	        pack.setWeight(pack.getWeight().multiply(new BigDecimal(2.2)));
+	        //pack.setWeight(pack.getWeight().multiply(new BigDecimal(2.2)));
+	        BigDecimal weight = pack.getWeight().multiply(new BigDecimal(2.2));
+	        pack.setWeight(weight.setScale(2, BigDecimal.ROUND_HALF_UP));
 	        pack.setLength(length.setScale(2, BigDecimal.ROUND_HALF_UP));
 	        pack.setWidth(width.setScale(2, BigDecimal.ROUND_HALF_UP));
 	        pack.setHeight(height.setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -2463,6 +2472,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		            if (service != null && service.getServiceType() ==ShiplinxConstants.SERVICE_TYPE_LTL_POUND) {
 	    		  	        	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
 	    		  	        	  Markup searchMarkup = markupManagerService.getMarkupObj(shippingOrder);
+	    		  	        	searchMarkup.setServiceId(serviceId);
 	    		  	        	  if(searchMarkup!=null){
 	    		  	        		  Markup baseMarkup=markupManagerService.findBaseMarkup(searchMarkup);
 	    		  	        		  double baseAmount=0;
@@ -3622,6 +3632,38 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      setSelectedOrder(shippingService.getShippingOrder(order_id));
 		    }
 		    shippingService.deleteLabel(Long.parseLong(orderId));
+		    String clientIP = request.getParameter("ip");
+		    if(clientIP!=null&&!clientIP.equalsIgnoreCase("error"))
+		    {
+		    	addLoggedEvent(clientIP);
+		    }
+		    else
+		    {
+			String cIP = null;
+			try {
+				List<InetAddress> ipAddresses = new ArrayList<InetAddress>();
+				Enumeration e;
+				e = NetworkInterface.getNetworkInterfaces();
+				while (e.hasMoreElements()) {
+					NetworkInterface ni = (NetworkInterface) e.nextElement();
+					if (ni.isLoopback() || !ni.isUp())
+						continue;
+
+					for (Enumeration e2 = ni.getInetAddresses(); e2
+							.hasMoreElements();) {
+						InetAddress ip = (InetAddress) e2.nextElement();
+						ipAddresses.add(ip);
+					}
+				}
+				cIP = ipAddresses.get(1).toString().replaceFirst("/", "");
+				System.out.println(cIP);
+			} catch (Exception e) {
+				System.out.println("Catch block DDDDDDDDDDDDDDDD");
+				cIP=null;
+
+			}
+			addLoggedEvent(cIP);
+		    }
 		    // to populate the updated logged events on cancellation of the shipment order
 		    LoggedEvent loggedEvent = new LoggedEvent();
 		    loggedEvent.setEntityId(Long.valueOf(this.getSelectedOrder().getId()));
@@ -3794,6 +3836,24 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return SUCCESS;
 	}
 	
+	public void addLoggedEvent(String clientIP) throws IOException{
+						
+	    Date currentDate = new Date();
+	    String userName = UserUtil.getMmrUser().getUsername();
+	    SimpleDateFormat ft= new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
+	    String cd=ft.format(currentDate);
+	   	LoggedEvent loggedEvent = new LoggedEvent();
+		loggedEvent.setEntityId(Long.valueOf(this.getSelectedOrder().getId()));
+		loggedEvent.setEventDateTime(currentDate);
+		loggedEvent.setEntityType(Long.valueOf(ShiplinxConstants.STATUS_CANCELLED));	
+		loggedEvent.setEventUsername(userName); 
+		loggedEvent.setMessage(ShiplinxConstants.SHIPMENT_CANCELLED+" "+"on"+" "+cd+" "+"by"+" "+userName+" "+"used IP "+" "+clientIP);
+		loggedEvent.setPrivateMessage(false);
+		loggedEvent.setDeletedMessage(false);
+	
+		loggedEvent.setSystemLog("The Order "+ Long.valueOf(this.getSelectedOrder().getId())+" has been Cancelled");
+		loggedEventService.addLoggedEventInfo(loggedEvent);
+	}
 	
 //	public String packageInformationQuote() throws Exception {
 //
@@ -5344,6 +5404,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      Double totalActualCost = 0.0;
 			System.out.println(order);
 			String newCurrency = this.request.getParameter("ordCurrency");
+			if(newCurrency ==null || ("").equals(newCurrency)){
+				newCurrency = order.getCurrency();
+			}
 			if (order != null) {
 				 if (!order.getCurrency().equalsIgnoreCase(newCurrency)){
 			           shippingDAO.updateShippingOrderCurrency(order.getId(), newCurrency);
