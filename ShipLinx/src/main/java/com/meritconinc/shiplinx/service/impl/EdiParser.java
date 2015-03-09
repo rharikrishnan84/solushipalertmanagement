@@ -558,13 +558,14 @@ public abstract class EdiParser {
 		}else{
 			// TODO check if address already exists
 			long customerId = this.addressDAO.getCustomerIdByAddressMatch(shipment);  
-			if(customerId > 0){
+			Customer customerInfo=this.customerDAO.getCustomerInfoByCustomerId(customerId, shipment.getBusinessId());
+			if(customerId > 0 && customerInfo!=null){
 				shipment.setCustomerId(customerId);
 				shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
 				return;
 			}else {
 				long fromCustomerId = this.addressDAO.getCustomerIdForFromAddress(shipment);
-				Customer customerInfo=this.customerDAO.getCustomerInfoByCustomerId(fromCustomerId, shipment.getBusinessId());
+				customerInfo=this.customerDAO.getCustomerInfoByCustomerId(fromCustomerId, shipment.getBusinessId());
 				if(fromCustomerId > 0){
 					long toCustomerId = this.addressDAO.getCustomerIdForToAddress(shipment);
 					if(toCustomerId > 0 && fromCustomerId == toCustomerId && customerInfo!=null){

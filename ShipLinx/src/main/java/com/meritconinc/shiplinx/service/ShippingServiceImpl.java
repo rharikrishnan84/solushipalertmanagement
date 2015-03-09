@@ -28,6 +28,7 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.carrier.CarrierService;
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.dao.AddressDAO;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.LoggedEventDAO;
@@ -64,6 +65,7 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 
 public class ShippingServiceImpl implements ShippingService {
 
@@ -2204,6 +2206,19 @@ public void updateShippingOrderCurrency(ShippingOrder ediShipment) {
 	}
 }
 
+@Override
+public Long insertFutureReference(FutureReference fc) {
+	// TODO Auto-generated method stub
+	return shippingDAO.insertFutureReference(fc);
+	
+}
+
+@Override
+public void insertFuturePackages(FutureReferencePackages futureRefPack) {
+	// TODO Auto-generated method stub
+	shippingDAO.insertFuturePackages(futureRefPack);
+	
+}
 	public List<ShippingOrder> getOrdersByAddressId(long fromAddressId){
 		return this.shippingDAO.getOrdersByAddressId(fromAddressId);
 	}

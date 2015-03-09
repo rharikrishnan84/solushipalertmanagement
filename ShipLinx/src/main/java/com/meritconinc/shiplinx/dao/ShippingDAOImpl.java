@@ -19,6 +19,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.model.BillingStatus;
 import com.meritconinc.shiplinx.model.Carrier;
@@ -41,6 +42,8 @@ import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
+import com.meritconinc.shiplinx.model.FutureReference;
 public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingDAO {
   private static final Logger log = LogManager.getLogger(ShippingDAOImpl.class);
 
@@ -1422,5 +1425,50 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 		public void updateBilledUOM(long id1) {
 			// TODO Auto-generated method stub
 			getSqlMapClientTemplate().update("updateBilledUOM", id1);	
-		}													
-}
+		}
+		
+		@Override
+										public Long insertFutureReference(FutureReference fc) {
+											System.out.println("Enter impl");
+											long in;
+											in=((Long)getSqlMapClientTemplate().insert("addFutureReference",fc)).longValue();
+											System.out.println(in);
+											return in;
+										
+								
+										}
+		
+										@Override
+										public List<FutureReference> getFutureReference() {
+											// TODO Auto-generated method stub
+											List<FutureReference> fc1 =getSqlMapClientTemplate().queryForList("getFutureReference");
+											
+											return fc1;
+										}
+		
+										@Override
+										public void deleteFutureReference(Long id) {
+											// TODO Auto-generated method stub
+											getSqlMapClientTemplate().delete("deleteFutureReference",id);
+										}
+		
+										@Override
+										public FutureReference showFutureReference(Long id) {
+											// TODO Auto-generated method stub
+											 FutureReference fc2=(FutureReference) getSqlMapClientTemplate().queryForObject("showFutureReference", id);
+											return fc2;
+										}
+		
+										@Override
+										public void insertFuturePackages(FutureReferencePackages futureRefPackList) {
+											// TODO Auto-generated method stub
+											getSqlMapClientTemplate().insert("addFutureReferencePackages",futureRefPackList);
+											
+										}
+												@Override
+										public List<FutureReferencePackages> showFutureReferencePackage(Long id1) {
+											// TODO Auto-generated method stub
+											List<FutureReferencePackages>frpList=getSqlMapClientTemplate().queryForList("showFutureReferencePackage", id1);
+											return frpList;
+										}
+		}

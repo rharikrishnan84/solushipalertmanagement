@@ -168,9 +168,19 @@ public class ShippingDocumentsServiceClient{
 						List<DocumentDetail> d = document.getDocumentDetails().getDocumentDetail();
 						for(DocumentDetail documentDetail: d){
 							logger.debug("Getting document type: " + documentDetail.getDocumentType());
-
-							URL url1 =new java.net.URL(documentDetail.getURL());
-							URLConnection connection = url1.openConnection();
+							URL url1 = null;
+							URLConnection connection = null;
+							try{
+								url1 =new java.net.URL(documentDetail.getURL());
+								logger.debug("sample1");
+								connection = url1.openConnection();
+								logger.debug("sample2");
+							}catch(Exception e){
+								url1 =new java.net.URL(documentDetail.getURL());
+								logger.debug("sample3");
+								connection = url1.openConnection();
+								logger.debug("sample4");
+							}
 							connection.setUseCaches( false );
 							connection.setDoOutput( true );
 							connection.setDoInput( true );
@@ -307,7 +317,6 @@ public class ShippingDocumentsServiceClient{
 		
 			// ----------- RequestContext
 			RequestContext reqContext = getRequestContext();
-			
 			List<Header> headers = new ArrayList<Header>();
 			Header dummyHeader = new Header(new QName("http://purolator.com/pws/datatypes/v1", "RequestContext"), reqContext,
 			                                new JAXBDataBinding(RequestContext.class));

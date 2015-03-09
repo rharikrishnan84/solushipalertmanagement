@@ -11,7 +11,9 @@ import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
 import com.meritconinc.shiplinx.model.SalesRecord;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 
 public interface InvoiceManager {
 	
@@ -61,5 +63,11 @@ public interface InvoiceManager {
 			public Double currencyConversionToId(String fromCurrency, int toCurrency, double amount);
 			public List<Invoice> getInvoiceByEmailType(Long invoiceId);
 			public void updateBilledUOM(long id1);
+			
+			public List<FutureReference>getFutureReference();
+			public void deleteFutureReference(Long id2);
+			public FutureReference showFutureReference(Long id1);
+			
+			public List<FutureReferencePackages> showFutureReferencePackage(Long id1);
 			
 }

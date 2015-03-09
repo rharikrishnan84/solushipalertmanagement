@@ -231,5 +231,14 @@ public class PDFRenderer
 				path.mkdirs();
 			
 			return tempPath + File.separator + fName + curDateTime.getTime() + ".pdf";
-		}	 
+		}	
+		
+		public String getUniquePDFFileName(String folderName,String fileName){
+			Date curDateTime = new Date();
+			File path = new File( folderName );
+			if ( !path.exists() )
+				path.mkdirs();
+					
+			return folderName + File.separator + fileName + curDateTime.getTime() + ".pdf";
+		}
 }

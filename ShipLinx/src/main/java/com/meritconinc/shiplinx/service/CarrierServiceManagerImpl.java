@@ -71,6 +71,8 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
 
 public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnable {
   private static final Logger log = LogManager.getLogger(CarrierServiceManagerImpl.class);
@@ -97,6 +99,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   private UserSearchCriteria criteria;
   private MarkupManagerDAO markupDAO;
   private ShippingDAO shippingDAO;
+  private BusinessDAO businessDAO;
 
   private CarrierServiceManagerImpl parentThread;
   private FuelSurchargeService fuelSurchargeService = null;
@@ -1317,7 +1320,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   public void getShippingLabel(ShippingOrder shippingOrder, OutputStream outputStream) {
 
     try {
-      // get the carrier available to customer
+    /*  // get the carrier available to customer
       // List<CustomerCarrier> customerCarrierList =
       // getCutomerCarrier(shippingOrder.getCustomerId());
       PDFRenderer pdfRenderer = new PDFRenderer();
@@ -1345,6 +1348,78 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       }
       pdfRenderer.concatPDF(srcList, outputStream);
       // carrierService.generateShippingLabel(outputStream,54);
+*/  
+    	boolean flag=false;
+    	boolean flag1=false;
+    	ArrayList<String> srcList = new ArrayList<String>();
+    	        PDFRenderer pdfRenderer = new PDFRenderer();
+    	        Business business = getBusinessDAO().getBusiessById(shippingOrder.getBusinessId());
+    	  	      String reportPath = business.getReportPath();
+    	  	      String shippingLabelFileName = pdfRenderer.getUniquePDFFileName(reportPath,"ICBOL_"
+    	  	          + shippingOrder.getId()+"_");
+    	  	    File fLabelPDF = new File(shippingLabelFileName);
+    	  	      long id=shippingOrder.getId();
+    	  	      File folderPath = new File(reportPath);
+    	  	      if (folderPath.isDirectory()) {
+    	  		   	  File[] fList = folderPath.listFiles();
+    	  		    	  if(fList!=null){
+    	  		    		  for(File file:fList){
+    	  		    			  String fileName=file.getName();
+    	  		    			  String[] splitFileName=fileName.split("_");
+    	  		    			  if(id==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("ICBOL")){
+    	  		    				  flag=true;
+    	  		    				  srcList.add(file.toString());
+    	  		    				fLabelPDF = new File(file.toString());
+    	  		    			  }
+    	  		    		  }
+    	  		    	  }
+    	  	      }if(flag==false) {
+    	  	      		  	fLabelPDF = new File(shippingLabelFileName);
+    	  	                //fLabelPDF.deleteOnExit();
+    	  	                BufferedOutputStream labelBOS = new BufferedOutputStream(new FileOutputStream(fLabelPDF));
+    	  	                errorMessages = new ArrayList<CarrierErrorMessage>();
+    	  	                Carrier carrier = carrierServiceDAO.getCarrier(shippingOrder.getCarrierId());
+    	  	
+    	  	                CustomerCarrier customerCarrier = getCarrierAccount(shippingOrder.getCustomerId(),
+    	  	                		                      shippingOrder.getBusinessId(), carrier.getId(), shippingOrder.getFromAddress()
+    	  	                		                          .getCountryCode(), shippingOrder.getToAddress().getCountryCode());
+    	  	                // for(CustomerCarrier customerCarrier :
+    	  	                // customerCarrierList){
+    	  	                CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
+    	  	                carrierService.generateShippingLabel(labelBOS, shippingOrder.getId(), customerCarrier);
+    	  	                srcList.add(shippingLabelFileName);
+    	  	       }// carrierService.generateShippingLabel(outputStream,54);
+    	  	       
+    	  	      	String reportPathc = business.getReportPath();
+    	  	      	String customsInvoicePDF = pdfRenderer.getUniquePDFFileName(reportPathc,"customsInvoice_"
+    	  	  	          + shippingOrder.getId()+"_");
+    	  	      	long id1=shippingOrder.getId();
+    	  		      File folderPathc = new File(reportPathc);
+    	  		      if (folderPathc.isDirectory()) {
+    	  			   	  File[] fList = folderPathc.listFiles();
+    	  			    	  if(fList!=null){
+    	  			    		  for(File file:fList){
+    	  			    			  String fileName=file.getName();
+    	  			    			  String[] splitFileName=fileName.split("_");
+    	  			    			  if(id1==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("customsInvoice")){
+    	  			    				  flag1=true;
+    	  			    					  srcList.add(file.toString());
+    	  			    			  }
+    	  			    		  }
+    	  			    	  }
+    	  		      }if(flag1==false){
+    	  		    		  if (getCustomsInvoice(shippingOrder, customsInvoicePDF)) {
+    	  		    			  srcList.add(customsInvoicePDF);
+    	  		    	  }
+    	  		      }
+    	  		 // if the label size is 0 then it should not store it
+      		      if(fLabelPDF!=null && fLabelPDF.length() > 0){
+    	    		pdfRenderer.concatPDF(srcList, outputStream);
+      		      }else{
+    	    		pdfRenderer.deleteFiles(srcList);
+      		      }
+             // carrierService.generateShippingLabel(outputStream,54);
+    	    	                        		          
     } catch (ShiplinxException e) {
       log.error("-------LabelGenerationException----------", e);
     }
@@ -1363,7 +1438,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       int ccopies) {
 
     try {
-
+    	boolean flag=false;
+    	boolean flag1=false;
       ArrayList<String> srcList = new ArrayList<String>();
 
       for (int i = 0; i < lstOrders.size(); i++) {
@@ -1386,7 +1462,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           // List<CustomerCarrier> customerCarrierList =
           // getCutomerCarrier(shippingOrder.getCustomerId());
           PDFRenderer pdfRenderer = new PDFRenderer();
-          String shippingLabelFileName = pdfRenderer.getUniqueTempPDFFileName("ICBOL"
+         /* String shippingLabelFileName = pdfRenderer.getUniqueTempPDFFileName("ICBOL"
               + shippingOrder.getId());
           File fLabelPDF = new File(shippingLabelFileName);
           fLabelPDF.deleteOnExit();
@@ -1421,6 +1497,87 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           pdfRenderer.concatPDF(srcList, outputStream);
 
           // carrierService.generateShippingLabel(outputStream,54);
+*/        
+          Business business = getBusinessDAO().getBusiessById(shippingOrder.getBusinessId());
+          	      String reportPath = business.getReportPath();
+          	      String shippingLabelFileName = pdfRenderer.getUniquePDFFileName(reportPath,"ICBOL_"
+          	          + shippingOrder.getId()+"_");
+          	    File fLabelPDF = new File(shippingLabelFileName);
+          	      long id=shippingOrder.getId();
+          	      File folderPath = new File(reportPath);
+          	      if (folderPath.isDirectory()) {
+          		   	  File[] fList = folderPath.listFiles();
+          		    	  if(fList!=null){
+          		    		  for(File file:fList){
+          		    			  String fileName=file.getName();
+          		    			  String[] splitFileName=fileName.split("_");
+          		    			  if(id==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("ICBOL")){
+          		    				  flag=true;
+          		    				  for (int s = 0; s < scopies; s++){
+          		    					  srcList.add(file.toString());
+          		    					fLabelPDF = new File(file.toString());
+          		    				  }
+          		    			  }
+          		    		  }
+          		    	  }
+          	      }if(flag==false) {
+          	      		  	fLabelPDF = new File(shippingLabelFileName);
+          	                //fLabelPDF.deleteOnExit();
+          	                BufferedOutputStream labelBOS = new BufferedOutputStream(new FileOutputStream(fLabelPDF));
+          	                errorMessages = new ArrayList<CarrierErrorMessage>();
+          	                Carrier carrier = carrierServiceDAO.getCarrier(shippingOrder.getCarrierId());
+          	
+          	                CustomerCarrier customerCarrier = getCarrierAccount(shippingOrder.getCustomerId(),
+          	                		                      shippingOrder.getBusinessId(), carrier.getId(), shippingOrder.getFromAddress()
+          	                		                          .getCountryCode(), shippingOrder.getToAddress().getCountryCode());
+          	                // for(CustomerCarrier customerCarrier :
+          	                // customerCarrierList){
+          	                CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
+          	                carrierService.generateShippingLabel(labelBOS, Long.valueOf(lstOrders.get(i)), customerCarrier);
+          	                for (int s = 0; s < scopies; s++) // generate Shipping Label
+                          // for the no of copies
+          	                // selected.
+          	                {
+          	                	srcList.add(shippingLabelFileName);
+          	                }
+          	                		                	          	  
+          	       }// carrierService.generateShippingLabel(outputStream,54);
+          	       
+          	      	String reportPathc = business.getReportPath();
+          	      	String customsInvoicePDF = pdfRenderer.getUniquePDFFileName(reportPathc,"customsInvoice_"
+          	  	          + shippingOrder.getId()+"_");
+          	      	long id1=shippingOrder.getId();
+          		      File folderPathc = new File(reportPathc);
+          		      if (folderPathc.isDirectory()) {
+          			   	  File[] fList = folderPathc.listFiles();
+          			    	  if(fList!=null){
+          			    		  for(File file:fList){
+          			    			  String fileName=file.getName();
+          			    			  String[] splitFileName=fileName.split("_");
+          			    			  if(id1==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("customsInvoice")){
+          			    				  flag1=true;
+          			    				  for (int c = 0; c < ccopies; c++) {
+          			    					  srcList.add(file.toString());
+          			    				  }
+          			    			  }
+          			    		  }
+          			    	  }
+          		      }if(flag1==false){
+          		    	  for (int c = 0; c < ccopies; c++) {
+          		    		  if (getCustomsInvoice(shippingOrder, customsInvoicePDF)) {
+          		    			  srcList.add(customsInvoicePDF);
+          		    		  }
+          		    	  }
+          		      }
+          		 // if the label size is 0 then it should not store it
+		      	if(fLabelPDF!=null && fLabelPDF.length() > 0){
+		    		pdfRenderer.concatPDF(srcList, outputStream);
+		    	}else{
+		    		pdfRenderer.deleteFiles(srcList);
+		    	}
+                    		                	          	  
+           // carrierService.generateShippingLabel(outputStream,54);
+          
         }// End of If
       }// End of for
     } catch (ShiplinxException e) {
@@ -4013,4 +4170,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 					}
 				}	
 		  }
+		  
+		public BusinessDAO getBusinessDAO() {
+  			return businessDAO;
+  		}
+  
+  		public void setBusinessDAO(BusinessDAO businessDAO) {
+  			this.businessDAO = businessDAO;
+  		}
 }

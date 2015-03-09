@@ -125,6 +125,7 @@ import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.model.UnitOfMeasure;
 import com.meritconinc.shiplinx.service.AddressManager;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.service.InvoiceManager;
@@ -137,6 +138,7 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.EODManifestCreator;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 /**
  * @author Rahul
  *
@@ -174,6 +176,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private String uploadFileName;
 //	private List<OrderStatus> orderStatusList;
 	private MarkupManager markupManagerService;
+	
+	private FutureReference fc;
+	private ShippingOrder so;
+	private FutureReferencePackages frp;
+	private List<FutureReferencePackages>futureRefPackList=new ArrayList<FutureReferencePackages>();
 	
 	private List<KeyValueVO> cachedList;
 	public List<CurrencySymbol> getCurrencyList() {
@@ -2536,11 +2543,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      ////End Markup Minimum Calculation
 	      
 	      
+	      	    for (Rating r : ratingList){
+    		    	  if((r.getCarrierId()==ShiplinxConstants.CARRIER_GENERIC)&&(r.getBillWeight()==0.0)&&(r.getTotalCost()==0.0)){
+    		    		 //flag=true;
+    		    		  createFutureReference(shippingOrder);
+    		    	  }
+		      }
+	      	    
 	      if (ratingList == null || ratingList.size() == 0) {
 	        if (shippingOrder.getCarrierId_web() != null && shippingOrder.getCarrierId_web() > 0)
 	          getSession().put("SERVICES",
 	              carrierServiceManager.getServicesForCarrier(shippingOrder.getCarrierId_web()));
 	        addActionError(getText("shippingOrder.rate.empty"));
+	        createFutureReference(shippingOrder);
 	        if (shippingOrder.getUnitmeasure() == 2) {
 	          for (Package pack : packageList) {
 	            float length = pack.getLength().floatValue() / 0.39370f;
@@ -2718,6 +2733,130 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    return SUCCESS;
 
 	  }
+	
+	private void createFutureReference(ShippingOrder shippingOrder) {
+				User user = UserUtil.getMmrUser();
+			    userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
+			    String[] sertype;
+			    String shipdate;
+			    frp=new FutureReferencePackages();
+				fc=new FutureReference();
+				fc.setCustomerId(shippingOrder.getCustomerId());        		 
+				fc.setCreatedBy(user.getUsername());
+				fc.setDateCreated((Timestamp)shippingOrder.getDateCreated());
+				sertype=(shippingOrder.getPackageTypeId().getType()).split("_");
+				shipdate=shippingOrder.getScheduledShipDate_web();
+				String readyTime,closeTime;
+				readyTime=shippingOrder.getPickup().getReadyHour()+":"+shippingOrder.getPickup().getReadyMin();
+				closeTime=shippingOrder.getPickup().getCloseHour()+":"+shippingOrder.getPickup().getCloseMin();
+			    String pickupInstruction;
+			    pickupInstruction=shippingOrder.getPickup().getInstructions();
+			    fc.setDocumentsOnly(shippingOrder.getDocsOnly());
+			    fc.setAppointmentPickup(shippingOrder.isAppointmentPickup());
+			    fc.setTradeShowPickup(shippingOrder.isTradeShowPickup());
+			    fc.setTaligateDelivery(shippingOrder.isToTailgate());
+			    fc.setTradeShowDelivery(shippingOrder.isTradeShowDelivery());
+			    fc.setAppointmentDelivery(shippingOrder.isAppointmentDelivery());
+			    fc.setInsidePickup(shippingOrder.isInsidePickup());
+			    fc.setTaligatePickup(shippingOrder.isFromTailgate());
+			    fc.setDangerousGoods(shippingOrder.getDangerousGoodsName());
+			    fc.setRefCode(shippingOrder.getReferenceCode());
+			    fc.setHoldForPickup(shippingOrder.getHoldForPickupRequired());
+			    fc.setSaturdayDelivery(shippingOrder.getSatDelivery());
+			    int sig_req;
+			    sig_req=shippingOrder.getSignatureRequired();
+			    if(sig_req==1)
+			    {
+			    fc.setSignatureRequired("NO");
+			    }
+			    else if(sig_req==2)
+			    {
+			    	fc.setSignatureRequired("Del.Confirmation");
+			    }
+			    else if(sig_req==3)
+			    {
+			    	fc.setSignatureRequired("Signature");
+			    }
+			    else if(sig_req==4)
+			    {
+			    	fc.setSignatureRequired("Adult Signature");
+			    }
+			    fc.setDutiableCode((shippingOrder.getDutiableAmount()).toString());
+			    fc.setNotifyShipper(shippingOrder.getFromAddress().isSendNotification());
+			    fc.setNotifyConsignee(shippingOrder.getToAddress().isSendNotification());
+			        
+			    	
+				if(shippingOrder.getPickup().isPickupRequired()==true)
+				{
+				fc.setReadyTime(readyTime);
+				fc.setCloseTime(closeTime);
+				fc.setPickupInstruction(shippingOrder.getPickup().getInstructions());
+				fc.setPickupLocation(shippingOrder.getPickup().getPickupLocation());
+				}
+				else
+				{
+					fc.setReadyTime(null);
+					fc.setCloseTime(null);
+					fc.setPickupInstruction(null);
+					fc.setPickupLocation(null);
+				}
+				fc.setFromContactName(shippingOrder.getFromAddress().getContactName());
+				fc.setToContactName(shippingOrder.getToAddress().getContactName());
+				fc.setFromPostalCode(shippingOrder.getFromAddress().getPostalCode());
+				fc.setToPostalCode(shippingOrder.getToAddress().getPostalCode());
+						
+				
+				fc.setName(shippingOrder.getCustomer().getName());
+				fc.setFromCity(shippingOrder.getFromAddress().getCity());
+				fc.setFromState(shippingOrder.getFromAddress().getProvinceCode());
+				fc.setFromCountry(shippingOrder.getFromAddress().getCountryName());
+				fc.setToCity(shippingOrder.getToAddress().getCity());
+				fc.setToState(shippingOrder.getToAddress().getProvinceCode());
+				fc.setToCountry(shippingOrder.getToAddress().getCountryName());
+				fc.setShipFromAddress(shippingOrder.getFromAddress().getAddress1());
+				fc.setShipToAddress(shippingOrder.getToAddress().getAddress1());
+				fc.setQuantity(shippingOrder.getQuantity());
+				fc.setServiceType(sertype[1]);
+				fc.setShipScheduleDate(shippingOrder.getScheduledShipDate_web());
+				fc.setShipFromEmail(shippingOrder.getFromAddress().getEmailAddress());
+				fc.setShipToEmail(shippingOrder.getToAddress().getEmailAddress());
+				fc.setShipFromPhone(shippingOrder.getFromAddress().getPhoneNo());
+				fc.setShipToPhone(shippingOrder.getToAddress().getPhoneNo());
+				fc.setFromCompany(shippingOrder.getFromAddress().getAbbreviationName());
+				fc.setToCompany(shippingOrder.getToAddress().getAbbreviationName());
+				/*if((shippingOrder.getFromAddress().getResidential())==true)
+				fc.setFromResidential(1);
+				else
+					fc.setFromResidential(0);
+				
+				if((shippingOrder.getToAddress().getResidential())==true)
+				fc.setToresidential(1);
+				else
+					fc.setToresidential(0);*/
+				//fc.setPackageList(shippingOrder.getPackages());
+				fc.setFromResidential(shippingOrder.getFromAddress().getResidential());
+				fc.setToresidential(shippingOrder.getToAddress().getResidential());
+				System.out.println(fc.getFutureReferenceId());
+		        long frId=shippingService.insertFutureReference(fc);
+		        int len=shippingOrder.getPackages().size();
+		        int i;
+		        for(i=0;i<len;i++)
+		        {
+				        frp.setFutureReferenceId(frId);
+				        frp.setCustomerId(shippingOrder.getCustomerId());
+				        frp.setPackLength((shippingOrder.getPackages().get(i).getLength().doubleValue()));
+				        frp.setPackWidth((shippingOrder.getPackages().get(i).getWidth().doubleValue()));
+				        frp.setPackHeight((shippingOrder.getPackages().get(i).getHeight()).doubleValue());
+				        frp.setPackWeight((shippingOrder.getPackages().get(i).getWeight()).doubleValue());
+				        frp.setPackCodAmount((shippingOrder.getPackages().get(i).getCodAmount()).doubleValue());
+				        frp.setPackInsuranceAmount((shippingOrder.getPackages().get(i).getInsuranceAmount()).doubleValue());
+				        frp.setPackDescription(shippingOrder.getPackages().get(i).getDescription());
+				        
+				        shippingService.insertFuturePackages(frp);
+		        }
+		       
+			}
+
 	
 	public ShippingOrder applyCOD(ShippingOrder order){
 		Double codTotal=0.0;

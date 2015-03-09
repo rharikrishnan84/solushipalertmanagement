@@ -66,7 +66,9 @@ import com.meritconinc.shiplinx.service.PinBlockManager;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.FutureReference;
 
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 public class InvoiceManagerImpl implements InvoiceManager {
 
   private static final Logger log = LogManager.getLogger(InvoiceManagerImpl.class);
@@ -984,8 +986,8 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 
   public void getInvoicePdf(Long id, String url, OutputStream outStream, boolean detailed)
       throws Exception {
-    try {
-      Invoice invoice = getInvoiceById(id);
+   // try {
+     /* Invoice invoice = getInvoiceById(id);
 
       PDFRenderer pdfRenderer = new PDFRenderer();
 
@@ -1007,16 +1009,60 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
         // srcList.add(webPDFFileName);
       }
 
-      pdfRenderer.concatPDF(srcList, outStream);
+      pdfRenderer.concatPDF(srcList, outStream);*/
+    	try {
+	 	      Invoice invoice = getInvoiceById(id);
+		      boolean flag=false;
+		      PDFRenderer pdfRenderer = new PDFRenderer();
+		     ArrayList<String> srcList = new ArrayList<String>();
+		     Business business = getBusinessDAO().getBusiessById(invoice.getBusinessId());
+		       String reportPathInvoice = business.getReportPathInvoice();
+		       String mainPDFFileName = pdfRenderer.getUniquePDFFileName(reportPathInvoice,"invoice_"
+		           + invoice.getInvoiceNum()+"_");
+		     String invoiceNum=invoice.getInvoiceNum();
+		       File folderPath = new File(reportPathInvoice);
+		       if (folderPath.isDirectory()) {
+		        File[] fList = folderPath.listFiles();
+		        if(fList!=null){
+		         for(File file:fList){
+		          String fileName=file.getName();
+		          String[] splitFileName=fileName.split("_");
+		          if(invoiceNum.equals(splitFileName[1])){
+		             flag=true;
+		             srcList.add(file.toString());
+		          }
+		         }
+		        }
+		       }
+		       if(flag==false) {
+		            generateInvoiceMainPage(url, invoice, mainPDFFileName);
+		          srcList.add(mainPDFFileName);
+		       }
+		      if (detailed) {
+		        // String ediPDFFileName =
+		        // pdfRenderer.getUniqueTempPDFFileName("ediInvoice");
+		        // if ( generateInvoiceEdiBackupPages(invoice, ediPDFFileName) )
+		        // srcList.add(ediPDFFileName);
+		        //
+		        // String webPDFFileName =
+		        // pdfRenderer.getUniqueTempPDFFileName("webInvoice");
+		        // if ( generateInvoiceWOBackupPages(invoice, webPDFFileName) )
+		        // srcList.add(webPDFFileName);
+		      }
+		      pdfRenderer.concatPDF(srcList, outStream);
 
-      // delete temp files
-      pdfRenderer.deleteFiles(srcList);
-
-    } catch (Exception e) {
+   /* } catch (Exception e) {
       e.printStackTrace();
       throw e;
     }
-  }
+  }*/
+    	  //pdfRenderer.concatPDF(srcList, outStream);
+    	  	       
+    	  	    } catch (Exception e) {
+    	   	      e.printStackTrace();
+    	   	      throw e;
+    	   	    }
+    	}
   
   public void getSalesInvoicePdf(Long id, String url, OutputStream outStream, boolean detailed,String salesUser)
 	      throws Exception {
@@ -2461,4 +2507,31 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 			// TODO Auto-generated method stub
 			shippingDAO.updateBilledUOM(id1);
 		}
-}
+		
+		@Override
+				public List<FutureReference> getFutureReference() {
+					// TODO Auto-generated method stub
+					
+					return shippingDAO.getFutureReference();
+				}
+		
+				@Override
+			public void deleteFutureReference(Long id2) {
+					// TODO Auto-generated method stub
+					shippingDAO.deleteFutureReference(id2);
+				}
+		
+				@Override
+				public FutureReference showFutureReference(Long id1) {
+					// TODO Auto-generated method stub
+					return shippingDAO.showFutureReference(id1);
+				}
+				
+		
+				@Override
+				public List<FutureReferencePackages> showFutureReferencePackage(Long id1) {
+					// TODO Auto-generated method stub
+					return shippingDAO.showFutureReferencePackage(id1);
+					
+				}
+		}

@@ -71,6 +71,9 @@ public class Business {
 	
 	private String ltlEmail;
 	
+	private String reportPath;
+	private String reportPathInvoice;
+	
 	public String getLtlEmail() {
 		return ltlEmail;
 	}
@@ -374,5 +377,16 @@ public class Business {
 		this.usAddress = usAddress;
 	}
 	
-	
+	public String getReportPath() {
+		return reportPath;
+	}
+	public void setReportPath(String reportPath) {
+		this.reportPath = reportPath;
+	}
+	public String getReportPathInvoice() {
+		return reportPathInvoice;
+	}
+	public void setReportPathInvoice(String reportPathInvoice) {
+		this.reportPathInvoice = reportPathInvoice;
+	}
 }

@@ -17,12 +17,14 @@ import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.OrderProduct;
 import com.meritconinc.shiplinx.model.OrderStatus;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.Package;
 import com.meritconinc.shiplinx.model.PackageType;
 import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 public interface ShippingDAO {
 
   public List<String> findPackageTypeByName(String name);
@@ -217,4 +219,12 @@ public interface ShippingDAO {
   public List<ShippingOrder> getShippingOrders(List<Long> soluShipOrderIds);
   public List<ShippingOrder> getOrdersByAddressId(long fromAddressId);
   public void updateBilledUOM(long id1);
+  
+  public Long insertFutureReference(FutureReference fc);
+  public List<FutureReference>getFutureReference();
+  public void deleteFutureReference(Long id2);
+  public FutureReference showFutureReference(Long id1);
+
+  public void insertFuturePackages(FutureReferencePackages futureRefPack);
+  public List<FutureReferencePackages> showFutureReferencePackage(Long id1);
   }

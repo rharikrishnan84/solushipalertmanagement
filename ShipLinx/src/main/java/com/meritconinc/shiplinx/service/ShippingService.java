@@ -15,6 +15,7 @@ import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.ExchangeRateCurrency;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
+import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.DangerousGoods;
 import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.OrderProduct;
@@ -24,6 +25,7 @@ import com.meritconinc.shiplinx.model.PackageType;
 import com.meritconinc.shiplinx.model.Rating;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 
 public interface ShippingService {
 
@@ -209,5 +211,7 @@ public interface ShippingService {
 public void updateShippingOrderCurrency(ShippingOrder ediShipment);
 
 public List<ShippingOrder> getOrdersByAddressId(long fromAddressId);
-  
+
+public Long insertFutureReference(FutureReference fc);
+public void insertFuturePackages(FutureReferencePackages futureRefPack);
 }

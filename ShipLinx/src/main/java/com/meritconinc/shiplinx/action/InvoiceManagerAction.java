@@ -66,6 +66,8 @@ import com.meritconinc.shiplinx.service.InvoiceManager;
 import com.meritconinc.shiplinx.service.ShippingService;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.FutureReference;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
 
@@ -103,6 +105,9 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private SalesRecord salesRecord;
   private Integer statusId;
 
+  private List<FutureReference> fCustomers=new ArrayList<FutureReference>();
+  private List<FutureReference> showFutureCust=new ArrayList<FutureReference>();
+  private List<FutureReferencePackages>showfutRefPackageList=new ArrayList<FutureReferencePackages>();
   public static final List<String> MONTH_LIST = createMonthList();
 
   private String salesRep;
@@ -117,6 +122,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<Commission> commissions;
   private String paymentStatus;
   private List<Invoice> invoiceBreakdown;
+  private FutureReference fc;
   private List<Invoice> invoiceBreakdownList;
   Invoice invoiceModel = new  Invoice();
   
@@ -300,7 +306,37 @@ public String getSalesRep() {
     return SUCCESS;
   }
 
-  public String searchInvoice() {
+  public String showFutureRef()
+    {
+  	  String id=request.getParameter("id");
+  	  long id1=Long.valueOf(id);
+  	  fc=invoiceManager.showFutureReference(id1);
+  	  showfutRefPackageList=invoiceManager.showFutureReferencePackage(id1);
+  	 	 
+  	  return SUCCESS;
+    }    
+  public String deletefutureRef()
+    {
+		String id = request.getParameter("futureRefId");
+		String[] ids = id.split(",");
+
+		for (int i = 0; i < ids.length; i++) {
+			long id2 = Long.valueOf(ids[i]);
+			System.out.println(id2);
+			invoiceManager.deleteFutureReference(id2);
+
+		}
+
+		return SUCCESS;
+    }
+
+    
+    public String futureRef(){
+  	  setfCustomers(invoiceManager.getFutureReference());
+  	  return SUCCESS;
+    }
+
+    public String searchInvoice() {
 
 	  log.debug("In searchInvoice");
 	  	    String search = request.getParameter("search");
@@ -2672,5 +2708,37 @@ public SubTotal getSubtotals() {
 public void setSubtotals(SubTotal subtotals) {
 	this.subtotals = subtotals;
 } 
+
+public List<FutureReference> getfCustomers() {
+	return fCustomers;
+}
+
+public void setfCustomers(List<FutureReference> fCustomers) {
+	this.fCustomers = fCustomers;
+}
+
+public List<FutureReference> getShowFutureCust() {
+	return showFutureCust;
+}
+
+public void setShowFutureCust(List<FutureReference> showFutureCust) {
+	this.showFutureCust = showFutureCust;
+ } 
+
+public List<FutureReferencePackages> getShowfutRefPackageList() {
+	return showfutRefPackageList;
+}
+
+public void setShowfutRefPackageList(List<FutureReferencePackages> showfutRefPackageList) {
+	this.showfutRefPackageList = showfutRefPackageList;
+}
+
+public FutureReference getFc() {
+	return fc;
+}
+
+public void setFc(FutureReference fc) {
+	this.fc = fc;
+}
 
 }
