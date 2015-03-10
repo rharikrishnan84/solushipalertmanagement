@@ -64,7 +64,71 @@
 			<result property="saveShipmet" column="save_shipment"/>	
 			<result property="currency" column="currency"/>
 	</resultMap>
-	
+	<resultMap id="FutureReferenceResult" class="com.meritconinc.shiplinx.model.FutureReference">
+			<result property="createdBy" column="createdBy"/>
+			<result property="dateCreated" column="created"/>
+			<result property="futureReferenceId" column="future_reference_id"/>
+			<result property="customerId" column="customer_id"/>
+			<result property="name" column="name"/>
+			<result property="fromCity" column="from_city"/>
+			<result property="fromState" column="from_state"/>
+			<result property="fromCountry" column="from_country"/>
+			<result property="toCity" column="to_city"/>
+			<result property="toState" column="to_state"/>
+			<result property="toCountry" column="to_country"/>
+			<result property="shipFromAddress" column="ship_from_address"/>
+			<result property="shipToAddress" column="ship_to_address"/>
+			<result property="quantity" column="no_of_packages"/>
+			<result property="serviceType" column="service_type"/>
+			<result property="shipScheduleDate" column="ship_schedule_date"/>
+			<result property="shipFromEmail" column="ship_from_email"/>
+			<result property="shipToEmail" column="ship_to_email"/>
+			<result property="shipFromPhone" column="ship_from_phone"/>
+			<result property="shipToPhone" column="ship_to_phone"/>
+			<result property="fromCompany" column="from_company"/>
+			<result property="toCompany" column="to_company"/>
+			<result property="fromResidential" column="from_residential"/>
+			<result property="toresidential" column="to_residential"/>
+			<result property="readyTime" column="ready_time"/>
+			<result property="closeTime" column="close_time"/>
+			<result property="pickupInstruction" column="pickup_instruction"/>
+			<result property="pickupLocation" column="pickup_location"/>
+			<result property="fromContactName" column="from_contact_name"/>
+			<result property="toContactName" column="to_contact_name"/>
+			<result property="fromPostalCode" column="from_postal_code"/>
+			<result property="toPostalCode" column="to_postal_code"/>
+			<result property="documentsOnly" column="documents_only"/>
+			<result property="appointmentPickup" column="appointment_pickup"/>
+			<result property="tradeShowPickup" column="tradeshow_pickup"/>
+			<result property="taligateDelivery" column="taligate_delivery"/>
+			<result property="tradeShowDelivery" column="trade_show_delivery"/>
+			<result property="appointmentDelivery" column="appointment_delivery"/>
+			<result property="insidePickup" column="inside_pickup"/>
+			<result property="taligatePickup" column="taligate_pickup"/>
+			<result property="dangerousGoods" column="dangerous_goods"/>
+			<result property="refCode" column="ref_code"/>
+			<result property="holdForPickup" column="hold_for_pickup"/>
+			<result property="saturdayDelivery" column="saturday_delivery"/>
+			<result property="signatureRequired" column="signature_required"/>
+			<result property="dutiableCode" column="dutiable_code"/>
+			<result property="notifyShipper" column="notify_shipper"/>
+			<result property="notifyConsignee" column="notify_consignee"/>
+			</resultMap>
+				
+	<resultMap id="FutureReferencePackagesResult" class="com.meritconinc.shiplinx.model.FutureReferencePackages">
+		<result property="futRefPackId" column="fut_ref_pack_id"/>
+		<result property="packLength" column="pack_length"/>
+		<result property="packWidth" column="pack_width"/>
+		<result property="packHeight" column="pack_height"/>
+		<result property="packWeight" column="pack_weight"/>
+		<result property="packCodAmount" column="pack_cod_amount"/>
+		<result property="packInsuranceAmount" column="pack_insurance_amount"/>
+		<result property="packDescription" column="pack_description"/>
+		<result property="customerId" column="customer_id"/>
+		<result property="futureReferenceId" column="future_reference_id"/>
+
+</resultMap>
+
 	<resultMap id="ShippingOrdersAllStatus" class="com.meritconinc.shiplinx.model.OrderStatus">
 			<result property="id"/>
 			<result property="name" />
@@ -1637,5 +1701,34 @@
 	<update id = "updateBilledUOM">
 		update shipping_order set billed_weight_uom="KGS" where order_id=#id#
 	</update>
+	
+	<insert id="addFutureReference" parameterClass="com.meritconinc.shiplinx.model.FutureReference">
+	insert into quote (customer_id,name,from_city,from_state,from_country,to_city,to_state,to_country,created,createdBy,ship_from_address,ship_to_address,no_of_packages,service_type,ship_schedule_date,ship_from_email,ship_to_email,ship_from_phone,ship_to_phone,from_company,to_company,from_residential,to_residential,ready_time,close_time,pickup_instruction,pickup_location,from_contact_name,to_contact_name,from_postal_code,to_postal_code,documents_only,appointment_pickup,tradeshow_pickup,taligate_delivery,trade_show_delivery,appointment_delivery,inside_pickup,taligate_pickup,dangerous_goods,ref_code,hold_for_pickup,saturday_delivery,signature_required,dutiable_code,notify_shipper,notify_consignee)
+	values(#customerId#,#name#,#fromCity#,#fromState#,#fromCountry#,#toCity#,#toState#,#toCountry#,#dateCreated#,#createdBy#,#shipFromAddress#,#shipToAddress#,#quantity#,#serviceType#,#shipScheduleDate#,#shipFromEmail#,#shipToEmail#,#shipFromPhone#,#shipToPhone#,#fromCompany#,#toCompany#,#fromResidential#,#toresidential#,#readyTime#,#closeTime#,#pickupInstruction#,#pickupLocation#,#fromContactName#,#toContactName#,#fromPostalCode#,#toPostalCode#,#documentsOnly#,#appointmentPickup#,#tradeShowPickup#,#taligateDelivery#,#tradeShowDelivery#,#appointmentDelivery#,#insidePickup#,#taligatePickup#,#dangerousGoods#,#refCode#,#holdForPickup#,#saturdayDelivery#,#signatureRequired#,#dutiableCode#,#notifyShipper#,#notifyConsignee#)
+		<selectKey resultClass="long" type="post" keyProperty="futureReferenceId" >select LAST_INSERT_ID() as value
+	 		</selectKey>	
+	</insert>
+	
+	<select id="getFutureReference" resultMap="FutureReferenceResult">
+	select * from quote
+	</select>
+	
+	<delete id="deleteFutureReference">
+       delete from quote where future_reference_id=#futureReferenceId#
+      </delete>
+     
+    <select id="showFutureReference" resultMap="FutureReferenceResult">
+	select * from quote where future_reference_id=#futureReferenceId#
+	</select>
+	
+	<insert id="addFutureReferencePackages" parameterClass="com.meritconinc.shiplinx.model.FutureReferencePackages">
+	insert into quote_packages (pack_length,pack_width,pack_height,pack_weight,pack_cod_amount,pack_insurance_amount,pack_description,customer_id,future_reference_id)
+	values(#packLength#,#packWidth#,#packHeight#,#packWeight#,#packCodAmount#,#packInsuranceAmount#,#packDescription#,#customerId#,#futureReferenceId#)
+	</insert>
+	
+	<select id="showFutureReferencePackage" resultMap="FutureReferencePackagesResult">
+	select * from quote_packages where future_reference_id=#futureReferenceId#
+	</select>
+	
 </sqlMap>
 

@@ -1718,6 +1718,16 @@
             <result type="tiles" name="success">invoiceBreakdown</result>
             <result type="tiles" name="input">invoiceBreakdown</result>
        	</action> 
+       	<action name="futRef" class="invoiceManagerAction" method="futureRef">
+       	<result type="tiles" name="success">futureRefHome</result>
+       	</action> 
+       	<action name="futRef1" class="invoiceManagerAction" method="deletefutureRef">
+       <!-- 	<result type="tiles" name="success">futureRef</result> -->
+       	<result type="redirectAction" name="success">futRef</result>
+       	</action>
+       	 <action name="futRef2" class="invoiceManagerAction" method="showFutureRef">
+       	<result type="tiles" name="success">showFutureRef</result>
+       	</action> 
 	</package>
 
 </struts>

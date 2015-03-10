@@ -436,6 +436,7 @@
 				<property name="addressService" ref="addressService"/>
 				<property name="pickupService" ref="pickupService"/>
 				<property name="businessService" ref="businessService"/>
+				<property name="businessDAO" ref="businessDAO"/>
  				<property name="markupManagerService" ref="markupManagerService"/>
 				<property name="creditCardService">
 					<ref local="ccTransactionManager"/>

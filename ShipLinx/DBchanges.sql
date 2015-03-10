@@ -2529,3 +2529,307 @@ END
 insert into resourcebundle(msg_id,msg_content,locale,is_fmk) values ('label.system.log.edi.message','EDI Upload Processing - Address correction occured!','en_CA',1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 
+
+
+CREATE TABLE `future_customer` (
+  `future_customer_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` INT(11) NULL,
+  `name` VARCHAR(255) NULL,
+  `from_city` VARCHAR(45) NULL,
+  `from_state` VARCHAR(45) NULL,
+  `from_country` VARCHAR(45) NULL,
+  `to_city` VARCHAR(45) NULL,
+  `to_state` VARCHAR(45) NULL,
+  `to_country` VARCHAR(45) NULL,
+  PRIMARY KEY (`future_customer_id`));
+
+
+
+
+alter table future_customer add foreign key(customer_id) references customer(customer_id)
+
+
+
+ALTER TABLE `future_customer` 
+ADD COLUMN `created` DATETIME NULL AFTER `to_country`;
+
+ALTER TABLE `future_customer` 
+ADD COLUMN `createdBy` INT(11) NULL AFTER `created`;
+
+ALTER TABLE `future_customer` 
+RENAME TO  `future_Reference` ;
+
+
+
+INSERT INTO  `menu` (`id`, `name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`) VALUES ('432', 'Future Reference', '/admin/futRef.action', '4', 'LEVEL_1', '1', '400', 'menu.admin.futureReference', '');
+
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.futureReference', 'Future Reference', 'en_CA', 1, '');
+
+INSERT INTO `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('432', 'busadmin', '');
+
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '432', '');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`, `parent_action_id`, `namespace`) VALUES ('futRef', '432', 1, 'Future References', 1, '1022', '', 'admin');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1022');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('futRef1', '432', 1, 'Future References Delete', 1, '1023');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1023');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('futRef2', '432', 1, 'Future Reference  view', 1, '1024');
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1024');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.name', 'Name', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.fromstate', 'From State', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.from country', 'FromCountry', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.tostate', 'To State', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.tocountry', 'To Country', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.delete', 'DELETE', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.customerid', 'CustomerID', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.fromcity', 'From City', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.tocity', 'To City', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.datecreated', 'Date Created', 'en_CA');
+
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.view', 'View', 'en_CA');
+
+
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `ship_from_address` VARCHAR(200) NULL AFTER `createdBy`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `ship_to_address` VARCHAR(45) NULL AFTER `ship_from_address`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `no_of_packages` INT(50) NULL AFTER `ship_to_address`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `service_type` VARCHAR(45) NULL AFTER `no_of_packages`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN  `ship_schedule_date` VARCHAR(45) NULL ;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `ship_from_email` VARCHAR(45) NULL AFTER `ship_schedule_date`,
+ADD COLUMN `ship_to_email` VARCHAR(45) NULL AFTER `ship_from_email`,
+ADD COLUMN `ship_from_phone` VARCHAR(45) NULL AFTER `ship_to_email`,
+ADD COLUMN `ship_to_phone` VARCHAR(45) NULL AFTER `ship_from_phone`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `from_company` VARCHAR(45) NULL AFTER `ship_to_phone`,
+ADD COLUMN `to_company` VARCHAR(45) NULL AFTER `from_company`;
+
+
+CREATE TABLE `future_ref_packages` (
+  `fut_ref_pack_id` INT NOT NULL AUTO_INCREMENT,
+  `pack_length` DECIMAL(10,4) NULL,
+  `pack_width` DECIMAL(10,4) NULL,
+  `pack_height` DECIMAL(10,4) NULL,
+  `pack_weight` DECIMAL(10,4) NULL,
+  `pack_cod_amount` DECIMAL(10,4) NULL,
+  `pack_insurance_amount` DECIMAL(10,4) NULL,
+  `pack_description` VARCHAR(100) NULL,
+  `customer_id` INT(11) NULL,
+  `future_reference_id` INT(15) NULL,
+  PRIMARY KEY (`fut_ref_pack_id`));
+
+
+ALTER TABLE `future_ref_packages` 
+DROP FOREIGN KEY `future_ref_packages_ibfk_1`;
+ALTER TABLE `future_ref_packages` 
+ADD CONSTRAINT `future_ref_packages_ibfk_1`
+  FOREIGN KEY (`future_reference_id`)
+  REFERENCES `future_reference` (`future_reference_id`)
+  ON DELETE CASCADE
+  ON UPDATE RESTRICT;
+
+
+
+alter table future_ref_packages add foreign key(future_reference_id) references future_reference(future_reference_id)
+
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `from_residential` TINYINT NULL AFTER `to_company`,
+ADD COLUMN `to_residential` TINYINT NULL AFTER `from_residential`;
+
+ALTER TABLE `soluship`.`future_reference` 
+CHANGE COLUMN `from_residential` `from_residential` BIT(1) NULL DEFAULT b'0' ,
+CHANGE COLUMN `to_residential` `to_residential` BIT(1) NULL DEFAULT NULL ;
+
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.backfr', 'Back', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.ship.from', 'Ship From', 'en_CA');
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.shipfrom.company', 'Company', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.shipfrom.residential', 'Residential', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.shipfrom.address', 'Address', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.from.email', 'Email', 'en_CA');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.from.phoneno', 'Phone No', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.shipto', 'Ship To', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.shipto.company', 'Company', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.shipto.residential', 'Residential', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.shipto.address', 'Address', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.add.shipto.email', 'Email', 'en_CA', 1, '');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.shipto.phoneno', 'Phone No', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.future.services', 'SERVICES', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.service.type', 'Service Type', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.ship.date', 'Ship Date', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.add.package.details', 'Package Details', 'en_CA', 1, '');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.no.of.packages', 'Number Of Packages', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`) VALUES ('label.add.view.future.refenence', 'View Future Reference', 'en_CA');
+
+
+
+ALTER TABLE `future_reference` 
+CHANGE COLUMN `from_residential` `from_residential` BIT(1) NOT NULL DEFAULT b'0' ,
+ADD COLUMN `ready_time` VARCHAR(45) NULL DEFAULT NULL AFTER `to_residential`,
+ADD COLUMN `close_time` VARCHAR(45) NULL DEFAULT NULL AFTER `ready_time`,
+ADD COLUMN `pickup_instruction` VARCHAR(200) NULL DEFAULT NULL AFTER `close_time`,
+ADD COLUMN `pickup_location` VARCHAR(105) NULL DEFAULT NULL AFTER `pickup_instruction`,
+ADD COLUMN `from_contact_name` VARCHAR(45) NULL DEFAULT NULL AFTER `pickup_location`,
+ADD COLUMN `to_contact_name` VARCHAR(45) NULL DEFAULT NULL AFTER `from_contact_name`,
+ADD COLUMN `from_postal_code` VARCHAR(45) NULL DEFAULT NULL AFTER `to_contact_name`,
+ADD COLUMN `to_postal_code` VARCHAR(45) NULL DEFAULT NULL AFTER `from_postal_code`;
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.from.attention', 'Attention', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.from.postal.zipcode', 'Postal/zip Code', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.toattention', 'Attention', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.to.postal.zipcode', 'Postal Code/Zip Code', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.quick.ship', 'Quick Ship', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.ready.time', 'Ready Time', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.close.time', 'Close Time', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.quickship.location', 'Location', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.quickship.instruction', 'Instruction', 'en_CA', 1);
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `documents_only` BIT(1) NULL DEFAULT b'0' AFTER `to_postal_code`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `appointment_pickup` BIT(1) NULL DEFAULT b'0' AFTER `documents_only`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `tradeshow_pickup` BIT(1) NULL DEFAULT b'0' AFTER `appointment_pickup`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `taligate_delivery` BIT(1) NULL DEFAULT b'0' AFTER `tradeshow_pickup`;
+
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `trade_show_delivery` BIT(1) NULL DEFAULT b'0' AFTER `taligate_delivery`,
+ADD COLUMN `appointment_delivery` BIT(1) NULL DEFAULT b'0' AFTER `trade_show_delivery`,
+ADD COLUMN `inside_pickup` BIT(1) NULL DEFAULT b'0' AFTER `appointment_delivery`,
+ADD COLUMN `taligate_pickup` BIT(1) NULL DEFAULT b'0' AFTER `inside_pickup`;
+
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `dangerous_goods` VARCHAR(85) NULL DEFAULT NULL AFTER `taligate_pickup`,
+ADD COLUMN `ref_code` VARCHAR(85) NULL DEFAULT NULL AFTER `dangerous_goods`,
+ADD COLUMN `hold_for_pickup` BIT(1) NULL DEFAULT b'0' AFTER `fef_code`;
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `saturday_delivery` BIT(1) NULL DEFAULT b'0' AFTER `hold_for_pickup`,
+ADD COLUMN `signature_required` VARCHAR(85) NULL DEFAULT NULL AFTER `saturday_delivery`,
+ADD COLUMN `dutiable_code` VARCHAR(85) NULL DEFAULT NULL AFTER `signature_required`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.dangerous.goods', 'Dangerous Goods', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.documents.only', 'Documents Only', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.trade.show.pickup', 'Trade Show Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.ref.code', 'Ref.Code', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.appointment.pickup', 'Appointment Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.taligate.delivery', 'Taligate Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.hold.pickup', 'Hold For Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.trade.show.delivery', 'Trade Show Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.appointment.delivery', 'Appointment Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.saturday.delivery', 'Saturday Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.inside.pickup', 'Inside Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.add.taligate.pickup', 'Taligate Pickup', 'en_CA', 1, '');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.signature.required', 'Signature Required', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.dutiable.code', 'Dutiable Amount', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.fromcountry', 'From Country', 'en_CA', 1);
+
+
+ALTER TABLE `future_reference` 
+ADD COLUMN `notify_shipper` BIT(1) NULL DEFAULT b'0' AFTER `dutiable_code`,
+ADD COLUMN `notify_consignee` BIT(1) NULL DEFAULT b'0' AFTER `notify_shipper`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.notify.shipper', 'Notify Shipper', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.notify.consignee', 'Notify Consignee', 'en_CA', 1);
+
+
+
+ALTER TABLE `future_reference` 
+RENAME TO  `quote` ;
+
+ALTER TABLE `future_ref_packages` 
+RENAME TO  `quote_packages` ;
+
+ALTER TABLE `future_ref_packages` 
+ADD INDEX `future_ref_packages_ibfk_1_idx` (`future_reference_id` ASC);
+ALTER TABLE `future_ref_packages` 
+ADD CONSTRAINT `future_ref_packages_ibfk_1`
+  FOREIGN KEY (`future_reference_id`)
+  REFERENCES `future_reference` (`future_reference_id`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
+
+  
+alter table business add report_path varchar(60), add report_pathinvoice varchar(60);

@@ -48,6 +48,8 @@
 			<result property="addCustomerNotificationSubject" column="add_customer_notification_subject"/>
 			<result property="addCustomerNotificationBody" column="add_customer_notification_body"/>
 			<result property="ltlEmail" column="ltl_email"/>
+			<result property="reportPath" column="report_path"/>
+			<result property="reportPathInvoice" column="report_pathinvoice"/>
 	</resultMap>
 	
 	
@@ -56,7 +58,7 @@
 	</select>
 	
 	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-			  insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, date_created, active, default_net_terms, default_credit_limit) values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#)
+			  insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, date_created, active, default_net_terms, default_credit_limit, report_path, reportPathInvoice) values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#)
 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
