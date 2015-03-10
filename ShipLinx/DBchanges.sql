@@ -2527,9 +2527,6 @@ END
 
 
 insert into resourcebundle(msg_id,msg_content,locale,is_fmk) values ('label.system.log.edi.message','EDI Upload Processing - Address correction occured!','en_CA',1);
---------------------------------------END of LIVE SERVER COMMIT---------------------------------------
-
-
 
 CREATE TABLE `future_customer` (
   `future_customer_id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -2833,3 +2830,5 @@ ADD CONSTRAINT `future_ref_packages_ibfk_1`
 
   
 alter table business add report_path varchar(60), add report_pathinvoice varchar(60);
+--------------------------------------END of LIVE SERVER COMMIT---------------------------------------
+
