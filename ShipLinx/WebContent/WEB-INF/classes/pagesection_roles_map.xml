@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<section>
+	<section1 allow="fmk_admin,fmk_user" description="All registered users"/>
+	<section2 allow="fmk_admin" description="Admin users"/>
+	<section3 allow="fmk_base" description="Registered users with base permissions"/>
+	<section4 allow="fmk_sample" description="Registered users with more then base permissions"/>
+	<section5 allow="fmk_public" description="All public"/>
+</section> 

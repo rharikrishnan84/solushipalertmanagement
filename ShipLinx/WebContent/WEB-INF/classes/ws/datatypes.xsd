@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema version="1.0" targetNamespace="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes"
+		elementFormDefault="unqualified" attributeFormDefault="unqualified">
+
+    <xsd:complexType name="OrderWSType">
+    <xsd:sequence>
+    	<xsd:element name="OrderID" type="xsd:long" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="CreatedDate" type="xsd:dateTime"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="Carrier" type="CarrierWSType" minOccurs="0" />
+    	<xsd:element name="Charges" type="ChargesWSType" minOccurs="0" />
+    	<xsd:element name="Accessorial" type="AccessorialWSType"
+    		minOccurs="0" />
+    	<xsd:element name="Currency" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="Status" type="StatusWSType" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="QuotedWeight" type="WeightWSType" maxOccurs="1" minOccurs="0"></xsd:element>
+    	<xsd:element name="BilledWeight" type="WeightWSType" maxOccurs="1"	minOccurs="0" />
+    	<xsd:element name="DutiableAmount" type="xsd:double"
+    		minOccurs="0" />
+    	<xsd:element name="FromAddress" type="AddressWSType"
+    		minOccurs="1" maxOccurs="1" />
+    	<xsd:element name="ToAddress" type="AddressWSType"
+    		minOccurs="0" />
+    	<xsd:element name="TrackingNumber" type="xsd:string"
+    		minOccurs="0" />
+
+    	<xsd:element name="OrderNumber" type="xsd:string" minOccurs="0" />
+
+    	<xsd:element name="PackageType" minOccurs="1">
+    		<xsd:simpleType>
+    			<xsd:annotation>
+    				<xsd:documentation>
+    					Package Type - Envelope (ENV);Pack
+    					(PACK);Package (PACKAGE);Pallet (PALLET)
+    				</xsd:documentation>
+    			</xsd:annotation>
+    			<xsd:restriction base="xsd:string">
+    				<xsd:enumeration value="ENV" />
+    				<xsd:enumeration value="PACK" />
+    				<xsd:enumeration value="PACKAGE" />
+    				<xsd:enumeration value="PALLET" />
+    				<xsd:maxLength value="7"></xsd:maxLength>
+    			</xsd:restriction>
+    		</xsd:simpleType>
+    	</xsd:element>
+
+    	<xsd:element name="Packages" type="PackagesWSType"
+    		minOccurs="1" />
+    	<xsd:element name="References" type="xsd:string" minOccurs="0"
+    		maxOccurs="3" />
+    	<xsd:element name="RequiredDeliveryDate" type="xsd:date"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="ScheduledShipDate" type="xsd:dateTime"
+    		minOccurs="1" maxOccurs="1" />
+    	<xsd:element name="Service" type="ServiceWSType" minOccurs="0"
+    		maxOccurs="1" />
+    	<xsd:element name="Pickup" type="PickupWSType" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="POD" type="PODWSType" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="ShippingLabel" type="xsd:hexBinary"
+    		minOccurs="0" maxOccurs="1" />
+    	<xsd:element name="CustomsInvoice" type="CustomsInvoiceWSType"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="TrackingURL" type="xsd:string" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ChargeWSType">
+    <xsd:sequence>
+    	<xsd:element name="Charge" type="xsd:double" minOccurs="0" />
+    	<xsd:element name="ChargeCode" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="ChargeCodeLevel2" type="xsd:string"
+    		minOccurs="0" />
+    	<xsd:element name="Currency" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="Name" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="GroupName" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+    	<xsd:element name="TariffRate" type="xsd:double" minOccurs="0" />
+    	<xsd:element name="Tax" type="xsd:boolean" maxOccurs="1"
+    		minOccurs="0">
+    	</xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AddressWSType">
+    <xsd:sequence>
+    	<xsd:element name="CompanyName" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="Address1" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="Address2" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="City" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="ContactName" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="CountryCode" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    	<xsd:element name="EmailAddress" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="FaxNo" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="MobilePhoneNo" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="PhoneNo" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="PostalCode" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="ProvinceCode" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="IsRes" type="xsd:boolean" minOccurs="0" />
+    	<xsd:element name="Instructions" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PackageWSType">
+    <xsd:sequence>
+    	<xsd:element name="CODAmount" type="xsd:decimal" minOccurs="0" />
+    	<xsd:element name="Description" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="FreightClass" type="xsd:string"
+    		minOccurs="0" />
+    	<xsd:element name="Height" type="xsd:decimal" minOccurs="0" />
+    	<xsd:element name="Length" type="xsd:decimal" minOccurs="0" />
+    	<xsd:element name="Width" type="xsd:decimal" minOccurs="0" />
+    	<xsd:element name="InsuranceAmount" type="xsd:decimal"
+    		minOccurs="0" />
+    	<xsd:element name="TrackingNumber" type="xsd:string"
+    		minOccurs="0" />
+    	<xsd:element name="Type" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="Weight" type="xsd:decimal" minOccurs="0" />
+    	<xsd:element name="WeightUOM" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ServiceWSType">
+    <xsd:sequence>
+      <xsd:element name="Code" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Name" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SecurityWSType">
+    <xsd:sequence>
+    	<xsd:element name="TransactionID" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+    	<xsd:element name="APIUserName" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="APIUserPassword" type="xsd:string"
+    		minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="RatingWSType">
+    <xsd:sequence>
+      <xsd:element name="BillWeight" type="xsd:double" maxOccurs="1" minOccurs="1"/>
+      <xsd:element name="CarrierName" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Charges" type="ChargeListWSType" minOccurs="0" />
+      <xsd:element name="Currency" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModeTransport" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Service" type="ServiceWSType" maxOccurs="1" minOccurs="1" />
+      <xsd:element name="TariffRate" type="xsd:double" maxOccurs="1" minOccurs="0"/>
+      <xsd:element name="Total" type="xsd:double" maxOccurs="1" minOccurs="1"/>
+      <xsd:element name="TransitDays" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="CODWSType">
+  	<xsd:sequence>
+  		<xsd:element name="PayableTo" type="xsd:string" minOccurs="0" />
+  		<xsd:element name="Currency" type="xsd:string" minOccurs="0" />
+    	<xsd:element name="PaymentType" minOccurs="1">
+			<xsd:simpleType>
+				<xsd:annotation>
+					<xsd:documentation>
+						COD Payment Type - Cash (CA);Money Order (MO);Check (CH)
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="CA" />
+					<xsd:enumeration value="MO" />
+					<xsd:enumeration value="CH" />
+					<xsd:maxLength value="2"></xsd:maxLength>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+
+
+  <xsd:complexType name="AccessorialWSType">
+  	<xsd:sequence>
+  		<xsd:element name="SaturdayDelivery" type="xsd:boolean"
+  			minOccurs="0" />
+  		<xsd:element name="HoldForPickupRequired" type="xsd:boolean"
+  			minOccurs="0" />
+  		<xsd:element name="SaturdayPickup" type="xsd:boolean"
+  			minOccurs="0" />
+  		<xsd:element name="COD" type="CODWSType" maxOccurs="1"
+  			minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="NotifyRecipient" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="ConfirmDelivery" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="DangerousGoods" minOccurs="0"
+  			maxOccurs="1">
+  			<xsd:simpleType>
+  				<xsd:annotation>
+  					<xsd:documentation>
+  						Dangerous Goods - Yes (YES);Some (SOME);None
+  						(NONE)
+  					</xsd:documentation>
+  				</xsd:annotation>
+  				<xsd:restriction base="xsd:string">
+  					<xsd:enumeration value="YES" />
+  					<xsd:enumeration value="SOME" />
+  					<xsd:enumeration value="NONE" />
+  					<xsd:maxLength value="4"></xsd:maxLength>
+  				</xsd:restriction>
+  			</xsd:simpleType>
+  		</xsd:element>
+  		<xsd:element name="HoldForPickup" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="DeliveryTailgate" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="PickupTailgate" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="InsideDelivery" type="xsd:boolean"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="SignatureRequired" minOccurs="0"
+  			maxOccurs="1">
+  			<xsd:simpleType>
+  				<xsd:annotation>
+  					<xsd:documentation>
+  						Signature Required - Yes (YES);No (NO);Adult
+  						(ADULT)
+  					</xsd:documentation>
+  				</xsd:annotation>
+  				<xsd:restriction base="xsd:string">
+  					<xsd:enumeration value="YES" />
+  					<xsd:enumeration value="NO" />
+  					<xsd:enumeration value="ADULT" />
+  					<xsd:maxLength value="5"></xsd:maxLength>
+  				</xsd:restriction>
+  			</xsd:simpleType>
+  		</xsd:element>
+  		<xsd:element name="SpecialEquipment" type="xsd:boolean" maxOccurs="1" minOccurs="0"></xsd:element>
+    	<xsd:element name="TradeShowPickup" type="xsd:boolean"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="TradeShowDelivery" type="xsd:boolean"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="InsidePickup" type="xsd:boolean"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="AppointmentPickup" type="xsd:boolean"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+    	<xsd:element name="AppointmentDelivery" type="xsd:boolean"
+    		maxOccurs="1" minOccurs="0">
+    	</xsd:element>
+  		
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PODWSType">
+  	<xsd:sequence>
+  		<xsd:element name="DeliveryDateTime" type="xsd:dateTime"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="Receiver" type="xsd:string" maxOccurs="1"
+  			minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="Signature" type="xsd:base64Binary" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PickupWSType">
+  	<xsd:sequence>
+  		<xsd:element name="ReadyTime" type="xsd:duration"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="CloseTime" type="xsd:duration"
+  			maxOccurs="1" minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="Location" type="xsd:string" maxOccurs="1"
+  			minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="Reference" type="xsd:string" maxOccurs="1"
+  			minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="Instructions" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="ErrorWSType">
+  	<xsd:sequence>
+		<xsd:element name="Code" minOccurs="1">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:maxLength value="4"></xsd:maxLength>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:element>  		
+  		<xsd:element name="Description" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="RatingErrors" type="ErrorsWSType"></xsd:element>
+  <xsd:element name="ShippingErrors" type="ErrorsWSType"></xsd:element>
+
+
+
+  <xsd:complexType name="PackagesWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Package" type="PackageWSType" nillable="true" minOccurs="1" maxOccurs="unbounded" />
+  	</xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="ChargesWSType">
+  	<xsd:sequence>
+  		<xsd:element name="QuotedCharges" type="ChargeListWSType" minOccurs="0" maxOccurs="1"></xsd:element>
+  		<xsd:element name="ActualCharges" type="ChargeListWSType" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>  
+  
+  <xsd:complexType name="ChargeListWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Charge" type="ChargeWSType" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+  		<xsd:element name="Total" type="xsd:double" maxOccurs="1" minOccurs="0"></xsd:element>
+  		<xsd:element name="TotalExcludingTaxes" type="xsd:double" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>   
+  
+  <xsd:complexType name="RatingsWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Rating" type="RatingWSType" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+  	</xsd:sequence>
+  </xsd:complexType>  
+  
+  <xsd:complexType name="ErrorsWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Error" type="ErrorWSType" nillable="true" minOccurs="0" maxOccurs="unbounded" />
+  	</xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="CustomsInvoiceProductWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Description" type="xsd:string"></xsd:element>
+  		<xsd:element name="HarmCode" type="xsd:string"></xsd:element>
+  		<xsd:element name="Origin" type="xsd:string"></xsd:element>
+  		<xsd:element name="Quantity" type="xsd:int"></xsd:element>
+  		<xsd:element name="UnitPrice" type="xsd:double"></xsd:element>
+  		<xsd:element name="Weight" type="xsd:int"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="CustomsInvoiceWSType">
+  	<xsd:sequence>
+  		<xsd:element name="BillTo" type="xsd:string"></xsd:element>
+  		<xsd:element name="BillToAccountNum" type="xsd:string"></xsd:element>
+  		<xsd:element name="BillToAddress" type="AddressWSType"></xsd:element>
+  		<xsd:element name="Reference" type="xsd:string"></xsd:element>
+  		<xsd:element name="Currency" type="xsd:string"></xsd:element>
+  		<xsd:element name="TotalValue" type="xsd:double"></xsd:element>
+  		<xsd:element name="TotalWeight" type="xsd:int"></xsd:element>
+  		<xsd:element name="TaxId" type="xsd:string"></xsd:element>
+  		<xsd:element name="BrokerAddress" type="AddressWSType"></xsd:element>
+  		<xsd:element name="Products"
+  			type="CustomsInvoiceProductWSType" maxOccurs="unbounded"
+  			minOccurs="0">
+  		</xsd:element>
+  		<xsd:element name="MetaData" type="MetaDataWSType" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MetaDataWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Key" type="xsd:string"></xsd:element>
+  		<xsd:element name="Value" type="xsd:string"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="StatusWSType">
+    <xsd:sequence>
+      <xsd:element name="Code" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+
+  <xsd:element name="OrderID" type="xsd:long"></xsd:element>
+
+  <xsd:complexType name="CarrierWSType">
+  	<xsd:sequence>
+  		<xsd:element name="ID" type="xsd:long" maxOccurs="1"
+  			minOccurs="1">
+  		</xsd:element>
+  		<xsd:element name="Name" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="WeightWSType">
+  	<xsd:sequence>
+  		<xsd:element name="Weight" type="xsd:double" maxOccurs="1"
+  			minOccurs="1">
+  		</xsd:element>
+  		<xsd:element name="UOM" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+  	</xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+

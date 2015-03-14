@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema version="1.0" targetNamespace="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingResponse"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns="http://www.proxy.ws.shiplinx.meritconinc.com/ShippingResponse"
+		xmlns:dt="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes"
+		elementFormDefault="unqualified" attributeFormDefault="unqualified">		
+
+	<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes" schemaLocation="datatypes.xsd" />
+		
+  <xsd:complexType name="ShippingResponseWSType">
+    <xsd:sequence>
+    	<xsd:element name="Security" type="dt:SecurityWSType"/>
+    	<xsd:element name="IsSuccess" type="xsd:boolean" maxOccurs="1" minOccurs="1"></xsd:element>
+    	<xsd:element name="Errors" type="dt:ErrorsWSType" minOccurs="0" />
+		<xsd:element name="Order" type="dt:OrderWSType" minOccurs="0" maxOccurs="1"/>    		
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="ShippingResponse" type="ShippingResponseWSType"></xsd:element>
+  
+</xsd:schema>
+

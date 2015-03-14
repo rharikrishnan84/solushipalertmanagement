@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="RatingService" targetNamespace="http://www.proxy.ws.shiplinx.meritconinc.com/" 
+			xmlns:ns1="http://schemas.xmlsoap.org/soap/http" 
+			xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+			xmlns:tns="http://www.proxy.ws.shiplinx.meritconinc.com/" 
+			xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			xmlns:dt="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes"
+			xmlns:req="http://www.proxy.ws.shiplinx.meritconinc.com/RatingRequest"
+			xmlns:res="http://www.proxy.ws.shiplinx.meritconinc.com/RatingResponse">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/datatypes" schemaLocation="datatypes.xsd" />
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/RatingRequest" schemaLocation="RatingRequest.xsd" />
+			<xsd:import namespace="http://www.proxy.ws.shiplinx.meritconinc.com/RatingResponse" schemaLocation="RatingResponse.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	
+	<wsdl:message name="RatingShipmentMessage">
+		<wsdl:part name="Body" element="req:RatingRequest"/>
+		<wsdl:part name="Security" element="req:Security"/>
+	</wsdl:message>
+	<wsdl:message name="RatingResponseMessage">
+		<wsdl:part name="Body" element="res:RatingResponse"/>
+	</wsdl:message>
+	<wsdl:message name="RatingException">
+		<wsdl:part name="RatingErrors" element="dt:RatingErrors"/>
+	</wsdl:message>	
+ 
+	<wsdl:portType name="RatingPortType">
+		<wsdl:operation name="RateShipment">
+			<wsdl:input name="RatingRequest" message="tns:RatingShipmentMessage"/>
+			<wsdl:output name="RatingResponse" message="tns:RatingResponseMessage"/>
+			<wsdl:fault name="RatingErrors" message="tns:RatingException"/>
+		</wsdl:operation>
+	</wsdl:portType> 
+  
+	<wsdl:binding name="RatingBinding" type="tns:RatingPortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="RateShipment">
+			<soap:operation soapAction="http://onlinetools.meritcon.com/webservices/RatingBinding/v1.1" style="document"/>
+			<wsdl:input name="RatingRequest">
+				<soap:body parts="Body" use="literal"/>
+				<soap:header message="tns:RatingShipmentMessage" part="Security" use="literal">
+					<soap:headerfault message="tns:RatingException" part="RatingErrors" use="literal"/>
+				</soap:header>
+			</wsdl:input>
+			<wsdl:output name="RatingResponse">
+				<soap:body parts="Body" use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="RatingErrors">
+				<soap:fault name="RatingErrors" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>  
+  
+	<wsdl:service name="RatingService">
+    	<wsdl:port binding="tns:RatingBinding" name="RatingServiceImplPort">
+      		<soap:address location="https://localhost:8443/shiplinx/services/RatingService"/>
+    	</wsdl:port>
+  	</wsdl:service>
+</wsdl:definitions>

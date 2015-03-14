@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts> 
+
+	<package name="mmr-default" extends="tiles-default">
+		<interceptors>
+			<interceptor name="mmrBase" class="com.meritconinc.mmr.interceptor.MmrInterceptor" />
+			<interceptor name="mmrAjax" class="com.meritconinc.mmr.interceptor.MmrAjaxInterceptor" />
+			<interceptor name="mmrPopup" class="com.meritconinc.mmr.interceptor.MmrPopupInterceptor" />
+			<interceptor name="mmrTrack" class="com.meritconinc.mmr.interceptor.MmrTrackingInterceptor"/>
+			
+			<!-- Basic stack with custom exception handling-->
+			<interceptor-stack name="basicStack-mmr">				
+				<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<!-- Basic stack with custom exception handling -->
+			<interceptor-stack name="basicAjaxStack-mmr">
+				<interceptor-ref name="mmrAjax" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>			
+
+			<!-- Basic stack with custom exception handling -->
+			<interceptor-stack name="basicPopup-mmr">
+				<interceptor-ref name="mmrPopup" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>			
+
+			<!-- Mmr stack NO Tracking -->			
+			<interceptor-stack name="mmrStack">
+				<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<!-- Mmr stack with Tracking -->			
+			<interceptor-stack name="mmrStackTrack">
+				<interceptor-ref name="mmrBase" />
+				<interceptor-ref name="params" />
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="mmrTrack" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+		</interceptors>
+
+		<global-results>
+			<result type="redirect-action" name="login">
+				<param name="actionName">logon.viewLogonSessionExp</param>
+				<param name="namespace">/</param>
+			</result>
+			<result type="redirect-action" name="accessdenied">
+				<param name="actionName">access.denied</param> 
+				<param name="namespace">/</param> 
+			</result>
+			<result type="redirect-action" name="termsOfUse">
+				<param name="actionName">viewTermsOfUse</param> 
+				<param name="namespace">/</param> 
+			</result>
+			<result name="passwordExpired" type="redirect-action">
+				<param name="actionName">viewChangePswd</param>
+				<param name="namespace">/secure</param>
+				<param name="displayMessage">true</param>
+			</result>
+			<result name="ajaxError">/mmr/jsp/error/ajaxError.jsp</result>
+			<result type="tiles" name="global_error">global_error</result>
+			<result type="tiles" name="popup_global_error">popup_global_error</result>
+			<result type="tiles" name="ajaxTimeOut">ajax.TimeOut</result>
+			<result type="tiles" name="popupTimeOut">popup.TimeOut</result>
+			<result type="tiles" name="error">error</result>
+			<result type="tiles" name="unhandle.error">error</result>
+			<result type="tiles" name="daoException">dao.error</result>
+		</global-results>
+	</package>
+	
+
+
+	<package name="publicArea" namespace="/" extends="mmr-default">
+		<default-interceptor-ref name="basicStack-mmr" />
+
+		<action name="logon.*" method="{1}" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+		</action>
+				
+		<action name="viewLogon" method="viewLogon" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+		
+		<action name="logonFailed" method="viewLogonFailed" class="logonAction">
+			<result name="input">/mmr/jsp/welcome/login.jsp</result>
+		</action>
+
+        <!-- COMMON ACTIONS -->
+        <action name="setLanguage" class="com.meritconinc.mmr.action.common.SetLanguage">
+			<result type="redirect-action" name="success">
+				<param name="actionName">welcome</param>
+				<param name="namespace">/</param>
+			</result>
+		</action>
+        
+		<action name="access.denied" class="com.meritconinc.mmr.action.common.GenericAction">
+			<result type="tiles">access.denied</result>
+		</action>
+
+		<action name="ajaxError" class="com.meritconinc.mmr.action.common.AjaxErrorAction">
+			<result type="tiles">global_error</result>
+		</action>
+		
+		<action name="submitAccessRequest" class="requestAccessAction">
+			<result type="tiles" name="success">request.access.confirmation</result>
+			<result type="tiles" name="input">request.access</result>
+		</action>
+
+		<action name="request.access" method="input" class="requestAccessAction">
+			<result type="tiles" name="input">request.access</result>
+		</action>
+        
+		<!-- 
+		<action name="viewChangePswd" method="viewChangePswd" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+        </action>
+
+		<action name="changePassword" method="changePassword" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+            <result type="tiles" name="success">change.password.complete</result>
+        </action>
+         -->
+                 
+		<!-- 
+		<action name="viewTermsOfUse" method="viewTermsOfUse" class="com.meritconinc.mmr.action.security.TermsOfUseAction">
+            <result type="tiles" name="input">terms.of.use</result>		
+        </action>        
+
+		<action name="termsOfUse" class="com.meritconinc.mmr.action.security.TermsOfUseAction">
+			<result name="next" type="redirect">
+				<param name="location">${nextAction}</param>
+			</result>
+            <result type="tiles" name="input">terms.of.use</result>		
+        </action>        
+		-->
+		
+        <!-- WELCOME TAB -->
+		<action name="welcome" class="com.meritconinc.mmr.action.welcome.WelcomeAction">
+			<result type="tiles">welcome.index</result>
+		</action>
+
+		<action name="links" class="com.meritconinc.mmr.action.welcome.LinksAction">
+			<result type="tiles">page.links</result>
+		</action>
+		
+		<!-- ABOUT US TAB -->
+		<action name="aboutUs" class="com.meritconinc.mmr.action.aboutus.AboutUsAction">
+			<result type="tiles">aboutus.index</result>
+		</action>
+
+		<action name="aboutUs.Contact" method="contactUs" class="feedbackAction">
+			<result name="contactUs" type="tiles">aboutus.contact</result>
+		</action>
+
+		<action name="viewSiteMap" class="com.meritconinc.mmr.action.aboutus.SiteMapAction">
+			<result type="tiles">aboutus.siteMap</result>
+		</action>
+
+		<action name="viewDisclaimer" class="com.meritconinc.mmr.action.aboutus.DisclaimerAction">
+			<result type="tiles">aboutus.disclaimer</result>
+		</action>
+
+		<action name="saveFeedBack" class="feedbackAction">
+			<result name="success" type="tiles">aboutus.contact</result>
+		</action>
+		
+        <!-- GET RATES  -->
+        <action name="getRates" class="com.meritconinc.mmr.action.shipping.RatingAction">            
+            <result type="tiles" name="success">shipping.getRates</result>
+        </action>
+		
+		<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+
+	</package>
+
+
+	<package name="secureArea" namespace="/secure" extends="mmr-default">
+		<default-interceptor-ref name="mmrStackTrack" />		
+		
+		<action name="changePassword" method="changePassword" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+            <result type="tiles" name="success">change.password.complete</result>
+        </action>
+
+		<action name="viewChangePswd" method="viewChangePswd" class="userAdminAction">
+            <result type="tiles" name="input">change.password</result>		
+        </action>
+        
+		<action name="viewUpdateProfile" method="viewUpdateProfile" class="userAdminAction">
+            <result type="tiles" name="success">update.profile</result>		
+        </action>
+
+		<action name="updateProfile" method="updateProfile" class="userAdminAction">
+            <result type="tiles" name="input">update.profile</result>		
+            <result type="tiles" name="success">update.profile.complete</result>
+        </action>
+
+		<action name="querytool" method="init" class="queryAction">
+			<result type="tiles" name="success">query.tool</result>
+		</action>
+
+		<action name="querytool!*" method="{1}" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+			<result name="queryParameters">/mmr/jsp/query/querytool-parameters.jsp</result>
+			<result name="queryResult">/mmr/jsp/query/querytool-result.jsp</result>
+		</action>
+
+		<action name="adminQueryTool" method="init" class="adminQueryAction">
+			<result type="tiles" name="success">query.tool.admin</result>
+			<result type="tiles" name="error2">query.tool.admin</result>
+		</action>
+
+		<action name="adminQueryTool!runQuery" method="runQuery" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />												
+			<result type="tiles" name="queryParameters">query.tool.admin.runquery</result>
+			<result name="queryResult">/mmr/jsp/query/querytool-result.jsp</result>
+		</action>
+
+		<action name="adminQueryTool!showQueryParameters" method="showQueryParameters" class="queryAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />						
+			<result type="tiles" name="input">query.tool.admin.runquery</result>						
+			<result type="tiles" name="queryParameters">query.tool.admin.runquery</result>			
+		</action>
+		
+		<action name="adminQueryTool!*" method="{1}" class="adminQueryAction">
+			<result type="tiles" name="queryDetail">query.tool.edit</result>
+			<result type="tiles" name="input">query.tool.edit</result>
+			<result type="tiles" name="success">query.tool.admin</result>
+		</action>
+
+						   		
+
+		<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+        
+	</package>
+
+	<package name="adminArea" namespace="/admin" extends="mmr-default">
+		<default-interceptor-ref name="mmrStackTrack" />		
+		
+		<!-- ADMIN TAB -->
+		<action name="user.list.req" method="list" class="userListAction">
+           	<param name="criteria.status">U</param>
+           	<param name="resetCurrPage">true</param>
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list.active" method="list" class="userListAction">
+           	<param name="criteria.status">A</param>
+           	<param name="resetCurrPage">true</param>
+            <result type="tiles" name="success">user.list</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list.admin" method="list" class="userListAction">
+           	<param name="criteria.status">A</param>
+           	<param name="criteria.roleCode">fmk_admin</param>
+           	<param name="resetCurrPage">true</param>
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list" method="list" class="userListAction">
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="user.list!*" method="{1}" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />						
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="sort.user.list" method="list" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />				
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="sort.user.list!*" method="{1}" class="userListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />				
+            <result name="success" type="tiles">user.list.tile</result>
+        </action>
+
+		<action name="back.to.list" method="back" class="userListAction">
+            <result name="success" type="tiles">user.list</result>
+        </action>
+        
+		<action name="view.user" method="view" class="userAdminAction">
+            <result type="tiles" name="success">user</result>
+        </action>
+        
+		<action name="saveUser" method="save" class="userAdminAction">
+            <result type="tiles" name="input">user</result>
+            <result type="tiles" name="success">user</result>
+        </action>
+
+		<action name="new.user" method="newUser" class="userAdminAction">
+            <result type="tiles" name="success">user</result>
+        </action>
+        
+        <action name="logout.user" class="com.meritconinc.mmr.action.LogoutAction">
+            <result name="success" type="redirect-action">welcome</result>
+        </action>
+        
+        <action name="new.customer" method="newCustomer" class="userAdminAction">
+            <result type="tiles" name="success">newCustomer</result>
+        </action>
+
+		<action name="createUser" method="create" class="userAdminAction">
+            <result type="tiles" name="input">user</result>		
+            <result type="tiles" name="success">user</result>
+        </action>
+
+		<action name="delete.user" method="delete" class="userAdminAction">
+            <result type="redirect-action" name="success">back.to.list</result>
+        </action>
+
+		<action name="viewSearch.user" method="goToSearch" class="userListAction">
+           	<param name="resetCurrPage">true</param>		
+            <result type="tiles" name="input">search.user</result>
+        </action>
+
+		<action name="search.user" method="list" class="userListAction">
+            <result type="tiles" name="success">search.user</result>
+            <result name="sortlist" type="tiles">user.list.tile</result>
+        </action>
+
+
+		<action name="distribution.list" class="distributionListAction">
+            <result type="tiles" name="success">distribution.list</result>
+        </action>
+
+		<action name="exception.list" method="list" class="exceptionListAction">
+			<result type="tiles" name="success">exception.list</result>
+			<result name="sortlist">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="exception.list!*" method="{1}" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="sort.exception.list" method="list" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="sort.exception.list!*" method="{1}" class="exceptionListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />								
+			<result type="tiles" name="success">/mmr/jsp/admin/exceptionlist.jsp</result>
+		</action>
+
+		<action name="property.list" method="list" class="propertyListAction">
+			<result type="tiles" name="success">property.list</result>
+		</action>
+
+		<action name="save.property" method="saveProperty" class="propertyListAction">
+			<interceptor-ref name="basicAjaxStack-mmr" />										
+			<result name="success">/mmr/jsp/common/action_messages.jsp</result>
+		</action>
+
+		<action name="text.property.list" method="listTextProperties" class="propertyListAction">
+			<result type="tiles" name="success">text.property.list</result>
+		</action>
+
+		<action name="edit.text.property" method="viewEditTextProperty" class="propertyListAction">
+			<result type="tiles" name="success">text.property.edit</result>
+		</action>
+
+		<action name="save.text.property" method="saveTextProperty" class="propertyListAction">
+			<result type="tiles" name="input">text.property.edit</result>
+			<result type="chain" name="success">text.property.list</result>
+		</action>
+
+		<action name="system.libraries" method="view" class="systemResourceAction">
+			<result name="success" type="tiles">system.libraries</result>
+		</action>		
+
+		<action name="system.resource" method="view" class="systemResourceAction">
+			<result name="success" type="tiles">system.resource</result>
+		</action>		
+
+		<action name="clear.cache" method="clearCache" class="systemResourceAction">
+			<result name="success" type="tiles">simple.actionmessage</result>
+		</action>
+		
+		<!-- UNAVAILABLE: ALWAYS PUT THIS LAST !!! -->
+		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
+            <result type="tiles" name="success">unavailable</result>
+        </action>
+        
+	</package>
+
+</struts>
