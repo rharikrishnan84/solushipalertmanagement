@@ -49,6 +49,7 @@
 		<property name="shippingService" ref="shippingService"/>
 		<property name="customerService" ref="customerService"/>
 		<property name="userService" ref="userService"/>
+		<property name="businessDAO" ref="businessDAO"/>
 	</bean>	
 	
 	
@@ -222,6 +223,7 @@
 		<property name="businessService" ref="businessService"/>
 		<property name="carrierServiceManager" ref="carrierServiceManager"/>
 		<property name="customermanagerDAO" ref="customermanagerDAO"/>	
+		<property name="shippingDAO" ref="shippingDAO"/>	
 	</bean>
 	
 	<bean id="CustomerInfoManagerAction" scope="prototype"	class="com.meritconinc.shiplinx.action.CustomerInfoManagerAction">

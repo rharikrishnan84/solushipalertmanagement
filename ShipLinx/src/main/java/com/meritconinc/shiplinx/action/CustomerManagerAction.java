@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringBufferInputStream;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -492,10 +495,28 @@ public String execute() throws Exception {
       {
         customerId = getLoginUser().getCustomerId();
       }
-      //customer = userService.getCustomerReference(customerId);
+      
       this.setCustomer(getService().getCustomerInfoByCustomerId(customerId));
       initialize();
-
+      if((getCustomer().getCreditLimit().compareTo(new BigDecimal(0.00)) != 0 && getCustomer().getCreditLimit() != null)){
+    	  	      CurrencySymbol curSym= new CurrencySymbol();
+    	  	      double availableCredit = 0.0;
+    	  	      if(getCustomer().getDefaultCurrency() != null && !(getCustomer().getDefaultCurrency().isEmpty())){
+    	  	    	  curSym = getShippingDAO().getSymbolByCurrencycode(this.getCustomer().getDefaultCurrency());
+    	  		  } else{
+    	  			  curSym = getShippingDAO().getSymbolByCurrencycode("CAD");
+    	  		  }
+    	  		      Locale locale = null;
+    	  	          if (curSym != null){
+    	  	          	locale = new Locale(curSym.getLanguageCode()!=null?curSym.getLanguageCode():"en", curSym.getCountryCode());
+    	  	          }else{
+    	  	          	locale = new Locale("en", "CA");
+    	  	          }
+    	  	      	NumberFormat currencyFormatter = NumberFormat.getNumberInstance(locale);
+    	  	      	availableCredit = this.getService().getAvailableCredit(customerId);
+    	  	        getSession().put("availableCredit", currencyFormatter.format(availableCredit));
+    	  	        getSession().put("currency",curSym.getCurrencySymbol());
+    	}
       getSession().put("oldBusinessName", this.getCustomer().getName());
       getSession().put("edit", "true");
 
@@ -513,6 +534,7 @@ public String execute() throws Exception {
       // setAddress(ad);
 
     } catch (Exception e) {
+    	e.printStackTrace();
       addActionError(getText("error.timeZones"));
     }
     return SUCCESS;
@@ -1316,6 +1338,12 @@ public String execute() throws Exception {
 						this.currencyList = currencyList;
 					}
 					
-	   				
+					public ShippingDAO getShippingDAO() {
+						return shippingDAO;
+					}
+
+					public void setShippingDAO(ShippingDAO shippingDAO) {
+						this.shippingDAO = shippingDAO;
+					}
 
 }

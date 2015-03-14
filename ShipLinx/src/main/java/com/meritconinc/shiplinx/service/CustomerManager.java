@@ -42,4 +42,8 @@ public interface CustomerManager{
 	public List<CustomerSalesUser> getCustomerSalesInformation(long customerId);
 	public boolean sendSalesRepAddCustomerMailNotification(Customer customer, User user);	
 	public List<Billduty> getBilldutyList(String locale);
+	
+	public void updateAvailableCredit(double availableCredit, long customerId);
+		public double getAvailableCredit(long customerId);
+		public int findUnpaidInvoiceDuration(long customerId, int holdTerms);
 }

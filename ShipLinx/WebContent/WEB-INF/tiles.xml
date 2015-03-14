@@ -540,5 +540,12 @@
 	<definition name="invoiceBreakdown" extends="admin.layout.window">
         <put-attribute name="mainBody" value="/mmr/jsp/admin/invoiceBreakdown.jsp"/>
     </definition> 
+    
+    <definition name="futureRefHome" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/futureReferences.jsp"/>
+    </definition> 
+    <definition name="showFutureRef" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/showFutureReferences.jsp"/>
+    </definition> 
 </tiles-definitions>
 

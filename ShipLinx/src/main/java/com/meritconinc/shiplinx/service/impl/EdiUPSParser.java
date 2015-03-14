@@ -605,7 +605,8 @@ public class EdiUPSParser extends EdiParser {
 				dbShipment.setBilledWeight(Float.parseFloat(getEdiField(BILLED_WEIGHT)));						
 			}
 			else{ //in this case this is the billed weight returned for a package, not an adjustment
-				dbShipment.setBilledWeight(dbShipment.getBilledWeight() + Float.parseFloat(getEdiField(BILLED_WEIGHT)));
+				//dbShipment.setBilledWeight(dbShipment.getBilledWeight() + Float.parseFloat(getEdiField(BILLED_WEIGHT)));
+				dbShipment.setBilledWeight(Float.parseFloat(getEdiField(BILLED_WEIGHT)));
 			}
 		}
 		if(dbShipment.getBilledWeightUOM()==null){

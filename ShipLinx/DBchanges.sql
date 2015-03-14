@@ -2830,5 +2830,35 @@ ADD CONSTRAINT `future_ref_packages_ibfk_1`
 
   
 alter table business add report_path varchar(60), add report_pathinvoice varchar(60);
+alter table customer add status varchar(60) default 'Prospect';
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.status.customer', 'Status', 'en_CA', 1);
+
+alter table customer add available_credit varchar(60)
+
+insert into resourcebundle (msg_id,msg_content,locale,is_fmk) values ('label.customer.availableCredit', 'Available Credit:', 'en_CA', 1)
+
+alter table customer add hold_terms int(10) unsigned default 65;
+
+alter table business add default_hold_terms int(10) unsigned default 0;
+
+insert into resourcebundle (msg_id,msg_content,locale,is_fmk) values('label.customer.hold.terms', 'Hold Terms (Days)', 'en_CA',1);
+
+UPDATE `business` SET `default_hold_terms`='65' WHERE `business_id`='1';
+
+update customer c,invoice i set c.status='Customer' where c.customer_id=i.customer_id
+
+ALTER TABLE shipping_order 
+ADD COLUMN `link_to_order` INT(11) NULL DEFAULT NULL AFTER `followup`;
+
+
+INSERT INTO resourcebundle (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.viewship.link.to.shipid', 'Link To', 'en_CA', 1);
+
+
+SET SQL_SAFE_UPDATES = 0;
+
+
+update shipping_order set link_to_order=0;
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
+
 

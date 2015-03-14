@@ -61,6 +61,9 @@
 						<div class="content_table" > 
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="label.invoice.search"/></div>
+								<s:if test="%{#session.ROLE.contains('customer_admin')}">
+										<div class="cont_hdrtitle_w" style="padding-left:330px;"><mmr:message messageId="label.customer.availableCredit"/>&nbsp;<s:property value="#session.currencyS"/><s:property value="#session.availableCredit"/></div>	
+									</s:if>
 								<div class="form_buttons" >		
 									<a href="javascript: submitform()"><mmr:message messageId="label.search.btn.search"/></a>
 									<a href="invoice.action"><mmr:message messageId="label.btn.reset"/></a>

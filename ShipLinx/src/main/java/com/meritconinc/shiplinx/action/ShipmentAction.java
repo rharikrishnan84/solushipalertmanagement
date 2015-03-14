@@ -733,6 +733,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		
 		getSession().remove("shippingOrder");
 		getSession().remove("PackageType");
+		putUomToSeession();
+		List<DangerousGoods> dangerousGoodsList = new ArrayList<DangerousGoods>();
+		dangerousGoodsList = shippingService.getDangerousGoodsAll();
+		getSession().put("DGList", dangerousGoodsList);
 		ShippingOrder newShippingOrder = new ShippingOrder();
 		ShippingOrder order = null;
 		String orderId=request.getParameter("order_id");
@@ -7952,5 +7956,22 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					public void setCachedList(List<KeyValueVO> cachedList) {
 						this.cachedList = cachedList;
 					}
+					
+					public void putUomToSeession() {
+						User user1 = UserUtil.getMmrUser();
+						userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
+						uom = userDAO.unitOfMeasure();
+						User unitofmeasure = userDAO.findunitofmeasure(user1.getUsername());
+						if (user1 != null && unitofmeasure.getUnitmeasure() == 2) {
+							for (int i = 0; i < uom.size(); i++) {
+								if (unitofmeasure != null
+										&& unitofmeasure.getUnitmeasure() == uom.get(i)
+												.getUnitOfMeasureId()) {
+									Collections.swap(uom, 0, i);
+								}
+							}
+					}
+						getSession().put("UOM", uom);
+					}	
 			/// ============== End =======================				
 }

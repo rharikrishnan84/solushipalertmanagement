@@ -449,4 +449,6 @@ public class ShiplinxConstants {
 	 public static final String [] EURO_UNION_LIST = {"AT", "BE", "BG", "HR", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "NL", "PL", "PT", "RO", "SK", "ES", "SI", "SE", "GB"};
 	 
 	 public static final String SHIPMENT_CANCELLED="Shipment Cancelled";
+	 
+	 public static final String CUSTOMER_STATUS="Customer";
 }

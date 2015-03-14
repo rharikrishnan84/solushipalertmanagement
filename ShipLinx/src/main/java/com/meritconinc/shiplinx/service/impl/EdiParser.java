@@ -461,9 +461,17 @@ public abstract class EdiParser {
 		// Need to confirm with Rizwan
 //		loggedEvent.setEventUsername(UserUtil.getMmrUser().getUsername()); //Current User
 		loggedEvent.setEventUsername(ShiplinxConstants.SYSTEM); // User SYSTEM 
-		String systemLog = MessageUtil.getMessage("label.system.log.edi.exceptions");
-		if(isApplyEdiConstrains){
-			systemLog = MessageUtil.getMessage("label.system.log.edi.message");
+		//String systemLog = MessageUtil.getMessage("label.system.log.edi.exceptions");
+		String systemLog;
+		try{
+			systemLog = MessageUtil.getMessage("label.system.log.edi.exceptions");
+			if(isApplyEdiConstrains){
+				systemLog = MessageUtil.getMessage("label.system.log.edi.message");
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+				log.debug("Error in getting the locale from the session :" + e.getMessage());
+				systemLog="EDI Upload Processing - Address correction occured";
 		}
 		loggedEvent.setSystemLog(systemLog); //System generated Message Log
 //		if(UserUtil.getMmrUser().getUserRole().equals("busadmin"))
@@ -563,7 +571,7 @@ public abstract class EdiParser {
 				shipment.setCustomerId(customerId);
 				shipment.setBillingStatus(ShiplinxConstants.BILLING_STATUS_READY_TO_INVOICE);
 				return;
-			}else {
+			}/*else {
 				long fromCustomerId = this.addressDAO.getCustomerIdForFromAddress(shipment);
 				customerInfo=this.customerDAO.getCustomerInfoByCustomerId(fromCustomerId, shipment.getBusinessId());
 				if(fromCustomerId > 0){
@@ -574,7 +582,7 @@ public abstract class EdiParser {
 						return;
 					}
 				}
-			}
+			}*/
 		}		
 		Long cusId = getCustomerIdByAccountNumber(accountNumber);
 		if (cusId != null && cusId>0) {

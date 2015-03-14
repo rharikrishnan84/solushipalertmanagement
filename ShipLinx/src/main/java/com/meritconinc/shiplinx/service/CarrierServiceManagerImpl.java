@@ -55,6 +55,7 @@ import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CreditUsageReport;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.LtlPoundRate;
@@ -100,6 +101,7 @@ public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnabl
   private MarkupManagerDAO markupDAO;
   private ShippingDAO shippingDAO;
   private BusinessDAO businessDAO;
+  private CreditUsageReport cur;
 
   private CarrierServiceManagerImpl parentThread;
   private FuelSurchargeService fuelSurchargeService = null;
@@ -204,6 +206,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           }
         }
         shippingService.updateShippingOrder(order);
+        
+        	if(order.getCustomer().getCreditLimit().doubleValue() > 0){
+	        	if(order.getCustomerId() != null && order.getCustomerId() > 0){
+	        		double avlCredit= customerService.getAvailableCredit(order.getCustomerId());
+	        		double updatedCredit = new BigDecimal(avlCredit + order.getQuoteTotalCharge()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			        customerService.updateAvailableCredit(updatedCredit,order.getCustomerId());
+	        	}
+        	}
+        	        
       }
     } catch (Exception e) {
       log.error("-------Exception----", e);
@@ -991,15 +1002,31 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
     // check if customer has crossed credit limit, if credit limit is set to
     // 0 means no limit
-    if (order.getCustomer().getCreditLimit().doubleValue() > 0) {
-      CreditUsageReport cur = this.customerService.getCreditUsageReport(order.getCustomerId(),
-          order.getCustomer().getBusinessId());
-      if (cur.getTotalCreditUsed() > order.getCustomer().getCreditLimit().doubleValue()) {
+    int unpaidInvoiceCount = customerService.findUnpaidInvoiceDuration(order.getCustomer().getId(),order.getCustomer().getHoldTerms());
+    if(order.getCustomer().getCreditLimit().doubleValue() > 0){
+    	cur = this.customerService.getCreditUsageReport(order.getCustomerId(),
+    	           order.getCustomer().getBusinessId());
+    if (cur.getTotalCreditUsed() > order.getCustomer().getCreditLimit().doubleValue() ) {
         errorMessages.add(new CarrierErrorMessage(order.getCarrierId(), MessageUtil.getMessage(
             "error.credit.overrun", MessageUtil.getLocale())));
         throw new CreditOverrunException(cur);
+      }else if(unpaidInvoiceCount > 0){
+    	errorMessages.add(new CarrierErrorMessage(order.getCarrierId(), MessageUtil.getMessage(
+                "shippingOrder.unpaid.invoice.error", MessageUtil.getLocale())));
+            throw new CreditOverrunException(cur);
       }
-    }
+    double availableCredit = 0.0;
+        	if(cur.getTotalCreditUsed() > 0){
+                	availableCredit = order.getCustomer().getCreditLimit().doubleValue() - (cur.getTotalCreditUsed() + order.getTotalChargeQuoted()) ;
+        	}else{
+        	  	availableCredit = order.getCustomer().getCreditLimit().doubleValue() - order.getTotalChargeQuoted();
+        	}
+              this.customerService.updateAvailableCredit(availableCredit, order.getCustomerId());
+        }else if(unpaidInvoiceCount > 0){
+        	errorMessages.add(new CarrierErrorMessage(order.getCarrierId(), MessageUtil.getMessage(
+                    "shippingOrder.unpaid.invoice.error", MessageUtil.getLocale())));
+                throw new CreditOverrunException(cur);
+        }
 
     Carrier carrier = this.carrierServiceDAO.getCarrier(rate.getCarrierId());
     CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
@@ -4178,4 +4205,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   		public void setBusinessDAO(BusinessDAO businessDAO) {
   			this.businessDAO = businessDAO;
   		}
+
+		public CreditUsageReport getCur() {
+			return cur;
+		}
+
+		public void setCur(CreditUsageReport cur) {
+			this.cur = cur;
+		}
 }

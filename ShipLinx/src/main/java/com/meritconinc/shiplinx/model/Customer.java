@@ -19,6 +19,7 @@ public class Customer {
 	private Date dateCreated;
 	private String invoicingEmail;
 	private String salesAgent;
+	private String status;
 	/**
 	 * Start: Sales Agent 2 Implementation
 	 */
@@ -67,6 +68,7 @@ public class Customer {
 	
 	private String apPhone;
 	
+	private int holdTerms;
 	private boolean reference=false;
 	
 	private User user;
@@ -473,6 +475,18 @@ public class Customer {
 		this.defaultCurrency = defaultCurrency;
 	}
 	
-	
-	
+	public String getStatus() {
+				return status;
+			}
+		
+			public void setStatus(String status) {
+				this.status = status;
+			}
+			public int getHoldTerms() {
+						return holdTerms;
+					}
+				
+					public void setHoldTerms(int holdTerms) {
+						this.holdTerms = holdTerms;
+					}
 }

@@ -1702,7 +1702,7 @@ public class ShippingServiceImpl implements ShippingService {
       destOrder.setInsuranceValue(sourceOrder.getInsuranceValue());
       destOrder.setInsuredAmount(sourceOrder.getInsuredAmount());
       destOrder.setReferenceCode(sourceOrder.getReferenceCode());
-
+      destOrder.setLinkToOrder(sourceOrder.getId());
       // For additional services
       destOrder.setSignatureRequired(sourceOrder.getSignatureRequired());
 

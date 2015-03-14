@@ -50,6 +50,7 @@
 			<result property="ltlEmail" column="ltl_email"/>
 			<result property="reportPath" column="report_path"/>
 			<result property="reportPathInvoice" column="report_pathinvoice"/>
+			<result property="defaultHoldTerms" column="default_hold_terms"/> 
 	</resultMap>
 	
 	

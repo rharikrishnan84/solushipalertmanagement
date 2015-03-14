@@ -43,7 +43,11 @@ public interface CustomerDAO{
 	public CustomerSalesUser getCustomerSalesUserById(long id);
 	public List<Billduty> getBilldutyList(String locale);
 	
-	public int findUnpaidInvoiceDuration(long customerId);
+	public int findUnpaidInvoiceDuration(long customerId,int holdTerms);
 	public String getCustomerCurrencyById(Long customerId);
 	
+	public void updateCustomerStatus(long custId,String customerStatus);
+	
+	public void updateAvailableCredit(double availableCredit, long customerId);
+	public double getAvailableCredit(long customerId);
 }

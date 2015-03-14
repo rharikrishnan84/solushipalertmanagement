@@ -283,7 +283,7 @@
 	<select id="searchAddressMatch" resultClass="long">
 		select distinct so.customer_id from shipping_order so where so.ship_from_id in (select a.address_id from address a where a.address1 like '%$fromAddress$%' and (a.postal_code like '%$fromPostalCode$%')  
 		and (a.country_code like '%$fromCountryCode$%') and (a.abbreviation_name like '%$fromAbbreviationName$%')) and so.ship_to_id in (select a.address_id from address a where a.address1 like '%$toAddress$%' and (a.postal_code like '%$toPostalCode$%')  
-		and (a.country_code like '%$toCountryCode$%') and (a.abbreviation_name like '%$toAbbreviationName$%')) and so.customer_id > 0  limit 1
+		and (a.country_code like '%$toCountryCode$%') and (a.abbreviation_name like '%$toAbbreviationName$%')) and so.customer_id > 0  group by so.customer_id
 	</select>
 	
 	<select id="getCustomerIdForFromAddress" resultClass="long">

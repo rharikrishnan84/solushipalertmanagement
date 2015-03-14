@@ -1253,6 +1253,14 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									
 					</s:if>
 							</div>
+							<div class="fields">
+											<label><mmr:message messageId="label.viewship.link.to.shipid"/></label>
+										<div class="controls"><span>:</span>
+											<s:if test="%{selectedOrder.linkToOrder != null && selectedOrder.linkToOrder != 0}">
+										<s:property value="%{selectedOrder.linkToOrder}" />
+										</s:if>
+											</div>
+										</div>
 								<div id="payment_rqd_end">&nbsp;</div>
 <s:if test='%{selectedOrder.tradeShowPickup == 1 || selectedOrder.tradeShowDelivery == 1 || selectedOrder.insidePickup == 1 ||
 			selectedOrder.insideDelivery == 1 || selectedOrder.appointmentPickup == 1 || selectedOrder.appointmentDelivery == 1 ||

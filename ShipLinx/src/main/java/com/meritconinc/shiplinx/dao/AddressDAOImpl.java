@@ -391,15 +391,48 @@ public class AddressDAOImpl extends SqlMapClientDaoSupport implements
  		 	paramObj.put("fromAddress", shipment.getFromAddress().getAddress1());
  		 	paramObj.put("fromCountryCode", shipment.getFromAddress().getCountryCode());
  		 	paramObj.put("fromPostalCode", shipment.getFromAddress().getPostalCode());
- 		 	paramObj.put("fromAbbreviationName",shipment.getFromAddress().getAbbreviationName());
+ 		 	//paramObj.put("fromAbbreviationName",shipment.getFromAddress().getAbbreviationName());
+ 		 	StringBuilder fromAbbreviationName = new StringBuilder();
+ 		 	String fromTemp=shipment.getFromAddress().getAbbreviationName();
+ 		 	if(fromTemp!=null && !fromTemp.isEmpty() && fromTemp.contains("'")){
+ 		 		for (String temp: fromTemp.split("'")){
+ 		 			fromAbbreviationName.append(temp+"_");
+	 	         }
+ 		 		fromTemp=fromAbbreviationName.toString();
+ 		 		fromAbbreviationName.delete(0, fromAbbreviationName.length());
+ 		 		fromAbbreviationName.append(fromTemp.substring(0,fromTemp.length()-1));
+ 		 	}
+ 		 	else{
+ 		 		fromAbbreviationName.append(fromTemp);
+ 		 	}
+ 		 	paramObj.put("fromAbbreviationName",fromAbbreviationName.toString());
  		 	paramObj.put("toAddress", shipment.getToAddress().getAddress1());
  		 	paramObj.put("toCountryCode", shipment.getToAddress().getCountryCode());
  		 	paramObj.put("toPostalCode", shipment.getToAddress().getPostalCode());
- 		 	paramObj.put("toAbbreviationName", shipment.getToAddress().getAbbreviationName());
- 		 	Object obj = (Object) getSqlMapClientTemplate().queryForObject("searchAddressMatch", paramObj);
+ 		 	//paramObj.put("toAbbreviationName", shipment.getToAddress().getAbbreviationName());
+ 		 	StringBuilder toAbbreviationName = new StringBuilder();
+ 		 	String toTemp=shipment.getToAddress().getAbbreviationName();
+ 		 	if(toTemp!=null && !toTemp.isEmpty() && toTemp.contains("'")){
+ 		 		for (String temp: toTemp.split("'")){
+ 		 	         toAbbreviationName.append(temp+"_");
+ 		 	    }
+ 		 		toTemp=toAbbreviationName.toString();
+ 		 		toAbbreviationName.delete(0, toAbbreviationName.length());
+ 		 		toAbbreviationName.append(toTemp.substring(0,toTemp.length()-1));
+ 		 	}else{
+ 		 		toAbbreviationName.append(toTemp);
+ 		 	}
+ 		 	paramObj.put("toAbbreviationName",toAbbreviationName.toString());
+ 		 	/*Object obj = (Object) getSqlMapClientTemplate().queryForObject("searchAddressMatch", paramObj);
  		 	if(obj != null){
  		 		cusId = (Long)obj;
  		 		return cusId;
+ 		 	}*/
+ 		 	
+ 		 	@SuppressWarnings("unchecked")
+			List<Long> customerIdList = (List<Long>) getSqlMapClientTemplate().queryForList("searchAddressMatch", paramObj);
+ 		 	if(customerIdList!=null && customerIdList.size()==1){
+ 		 		return	customerIdList.get(0);
  		 	}
 		} catch (Exception e) {
  		 		 e.printStackTrace();

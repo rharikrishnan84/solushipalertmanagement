@@ -12,12 +12,16 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Currency;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,8 +51,10 @@ import com.meritconinc.mmr.service.UserService;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.model.ARTransaction;
+import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -65,6 +71,7 @@ import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.service.InvoiceManager;
 import com.meritconinc.shiplinx.service.ShippingService;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
+import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
@@ -124,6 +131,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<Invoice> invoiceBreakdown;
   private FutureReference fc;
   private List<Invoice> invoiceBreakdownList;
+  private BusinessDAO businessDAO;
   Invoice invoiceModel = new  Invoice();
   
 
@@ -301,6 +309,33 @@ public String getSalesRep() {
 	      }
 	      	      
     getSession().remove("invoice");*/
+	   // To find the credit available for the customer
+	      try{  
+  	      		if(UserUtil.getMmrUser().getCustomerId() > 0){
+  	      	    	  c = this.customerService.getCustomerInfoByCustomerId(invoice.getCustomerId());
+  	      	    	  CurrencySymbol cur = new CurrencySymbol();
+  	      	    	  double availableCredit = 0.00;
+  	      		    	  if((c.getCreditLimit().compareTo(new BigDecimal(0.00))!=0) && c.getCreditLimit() != null){
+        			    		  if(c.getDefaultCurrency() != null && !(c.getDefaultCurrency().isEmpty())){
+        			    			 cur = this.shippingService.getSymbolByCurrencycode(c.getDefaultCurrency());
+        			    		  } else {
+  	      			    			cur = this.shippingService.getSymbolByCurrencycode("CAD");
+        			    		  }
+  	      			    		Locale locale = null;
+  				    	          if (cur != null){
+  				    	          	locale = new Locale(cur.getLanguageCode()!=null?cur.getLanguageCode():"en", cur.getCountryCode());
+  				    	          }else{
+  				    	          	locale = new Locale("en", "CA");
+  				    	          }
+  			    	      	NumberFormat currencyFormatter = NumberFormat.getNumberInstance(locale);
+  			    	      	availableCredit=this.customerService.getAvailableCredit(invoice.getCustomerId());
+  			    	      	getSession().put("availableCredit",currencyFormatter.format(availableCredit));
+  			    	      	getSession().put("currencyS", cur.getCurrencySymbol());
+  	      		    	  }
+  	      	      }
+  	      	    } catch(Exception e){
+  	      	    	e.printStackTrace();
+  	      	    }
     log.debug("In execute of InvoiceAction");
     this.statusList = invoiceManager.getInvoiceStatusList();
     return SUCCESS;
@@ -545,6 +580,26 @@ public String getSalesRep() {
       return SUCCESS;
   }
 
+  private void updateStatus(String ids[]){
+		  ShippingOrder order =new ShippingOrder();
+		  
+		  Set<Long> s = new HashSet<Long>();
+		    for(int i=0;i<ids.length;i++){
+		    	long custId;
+		    	long id2=Long.valueOf(ids[i]);
+		    	order=this.shippingService.getShippingOrder(id2);
+		    	
+		    	custId=order.getCustomerId();
+		    	if(!s.contains(custId)){
+		    		invoiceManager.updateCustomerStatus(custId,ShiplinxConstants.CUSTOMER_STATUS);
+		    		
+		    	}
+		    	s.add(custId);
+		    		    	
+		    }
+	  
+	}
+  
   public String createInvoice() {
 
 	    log.debug("In createInvoice");
@@ -591,6 +646,7 @@ public String getSalesRep() {
     				}
     	
     			}
+	    updateStatus(ids);
 	    return SUCCESS;
 	  }
 
@@ -631,6 +687,8 @@ public String getSalesRep() {
     			}
     	
     		}
+    
+    updateStatus(ids);
     this.addActionMessage(getText("invoice.created"));
 
     return SUCCESS;
@@ -662,6 +720,12 @@ public String getSalesRep() {
    for(Invoice invoice:invoices){
     	   if(invoice.getTransaction().getStatus()!=10 && invoice.getTransaction().getProcessorTransactionId()!=null){
     		   addActionMessage("Payment has been Approved and your Receipt Id is: "+invoice.getTransaction().getReceiptId());
+    		   if(invoice.getCustomer().getCreditLimit().doubleValue() > 0){
+  	    		   long cusId=invoice.getCustomerId();
+  	    		   double actualCredit=customerService.getAvailableCredit(cusId);
+  	    		   double availableCredit=actualCredit+invoice.getPaidAmount().doubleValue();
+  	    		   this.customerService.updateAvailableCredit(availableCredit, cusId);
+      		   }
     	   }else{
     		   if(invoice.getTransaction().getProcessorTransactionId()!=null){
     		   addActionError("Payment has been declined and your Declined Receipt Id is: "+invoice.getTransaction().getReceiptId());
@@ -729,6 +793,11 @@ public String getSalesRep() {
 	     invoice.getArTransaction().setPaymentRefNum(payrefnum[i]);
 	     try{     
 	      invoicesToUpdate.add(invoice);
+	      if(invoicesToUpdate.get(i).getCustomer()!=null && invoicesToUpdate.get(i).getCustomer().getCreditLimit().doubleValue() > 0){
+	    	   double actualCredit=customerService.getAvailableCredit(invoicesToUpdate.get(i).getCustomerId());
+	    	   double availableCredit=actualCredit+invoicesToUpdate.get(i).getArTransaction().getAmount().doubleValue();
+	    	   this.customerService.updateAvailableCredit(availableCredit, invoicesToUpdate.get(i).getCustomerId());
+	      }
 	     }catch(Exception e){
 	      log.error("Error in converting the Invoice id :"+ids[i]);
 	     }
@@ -1090,6 +1159,25 @@ public String getSalesRep() {
             trackNos);
         this.setInvoice(invoice);
         addActionMessage("Charge Updated Successfully..");
+        PDFRenderer pdfRenderer = new PDFRenderer();
+        ArrayList<String> srcList = new ArrayList<String>();
+  	    Business business = businessDAO.getBusiessById(invoice.getBusinessId());
+  	    String reportPathInvoice = business.getReportPathInvoice();
+  	    String invoiceNum=invoice.getInvoiceNum();
+	      File folderPath = new File(reportPathInvoice);
+	      if (folderPath.isDirectory()) {
+	    	  File[] fList = folderPath.listFiles();
+	    	  if(fList!=null){
+	    		  for(File file:fList){
+	    			  String fileName=file.getName();
+	    			  String[] splitFileName=fileName.split("_");
+			  			  if(invoiceNum.equals(splitFileName[1])){
+			    				  srcList.add(file.toString());
+			    				pdfRenderer.deleteFiles(srcList);
+			  			  }
+	    		  }
+	    	  }
+	      }
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -1256,10 +1344,22 @@ public String getSalesRep() {
     String method = request.getParameter("method");
 
     if (method != null) {
-      getSession().remove("salesRecord");
+      /*getSession().remove("salesRecord");
       SalesRecord sales = getSalesRecord();
       currencyList=shippingService.getallCurrencySymbol();
-      return SUCCESS;
+      return SUCCESS;*/
+    	getSession().remove("salesRecord");
+       if(getSalesRecord() !=null){
+    	   Calendar gc=new GregorianCalendar();
+	       int year = gc.get(Calendar.YEAR);
+	    	int month = gc.get(Calendar.MONTH);
+	    	getSalesRecord().setMonth(month+1);
+	    	getSalesRecord().setMonthName(String.valueOf(month+1));
+	    	getSalesRecord().setYear(String.valueOf(year));
+	    	SalesRecord sales = getSalesRecord();
+	       currencyList=shippingService.getallCurrencySymbol();     
+	    	return SUCCESS;
+        }
     }
 
     SalesRecord sales = getSalesRecord();
@@ -2741,4 +2841,11 @@ public void setFc(FutureReference fc) {
 	this.fc = fc;
 }
 
+public BusinessDAO getBusinessDAO() {
+	return businessDAO;
+}
+
+public void setBusinessDAO(BusinessDAO businessDAO) {
+	this.businessDAO = businessDAO;
+ } 
 }

@@ -418,6 +418,10 @@ window.onload = doOnload;
 										</div>	
 										<!-- this code in under test -->
 										<div class="fields">
+										<label><mmr:message messageId="label.customer.hold.terms"/></label>
+											<div class="controls"><span>:</span><s:textfield size="24" key="customer.holdTerms" name="customer.holdTerms" cssStyle="text-align:right;padding-right:5px;"  /></div>
+										</div>
+										<div class="fields">
            										<label><mmr:message messageId="label.customer.showref"/></label>
            										<div class="controls"><span>:</span>
             									<s:checkbox name="customer.reference" value="%{customer.reference}" key="customer.reference" id="showref"/>             
@@ -429,13 +433,31 @@ window.onload = doOnload;
             									<s:checkbox name="customer.chbCustomer" value="%{customer.chbCustomer}" key="customer.chbCustomer" id="chbcus"/>             
             									</div>
            								</div>
+           								<s:if test="#session.edit != 'true'">
+           								<div class="fields">
+           								<label><mmr:message messageId="add.label.status.customer"/></label>
+           								<div class="controls"><span>:</span>
+           							
+           								
+           								<s:select list="#{'Prospect':'Prospect','Customer':'Customer'}" name="customer.status"  disabled="true" />
+           								</div></div></s:if>
+           								<s:if test="#session.edit == 'true'">
+           								<div class="fields">
+           								<label><mmr:message messageId="add.label.status.customer"/></label>
+           								<div class="controls"><span>:</span>
+           							        								
+           								<s:select list="#{'Prospect':'Prospect','Customer':'Customer'}" name="customer.status" value="%{customer.status}" />
+           								</div></div></s:if>
 										</s:if>
 									</div>
 									</s:if>
 								</div>
 								
 								<div class="content_header">
-									<div class="cont_hdr_title"><mmr:message messageId="label.heading.accounting"/></div>								
+									<div class="cont_hdr_title"><mmr:message messageId="label.heading.accounting"/></div>
+									<s:if test="#session.edit == 'true'">
+										<div class="cont_hdrtitle_w" style="padding-left:470px;"><mmr:message messageId="label.customer.availableCredit"/>&nbsp;<s:property value="#session.currency"/><s:property value="#session.availableCredit"/></div>
+									</s:if>								
 								</div>
 								<div class="cont_data_body">
 									<div class="rows">

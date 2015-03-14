@@ -122,7 +122,12 @@
 												<s:checkbox name="shippingOrder.docsOnly"  value="shippingOrder.docsOnly"/>
 											</div>
 										</div>
-										
+										<div class="fields">
+											<label><mmr:message messageId="label.viewship.link.to.shipid"/></label>
+										<div class="controls"><span>:</span>
+												<s:textfield id="shippingOrder.linkToOrder" name="shippingOrder.linkToOrder"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{shippingOrder.linkToOrder}"/>
+											</div>
+										</div>
 									</div>
 									
 									<div class="rows" id="hide_this_one" style="display:none;">

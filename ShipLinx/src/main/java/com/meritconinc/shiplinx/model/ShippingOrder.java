@@ -256,6 +256,7 @@ public class ShippingOrder implements Serializable {
   private String fromAddressLong;
   private String toAddressLong;
   private String purpose;
+  private long linkToOrder;
   public int getSaveShipmet() {
 	return saveShipmet;
 }
@@ -2055,5 +2056,12 @@ public void setPurpose(String purpose) {
 	this.purpose = purpose;
 }
 
+public long getLinkToOrder() {
+	return linkToOrder;
+}
+
+public void setLinkToOrder(long linkToOrder) {
+	this.linkToOrder = linkToOrder;
+}
 
 }

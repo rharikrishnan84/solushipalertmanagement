@@ -74,6 +74,7 @@ public class Business {
 	private String reportPath;
 	private String reportPathInvoice;
 	
+	private int defaultHoldTerms;
 	public String getLtlEmail() {
 		return ltlEmail;
 	}
@@ -389,4 +390,11 @@ public class Business {
 	public void setReportPathInvoice(String reportPathInvoice) {
 		this.reportPathInvoice = reportPathInvoice;
 	}
+	
+	public int getDefaultHoldTerms() {
+				return defaultHoldTerms;
+			}
+			public void setDefaultHoldTerms(int defaultHoldTerms) {
+				this.defaultHoldTerms = defaultHoldTerms;
+			}
 }

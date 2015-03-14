@@ -63,6 +63,7 @@
 			<result property="unitmeasure" column="unitmeasure"/>	
 			<result property="saveShipmet" column="save_shipment"/>	
 			<result property="currency" column="currency"/>
+			<result property="linkToOrder" column="link_to_order"/>	
 	</resultMap>
 	<resultMap id="FutureReferenceResult" class="com.meritconinc.shiplinx.model.FutureReference">
 			<result property="createdBy" column="createdBy"/>
@@ -213,7 +214,9 @@
             <result property="actualTotalCharge" column="actual_total"/>
            <result property="actualTotalCost" column="actual_cost"/>
            <result property="unitmeasure" column="unitmeasure"/>
-           <result property="saveShipmet" column="save_shipment"/>	
+           <result property="dangerousGoods" column="dangerous_goods"/> 
+           <result property="saveShipmet" column="save_shipment"/>
+           <result property="linkToOrder" column="link_to_order"/>	
 	</resultMap>
 	
 	<resultMap id="SearchOrderResult1" class="com.meritconinc.shiplinx.model.ShippingOrder">
@@ -638,8 +641,8 @@
 	</resultMap>
 	
 	<insert id="addShippingOrder" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder">
-			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,account_num,unitmeasure,save_shipment) 
-			 					 values (#orderNum#, #statusId#,#shipToId#,	#shipFromId#,	#packageTypeId.packageTypeId#,	#businessId#, #customerId#,	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,	#docsOnly#, #holdForPickupRequired#,#insideDelivery#,	#specialEquipment#,	#CODPayment#,	#CODValue#,	#CODCurrency#,	#CODPin#, #dangerousGoods#,	#reqDeliveryDate#,	#carrierId#,#serviceId#,#originalServiceId#,#totalCharge#,	#baseCharge#,	#fromInstructions#,	#toInstructions#,#fromTailgate#,#toTailgate#,	#fromAttention#,#toAttention#,	#dateCreated#,	#recidential#,	#scheduledShipDate#,#masterTrackingNum#,	#live#, 	#fromZone#, #toZone#, #quantity#, 	#referenceOneName#, #referenceOne#, #referenceTwoName#, #referenceTwo#, #podDateTime#,#podReceiver#,#markPercent#, #markType#, #fuelPercent#, #billingStatus#,#paidAmount#,#billedWeight#, #billedWeightUOM#, #quotedWeight#, #quotedWeightUOM#, #currency#, #createdBy#, #batchId#, #message#, #tradeShowPickup#, #tradeShowDelivery#, #insidePickup#, #appointmentPickup#, #appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#, #billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#accountNum#,#unitmeasure#,#saveShipmet#)     
+			  			  insert into shipping_order(order_num, status_id,	ship_to_id,	ship_from_id, package_type_id,  business_id, customer_id, reference_code_name, reference_code, carrier_reference, sat_delivery, docs_only, hold, inside_delivery, special_equipment, cod_payment, cod_value, cod_currency,	cod_pin, dangerous_goods, req_delivery_date,	carrier_id,	service_id,	original_service_id, total_charge, base_charge, frominstructions, toinstructions, fromtailgate,	totailgate,	 fromattention,	toattention, date_created, res,	 scheduled_ship_date,master_tracking_num, live_mode,  from_zone, 	to_zone, quantity,  reference1_name, reference1, reference2_name, reference2,	 pod_datetime, pod_receiver, mark_percent,  mark_type, fuel_percent, billing_status, paid_amount, billed_weight, billed_weight_uom, quoted_weight, quoted_weight_uom, currency, created_by, batch_id, message, tradeshow_pickup, tradeshow_delivery, inside_pickup, appointment_pickup, appointment_delivery, tracking_url, rated_as_weight, billing_type, billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,account_num,unitmeasure,save_shipment,link_to_order) 
+			 					 values (#orderNum#, #statusId#,#shipToId#,	#shipFromId#,	#packageTypeId.packageTypeId#,	#businessId#, #customerId#,	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,	#docsOnly#, #holdForPickupRequired#,#insideDelivery#,	#specialEquipment#,	#CODPayment#,	#CODValue#,	#CODCurrency#,	#CODPin#, #dangerousGoods#,	#reqDeliveryDate#,	#carrierId#,#serviceId#,#originalServiceId#,#totalCharge#,	#baseCharge#,	#fromInstructions#,	#toInstructions#,#fromTailgate#,#toTailgate#,	#fromAttention#,#toAttention#,	#dateCreated#,	#recidential#,	#scheduledShipDate#,#masterTrackingNum#,	#live#, 	#fromZone#, #toZone#, #quantity#, 	#referenceOneName#, #referenceOne#, #referenceTwoName#, #referenceTwo#, #podDateTime#,#podReceiver#,#markPercent#, #markType#, #fuelPercent#, #billingStatus#,#paidAmount#,#billedWeight#, #billedWeightUOM#, #quotedWeight#, #quotedWeightUOM#, #currency#, #createdBy#, #batchId#, #message#, #tradeShowPickup#, #tradeShowDelivery#, #insidePickup#, #appointmentPickup#, #appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#, #billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#accountNum#,#unitmeasure#,#saveShipmet#,#linkToOrder#)     
 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -866,7 +869,7 @@
 						billing_status=#billingStatus#, paid_amount=#paidAmount#, applied_amount=#appliedAmount#, refunded_amount=#refundedAmount#, billed_weight=#billedWeight#, currency=#currency#, message=#message#,
 						quoted_weight=#quotedWeight#, quoted_weight_uom=#quotedWeightUOM#, billed_weight_uom=#billedWeightUOM#, scheduled_ship_date=#scheduledShipDate#, tradeshow_pickup = #tradeShowPickup#, tradeshow_delivery = #tradeShowDelivery#, 
 						inside_pickup = #insidePickup#, appointment_pickup = #appointmentPickup#, appointment_delivery = #appointmentDelivery#, fromtailgate = #fromTailgate#, totailgate = #toTailgate#,
-						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#, unitmeasure=#unitmeasure#
+						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#, unitmeasure=#unitmeasure#,link_to_order = #linkToOrder#
 				where order_id=#id#
 	</update>	
 

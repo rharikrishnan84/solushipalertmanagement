@@ -370,9 +370,10 @@ public List<Billduty> getBilldutyList(String locale) {
 	return getSqlMapClientTemplate().queryForList("getBilldutyList",locale);
 }
 
-public int findUnpaidInvoiceDuration(long customerId){
+public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 		Map<String, Object> paramObj = new HashMap<String, Object>(1);
 	    paramObj.put("customerId", customerId);
+	    paramObj.put("holdTerms", holdTerms);
 	    Object obj=getSqlMapClientTemplate().queryForObject("findUnpaidInvoiceDuration", paramObj);
 	    if(obj!=null)
 	    {
@@ -390,5 +391,33 @@ public int findUnpaidInvoiceDuration(long customerId){
 	    String currency=(String) getSqlMapClientTemplate().queryForObject("getCustomerCurrencyById", paramObj);
 	    return currency;
 	}  
+	
+	@Override
+	public void updateCustomerStatus(long custId,String customerStatus) {
+		// TODO Auto-generated method stub
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+		paramObj.put("custId", custId);
+		paramObj.put("customerStatus", customerStatus);
+		getSqlMapClientTemplate().update("updateCustomerStatus",paramObj);
+		
+	}
+	
+	public void updateAvailableCredit(double availableCredit, long customerId){
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	    paramObj.put("availableCredit", availableCredit);
+	    paramObj.put("customerId", customerId);
+	    getSqlMapClientTemplate().update("updateAvailableCredit", paramObj);
+	}
+		
+	public double getAvailableCredit(long customerId){
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	    paramObj.put("customerId", customerId);
+	    Object obj=getSqlMapClientTemplate().queryForObject("getAvailableCredit", paramObj);
+	    if(obj != null)
+	    {
+			return (Double)obj;
+	    }
+	    return 0;
+	}
 }
 

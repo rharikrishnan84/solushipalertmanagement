@@ -30,6 +30,8 @@
 			<result property="branch" column="branch"/>
 			<result property="defaultCurrency" column="default_currency"/>
 			<result property="chbCustomer" column="chb_customer"/>
+			<result property="holdTerms" column="hold_terms"/>
+			<result property="status" column="status"/>
 	</resultMap>
 	
 	<resultMap id="CustomerId" class="com.meritconinc.shiplinx.model.Customer">
@@ -82,8 +84,8 @@
 			select count(1) as count from customer where name = #customername# and business_id=#businessId# and customer_id!=#customerId#
 	</select>
 	<insert id="addCustomer" parameterClass="com.meritconinc.shiplinx.model.Customer">
-			 insert into customer(name,active,date_created,timeZone,deleted,api_password, api_username, business_id, address_id, account_number, sales_agent, sales_agent2, payable_days, payment_type, payment_type_level, additional_handling_charge, credit_limit, monthly_spend, branch, default_currency,show_ref,chb_customer) 
-			  values (#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#, #businessId#, #addressId#, #accountNumber#, #salesAgent#, #salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#, #additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#, #defaultCurrency#,#reference#,#chbCustomer#)
+			 insert into customer(name,active,date_created,timeZone,deleted,api_password, api_username, business_id, address_id, account_number, sales_agent, sales_agent2, payable_days, payment_type, payment_type_level, additional_handling_charge, credit_limit, monthly_spend, branch, default_currency,show_ref,chb_customer, hold_terms) 
+			  values (#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#, #businessId#, #addressId#, #accountNumber#, #salesAgent#, #salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#, #additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#, #defaultCurrency#,#reference#,#chbCustomer#,#holdTerms#)
  			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -132,7 +134,8 @@
 		update customer set name=#name#, active=#active#, api_username=#apiUsername#,api_password=#apiPassword#,timeZone=#timeZone#, 
 		invoice_email=#invoicingEmail#, account_number=#accountNumber#, sales_agent=#salesAgent#, 
 		payable_days=#payableDays#, payment_type=#paymentType#, payment_type_level=#paymentTypeLevel#,
-		 additional_handling_charge=#additionalHandlingCharge#, credit_limit=#creditLimit#, default_currency = #defaultCurrency#,show_ref=#reference#,chb_customer=#chbCustomer#
+		 additional_handling_charge=#additionalHandlingCharge#, credit_limit=#creditLimit#, default_currency = #defaultCurrency#,show_ref=#reference#,chb_customer=#chbCustomer#,
+		 status=#status# ,hold_terms=#holdTerms#
 		where customer_id=#id# and business_id=#businessId#
 	</update>	
 	
@@ -187,5 +190,21 @@
 	</select>
 	<select id="getCustomerCurrencyById" resultClass="String">
 		SELECT default_currency from customer where customer_id=#customerId#;
+	</select>
+	
+	<update id = "updateCustomerStatus">
+		update customer set status=#customerStatus# where customer_id=#custId#;
+	</update>
+	
+	<update id="updateAvailableCredit">
+		update customer set available_credit=#availableCredit# where customer_id=#customerId#
+	</update>
+	
+	<select id="getAvailableCredit" resultClass="double">
+		select available_credit from customer where customer_id=#customerId#
+	</select>
+	
+	<select id="findUnpaidInvoiceDuration"  resultClass="int">
+		select count(*) from invoice where payment_status in(10,20)  and customer_id = #customerId# and DATEDIFF(curdate(), due_date) > #holdTerms#
 	</select>
 </sqlMap>

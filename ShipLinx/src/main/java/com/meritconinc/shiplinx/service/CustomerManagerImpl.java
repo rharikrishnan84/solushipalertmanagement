@@ -879,4 +879,15 @@ public class CustomerManagerImpl implements CustomerManager {
 	public List<Billduty> getBilldutyList(String locale) {
 		return customerDAO.getBilldutyList(locale);
 	}
+	
+	public void updateAvailableCredit(double availableCredit, long customerId){
+				 customerDAO.updateAvailableCredit(availableCredit, customerId);
+			}
+			public double getAvailableCredit(long customerId){
+				return customerDAO.getAvailableCredit(customerId);
+			}
+			
+			public int findUnpaidInvoiceDuration(long customerId, int holdTerms) {
+				return customerDAO.findUnpaidInvoiceDuration(customerId, holdTerms);
+			}
 }

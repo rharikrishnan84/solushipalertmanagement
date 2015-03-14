@@ -760,6 +760,25 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
       invoiceDAO.deleteShipmentAndChargeFromInvoice(invoice.getInvoiceId(), 0, 0);
 
       invoiceDAO.updateInvoice(invoice);
+      PDFRenderer pdfRenderer = new PDFRenderer();
+      	  ArrayList<String> srcList = new ArrayList<String>();
+      	    Business business = businessDAO.getBusiessById(invoice.getBusinessId());
+      	      String reportPathInvoice = business.getReportPathInvoice();
+      	    String invoiceNum=invoice.getInvoiceNum();
+      	      File folderPath = new File(reportPathInvoice);
+      	      if (folderPath.isDirectory()) {
+      	    	  File[] fList = folderPath.listFiles();
+      	    	  if(fList!=null){
+      	    		  for(File file:fList){
+      	    			  String fileName=file.getName();
+      	    			  String[] splitFileName=fileName.split("_");
+      			  			  if(invoiceNum.equals(splitFileName[1])){
+      			    				  srcList.add(file.toString());
+      			    				pdfRenderer.deleteFiles(srcList);
+      			  			  }
+      	    		  }
+      	    	  }
+      	      }
 
     } catch (Exception e) {
       log.error("Unable to cancel invoice" + invoice.getInvoiceNum(), e);
@@ -2533,5 +2552,12 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 					// TODO Auto-generated method stub
 					return shippingDAO.showFutureReferencePackage(id1);
 					
+				}
+				
+				@Override
+				public void updateCustomerStatus(long custId,String customerStatus) {
+					// TODO Auto-generated method stub
+					customerDAO.updateCustomerStatus(custId,customerStatus);
+				
 				}
 		}

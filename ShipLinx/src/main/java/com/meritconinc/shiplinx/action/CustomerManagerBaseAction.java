@@ -155,7 +155,10 @@ public class CustomerManagerBaseAction extends BaseAction implements Preparable,
 				customer.setCreditLimit(new BigDecimal(UserUtil.getMmrUser().getBusiness().getDefaultCreditLimit()).setScale(2));
 				customer.getCreditLimit().setScale(2,BigDecimal.ROUND_HALF_UP);
 			}
-			     
+			if(customer.getHoldTerms() == 0){
+				customer.setHoldTerms(UserUtil.getMmrUser().getBusiness().getDefaultHoldTerms());
+			}
+			
 			if(customer.getPayableDays() == 0)
 				customer.setPayableDays(UserUtil.getMmrUser().getBusiness().getDefaultNetTerms());
 
