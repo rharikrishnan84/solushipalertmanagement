@@ -2,11 +2,14 @@ package com.meritconinc.shiplinx.carrier.purolator.stub;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
@@ -22,6 +25,8 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
 
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ArrayOfDocument;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ArrayOfDocumentCriteria;
@@ -37,16 +42,12 @@ import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.Obj
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.PIN;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.RequestContext;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ResponseInformation;
-import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ShippingDocumentsService;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ShippingDocumentsServiceContract;
 import com.meritconinc.shiplinx.carrier.purolator.ws.shippingdocuments.proxy.ShippingDocumentsServiceContractGetDocumentsValidationFaultFaultFaultMessage;
 import com.meritconinc.shiplinx.carrier.utils.PurolatorException;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
-import com.cwsi.eshipper.carrier.ups.rate.ResponseDocument.Response;
-import com.meritconinc.mmr.model.security.User;
-import com.meritconinc.mmr.utilities.security.UserUtil;
 
 public class ShippingDocumentsServiceClient{
 
@@ -80,6 +81,15 @@ public class ShippingDocumentsServiceClient{
 
 			GetDocumentsRequestContainer reqContainer = new GetDocumentsRequestContainer();
 
+			try{
+				JAXBElement<GetDocumentsRequestContainer> jaxbElement =  new JAXBElement(new QName(GetDocumentsRequestContainer.class.getSimpleName()), GetDocumentsRequestContainer.class,reqContainer);
+		         StringWriter writer = new StringWriter();
+		         JAXBContext context = JAXBContext.newInstance(GetDocumentsRequestContainer.class);
+		         context.createMarshaller().marshal(jaxbElement, writer);
+				 logger.debug("Purolator File Request :" +writer.toString());
+			}catch(Exception e){
+				logger.error("Error occured in printing the puralotor Request : " + e.getMessage());
+			}
 			int c = 0;
 			int numOfCriteria = 1;
 			
@@ -152,6 +162,19 @@ public class ShippingDocumentsServiceClient{
 			// Call the service
 			GetDocumentsResponseContainer response = sendDocumentRequest(reqContainer);
 			
+			try{
+				JAXBElement<GetDocumentsResponseContainer> jaxbElement4 =  new JAXBElement<GetDocumentsResponseContainer>( 
+								            new QName(GetDocumentsResponseContainer.class.getSimpleName()), GetDocumentsResponseContainer.class,response);
+		         StringWriter writer4 = new StringWriter();
+		         // create JAXBContext which will be used to update writer 		
+		         JAXBContext context4 = JAXBContext.newInstance(GetDocumentsResponseContainer.class);
+		         // marshall or convert jaxbElement containing student to xml format
+		         context4.createMarshaller().marshal(jaxbElement4, writer4);
+		         //print XML string representation of Student object			
+		         logger.debug("Purolator Response :"+writer4.toString());
+			}catch(Exception e){
+				logger.error("Error occured while printing the puralotor response :"+e.getMessage());
+			}
 			// Display the response
 			getResponseError(response.getResponseInformation());
 

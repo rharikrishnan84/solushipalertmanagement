@@ -315,7 +315,7 @@ public String getSalesRep() {
   	      	    	  c = this.customerService.getCustomerInfoByCustomerId(invoice.getCustomerId());
   	      	    	  CurrencySymbol cur = new CurrencySymbol();
   	      	    	  double availableCredit = 0.00;
-  	      		    	  if((c.getCreditLimit().compareTo(new BigDecimal(0.00))!=0) && c.getCreditLimit() != null){
+  	      		    	  
         			    		  if(c.getDefaultCurrency() != null && !(c.getDefaultCurrency().isEmpty())){
         			    			 cur = this.shippingService.getSymbolByCurrencycode(c.getDefaultCurrency());
         			    		  } else {
@@ -327,9 +327,13 @@ public String getSalesRep() {
   				    	          }else{
   				    	          	locale = new Locale("en", "CA");
   				    	          }
+  				    	   if((c.getCreditLimit() != null && c.getCreditLimit().compareTo(new BigDecimal(0.00))!=0) ){
   			    	      	NumberFormat currencyFormatter = NumberFormat.getNumberInstance(locale);
   			    	      	availableCredit=this.customerService.getAvailableCredit(invoice.getCustomerId());
   			    	      	getSession().put("availableCredit",currencyFormatter.format(availableCredit));
+  			    	      	getSession().put("currencyS", cur.getCurrencySymbol());
+  	      		    	  }else{
+  	      		    		getSession().put("availableCredit",availableCredit);
   			    	      	getSession().put("currencyS", cur.getCurrencySymbol());
   	      		    	  }
   	      	      }

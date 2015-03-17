@@ -498,7 +498,7 @@ public String execute() throws Exception {
       
       this.setCustomer(getService().getCustomerInfoByCustomerId(customerId));
       initialize();
-      if((getCustomer().getCreditLimit().compareTo(new BigDecimal(0.00)) != 0 && getCustomer().getCreditLimit() != null)){
+      
     	  	      CurrencySymbol curSym= new CurrencySymbol();
     	  	      double availableCredit = 0.0;
     	  	      if(getCustomer().getDefaultCurrency() != null && !(getCustomer().getDefaultCurrency().isEmpty())){
@@ -512,11 +512,15 @@ public String execute() throws Exception {
     	  	          }else{
     	  	          	locale = new Locale("en", "CA");
     	  	          }
+    	  if((getCustomer().getCreditLimit() != null && getCustomer().getCreditLimit().compareTo(new BigDecimal(0.00)) != 0)){
     	  	      	NumberFormat currencyFormatter = NumberFormat.getNumberInstance(locale);
     	  	      	availableCredit = this.getService().getAvailableCredit(customerId);
     	  	        getSession().put("availableCredit", currencyFormatter.format(availableCredit));
     	  	        getSession().put("currency",curSym.getCurrencySymbol());
-    	}
+    	  }else{
+    				getSession().put("availableCredit", availableCredit);
+    				getSession().put("currency",curSym.getCurrencySymbol());
+    	  }
       getSession().put("oldBusinessName", this.getCustomer().getName());
       getSession().put("edit", "true");
 
