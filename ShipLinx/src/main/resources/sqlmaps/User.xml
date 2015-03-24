@@ -65,6 +65,19 @@
 		<result property="logoURL" column="logo_url"/>
 		<result property="commissionPercentageCHB" column="commission_perc_CHB"/>
         <result property="timeZone" column="time_zone"/>
+         <!-- business filter changes  -->
+        <result property="partnerLevel" column="ispartner_level"/>
+        <result property="nationLevel" column="isnation_level"/>
+        <result property="branchLevel" column="isbranch_level"/>
+        <result property="divitionLevel" column="isdivision_level"/>
+        <result property="businessLevel" column="isbusiness_level"/> 
+        
+        <!--division level filter  -->
+        <result property="spdEnabled" column="spd_enabled"/>
+        <result property="fwdEnabled" column="fwd_enabled"/>
+        <result property="chbEnabled" column="chb_enabled"/>
+        <result property="fpaEnabled" column="fpa_enabled"/>
+        <result property="ltlEnabled" column="ltl_enabled"/>
 	</resultMap>
 	
 		<resultMap id="userResultUnit" class="com.meritconinc.mmr.model.security.User">
@@ -120,9 +133,11 @@
 		   from user u, user_role r 
 		   <dynamic prepend="where">
 			u.username = r.username 
-	 		<isGreaterThan property="businessId" compareValue="0">
-	 			and business_id = #businessId#
-	 		</isGreaterThan>	
+	 <isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+			and	 business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull> 	
 	 		<isGreaterThan property="customerId" compareValue="0">
 	 			and customer_id = #customerId#
 	 		</isGreaterThan>	
@@ -183,12 +198,29 @@
 	</select>
 	
 	<select id="findUserByCustomerId" resultMap="userResult">
-		select * from user where customer_id = #customerId# and business_id = #businessId#
-			<isNotNull property = "branch">
+		select * from user  
+		<dynamic prepend="where">
+			<isNotNull property = "customerId">
+				<isNotEmpty property = "customerId">
+					customer_id = #customerId#
+				</isNotEmpty>
+		</isNotNull>
+			<isNotNull property = "customerIds">
+				<isNotEmpty property = "customerIds">
+					customer_id IN <iterate  open="(" close=")" conjunction="," property="customerIds"> #customerIds[]# </iterate>
+				</isNotEmpty>
+	</isNotNull>
+			<isNotNull property = "businessId">
+				<isNotEmpty property = "businessId">
+					and business_id = #businessId#
+		</isNotEmpty>
+			</isNotNull>
+ 			<isNotNull property = "branch">
 				<isNotEmpty property = "branch">
 					and branch = #branch#
 				</isNotEmpty>
-			</isNotNull>		
+			</isNotNull>
+			</dynamic>					
 	</select>
 	
 	<select id="findUserByEmail" resultMap="userResult">
@@ -256,7 +288,12 @@
 			locale = #locale#,
 			expiration_date = #expDate#, commission_perc_CHB=#commisionPercentagePerCHB#, commission_perc_PP=#commissionPercentagePerPalletService#, commission_perc_PS=#commissionPercentagePerSkidService#,
 			print_num_of_labels = #printNoOfLabels#, print_num_of_ci = #printNoOfCI#, print_preferred_label_size = #preferredLabelSize#, print_auto = #autoPrint#,
-			default_from_address_id = #fromAddressId#, default_to_address_id = #toAddressId#, gl_refno = #userGLOrRefNumber#,user_code=#userCode#,logo_url=#logoURL#,unit_measure=#unitmeasure#,time_zone=#timeZone#
+			default_from_address_id = #fromAddressId#, default_to_address_id = #toAddressId#, gl_refno = #userGLOrRefNumber#,user_code=#userCode#,logo_url=#logoURL#,unit_measure=#unitmeasure#,time_zone=#timeZone#,
+			spd_enabled=#spdEnabled#,
+			ltl_enabled=#ltlEnabled#,
+			chb_enabled=#chbEnabled#,
+			fpa_enabled=#fpaEnabled#,
+			fwd_enabled=#fwdEnabled#
 			where username = #username#
 	</update>
 	<!-- 
@@ -355,12 +392,11 @@
 			email, user_comments, account_status, created_by, created,
 			company, phone_number, phone_number_ext, occupation,
 			address_line, city, state_province, country_code, postal_zip, session_timeout,
-			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id,commission_perc_CHB,commission_perc_PP,commission_perc_PS, default_menu_id, print_num_of_labels, print_num_of_ci, print_preferred_label_size, print_auto, branch, default_from_address_id, default_to_address_id, gl_refno,unit_measure,time_zone) 
-			values (#username#, #password#, #today#, #first_name#, 
+			locale, expiration_date,customer_id,access_times,login_failed_count,sub_type,enabled,business_id,commission_perc_CHB,commission_perc_PP,commission_perc_PS, default_menu_id, print_num_of_labels, print_num_of_ci, print_preferred_label_size, print_auto, branch, default_from_address_id, default_to_address_id, gl_refno,unit_measure,time_zone,ispartner_level,isnation_level,isbranch_level,isdivision_level,isbusiness_level,spd_enabled,chb_enabled,ltl_enabled,fpa_enabled,fwd_enabled) 			values (#username#, #password#, #today#, #first_name#, 
 			#last_name#, #email#, #user_comments#, #account_status#, #created_by#, 
 			#created#, #company#, #phone_number#, #phone_number_ext#, #occupation#, 
 			#address_line#, #city#, #state_province#, #country_code#, #postal_zip#, #session_timeout#,
-			#locale#, #expiration_date#,IFNULL(#customerId#,0),#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#,IFNULL(#commisionPercentagePerCHB#,0),IFNULL(#commissionPercentagePerPalletService#,0),IFNULL(#commissionPercentagePerSkidService#,0),#default_menuId#, IFNULL(#printNoOfLabels#,1), IFNULL(#printNoOfCI#,3), #preferredLabelSize#, #autoPrint#, #branch#, IFNULL(#fromAddressId#,0), IFNULL(#toAddressId#,0), #userGLOrRefNumber#,#unitmeasure#,#timeZone#)
+			#locale#, #expiration_date#,IFNULL(#customerId#,0),#accesstimes#,#loginfailedcount#,#subtype#,#enabled#,#businessId#,IFNULL(#commisionPercentagePerCHB#,0),IFNULL(#commissionPercentagePerPalletService#,0),IFNULL(#commissionPercentagePerSkidService#,0),#default_menuId#, IFNULL(#printNoOfLabels#,1), IFNULL(#printNoOfCI#,3), #preferredLabelSize#, #autoPrint#, #branch#, IFNULL(#fromAddressId#,0), IFNULL(#toAddressId#,0), #userGLOrRefNumber#,#unitmeasure#,#timeZone#,#partnerLevel#,#nationLevel#,#branchLevel#,#divitionLevel#,#businessLevel#,#spdEnabled#,#chbEnabled#,#ltlEnabled#,#fpaEnabled#,#fwdEnabled#)
 	</insert>
 	
 	<!-- 
@@ -426,5 +462,7 @@
     <select id="getDisplayTextByLocale" resultMap="userLocale">
        select * from locale where locale=#locale#
     </select>
-    
+       <select id="getAllUsers" resultMap="userResult">
+        select * from user        
+    </select>
 </sqlMap>

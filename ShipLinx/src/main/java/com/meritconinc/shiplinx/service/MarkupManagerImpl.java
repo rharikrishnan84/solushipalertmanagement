@@ -81,12 +81,16 @@ public class MarkupManagerImpl implements MarkupManager {
   // }
   public List<Markup> getMarkupListForCustomer(Markup markup) {
     // TODO Auto-generated method stub
-    if (markupDAO != null && markup != null) {
+	  if (markup.getCustomerId() > 0 || (markup.getCustomerIds()!=null && markup.getCustomerIds().size() > 0)) {
       if (markup.getCustomerId() > 0) {
         Long orgCustId = markup.getCustomerId();
+        List<Long> custIds = markup.getCustomerIds();
         List<Markup> custMarkupList = markupDAO.getMarkupListForCustomer(markup);
         if (custMarkupList != null) {
-          markup.setCustomerId(0L);
+        	// markup.setCustomerId(0L);
+        	        	        	List<Long> forDefaultCustomer = new ArrayList<Long>();
+        	        	        	          forDefaultCustomer.add(0L);
+        	        	        	          markup.setCustomerIds(forDefaultCustomer);
           List<Markup> defMarkupList = markupDAO.getMarkupListForCustomer(markup);
           for (Markup m : custMarkupList) {
             int n = findMarkup(defMarkupList, m);
@@ -101,11 +105,17 @@ public class MarkupManagerImpl implements MarkupManager {
           }
           custMarkupList.clear();
           markup.setCustomerId(orgCustId);
-          boolean flag = markupDAO.isCustomerMarkupByDisabled(orgCustId);  
-          for(Markup m : defMarkupList){                                   
-        	  if(!flag && m.getDisabled()==0)       
-        		  m.setDisabled(1);            
-          }                                                                
+          if(custIds!=null && custIds.size() >0){
+        	          	          	          	  for(Long custId : custIds){
+        	          	          	          		  boolean flag = markupDAO.isCustomerMarkupByDisabled(custId);  
+        	          	          	          		  for(Markup m : defMarkupList){                                   
+        	          	          	          			  if(!flag && m.getDisabled()==0)       
+        	          	          	         				  m.setDisabled(1);            
+        	          	          	          		  }                                                                
+        	          	          	          	  }
+        	          	          	          	  
+        	          	          	            }                                                              
+        	                                                                           
           return defMarkupList;
         }
       }
@@ -498,6 +508,9 @@ public class MarkupManagerImpl implements MarkupManager {
       this.markupDAO.deleteCustomerMarkup(targetCusId, businessId);
       Markup srcMarkup = new Markup();
       srcMarkup.setCustomerId(sourceCusId);
+      List<Long> tempCutomerIds = new ArrayList<Long>();
+                        tempCutomerIds.add(sourceCusId);
+                       srcMarkup.setCustomerIds(tempCutomerIds);
       srcMarkup.setBusinessId(businessId);
       List<Markup> srcMarkupList = markupDAO.getMarkupListForCustomer(srcMarkup);
       if (srcMarkupList != null) {
@@ -704,7 +717,7 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 		return markupDAO.isCustomerMarkupByDisabled(customerId);
 	}
 	
-	public List<Markup> getAllMarkupsForCustomer(Long customerId){
-		return markupDAO.getAllMarkupsForCustomer(customerId);
+	public List<Markup> getAllMarkupsForCustomer(Long customerId,long businessId){
+		return markupDAO.getAllMarkupsForCustomer(customerId,businessId);
 	}
 }

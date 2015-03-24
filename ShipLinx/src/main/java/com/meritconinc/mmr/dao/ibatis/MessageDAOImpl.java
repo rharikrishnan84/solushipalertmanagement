@@ -10,6 +10,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.mmr.dao.MessageDAO;
 import com.meritconinc.mmr.model.common.CountryVO;
 import com.meritconinc.mmr.model.common.LocaleVO;
+import com.meritconinc.mmr.utilities.security.UserUtil;
 
 public class MessageDAOImpl extends SqlMapClientDaoSupport implements MessageDAO {
 
@@ -82,5 +83,31 @@ public String getPath(String url) {
 	 return urlPath;
 }
 
+@Override
+public void saveResource(String msgId, String msgContent, String locale) {
+	Map map = new HashMap();
+    map.put("msgId", msgId);
+    map.put("msgContent", msgContent);
+    map.put("locale", locale);
+    try {
+        getSqlMapClientTemplate().insert("addResource", map);
+      } catch (Exception e) {
+        // log.debug("-----Exception-----"+e);
+        e.printStackTrace();
+     }
+}
+ 
+@Override
+public LocaleVO getLocaleByMsgId(String msgId) {
+	Map map = new HashMap();
+    map.put("msgId", msgId);
+   map.put("locale", UserUtil.getMmrUser().getLocale());
+	List<LocaleVO> localeVO = (List<LocaleVO>)this.getSqlMapClientTemplate().queryForList("getResourceByMsgId", map);
+	if(localeVO!=null && localeVO.size() >0){
+		return localeVO.get(0);
+	}else{
+		return new LocaleVO();
+}
+}
 
 }

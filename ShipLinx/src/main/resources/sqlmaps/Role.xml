@@ -6,7 +6,10 @@
 		<result property="role" 			column="role" 			columnIndex="1"/>
 		<result property="description" 		column="msg_content" 	columnIndex="4"/>
 	</resultMap>
-	
+	<resultMap id="resultOnlyRole" class="com.meritconinc.mmr.model.common.RoleVO">
+		<result property="role" 			column="role" 			columnIndex="1"/>
+		<result property="description" 		column="description" 	columnIndex="2"/>
+	</resultMap>
 	<!--  the sql statements for the DAO -->
 	<select id="getRolesByUser" resultMap="resultRole">
 		SELECT role, description, display_order, b.msg_content
@@ -28,4 +31,49 @@
 		ORDER BY display_order			
 	</select> 
 	
+	<select id="getRoles" resultMap="resultOnlyRole">
+		SELECT role, description, display_order
+		FROM role a
+		WHERE a.role_type>0			
+		ORDER BY display_order			
+</select> 
+	
+	<insert id="addRoleMenu" parameterClass="map">
+			 insert into role_menu(menu_id,role) 
+			  values (#menuId#,#role#)
+			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<insert id="addRole" parameterClass="map">
+		 insert into role(role,description,display_order, role_type) 
+			  values (#role#,#description#,1,1)
+ 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+ 		</selectKey>			
+	</insert>
+	
+<select id="getRoleById" resultMap="resultOnlyRole">
+			select * from role where role=#id#
+</select>
+	
+	<update id="updateRoleDesc">
+		update role set description= #description#
+		where role=#role#
+</update>
+	
+	<update id="deleteRoleDesc">
+		delete from role where role=#role#
+	</update>
+	
+	<select id="getRoleByActions" resultClass="java.lang.String" parameterClass="map">
+		select role from role_action where action_id=#actionid#
+	</select>
+	
+	<select id="getSysadminRole" resultMap="resultOnlyRole">
+			select * from role where role='sysadmin'
+	</select>
+	<update id="deleteRoleByMenuId">
+	       delete from role_menu where menu_id=#menuId# and role=#role#
+	</update>
+
 </sqlMap>

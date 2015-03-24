@@ -13,11 +13,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Iterator;
 
 import javax.mail.MessagingException;
 
@@ -43,6 +43,7 @@ import com.meritconinc.shiplinx.carrier.CarrierService;
 import com.meritconinc.shiplinx.carrier.dhl.DHLAPI;
 import com.meritconinc.shiplinx.carrier.purolator.PurolatorAPI;
 import com.meritconinc.shiplinx.dao.AddressDAO;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.MarkupManagerDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
@@ -55,7 +56,6 @@ import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.CreditUsageReport;
-import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.LtlPoundRate;
@@ -72,8 +72,6 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
-import com.meritconinc.mmr.model.security.User;
-import com.meritconinc.shiplinx.dao.BusinessDAO;
 
 public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnable {
   private static final Logger log = LogManager.getLogger(CarrierServiceManagerImpl.class);
@@ -282,7 +280,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       markup.setCustomerId(order.getCustomerId());
       markup.setDisabled(0);
       boolean flagCarrierList;
-      List<Markup> myMarkups=markupManagerService.getAllMarkupsForCustomer(order.getCustomerId());
+      List<Markup> myMarkups=markupManagerService.getAllMarkupsForCustomer(order.getCustomerId(),order.getBusinessId());
       customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
       for(Carrier carrier:carriersForBusiness){
     	  List<Markup> localMarkup=new ArrayList<Markup>();
@@ -1005,7 +1003,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     int unpaidInvoiceCount = customerService.findUnpaidInvoiceDuration(order.getCustomer().getId(),order.getCustomer().getHoldTerms());
     if(order.getCustomer().getCreditLimit().doubleValue() > 0){
     	cur = this.customerService.getCreditUsageReport(order.getCustomerId(),
-    	           order.getCustomer().getBusinessId());
+    			order.getCustomer().getBusinessId());
     if (cur.getTotalCreditUsed() > order.getCustomer().getCreditLimit().doubleValue() ) {
         errorMessages.add(new CarrierErrorMessage(order.getCarrierId(), MessageUtil.getMessage(
             "error.credit.overrun", MessageUtil.getLocale())));

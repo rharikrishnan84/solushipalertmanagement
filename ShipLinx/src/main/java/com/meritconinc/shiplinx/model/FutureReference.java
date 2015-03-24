@@ -65,7 +65,8 @@ public class FutureReference {
 	private boolean notifyShipper;
 	private boolean notifyConsignee;
 	
-	
+	private long businessId;
+	private List<Long> businessIds;
 	
 	
 	
@@ -468,6 +469,22 @@ public class FutureReference {
 
 	public void setNotifyConsignee(boolean notifyConsignee) {
 		this.notifyConsignee = notifyConsignee;
+	}
+
+	public long getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(long businessId) {
+		this.businessId = businessId;
+	}
+
+	public List<Long> getBusinessIds() {
+		return businessIds;
+	}
+
+	public void setBusinessIds(List<Long> businessIds) {
+		this.businessIds = businessIds;
 	}
 
 	

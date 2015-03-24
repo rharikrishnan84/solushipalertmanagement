@@ -129,6 +129,22 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
         }else{
         	paramObj.put("unitmeasure", defaultValue);
         }
+      //setting the all user level to 0 for adding customer admin user
+                                user.setBusinessLevel(false);
+                                user.setPartnerLevel(false);
+                                user.setNationLevel(false); 
+                                user.setBranchLevel(false);
+                                user.setDivitionLevel(false);
+                                paramObj.put("partnerLevel", user.isPartnerLevel());
+                                paramObj.put("nationLevel", user.isNationLevel());
+                                paramObj.put("businessLevel",user.isBusinessLevel());
+                               paramObj.put("branchLevel",user.isBranchLevel());
+                                paramObj.put("divitionLevel", user.isDivitionLevel());   
+                                paramObj.put("spdEnabled", user.isSpdEnabled());
+                                paramObj.put("ltlEnabled", user.isLtlEnabled());
+                                paramObj.put("fpaEnabled", user.isFpaEnabled());
+                               paramObj.put("chbEnabled", user.isChbEnabled());
+                                paramObj.put("fwdEnabled", user.isFwdEnabled());
     getSqlMapClientTemplate().insert("createUser", paramObj);
     getSqlMapClientTemplate().insert("insertRole", paramObj);
 
@@ -419,5 +435,68 @@ public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 	    }
 	    return 0;
 	}
-}
+	
+	@Override
+			public List<Customer> getAllCustomers() {
+				// TODO Auto-generated method stub
+				
+				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomers");
+			}
+			
+			@Override
+			public List<Customer> getAllCustomersByBusinessLevel(Long businessId) {
+				// TODO Auto-generated method stub
+				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBusinessLevel",businessId);
+			}
+			
+			@Override
+			public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
+					Long partnerId) {
+				// TODO Auto-generated method stub
+				Map<String, Object> paramObj = new HashMap<String, Object>();
+			    paramObj.put("businessId", businessId);
+			    paramObj.put("partnerId", partnerId);
+			    
+				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByPartnerLevel",paramObj);
+			}
+			
+			@Override
+			public List<Customer> getAllCustomersByNationLevel(Long businessId,
+					Long partnerId, Long countryPartnerId) {
+				// TODO Auto-generated method stub
+				Map<String, Object> paramObj = new HashMap<String, Object>();
+			    paramObj.put("businessId", businessId);
+			    paramObj.put("partnerId", partnerId);
+			    paramObj.put("countryPartnerId",countryPartnerId);
+				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByNationLevel",paramObj);
+			}
+		
+			@SuppressWarnings("unchecked")
+			@Override
+			public List<Customer> getAllCustomersByBranchLevel(Long businessId,
+					Long partnerId, Long countryPartnerId, long branchId) {
+				// TODO Auto-generated method stub
+				Map<String, Object> paramObj = new HashMap<String, Object>();
+			    paramObj.put("businessId", businessId);
+			    paramObj.put("partnerId", partnerId);
+		    paramObj.put("countryPartnerId",countryPartnerId);
+		    paramObj.put("branchId", branchId);
+			return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBranchLevel",paramObj);
+			
+			}
+	
+			@SuppressWarnings("unchecked")
+			@Override
+			public List<Customer> getCustomersBySalesUser(String useName) {
+				// TODO Auto-generated method stub
+				return (List<Customer>) getSqlMapClientTemplate().queryForList("getCustomersBySalesUser",useName);
+				
+				
+			}
+		}
+	
+	
+	
+	
+	
 

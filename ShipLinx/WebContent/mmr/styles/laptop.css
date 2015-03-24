@@ -41,7 +41,7 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .wrapper_body			{ height: auto; width:100%; float:left; background-color:#E7E7E7;  }
 .wrapper_navi			{ height: 37px;  float:left; width:100%; background-color:#555555;  }
 .wrapper_navi p			{ color:#FFF;  padding:0px; margin:11px 20px 11px 5px; font-size:12px; float:right; }
-.wrapper_navi ul			{ list-style-type:none; text-transform:uppercase;  margin:0px 0px 0px 8px; padding:0px;  float:left; width:810px;font-size:12px;}
+.wrapper_navi ul			{ list-style-type:none; text-transform:uppercase;  margin:0px 0px 0px 8px; padding:0px;  float:left; width:auto;font-size:12px;}
 .wrapper_navi ul li		{ display:inline; text-transform:uppercase; float:left;	}
 .wrapper_navi ul li a		{ text-decoration:none; text-transform:uppercase; color:#ffffff ; padding:11px 17px 11px 5px; font-weight:600; float:left;}
 .wrapper_navi ul li a:hover { color:#CCC;}

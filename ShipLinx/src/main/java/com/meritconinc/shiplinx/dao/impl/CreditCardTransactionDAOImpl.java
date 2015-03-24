@@ -62,5 +62,24 @@ public class CreditCardTransactionDAOImpl extends SqlMapClientDaoSupport impleme
 		getSqlMapClientTemplate().update("updateCreditCard", creditCard);
 
 	}
+	
+	
+	
+	@Override
+			public void insertMerchantAccountByBusiness(long newBusinessId,
+					long defaultBusinessId) {
+				Map map = new HashMap();
+			    map.put("newBusinessId", newBusinessId);
+			    map.put("defaultBusinessId", defaultBusinessId);
+			    try {
+			        getSqlMapClientTemplate().insert("addMerchantAccountbyBusiness", map);
+			      } catch (Exception e) {
+			        // log.debug("-----Exception-----"+e);
+		        e.printStackTrace();
+			      }
+				
+			}
+		
 
 }
+	

@@ -143,7 +143,7 @@
 		abbreviation_name=#abbreviationName#,consignee_id=#consigneeId#,address1=#address1#,address2=#address2#,
 		city=#city#,country_code=#countryCode#,province_code=#provinceCode#,broker_code=#brokerCode#,postal_code=#postalCode#,phone_no=#phoneNo#,phone_ext=#phoneExt#,contact_name=#contactName#,
 		customer_id=#customerId#,email_address=#emailAddress#,residential=#residential#,default_from=#defaultFromAddress#,default_to=#defaultToAddress#,
-		send_notification = #sendNotification#,fax_no=#faxNo#,tax_id=#taxId# where address_id = #addressId#
+		send_notification = #sendNotification#,fax_no=#faxNo#,tax_id=#taxId#,mobile_phone_no=#mobilePhoneNo# where address_id = #addressId#
 	</update>
 
 	<update id="updateFromAddressNotDefault" parameterClass="com.meritconinc.shiplinx.model.Address">

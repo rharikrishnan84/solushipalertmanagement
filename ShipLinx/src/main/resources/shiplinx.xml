@@ -342,6 +342,13 @@
         <action name="shipFrom.listFromProvience" method="listFromProvience" class="shipmentAction">
             <result name="success">/mmr/jsp/admin/shippingFromProvienceList.jsp</result>
         </action>
+        
+        <action name="menu.listTopMenu" method="loadMenuLevel" class="menuAction">
+            <result name="success">/mmr/jsp/admin/loadTopMenu.jsp</result>
+            <result name="firstlevel">/mmr/jsp/admin/loadBothMenu.jsp</result>
+            <result name="emptylevel">/mmr/jsp/admin/loadEmptyLevel.jsp</result>
+        </action>
+        
         <action name="shipTo.listToProvience" method="listToProvience" class="shipmentAction">
             <result name="success">/mmr/jsp/admin/shippingToProvienceList.jsp</result>
             <result name="success2">/mmr/jsp/shipping/customsInvoiceBrokerProvince.jsp</result>
@@ -374,6 +381,11 @@
         
         <action name="logout" method="logout" class="logonAction">
             <result name="success">/mmr/jsp/welcome/login.jsp</result>
+            <result type="redirectAction" name="allbus">admin/list.business</result> 
+             <result type="redirectAction" name="allpartner">admin/list.partner</result>  
+              <result type="redirectAction" name="allnation">admin/list.countrypartner</result> 
+               <result type="redirectAction" name="allbranch">admin/list.branch</result>
+     
             <result type="redirectAction" name="return">admin/searchcustomer</result>  
              <result type="redirectAction" name="return2">
 				<param name="actionName">searchuser</param>
@@ -1121,6 +1133,7 @@
         </action>
 		<action name="adduser" method="newUser" class="userListAction">
             <result type="tiles" name="success">user</result>
+            <result type="redirectAction" name="fail">list.business</result>
         </action>        
 
                 
@@ -1134,6 +1147,7 @@
         <action name="addcustomer" method="init" class="CustomerManagerAction">
             <result type="tiles" name="success">customer</result>
             <result type="tiles" name="input">customer</result>
+            <result type="redirectAction" name="fail">list.business</result>
        	</action>
        	<action name="createCustomer" method="save" class="CustomerManagerAction">
        		<result type="tiles" name="input">customer</result>
@@ -1157,6 +1171,7 @@
         <action name="logInAs" method="loginAsUser" class="logonAction">
             <result type="redirectAction" name="success">new.shipment</result>
             <result type="redirectAction" name="SUCCESS1">search.shipment</result>
+            <result type="redirectAction" name="fail">searchcustomer</result> 
         </action>
         <action name="send.customer.notification" method="sendCustomerEmailNotification" class="CustomerManagerAction">
        		<result type="tiles" name="success">searchCustomer</result>
@@ -1272,8 +1287,188 @@
        	 		</result>
        </action>
        <!-- End -->
+        <!-- start of role management -->
+       <action name="list.menu" method="listMenu" class="menuAction">
+      		<result type="tiles" name="success">listMenu</result>
+        </action>
        
-        <!-- Product Management -->
+        <action name="add.menu" method="addMenu" class="menuAction">
+      		<result type="tiles" name="success">addMenu</result>
+        </action>
+        
+        <action name="save.menu" method="saveMenu" class="menuAction">
+       		<result type="redirectAction" name="success">list.menu</result>
+      		<result type="tiles" name="input">addMenu</result>
+        </action>
+        
+        <action name="edit.menu" method="editMenu" class="menuAction">
+      		<result type="tiles" name="success">addMenu</result>
+        </action>
+        
+        <action name="delete.menu" method="deleteMenu" class="menuAction">
+       		<result type="redirectAction" name="success">list.menu</result>
+       </action>
+        
+        <action name="list.strutsAction" method="listAction" class="strutsAction">
+      		<result type="tiles" name="success">listAction</result>
+        </action>
+       
+        <action name="new.strutsAction" method="newAction" class="strutsAction">
+       		<result type="tiles" name="success">addAction</result>
+       </action>
+        
+      <action name="add.strutsAction" method="addAction" class="strutsAction">
+           <result type="tiles" name="input">addAction</result>
+       		<result type="redirectAction" name="success">list.strutsAction</result>
+       </action>
+        
+       <action name="edit.strutsAction" method="editAction" class="strutsAction">
+       		<result type="tiles" name="success">addAction</result>
+       </action>
+        
+       <action name="delete.strutsAction" method="deleteAction" class="strutsAction">
+       		<result type="redirectAction" name="success">list.strutsAction</result>
+       </action>
+        
+       <action name="list.business" method="listBusiness" class="businessAction">
+       		<result type="tiles" name="success">listBusiness</result>
+        </action>
+       
+        <action name="new.business" method="newBusiness" class="businessAction">
+       		<result type="tiles" name="success">addBusiness</result>
+       </action>
+        
+        <action name="save.business" method="saveBusiness" class="businessAction">
+          <interceptor-ref name="fileUpload">
+				<param name="maximumSize">2097152</param>
+				<param name="allowedTypes">
+					image/png,image/gif,image/jpeg,image/pjpeg
+				</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+      		<result type="redirectAction" name="success">list.business</result>
+      		<result type="tiles" name="fail">addBusiness</result>
+        </action>
+        
+        <action name="edit.business" method="editBusiness" class="businessAction">
+      		<result type="tiles" name="success">addBusiness</result>
+       </action>
+        
+        <action name="delete.business" method="deleteBusiness" class="businessAction">
+      		<result type="redirectAction" name="success">list.business</result>
+      </action>
+        
+       <!-- business filter after 17.02.2015 -->
+       
+        <action name="list.partner" method="listPartnerBusiness" class="businessAction">
+            <result type="tiles" name="success">partnerlist</result>
+            <result type="redirectAction" name="fail">list.business</result>
+       	</action> 
+       	
+        <action name="addPartner" method="newPartnerBusiness" class="businessAction">
+            <result type="tiles" name="success">addpartner</result>
+       	</action> 
+       	
+        <action name="createPartner" method="savePartnerBusiness" class="businessAction">
+			 <result type="tiles" name="input">addpartner</result>
+			 <result type="tiles" name="success">partnerlist</result>
+		 <result type="tiles" name="success1">Allpartnerlist</result>
+         <result type="redirectAction" name="success">list.partner</result>
+       	</action> 
+       	
+        <action name="addNation" method="newCountryBusiness" class="businessAction">
+            <result type="tiles" name="success">addnation</result>
+      	</action> 
+      	
+        <action name="createNation" method="saveCountryBusiness" class="businessAction">
+             <result type="tiles" name="success">listCountryPartner</result>
+             <result type="tiles" name="input">addnation</result>
+       	</action> 
+       	
+       <action name="login.business" method="logInAsBusiness" class="businessAction">
+            <result type="redirectAction" name="success">list.partner</result>
+           <result type="redirectAction" name="fail">list.business</result>
+       	</action> 
+       	<action name="login.partner" method="logInAsPartner" class="businessAction">
+            <result type="redirectAction" name="success">list.countrypartner</result>
+            <result type="redirectAction" name="fail">list.partner</result>
+       	</action> 
+       	 <action name="list.countrypartner" method="listCountryPartner" class="businessAction">
+            <result type="tiles" name="success">listCountryPartner</result>
+            <result type="redirectAction" name="fail">list.partner</result>
+       	</action>
+       	
+       	<action name="login.country" method="logInAsCountry" class="businessAction">
+            <result type="redirectAction" name="success">list.branch</result>
+            <result type="redirectAction" name="fail">listCountryPartner</result>
+      	</action> 
+          <action name="list.branch" method="listBranchBusiness" class="businessAction">
+            <result type="tiles" name="success">listBranch</result>
+            <result type="redirectAction" name="fail">list.countrypartner</result>
+       	</action>
+       	
+       	 <action name="addbranch" method="newBranchBusiness" class="businessAction">
+           <result type="tiles" name="success">add.branch</result>
+      	</action>
+       	
+         <action name="saveBranch" method="saveBranchBusienss" class="businessAction">
+       	     <result type="tiles" name="input">add.branch</result>
+       	    <result type="tiles" name="success">listBranch</result>
+       	</action>
+       	<action name="set.branch" method="loginBranch" class="businessAction">
+       	    <result type="redirectAction" name="success">searchcustomer</result>
+       	</action>
+       	
+       	     
+        <action name="edit.partner" method="editPartnerBusiness" class="businessAction">
+            <result type="tiles" name="success">addpartner</result>
+       	</action> 
+       	
+        
+       <action name="edit.nation" method="editNationBusiness" class="businessAction">
+       	    <result type="tiles" name="success">addnation</result>
+       	</action>
+       	
+       	<action name="edit.branch" method="editBranchBusiness" class="businessAction">
+       	    <result type="tiles" name="success">add.branch</result>
+       	</action>
+       <action name="viewBus" method="viewBusiness" class="businessAction">
+         <result type="tiles" name="success">view.business</result>
+       </action>
+       	
+      <action name="edit.nation" method="editNationBusiness" class="businessAction">
+       	    <result type="tiles" name="success">addnation</result>
+       	</action>
+      <!-- end of business filter  -->
+        
+        
+       <action name="list.role" method="listRole" class="roleAction">
+       		<result type="tiles" name="success">listRole</result>
+        </action>
+       
+        <action name="new.role" method="newRole" class="roleAction">
+       		<result type="tiles" name="success">addRole</result>
+        </action>
+       
+        <action name="save.role" method="addRole" class="roleAction">
+        	<result type="tiles" name="input">addRole</result>
+       		<result type="redirectAction" name="success">list.role</result>
+        </action>
+        
+        <action name="edit.role" method="editRole" class="roleAction">
+       		<result type="tiles" name="success">addRole</result>
+       </action>
+        
+      <action name="delete.role" method="deleteRole" class="roleAction">
+       		<result type="redirectAction" name="success">list.role</result>
+        </action>
+        
+       <action name="list.businessfilter" method="listBusinessFilter" class="businessFilterAction">
+       		<result type="tiles" name="success">listBusinessFilter</result>
+       </action>
+   
+       <!-- End -->
+       <!-- Product Management -->
         <action name="search.products" method="listProducts" class="productManagerAction">
        		<result type="tiles" name="success">searchProduct</result>
        		
@@ -1728,6 +1923,67 @@
        	 <action name="futRef2" class="invoiceManagerAction" method="showFutureRef">
        	<result type="tiles" name="success">showFutureRef</result>
        	</action> 
-	</package>
+       	
+       	
+       	
+       	 <!-- BUSINESS FILTER -->
+       	
+       	     
+       	   <action name="list.all.partner" method="listAllPartner" class="businessFilterAction">
+            <result type="tiles" name="success">partnerlist</result>
+            <result type="redirectAction" name="fail">list.business</result>
+       	</action> 
+     
+       	  
+      
+       	
+         <action name="login.branch" method="logInAsBranch" class="businessFilterAction">
+            <result type="redirectAction" name="success">list.branch</result>
+            <result type="redirectAction" name="fail">listCountryPartner</result>
+    	</action> 
+       	 <action name="list.partner.bus" method="list" class="businessFilterAction">
+            <result type="tiles" name="success">partnerlist</result>
+            <result type="tiles" name="fail">partnerlist</result>
+       	</action> 
+       	  
+       	
+       	 
+       	 <action name="list.all.branch" method="listAllBranch" class="businessFilterAction">
+            <result type="tiles" name="success">listBranch</result>
+              <result type="tiles" name="success1">listBranch</result>
+            <result type="redirectAction" name="fail">list.countrypartner</result>
+       	</action>
+      
+  
+       	<action name="delete.partner" method="deletePartner" class="businessFilterAction">
+       	    <result type="tiles" name="success">partnerlist</result>
+       	</action>
+       		
+       	
+     
+       	
+       	 <action name="listCountryName" method="listCountryName" class="businessFilterAction">
+         <result name="success">
+         /mmr/jsp/admin/ajax_countryname.jsp
+             </result>
+      </action>	
+       	<action name="listBranchName" method="listBranchName" class="businessFilterAction">
+			<result name="success">
+         /mmr/jsp/admin/ajax_branchName.jsp
+             </result>
+       	</action>
+       	<action name="viewPartner" method="viewPartner" class="businessFilterAction">
+            <result type="tiles" name="success">view.partner</result>
+       	</action>
+           	<action name="viewCountry" method="viewCountry" class="businessFilterAction">
+            <result type="tiles" name="success">view.country</result>
+       	</action>
+       		<action name="viewBranch" method="viewBranch" class="businessFilterAction">
+            <result type="tiles" name="success">view.branch</result>
+       	</action>
+       	<!-- END  -->
+      	
+      	
+</package>
 
 </struts>

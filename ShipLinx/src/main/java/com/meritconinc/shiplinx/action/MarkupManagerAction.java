@@ -31,7 +31,10 @@ import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.service.MarkupManager;
 import com.opensymphony.xwork2.Preparable;
-
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.opensymphony.xwork2.ActionContext;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 public class MarkupManagerAction extends BaseAction implements Preparable, ServletRequestAware {
   private static final long serialVersionUID = 25092786;
   private MarkupManager markupManagerService;
@@ -237,9 +240,32 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
   public String init() throws Exception {
     try {
       Markup markup = this.getMarkup();
+      List<Customer> customers = (List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+                        
+                        Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+                        Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+                        Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+                        Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+                     List<Long> customerIds = new ArrayList<Long>();
+                     /*  if(customers!=null && customers.size()>0){
+                      	for(Customer customer : customers){
+                      		customerIds.add(customer.getId());
+                      	}*/
+                        
+                      	  customerIds.add(0L);
+                     
+            
       if (markup == null) {
         markup = new Markup();
-        markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+        markup.setCustomerIds(customerIds);
+                               if(businessId!=null){
+                                	markup.setBusinessId(businessId);
+                                }else{
+                                	markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+                               }
+                        
+                           markup.setBusinessIds(BusinessFilterUtil.getBusIdParentId(markup.getBusinessId()));
+                               // markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
         markup.setCustomerId(0L);
         markup.setDisabledFlag(false);
         markup.setCustomerBusName("Default");
@@ -262,11 +288,14 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
       String sCustomerId = request.getParameter("customerId");
       if (sCustomerId != null) {
         markup.setCustomerId(Long.parseLong(sCustomerId));
+        customerIds.clear();
+                customerIds.add(Long.parseLong(sCustomerId));
+                markup.setCustomerIds(customerIds);
         if (markup.getCustomerId() == 0)
           markup.setCustomerBusName("Default");
         else
           markup.setCustomerBusName(customerService.getCustomerInfoByCustomerId(
-              markup.getCustomerId()).getName());
+        		  Long.parseLong(sCustomerId)).getName());
       }
 
       initWeightList();
@@ -287,8 +316,12 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
         this.populateCustomersList();
         if (this.carrierServiceManager != null) {
           if (getSession().get("CARRIERS") == null) {
-            carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser()
-                .getBusinessId());
+        	  if(businessId!=null){
+        		          		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(businessId);
+        		          		          		                }else{
+        		         		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser()
+        		          		          		                			.getBusinessId());
+        		          		          		                }
             getSession().put("CARRIERS", carriers);
             setCarrierId(1L);
           }

@@ -547,5 +547,77 @@
     <definition name="showFutureRef" extends="admin.layout.window">
         <put-attribute name="mainBody" value="/mmr/jsp/admin/showFutureReferences.jsp"/>
     </definition> 
+    <definition name="listMenu" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listMenu.jsp"/>
+    </definition>  
+    
+    <definition name="addMenu" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addMenu.jsp"/>
+    </definition>
+ 	
+	<definition name="listAction" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listAction.jsp"/>
+    </definition>
+    
+    <definition name="addAction" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addAction.jsp"/>
+    </definition>
+ 	
+	<definition name="listBusiness" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listBusiness.jsp"/>
+    </definition>
+    
+    <definition name="addBusiness" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addBusiness.jsp"/>
+    </definition>
+    
+    <definition name="listRole" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listRole.jsp"/>
+    </definition>
+    
+     <definition name="addRole" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addRole.jsp"/>
+    </definition>
+    <definition name="listBusinessFilter" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listBusinessFilter.jsp"/>
+    </definition>   
+    
+    <definition name="view.business" extends="admin.layout.window">
+        
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/viewBusiness.jsp"/>
+    </definition>
+    
+     <!--  BUSINESS FILETER -->
+    
+       <definition name="partnerlist" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/partnerlist.jsp"/>
+    </definition>
+    <definition name="Allpartnerlist" extends="admin.layout.window">
+  	  <put-attribute name="mainBody" value="/mmr/jsp/admin/partnerlist.jsp"/>
+    </definition>
+    <definition name="listCountryPartner" extends="admin.layout.window">
+            <put-attribute name="mainBody" value="/mmr/jsp/admin/countryPartnerlist.jsp"/>
+    </definition>
+        <definition name="listBranch" extends="admin.layout.window">
+            <put-attribute name="mainBody" value="/mmr/jsp/admin/listbranch.jsp"/>
+    </definition>
+     <definition name="addpartner" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addpartner.jsp"/>
+    </definition>
+    <definition name="addnation" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addcountrypartner.jsp"/>
+    </definition>
+    <definition name="add.branch"  extends="admin.layout.window">
+     <put-attribute name="mainBody" value="/mmr/jsp/admin/addbranch.jsp"/>
+    </definition>
+      <definition name="view.partner"  extends="admin.layout.window">
+     <put-attribute name="mainBody" value="/mmr/jsp/admin/viewPartner.jsp"/>
+    </definition>
+     <definition name="view.country"  extends="admin.layout.window">
+     <put-attribute name="mainBody" value="/mmr/jsp/admin/viewCountry.jsp"/>
+    </definition>
+    <definition name="view.branch"  extends="admin.layout.window">
+     <put-attribute name="mainBody" value="/mmr/jsp/admin/viewBranch.jsp"/>
+    </definition>
 </tiles-definitions>
 

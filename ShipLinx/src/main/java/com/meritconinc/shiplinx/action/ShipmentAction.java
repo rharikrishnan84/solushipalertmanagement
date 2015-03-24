@@ -139,6 +139,12 @@ import com.meritconinc.shiplinx.utils.EODManifestCreator;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.model.common.KeyValueVO;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.Business;
+import com.opensymphony.xwork2.ActionContext;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 /**
  * @author Rahul
  *
@@ -2343,7 +2349,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    if (!fromcountryCode.equals(tocountryCode)) {
 	      Address customsBrokerAddress;
 	      Customer customer = customerService.getCustomerInfoByCustomerId(customerId);
-	      String customerName = customer.getName();
+	      if(customer!=null){
+	    	  String customerName = customer.getName();
+	      }
 	      if(shippingOrder.getCustomsInvoice().getBrokerAddress().getAbbreviationName()==null){
 	      customsBrokerAddress = addressService.findDefaultCustomsBrokerAddress(customerId,
 	          tocountryCode);
@@ -2840,7 +2848,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				//fc.setPackageList(shippingOrder.getPackages());
 				fc.setFromResidential(shippingOrder.getFromAddress().getResidential());
 				fc.setToresidential(shippingOrder.getToAddress().getResidential());
-				System.out.println(fc.getFutureReferenceId());
+				fc.setBusinessId(shippingOrder.getBusinessId());
 		        long frId=shippingService.insertFutureReference(fc);
 		        int len=shippingOrder.getPackages().size();
 		        int i;
@@ -4278,7 +4286,34 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			{
 				so.setCreatedBy(UserUtil.getMmrUser().getUsername());
 			} 
-			
+			/*		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+												if(businessId!=null && !businessId.equals("")){
+												so.setBusinessId(businessId);
+												}else{
+													so.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+												}*/
+									   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+									  
+												so.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+												List<Business>	allbusList=businessDAO.getHoleBusinessList();
+												List<Long> busids=new ArrayList<Long>();
+												if(so.getBusinessId()==0 && UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+												
+													if(allbusList!=null && allbusList.size()>0){
+													 
+														for(Business bs:allbusList){
+															 busids.add(bs.getId());
+														}
+														so.setBusinessIds(busids);
+										}
+												}else if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+												so.setBusinessIds(BusinessFilterUtil.getBusIdParentId(so.getBusinessId()));
+												}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+													busids.add(so.getBusinessId());
+											     	so.setBusinessIds(busids);
+											     	so.setCustomerId(UserUtil.getMmrUser().getCustomerId());
+											     	
+												}
 			//if the user belongs to a branch, then search only those shipments that belong to customers of that branch
 			if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
 				so.setBranch(UserUtil.getMmrUser().getBranch());
@@ -4387,12 +4422,65 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    } catch (Exception e) {
 	    	e.printStackTrace();
 	    	addActionError(getText("content.error.unexpected"));
+	    	
 		}
-		
+		if(this.getShipments()!=null){
+					this.setShipments(filterShipments(this.getShipments()));
+					}
 		return SUCCESS;
 	}	
-	
-	public String searchPickups()
+
+	private List<ShippingOrder> filterShipments(List<ShippingOrder> shipments) {
+						// TODO Auto-generated method stub
+						List<Customer> filCus=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+					    BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+						List<ShippingOrder> filteredShippments=new ArrayList<ShippingOrder>();
+						/*Iterator<ShippingOrder> ships=shipments.iterator();
+						Iterator<Customer> customers=filCus.iterator();*/
+						if(filCus!=null && filCus.size()>0 && shipments.size()>0 && shipments!=null){
+						Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel(); 
+						 List<Long> businessIds=new ArrayList<Long>();
+						if(businessId>0){
+							businessIds=BusinessFilterUtil.getBusIdParentId(businessId);
+						}else if(businessId==0){
+							List<Business>	allbusList=businessDAO.getHoleBusinessList();
+							if(allbusList!=null && allbusList.size()>0){
+								for(Business bs:allbusList){
+									businessIds.add(bs.getId());
+								}
+							}
+						
+						}
+								for(ShippingOrder so:shipments){
+									
+									for(Customer c:filCus){
+										if(so.getCustomerId()!=null){
+					                       if(so.getCustomerId()==c.getId()){
+											filteredShippments.add(so);
+										    }
+					                       
+										  }
+									}
+									
+									if(so.getCustomerId()==null ){
+								    	
+								    	for(Long busid:businessIds){
+								    		if(so.getBusinessId()>0){
+								    			if(so.getBusinessId()==busid){
+								    				filteredShippments.add(so);
+								    			}
+								    		}
+								    	}
+								    }
+							 }
+							 			
+						}
+						
+						return filteredShippments;
+					}
+				
+			
+		public String searchPickups()
 	{
 		log.debug("Inside searchPickups method of ShipmentAction");
 		
@@ -4601,7 +4689,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	private void initCarrierList() {
 		// TODO Auto-generated method stub
-		List<Carrier> cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+								List<Carrier> cList = new ArrayList<Carrier>();
+								if(businessId!=null && !businessId.equals("")){
+									cList = this.carrierServiceManager.getCarriersForBusiness(businessId);
+							}else{
+									cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+								}
 		Carrier c = new Carrier();
 		c.setId(-1L);
 		c.setName("");
@@ -4706,6 +4800,36 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				so.setEdiInvoiceNumber(request.getParameter("ediInvoiceNumber"));
 				so.setBillingStatus(ShiplinxConstants.BILLING_STATUS_AWAITING_CONFIRMATION);
 				so.setCustomerId(getLoginUser().getCustomerId());
+				Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+											    
+											    if(businessId!=null && !businessId.equals("")){
+											    	so.setBusinessId(businessId);
+											    }else{
+											    	so.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+											    }
+											    
+											    
+											    BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+												  
+												so.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+												List<Business>	allbusList=businessDAO.getHoleBusinessList();
+												List<Long> busids=new ArrayList<Long>();
+												if(so.getBusinessId()==0 && UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+												
+													if(allbusList!=null && allbusList.size()>0){
+														 
+														for(Business bs:allbusList){
+														 busids.add(bs.getId());
+														}
+														so.setBusinessIds(busids);
+													}
+												}else if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+											so.setBusinessIds(BusinessFilterUtil.getBusIdParentId(so.getBusinessId()));
+												}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+													
+													busids.add(so.getBusinessId());
+													so.setBusinessIds(busids);
+												}
 			}
 			if (this.shippingService != null) {
 				this.setShipments( this.shippingService.getShipments(so) );
@@ -4734,14 +4858,43 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				so.setEdiInvoiceNumber(request.getParameter("ediInvoiceNumber"));
 				so.setBillingStatus(ShiplinxConstants.BILLING_STATUS_ORPHAN);
 				so.setCustomerId(getLoginUser().getCustomerId());
+				 Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+				 				 				    
+				 				 				 if(businessId!=null && !businessId.equals("")){
+				 			 				   so.setBusinessId(businessId);
+				 				 				 }else{
+				 				 				   so.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+				 				 			    }
+				 				 				 
+				 				 				 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+				 				 				  
+				 				 					so.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+				 				 					List<Business>	allbusList=businessDAO.getHoleBusinessList();
+				 				 					List<Long> busids=new ArrayList<Long>();
+				 				 					if(so.getBusinessId()==0 && UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+				 				 					
+				 				 						if(allbusList!=null && allbusList.size()>0){
+				 				 							 
+				 				 							for(Business bs:allbusList){
+				 				 								 busids.add(bs.getId());
+				 				 							}
+				 				 							so.setBusinessIds(busids);
+				 				 						}
+				 				 					}else if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				 				 					so.setBusinessIds(BusinessFilterUtil.getBusIdParentId(so.getBusinessId()));
+				 				 					}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				 				 						
+				 				 						busids.add(so.getBusinessId());
+				 			 						so.setBusinessIds(busids);
+				 				 					}
 			}
 			if (this.shippingService != null) {
 				this.setShipments( this.shippingService.getShipments(so) );
 			}
 			
-			if (getSession().get("customersList") == null) {
+			
 				this.populateCustomersList();
-			}
+			 
 			
 	    } catch (Exception e) {
 	    	e.printStackTrace();
@@ -6331,9 +6484,16 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 	    Customer c = new Customer();
 	    c.setName(searchParameter);
-	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	    List<Customer> customers = this.customerService.search(c);
-
+	    	    Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	    	    	    if(businessId!=null && !businessId.equals("")){
+	    	    	    	c.setBusinessId(businessId);
+	    	    	    }else{
+	    	    	    	c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    	    	    	
+	    	    	    }
+	    	             
+	    	    	    List<Customer> customers =(List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	    	     
 	    // First record is empty
 	    customerSearchResult.put("", 0L);
 

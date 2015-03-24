@@ -31,11 +31,13 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.UnitOfMeasure;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.mmr.dao.MenusDAO;
+import com.meritconinc.mmr.model.common.RoleVO;
 
 public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
   private UserExtensionDAO userExtensionDAO;
   private static final Logger log = LogManager.getLogger(UserDAOImpl.class);
-
+  private MenusDAO menuItemDAO;
   public void changePassword(String username, String newPassword, String changedBy, boolean isAdmin) {
     Date passwordChangedDate = (isAdmin && !username.equals(changedBy)) ? null : new Date();
     updatePassword(username, newPassword, changedBy, passwordChangedDate);
@@ -90,7 +92,14 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("expiration_date", user.getExpDate());
     paramObj.put("password_changed", new Date());// should remove after password change
                                                  // functionality
-    paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());
+    if(user.getBusinessId()> 0) {
+    	    	    	    	    	  // functionality
+    	    	    	    	    	  paramObj.put("businessId", user.getBusinessId());
+    	    	    	    	      }else{
+    	    	    	    	    	  paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());
+    	    	    	    	      }
+    
+    
     paramObj.put("accesstimes", user.getAccessTimes());
     paramObj.put("loginfailedcount", user.getLoginFailedCount());
     paramObj.put("enabled", user.getEnabled());
@@ -99,11 +108,11 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("commissionPercentagePerPalletService", user.getCommissionPercentagePP());
     paramObj.put("commissionPercentagePerSkidService", user.getCommissionPercentagePS());
 
-    if (user.getCustomerId() > 0)
+   /* if (user.getCustomerId() > 0)
       paramObj.put("default_menuId", ShiplinxConstants.MENU_ID_NEW_SHIPMENT_PAGE); // for customer
     else
       paramObj.put("default_menuId", ShiplinxConstants.MENU_ID_CUSTOMER_SEARCH); // for bus admin
-
+*/
     paramObj.put("printNoOfLabels", user.getPrintNoOfLabels());
     paramObj.put("printNoOfCI", user.getPrintNoOfCI());
     paramObj.put("preferredLabelSize", user.getPreferredLabelSize());
@@ -115,6 +124,36 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("logoURL", user.getLogoURL());
     paramObj.put("unitmeasure", user.getUnitmeasure());
     paramObj.put("timeZone", user.getTimeZone());
+    paramObj.put("partnerLevel", user.isPartnerLevel());
+    paramObj.put("nationLevel", user.isNationLevel());
+    paramObj.put("businessLevel",user.isBusinessLevel());
+    paramObj.put("branchLevel",user.isBranchLevel());
+    paramObj.put("divitionLevel", user.isDivitionLevel());
+    
+    //Division level filter
+    paramObj.put("spdEnabled", user.isSpdEnabled());
+    paramObj.put("ltlEnabled", user.isLtlEnabled());
+    paramObj.put("fpaEnabled", user.isFpaEnabled());
+    paramObj.put("chbEnabled", user.isChbEnabled());
+    paramObj.put("fwdEnabled", user.isFwdEnabled());
+    
+    
+    if (user.getCustomerId() > 0)
+        paramObj.put("default_menuId", ShiplinxConstants.MENU_ID_NEW_SHIPMENT_PAGE); // for customer
+      else{
+               /* paramObj.put("default_menuId", ShiplinxConstants.MENU_ID_CUSTOMER_SEARCH); // for bus admin
+*/		
+           if(user.getUserRole()!=null && user.getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN) && user.isBusinessLevel()){
+        	 paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.partner.action"));
+            	
+            }else if(user.getUserRole()!=null && user.getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
+       	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.business.action"));
+          }else if(user.isPartnerLevel()){
+        	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.countrypartner.action"));
+          }else if(user.isNationLevel()){
+        	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.branch.action"));
+           }
+      }
     getSqlMapClientTemplate().insert("createUser", paramObj);
     userExtensionDAO.insertExtendedAttributes(username, user.getExtendedAttributes());
     copyUserToHistory(username);
@@ -171,7 +210,11 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
   public List<User> findUserByCustomer(UserSearchCriteria criteria) {
     Long customerid = criteria.getCustomerId();
     Map<String, Object> paramObj = new HashMap<String, Object>(1);
-    paramObj.put("customerId", customerid);
+    if(criteria.getCustomerIds()!=null && criteria.getCustomerIds().size()>0){
+    	    	    	    	paramObj.put("customerIds", criteria.getCustomerIds());
+    	    	    	    }else{
+    	    	    	    	paramObj.put("customerId", customerid);
+    	    	    	    }
     paramObj.put("businessId", criteria.getBusinessId());
     paramObj.put("branch", criteria.getBranch());
     List<User> user = (List<User>) getSqlMapClientTemplate().queryForList("findUserByCustomerId",
@@ -469,6 +512,12 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("logoURL", user.getLogoURL());
     paramObj.put("unitmeasure", user.getUnitmeasure());
     paramObj.put("timeZone", user.getTimeZone());
+  //division level user update
+        paramObj.put("spdEnabled", user.isSpdEnabled());
+        paramObj.put("ltlEnabled", user.isLtlEnabled());
+        paramObj.put("fpaEnabled", user.isFpaEnabled());
+        paramObj.put("chbEnabled", user.isChbEnabled());
+        paramObj.put("fwdEnabled", user.isFwdEnabled());
     getSqlMapClientTemplate().update("updateUser", paramObj);
     UserExtendedAttributes ea = userExtensionDAO
         .getExtendedAttributesByUsername(user.getUsername());
@@ -674,5 +723,20 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
 @Override
 public LocaleVO getDisplayTextByLocale(String locale) {
 	return (LocaleVO) getSqlMapClientTemplate().queryForObject("getDisplayTextByLocale",locale);
+}
+
+public MenusDAO getMenuItemDAO() {
+	return menuItemDAO;
+}
+
+public void setMenuItemDAO(MenusDAO menuItemDAO) {
+	this.menuItemDAO = menuItemDAO;
+}
+
+@SuppressWarnings("unchecked")
+@Override
+public List<User> getAllUsers() {
+	// TODO Auto-generated method stub
+	return (List<User>)getSqlMapClientTemplate().queryForList("getAllUsers");
 }
 }

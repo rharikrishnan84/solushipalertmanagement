@@ -10,22 +10,70 @@
 		<result property="parentAction" column="parent_action" 	columnIndex="5"/>
 		<result property="reloadSafe" 	column="reload_safe" 	columnIndex="6"/>
 		<result property="namespace" 	column="namespace" 	columnIndex="7"/>
-		<result property="parentNamespace" 	column="parent_namespace" 	columnIndex="8"/>		
+		<result property="parentNamespace" 	column="parent_namespace" 	columnIndex="8"/>
+      	<result property="id" 	column="id" 	/>
 	</resultMap>
 	
 	<!--  the sql statements for the DAO -->
 	<select id="readAction" resultMap="resultAction">
-		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace'
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace', f1.id
 		FROM action f1 LEFT OUTER JOIN
         action f2 ON f1.parent_action_id = f2.id
 		WHERE (f1.action=#action#)	
 	</select>
 
 	<select id="readGroupAction" resultMap="resultAction">
-		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace'
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace' , f1.id
 		FROM action f1 LEFT OUTER JOIN
         action f2 ON f1.parent_action_id = f2.id
 		WHERE (f1.action=#action#)	
 	</select>
+	
+	
+	<select id="readAllAction" resultMap="resultAction">
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f2.action AS 'parent_action', f1.reload_safe, f1.namespace, f2.namespace AS 'parent_namespace', f1.id
+		FROM action f1 LEFT OUTER JOIN
+        action f2 ON f1.parent_action_id = f2.id
+	</select>
+	
+	<insert id="addAction" parameterClass="com.meritconinc.mmr.model.common.AuthorizedActionVO">
+		 insert into action(action,menu_id,highlight,description,reload_safe) 
+			  values (#actionKey#,#menuId#,#highlight#,#description#,1)
+			<selectKey resultClass="int" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<insert id="addRoleAction" parameterClass="map">
+			 insert into role_action(role,action_id) 
+			  values (#roleName#,#actionId#)
+ 			<selectKey resultClass="int" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+
+	<select id="roleActionIds" resultClass="java.lang.Integer">
+	        select action_id from role_action where role=#role#
+</select>
+	
+	<update id="deleteRoleAction">
+		delete from role_action where role=#role# and action_id=#actionId#
+</update>
+	
+	<update id="deleteActionByRole">
+	delete from role_action where role=#role#
+	</update>
+	
+	<select id="readActionById" resultMap="resultAction" parameterClass="map">
+		SELECT  f1.action, f1.menu_id, f1.highlight, f1.description, f1.action AS 'parent_action', f1.reload_safe, f1.namespace, f1.namespace AS 'parent_namespace', f1.id
+		FROM action f1 where id=#actionId#	
+</select>
+	
+	<update id="updateAction" parameterClass="com.meritconinc.mmr.model.common.AuthorizedActionVO">
+		update action set action=#actionKey# , menu_id=#menuId#,highlight=#highlight#,description=#description# where id=#id#
+	</update>
+	
+	<update id="deleteAction">
+		delete from action where id=#actionId#
+</update>
+
 
 </sqlMap>

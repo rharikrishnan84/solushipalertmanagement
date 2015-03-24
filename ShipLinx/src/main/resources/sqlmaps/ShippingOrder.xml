@@ -114,6 +114,7 @@
 			<result property="dutiableCode" column="dutiable_code"/>
 			<result property="notifyShipper" column="notify_shipper"/>
 			<result property="notifyConsignee" column="notify_consignee"/>
+			<result property="businessId" column="business_id"/>
 			</resultMap>
 				
 	<resultMap id="FutureReferencePackagesResult" class="com.meritconinc.shiplinx.model.FutureReferencePackages">
@@ -946,6 +947,7 @@
   		<result property="totalToCharge" column="charge"/>
   		<result property="totalToCost" column="cost"/>
  	    <result property="previouslyBilled" column="billed"/>
+ 	    <result property="customerId" column="customer_id"/>
  	</resultMap>
  
 	<select id="searchUnbilledShipments" resultMap="ShippingOrderResult">
@@ -962,12 +964,17 @@
 	</select>	
 	
 	<select id="searchUnbilledShipments2" resultMap="ShippingOrderInvoicingResult">
-  select cus.name, s.order_id, s.date_created, s.actual_total AS 'charge', s.actual_cost as 'cost', sum(IF(c.status=30, c.charge, 0)) AS 'billed'
+  select cus.name, s.order_id, s.date_created, s.actual_total AS 'charge', s.actual_cost as 'cost', sum(IF(c.status=30, c.charge, 0)) AS 'billed' , s.customer_id 
      from shipping_order s left join charges c on (s.order_id=c.order_id and c.type=1 )
      left join customer cus on (s.customer_id=cus.customer_id)
    where s.order_id in (select distinct(c.order_id) from charges c left join shipping_order s on (c.order_id=s.order_id) where status=#statusId# and s.status_id!=40 and type=1 and c.charge>0)
-     and cus.business_id=#businessId#  
-      
+     <!--   and cus.business_id=#businessId# -->
+     <isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and cus.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>  
+   
   <isGreaterThan prepend="and" property="customerId" compareValue="0">
     s.customer_id = #customerId#
   </isGreaterThan>  
@@ -992,7 +999,15 @@
 		</isNotNull>		
 	</select>	
 	<select id="searchCustomerIdsByOrderIds" resultClass="java.lang.Long">
-		select distinct s.customer_id from shipping_order s where s.order_id in 		
+				select distinct s.customer_id from shipping_order s where s.order_id in 
+		<iterate open="(" close=")" conjunction=",">
+				#[]#
+			</iterate> 		
+	</select>
+	
+    <select id="getBusinessIdsByorderIds" resultClass="java.lang.Long">
+		select distinct s.business_id from shipping_order s where s.order_id in 		
+
 			<iterate open="(" close=")" conjunction=",">
 				#[]#
 			</iterate> 		
@@ -1117,9 +1132,11 @@
 			<isNotNull property="customerId">
 				and o.customer_id=#customerId#
 			</isNotNull>	
-			<isGreaterThan property="businessId" compareValue="0">
-				and o.business_id=#businessId#
-			</isGreaterThan>	
+			<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>	
 			<isNotNull  property="carrierId">
 				 and o.carrier_id=#carrierId#
 			</isNotNull>			
@@ -1157,7 +1174,14 @@
 	   			<isNotEmpty property="createdBy">
 	     		and (o.created_by=#createdBy#)
 	      		</isNotEmpty>
-     		</isNotNull>	
+     		</isNotNull>
+     		
+     		<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>
+     			
      		<isNotNull property="branch">
 	   			<isNotEmpty property="branch">
 	     		and (cs.branch=#branch#)
@@ -1204,9 +1228,11 @@
 			<isNotNull property="customerId">
 				and o.customer_id=#customerId#
 			</isNotNull>	
-			<isGreaterThan property="businessId" compareValue="0">
-				and o.business_id=#businessId#
-			</isGreaterThan>	
+			<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>	
 			<isNotNull  property="carrierId">
 				 and o.carrier_id=#carrierId#
 			</isNotNull>			
@@ -1244,7 +1270,12 @@
 	   			<isNotEmpty property="createdBy">
 	     		and (o.created_by=#createdBy#)
 	      		</isNotEmpty>
-     		</isNotNull>	
+     		</isNotNull>
+     		<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+				</isNotNull>
      		<isNotNull property="branch">
 	   			<isNotEmpty property="branch">
 	     		and (cs.branch=#branch#)
@@ -1431,9 +1462,11 @@
            <isNotNull property="customerId">
                and o.customer_id=#customerId#
            </isNotNull>    
-           <isGreaterThan property="businessId" compareValue="0">
-               and o.business_id=#businessId#
-           </isGreaterThan>    
+         <isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>    
            <isNotNull  property="carrierId">
                 and c.carrier_id=#carrierId#
            </isNotNull>            
@@ -1647,7 +1680,12 @@
 	and 	os.status_id = o.status_id
 	</select>
 	<select id="findShipmentsAdminById1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
-	select * from shipping_order where order_id=#id#
+	select * from shipping_order where order_id=#id# and
+	<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull> 
 	</select>
 	
 	<select id="getAllExchangeRateCurrency" resultMap="ExchangeRateCurrencyResult">
@@ -1706,14 +1744,19 @@
 	</update>
 	
 	<insert id="addFutureReference" parameterClass="com.meritconinc.shiplinx.model.FutureReference">
-	insert into quote (customer_id,name,from_city,from_state,from_country,to_city,to_state,to_country,created,createdBy,ship_from_address,ship_to_address,no_of_packages,service_type,ship_schedule_date,ship_from_email,ship_to_email,ship_from_phone,ship_to_phone,from_company,to_company,from_residential,to_residential,ready_time,close_time,pickup_instruction,pickup_location,from_contact_name,to_contact_name,from_postal_code,to_postal_code,documents_only,appointment_pickup,tradeshow_pickup,taligate_delivery,trade_show_delivery,appointment_delivery,inside_pickup,taligate_pickup,dangerous_goods,ref_code,hold_for_pickup,saturday_delivery,signature_required,dutiable_code,notify_shipper,notify_consignee)
-	values(#customerId#,#name#,#fromCity#,#fromState#,#fromCountry#,#toCity#,#toState#,#toCountry#,#dateCreated#,#createdBy#,#shipFromAddress#,#shipToAddress#,#quantity#,#serviceType#,#shipScheduleDate#,#shipFromEmail#,#shipToEmail#,#shipFromPhone#,#shipToPhone#,#fromCompany#,#toCompany#,#fromResidential#,#toresidential#,#readyTime#,#closeTime#,#pickupInstruction#,#pickupLocation#,#fromContactName#,#toContactName#,#fromPostalCode#,#toPostalCode#,#documentsOnly#,#appointmentPickup#,#tradeShowPickup#,#taligateDelivery#,#tradeShowDelivery#,#appointmentDelivery#,#insidePickup#,#taligatePickup#,#dangerousGoods#,#refCode#,#holdForPickup#,#saturdayDelivery#,#signatureRequired#,#dutiableCode#,#notifyShipper#,#notifyConsignee#)
+	insert into quote (customer_id,name,from_city,from_state,from_country,to_city,to_state,to_country,created,createdBy,ship_from_address,ship_to_address,no_of_packages,service_type,ship_schedule_date,ship_from_email,ship_to_email,ship_from_phone,ship_to_phone,from_company,to_company,from_residential,to_residential,ready_time,close_time,pickup_instruction,pickup_location,from_contact_name,to_contact_name,from_postal_code,to_postal_code,documents_only,appointment_pickup,tradeshow_pickup,taligate_delivery,trade_show_delivery,appointment_delivery,inside_pickup,taligate_pickup,dangerous_goods,ref_code,hold_for_pickup,saturday_delivery,signature_required,dutiable_code,notify_shipper,notify_consignee,business_id)
+	values(#customerId#,#name#,#fromCity#,#fromState#,#fromCountry#,#toCity#,#toState#,#toCountry#,#dateCreated#,#createdBy#,#shipFromAddress#,#shipToAddress#,#quantity#,#serviceType#,#shipScheduleDate#,#shipFromEmail#,#shipToEmail#,#shipFromPhone#,#shipToPhone#,#fromCompany#,#toCompany#,#fromResidential#,#toresidential#,#readyTime#,#closeTime#,#pickupInstruction#,#pickupLocation#,#fromContactName#,#toContactName#,#fromPostalCode#,#toPostalCode#,#documentsOnly#,#appointmentPickup#,#tradeShowPickup#,#taligateDelivery#,#tradeShowDelivery#,#appointmentDelivery#,#insidePickup#,#taligatePickup#,#dangerousGoods#,#refCode#,#holdForPickup#,#saturdayDelivery#,#signatureRequired#,#dutiableCode#,#notifyShipper#,#notifyConsignee#,#businessId#)
 		<selectKey resultClass="long" type="post" keyProperty="futureReferenceId" >select LAST_INSERT_ID() as value
 	 		</selectKey>	
 	</insert>
 	
 	<select id="getFutureReference" resultMap="FutureReferenceResult">
-	select * from quote
+	select * from quote where 
+	<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				 business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull> 
 	</select>
 	
 	<delete id="deleteFutureReference">

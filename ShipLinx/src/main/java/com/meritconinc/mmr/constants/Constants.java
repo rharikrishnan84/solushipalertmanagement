@@ -69,5 +69,10 @@ public interface Constants {
   public static final String QUERY_TOOL_DEFAULT_MAX_ROWS = "QUERY_TOOL_DEFAULT_MAX_ROWS";
 
   public static final String RATE_TEMPLATE_FOLDER = "RateTemplate";
+  
+  public static final String BUSINESS_ID_SESSION="businessFilterId";
+         public static final String PARTNER_ID_SESSION="partnerId";
+        public static final String NATION_ID_SESSION="countryPartnerId";
+        public static final String BRANCH_ID_SESSION="branchId";
 
 }

@@ -22,7 +22,7 @@
 	
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/countryProvince.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.js"></script>
-<s:if test="%{#session.ROLE.contains('busadmin')}">
+<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 	<script>
 		$(document).ready(function(){
 		   $('.navi_icon').click(function(){
@@ -185,6 +185,11 @@ window.onload = doOnload;
 		document.customerform.submit();
 	}	
 	
+	function cancelform1(){
+			document.customerform.action = "searchuser.action";
+			document.customerform.submit();
+	}	
+		
 	function resetform1(){
 		document.customerform.action = "myaccountinfo.action";
 		document.customerform.submit();
@@ -273,12 +278,15 @@ window.onload = doOnload;
 									<!--<s:submit onclick="resetform();" value="RESET"/>-->
 									</s:if>										
 									
+									<s:if test="%{(#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')) && #session.edit == 'true'}">									
+										<a href="#" onclick="cancelform();" ><mmr:message messageId="label.btn.cancel"/></a>									<!--<s:submit onclick="cancelform();" value="CANCEL"/>-->
+									</s:if>
+									
 									<s:else>
-									
-									
-										<a href="#" onclick="cancelform();" ><mmr:message messageId="label.btn.cancel"/></a>
-										<!--<s:submit onclick="cancelform();" value="CANCEL"/>-->
+ 										<a href="#" onclick="cancelform1();" ><mmr:message messageId="label.btn.cancel"/></a>
+ 										<!--<s:submit onclick="cancelform();" value="CANCEL"/>-->
 									</s:else>
+									
 									<s:if test="#session.edit == 'true'">
 								<!--	<a href="manage.sales.users.action">Manage Sales Users</a>  -->
 									</s:if> 
@@ -304,7 +312,7 @@ window.onload = doOnload;
 											<label><mmr:message messageId="label.customer.name"/> </label>
 											<div class="controls"><span>:</span><s:textfield  key="customer.name" name="customer.name" id="apiname"  /></div>
 										</div>
-									<s:if test="%{#session.ROLE.contains('busadmin')}">
+									<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.accountNumber"/> </label>
 											<div class="controls"><span>:</span><s:textfield size="24" key="customer.accountNumber" name="customer.accountNumber"  /></div>
@@ -351,7 +359,7 @@ window.onload = doOnload;
 										</div>
 										
 										
-										 <s:if test="%{#session.ROLE.contains('busadmin')}">
+										 <s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.apiusername"/> </label>
 											<div  class="controls"><span>:</span><s:textfield   key="customer.apiusername" name="customer.apiUsername" value="%{customer.apiUsername}" id="apiname" />
@@ -382,7 +390,7 @@ window.onload = doOnload;
 											listKey="provinceCode" listValue="provinceName" list="#session.provinces"/>
 											</div>
 										</div>
-										 <s:if test="%{#session.ROLE.contains('busadmin')}">
+										<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 									
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.timezone"/> </label>
@@ -408,7 +416,7 @@ window.onload = doOnload;
 											<label><mmr:message messageId="label.customer.creditLimit"/> </label>
 											<div class="controls"><span>:</span><s:textfield size="24" key="customer.creditLimit" name="customer.creditLimit" cssStyle="text-align:right;padding-right:5px;"  /></div>
 										</div>
-										<s:if test="%{#session.ROLE.contains('busadmin')}">
+										<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.default.currency"/></label>
 											<div class="controls"><span>:</span><s:select

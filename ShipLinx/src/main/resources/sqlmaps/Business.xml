@@ -6,13 +6,13 @@
 			<result property="id"/>
 			<result property="name"/>
 			<result property="shortCode" />
-			<result property="systemName" />
+			<result property="systemName" column="system_name"/>
 			<result property="logoFileName" />
 			<result property="logoHiResFileName" column="logohires_file_name"/>
 			<result property="logoURL" column="logo_url"/>
 			<result property="addressId" />
 			<result property="usAddressId" />
-			<result property="dateCreated" />
+			<result property="dateCreated" column="date_created"/>
 			<result property="active" />
 			<result property="headerKey" column="header_key"/>
 			<result property="subdomain" column="subdomain"/>
@@ -51,6 +51,14 @@
 			<result property="reportPath" column="report_path"/>
 			<result property="reportPathInvoice" column="report_pathinvoice"/>
 			<result property="defaultHoldTerms" column="default_hold_terms"/> 
+			<result property="headerKey" column="header_key"/>
+		  	<result property="partnerId" column="partner_id"/>
+			<result property="countryPartnerId" column="country_partner_id"/>
+			<result property="branchId" column="branch_id"/> 
+			<result property="parentBusinessId" column="parent_business_id"/>
+			<result property="partnerLevel" column="isPartner"/>
+			<result property="nationLevel"  column="isNation" /> 
+			<result property="branchLevel" column="isBranch"/>
 	</resultMap>
 	
 	
@@ -59,7 +67,8 @@
 	</select>
 	
 	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-			  insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, date_created, active, default_net_terms, default_credit_limit, report_path, reportPathInvoice) values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#)
+			   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port) 
+			  values              (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#)
 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -81,4 +90,107 @@
 			select * from business where name=#name#
 	</select>
 
+
+
+<select id="getAllBusinesses" resultMap="BusinessResult">
+		select * from business where isPartner=false and isNation=false and isBranch=false and parent_business_id=0
+	</select>
+
+<update id="updateBusiness">
+		update business set 
+		name = #name#,
+	    short_code = #shortCode#,
+	    system_name=#systemName#,
+	    logo_url=#logoURL#,
+	    logout_url=#logoutURL#,
+    terms_url=#termsURL#,
+	    support_url=#supportURL#,
+	    subdomain=#subdomain#,
+	    smtp_port=#smtpPort#,
+	    smtp_password=#smtpPassword#,
+	    smtp_username=#smtpUsername#,
+	    smtp_host=#smtpHost#,
+	    store_cc=#storeCC#,
+		logo_file_name = #systemName#,
+		logohires_file_name = #logoFileName#,
+		address_id = #addressId#,
+		date_created = #dateCreated#,
+		default_net_terms = #defaultNetTerms#,
+		default_credit_limit = #defaultCreditLimit#,
+		header_key = #headerKey#,
+		US_address_id = #usAddressId#,
+		active = #active#
+	where business_id = #id#
+	</update>
+	
+	<update id="deleteBusiness">
+	delete from business where business_id=#businessId#
+	</update>
+
+  <insert id="addDefaultCustomerCarrier">
+  INSERT INTO customer_carrier(customer_id,business_id,country,to_country,isdefaultaccount,account_number1,
+account_number2,property_1,property_2,property_3,property_4,property_5,carrier_id,isLive) (select #customerId#,#newBusinessId#,country,to_country,isdefaultaccount,account_number1,
+account_number2,property_1,property_2,property_3,property_4,property_5,carrier_id,isLive  from customer_carrier where customer_id = #customerId# and business_id=#oldBusinessId#)
+  </insert>
+  <insert id="addDefaultPinsToBusiness">
+  insert into pins(business_id,type,from_pin,to_pin,next_pin,prefix) select #newBusinessId#,type,from_pin,to_pin,next_pin,prefix 
+from pins where business_id=#oldBusinessId#
+  
+  </insert>
+  
+  <!-- businesss filter changes after 17.02  -->
+  <select id="getPartnerBusiness" resultMap="BusinessResult">
+      select * from business where parent_business_id=#parentBusinessId# and ispartner=#isPartner# 
+  </select>
+  <select id="getCountryBusiness"  resultMap="BusinessResult">
+       select * from business where parent_business_id=#parentBusinessId# and isNation=#isNation#  and partner_id=#partnerBusinessId#
+  </select>
+   
+  <insert id="addParterLevelBusienss" parameterClass="com.meritconinc.shiplinx.model.Business">
+      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isPartner,parent_business_id) values
+			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#partnerLevel#,#parentBusinessId#)
+      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	  </selectKey>
+  </insert>
+  
+  <insert id="addCountryLevelBusienss" parameterClass="com.meritconinc.shiplinx.model.Business">
+      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isNation,parent_business_id,partner_id) values
+			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#nationLevel#,#parentBusinessId#,#partnerId#)
+      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	  </selectKey>
+  </insert>
+  
+    <insert id="addBranchLevelBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
+      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isBranch,parent_business_id,partner_id,country_partner_id) values
+		  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#branchLevel#,#parentBusinessId#,#partnerId#,#countryPartnerId#)
+      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	  </selectKey>
+  </insert>
+ 
+    <select id="getBranchBuisness"  resultMap="BusinessResult">
+       select * from business where parent_business_id=#parentBusinessId# and isBranch=#isBranch#  and partner_id=#partnerBusinessId# and country_partner_id=#countryBusId#
+ </select>
+      
+  <select id="getBusinessListByLevel" resultMap="BusinessResult">
+      select * from business where parent_business_id=#id#
+      
+  </select>
+  <select id="getHoleBusinessList"   resultMap="BusinessResult">
+      select * from business
+  </select>
+  <select id="getPartnerBusinessByName" resultMap="BusinessResult">
+      select * from business where parent_business_id=#parentBusId# and name=#name#  
+  </select>
+  <select id="getBranchBusinessByName" resultMap="BusinessResult">
+    select * from business where partner_id=#partnerId# and parent_business_id=#countryPartnerId# and country_partner_id=#countryPartnerId# and name=#name# 
+  </select>
+  
+   <select id="getCountryBusinessByName" resultMap="BusinessResult">
+      select * from business where partner_id=#partnerId# and parent_business_id=#partnerId# and name=#name#  
+  </select>
+  <select id="getSuperParentBusiness" resultMap="BusinessResult">
+	  SELECT * FROM business where business_id in (select parent_business_id from business where business_id in (
+  	  select partner_id from business where business_id=#businessId#) or business_id=#businessId#)   and parent_business_id=0 and isNation=false and isPartner=false and isBranch=false limit 1
+  </select> 
+  <!--end of business filter  -->
 </sqlMap>

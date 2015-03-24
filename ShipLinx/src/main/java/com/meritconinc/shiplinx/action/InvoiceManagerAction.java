@@ -77,6 +77,13 @@ import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
+import java.util.Locale;
+import java.util.Iterator;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.Business;
+import com.opensymphony.xwork2.ActionContext;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class InvoiceManagerAction extends BaseAction implements Preparable, ServletRequestAware,
     ServletResponseAware{
@@ -133,6 +140,7 @@ public class InvoiceManagerAction extends BaseAction implements Preparable, Serv
   private List<Invoice> invoiceBreakdownList;
   private BusinessDAO businessDAO;
   Invoice invoiceModel = new  Invoice();
+  private User loginedUser;
   
 
 public List<Invoice> getInvoiceBreakdown() {
@@ -290,10 +298,35 @@ public String getSalesRep() {
 	  }
 	  getSession().remove("invoice");
 	  Customer c = new Customer();
-	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	    customers = customerService.search(c);
+	    /*c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    customers = customerService.search(c);*/
+	  Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  	  	   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  	  	  if(businessId==0 && UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+	  	  			List<Business>	allbusList=businessDAO.getHoleBusinessList();
+	  	  				if(allbusList!=null && allbusList.size()>0){
+	  	  					 List<Long> busids=new ArrayList<Long>();
+	  	  					for(Business bs:allbusList){
+	  	  						 busids.add(bs.getId());
+	  	  					}
+	  	  					 
+	  	  				}
+	  	  				businessId=UserUtil.getMmrUser().getBusinessId();
+	  	  			} 
+	  	  	  	  if(businessId!=null && !businessId.equals("")){
+	  	  	  		  c.setBusinessId(businessId);
+	  	  	  	  }else{
+	  	  	  		  c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	  	  	  }
+	  	  	  	  
+	  	    	  
+	  	  	    customers = (List<Customer>)ActionContext.getContext().getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
 	    Invoice invoice = new Invoice();
-	      invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    if(businessId!=null && !businessId.equals("")){
+	    		    		    				  invoice.setBusinessId(businessId);
+	    		    		    			  }else{
+	    		    		    				  invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    		    		    			  }
 	      if (UserUtil.getMmrUser().getCustomerId() > 0)
 	        invoice.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 	      if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -371,7 +404,8 @@ public String getSalesRep() {
 
     
     public String futureRef(){
-  	  setfCustomers(invoiceManager.getFutureReference());
+    	List<Long> businessIds=BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+    	  	fCustomers=invoiceManager.getFutureReference(businessIds);
   	  return SUCCESS;
     }
 
@@ -385,9 +419,13 @@ public String getSalesRep() {
 	  	                                                             // statusList does'nt go as null back
 	  	                                                             // to the form.
 	  	    Customer c = new Customer();
-	  	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	  	    customers = customerService.search(c);
-
+	  	    /*c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	    customers = customerService.search(c);*/
+	  	  Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  		  		  		  	  if(businessId!=null &&businessId>0){
+	  		  		  		  		  c.setBusinessId(businessId);
+	  		  		  		  	  }
+	  		  	  	   customers = (List<Customer>)ActionContext.getContext().getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
 	  	  if (search != null && search.equalsIgnoreCase("outstanding")) {
 	  			      i = new Invoice();
 	  			      i.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
@@ -402,7 +440,25 @@ public String getSalesRep() {
 			i.setPaymentStatusList(a);
 	  			    }*/
 
-	  	i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  		  		  	if(businessId!=null &&businessId>0){
+	  		  		  			  		  i.setBusinessId(businessId);
+	  		  		  			  	  }else{
+	  		  		  			  		  i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  		  		  			  	  }
+	  		  		    	//i.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+	  		  		    	if(i.getBusinessId()==0 && UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+	  		  					List<Business>	allbusList=businessDAO.getHoleBusinessList();
+	  		  						if(allbusList!=null && allbusList.size()>0){
+	  		  							 List<Long> busids=new ArrayList<Long>();
+	  		  						for(Business bs:allbusList){
+	  		  								 busids.add(bs.getId());
+	  		  							}
+	  		  							i.setBusinessIds(busids);
+	  		  						}
+	  		  					}else{
+	  		  					i.setBusinessIds(BusinessFilterUtil.getBusIdParentId(i.getBusinessId()));
+	  		  				}
 	  		    if (UserUtil.getMmrUser().getCustomerId() > 0)
 	  		      i.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 	  		    if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -504,6 +560,7 @@ public String getSalesRep() {
 	  			 //Invoice invoiceObj = invoiceManager.getInvoiceById(invoiceResult.getInvoiceId());
 				    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 				    CurrencySymbol currencySymbol = new CurrencySymbol();
+				    if(invoiceResult.getCustomer()!=null){
 				    if(invoiceResult.getCustomer().getDefaultCurrency()!=null && !invoiceResult.getCustomer().getDefaultCurrency().isEmpty()){
 				      currencySymbol = shippingDAO.getSymbolByCurrencycode(invoiceResult.getCustomer().getDefaultCurrency());
 			        getSession().put("customerDefaultCurrency", currencySymbol.getCurrencySymbol());
@@ -526,7 +583,7 @@ public String getSalesRep() {
 				    	}
 				    	
 				    }
-	  		 }
+				    }}
 	  		   
 	  		    ///
 	  				  ///// End
@@ -545,20 +602,62 @@ public String getSalesRep() {
 
   public String generateInvoice() {
 	  Customer c = new Customer();
-	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	    customers = customerService.search(c);
+	  Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	  	  	  businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  	  	    if(businessId!=null && businessId>0){
+	  	  	    	c.setBusinessId(businessId);
+	  	  	    } 
+	  	  	    customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
     log.debug("In generateInvoice");
     getSession().remove("invoice");
     Invoice i = this.getInvoice();
-    i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    /*    if(businessId!=null && !businessId.equals("")){
+            	i.setBusinessId(businessId);
+            }else{
+            	i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+            	
+            }*/
+            if(businessId!=null && businessId>0){
+            	i.setBusinessId(businessId);
+            	i.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+            }else{
+            	i.setBusinessId(businessId);
+            }
     i.setCustomerId(new Long(0));
 
-    orders = shippingService.getUnbilledShipments(i.getBusinessId(), i.getCustomerId().longValue(),
+    if(i.getBusinessId()!=null){
+    	    	     orders = shippingService.getUnbilledShipments(i.getBusinessId(), i.getCustomerId().longValue(),
         UserUtil.getMmrUser().getBranch());
+    }
+    this.setOrders(filterShipments(this.getOrders()));
     log.debug("Found : " + orders.size() + " shipments that can be billed");
     return SUCCESS;
   }
 
+  private List<ShippingOrder> filterShipments(List<ShippingOrder> shipments) {
+	  	  		// TODO Auto-generated method stub
+	  	  		List<Customer> filCus=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	  	  		List<ShippingOrder> filteredShippments=new ArrayList<ShippingOrder>();
+	  	  		/*Iterator<ShippingOrder> ships=shipments.iterator();
+	  	  		Iterator<Customer> customers=filCus.iterator();*/
+	  	  		if(filCus!=null && filCus.size()>0 && shipments.size()>0 && shipments!=null){
+	  	  			for(ShippingOrder so: shipments){
+	  	  				for(Customer c:filCus){
+	  	  					if(so.getCustomerId()!=null && c.getId()!=0){
+	  	  					if(so.getCustomerId()==c.getId()){
+	  	  						
+	  	  					filteredShippments.add(so);
+	  	  						
+	  	  					}
+	  	  				}
+	  	  				}
+	  	  			}
+	  	  		
+	  	  		}
+	  	  		
+	  	  		return filteredShippments;
+	  	  }
+  
   public String searchInvoiceableShipments() {
 
     Invoice i = this.getInvoice();
@@ -747,14 +846,40 @@ public String getSalesRep() {
 	  log.debug("In update A/R");
 	  	    String method = request.getParameter("method");
 	  	    log.debug("In update A/R-----method is:" + method);
-	  	    Customer c = new Customer();
-	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	    /*Customer c = new Customer();
+	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());*/
+	  	  Customer c=new Customer();
+	  		  	  Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	  		  		  	  businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  		  		      if(businessId!=null && !businessId.equals("")){
+	  		  		      	c.setBusinessId(businessId);
+	  		  		      }else{
+	  		  		      	c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  		  	      }
+	  		  		    //customers = customerService.search(c);
+	  		  		      if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId == null){
+	  		  		      	customers = BusinessFilterUtil.getSysadminLevelCustomers();
+	  		  		      }else{
+	  		  		      	customers=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	  		  		      }
 	    customers = customerService.search(c);
 	    if (method != null){	  
 	    		    Invoice i = this.getInvoice();
 	    		    if((i.getCustomerId() == null || i.getCustomerId()==0 )&&( i.getInvoiceId()==null || i.getInvoiceId()==0)){
 	    Invoice invoice = new Invoice();
-	      invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    if(businessId!=null && businessId>0){
+	    		    		    	invoice.setBusinessId(businessId);
+	    		    		    	invoice.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+	    		    		      }else if(businessId==0){
+	    		    		    	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	    		    		  		   List<Business>	allbusList=businessDAO.getHoleBusinessList();
+	    		    		    	   List<Long> busids=new ArrayList<Long>();
+	    		    					for(Business bs:allbusList){
+	    		    						 busids.add(bs.getId());
+	    		    					}
+	    		    					invoice.setBusinessIds(busids);
+	    		    	    	  invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	    		    		      }
 	      if (UserUtil.getMmrUser().getCustomerId() > 0)
 	        invoice.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 	      if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -767,7 +892,19 @@ public String getSalesRep() {
 	    		    }
     i.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
         Invoice.INVOICE_STATUS_PARTIAL_PAID });
-    i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    if(businessId!=null && businessId>0){
+    	    	    	i.setBusinessId(businessId);
+    	    	    	i.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+    	    	      }else if(businessId==0 ){
+    	    	    	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+    	    	 		   List<Business>	allbusList=businessDAO.getHoleBusinessList();
+    	    	   	   List<Long> busids=new ArrayList<Long>();
+    	    				for(Business bs:allbusList){
+    	    					 busids.add(bs.getId());
+    	    				}
+    	    				i.setBusinessIds(busids);
+    	    	   	  i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    	    	      }
     invoices = invoiceManager.searchInvoicesAr(i);
    // log.debug("Found : " + invoices.size() + " invoices");
 
@@ -832,14 +969,42 @@ public String getSalesRep() {
 
     log.debug("In search AR");
     String method = request.getParameter("method");    
-    Customer c = new Customer();
-    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    /*Customer c = new Customer();
+    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());*/
+    Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+            Customer c=new Customer();
+            if(businessId!=null && !businessId.equals("")){
+            	c.setBusinessId(businessId);
+            }else{
+            	c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+            }
+            
+           //customers = customerService.search(c);
+            if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId == null){
+            	customers = BusinessFilterUtil.getSysadminLevelCustomers();
+            }else{
+            	customers=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+            }
     customers = customerService.search(c);
     if (method != null){
     	        getSession().remove("arTransaction");
     ARTransaction arTransaction = new ARTransaction();
 
-    arTransaction.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    Long busId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+            if(busId!=null && busId>0){
+            	arTransaction.setBusinessIds(BusinessFilterUtil.getBusIdParentId(busId));
+            }else if(busId==0 && busId!=null){
+            	    BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+            	    List<Long> businessIds=new ArrayList<Long>();
+            		List<Business>	allbusList=businessDAO.getHoleBusinessList();
+            		if(allbusList!=null && allbusList.size()>0){
+            			for(Business bs:allbusList){
+            				businessIds.add(bs.getId());
+            			}
+            			arTransaction.setBusinessIds(businessIds);
+           		}
+            }
+            arTransaction.setBusinessId(busId);
     if (id != null && !id.isEmpty()) {
       arTransaction.setCustomerId(Long.valueOf(id));
       try {
@@ -1198,7 +1363,24 @@ public String getSalesRep() {
     String invoiceId = request.getParameter("invoiceIdlist");
     Commission commission = this.getCommission();
     UserSearchCriteria criteria = new UserSearchCriteria();
-    criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+            businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+            
+            if(businessId!=null && businessId>0){
+            	criteria.setBusinessId(null);
+            	criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+            }else if(businessId==0){
+            	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+          	      List<Business>	allbusList=businessDAO.getHoleBusinessList();
+        			if(allbusList!=null && allbusList.size()>0){
+        				 List<Long> busids=new ArrayList<Long>();
+        				for(Business bs:allbusList){
+        				 busids.add(bs.getId());
+        				}
+        				criteria.setBusinessIds(busids);
+          	            criteria.setBusinessId(null);
+        			}
+            }
     criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
     criteria.setSortBy(UserSearchCriteria.SORT_BY_FIRSTNAME);
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -1267,12 +1449,34 @@ public String getSalesRep() {
   public String invoiceBreakdown() throws Exception{
 	  	  String inclCancelldInv=request.getParameter("inclCancelledInv");
 	  	String method = request.getParameter("method");
+	  	loginedUser=UserUtil.getMmrUser();
 	  		  	  if(method!=null){
 	  		  		currencyList=shippingService.getallCurrencySymbol();
 	  		  		  return SUCCESS;
 	  		  	  }
 	  	  Commission commission = this.getCommission();
 	     String currency = commission.getCurrency();
+	     Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	     	     	     businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	     	     	     if(businessId!=null&&  businessId>0){
+	     	     	    	 commission.setBusinessIds(BusinessFilterUtil.getBusIdParentId(businessId));
+	     	     	     }else if(businessId!=null && businessId==0){
+	     	     	    	   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	     	     	    	    List<Business>	allbusList=businessDAO.getHoleBusinessList();
+	     	     				if(allbusList!=null && allbusList.size()>0){
+	     	     					 List<Long> busids=new ArrayList<Long>();
+	     	     				for(Business bs:allbusList){
+	     	     						 busids.add(bs.getId());
+	     	     					}
+	     	     					commission.setBusinessIds(busids);
+	     	     	    	 
+	     	     				}
+	     	     	     }
+	          	     if(businessId!=null && businessId>0){
+	     	     	    	 commission.setBusinessId(businessId);
+	     	     	     }else  if(businessId !=null && businessId==0){
+	     	         	 commission.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	     	     	     }
 	  	  commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
 	  			  FormattingUtil.DATE_FORMAT_WEB));
 	  	  commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
@@ -1342,8 +1546,15 @@ public String getSalesRep() {
     
   public String salesReport() throws Exception {
 	  Customer c = new Customer();
-	   c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	   customers = customerService.search(c);
+	  Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	  	  	   	   
+	  	  	   if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId==null){
+	  	  		   
+	  	  		   customers=BusinessFilterUtil.getSysadminLevelCustomers();
+	  	  		   
+	  	  	   }else if(businessId!=null || !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)) {
+	  	       	   customers = (List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	  	  	   }
 
     String method = request.getParameter("method");
 
@@ -1365,9 +1576,27 @@ public String getSalesRep() {
 	    	return SUCCESS;
         }
     }
-
+    Long busId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+            BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+            List<Long> businessIds=new ArrayList<Long>();
     SalesRecord sales = getSalesRecord();
-    sales.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    if(busId!=null && busId>0){
+    	    	    	sales.setBusinessIds(BusinessFilterUtil.getBusIdParentId(busId));
+    	    	    	sales.setBusinessId(busId);
+    	    	   }else if(busId==null || busId==0){
+    	    	    	
+    	    	    	List<Business>	allbusList=businessDAO.getHoleBusinessList();
+    	    			if(allbusList!=null && allbusList.size()>0){
+    	    				for(Business bs:allbusList){
+    	    					businessIds.add(bs.getId());
+    	    				}
+    	    			}
+    	    			if(businessIds.size()>0){
+    	    				sales.setBusinessIds(businessIds);
+    	    			}
+    	    			
+    	    			sales.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    	    	    }
     sales.setMonth(Integer.valueOf(sales.getMonthName()));
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
       sales.setBranch(UserUtil.getMmrUser().getBranch());
@@ -1661,7 +1890,8 @@ public String sendEmailNotificationForInvoice() {
 	  	  String type=request.getParameter("type");
 	  	String inclCancelldInv= request.getParameter("inclCancelldInv");
 	  	  UserSearchCriteria criteria = new UserSearchCriteria();
-	  	  criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	  	criteria.setBusinessId(null);
+	  		  	  criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
 	  	  criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
 	  	  criteria.setSortBy(UserSearchCriteria.SORT_BY_FIRSTNAME);
 	  	  if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -1768,7 +1998,8 @@ public String sendEmailNotificationForInvoice() {
 String method=request.getParameter("method");
 String type=request.getParameter("type");
 		UserSearchCriteria criteria = new UserSearchCriteria();
-		criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+		criteria.setBusinessId(null);
+				criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
 		criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
 		criteria.setSortBy(UserSearchCriteria.SORT_BY_FIRSTNAME);
 		if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -2851,5 +3082,13 @@ public BusinessDAO getBusinessDAO() {
 
 public void setBusinessDAO(BusinessDAO businessDAO) {
 	this.businessDAO = businessDAO;
+ } 
+
+public User getLoginedUser() {
+	return loginedUser;
+}
+
+public void setLoginedUser(User loginedUser) {
+	this.loginedUser = loginedUser;
  } 
 }

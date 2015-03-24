@@ -2,7 +2,7 @@ package com.meritconinc.shiplinx.model;
 
 import java.sql.Timestamp;
 import java.util.Date;
-
+import java.util.List;
 public class Commission {
 		private Long customerId;
 		private Long userId;
@@ -28,6 +28,8 @@ public class Commission {
 		private double totalFPA;
 		private String currency;
 		private String invoiceCurrency;
+		private long businessId;
+		private List<Long> businessIds;
 		public double getTotalSPD() {
 			return totalSPD;
 		}
@@ -171,6 +173,18 @@ public class Commission {
 		}
 		public void setTotalFPA(double totalFPA) {
 			this.totalFPA = totalFPA;
+		}
+		public long getBusinessId() {
+			return businessId;
+		}
+		public void setBusinessId(long businessId) {
+			this.businessId = businessId;
+		}
+		public List<Long> getBusinessIds() {
+			return businessIds;
+		}
+		public void setBusinessIds(List<Long> businessIds) {
+			this.businessIds = businessIds;
 		}
 		
 		

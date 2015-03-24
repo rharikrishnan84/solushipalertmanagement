@@ -32,6 +32,7 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.service.BusinessManager;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 import com.meritconinc.shiplinx.service.CaptchaServiceSingleton;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
@@ -200,7 +201,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 							menuItem = menusDAO.getMenuById(menuItem.getParentId(), user.getRoles(), MessageUtil.getLocale());
 						}
 						
-						if(menuItem.getName().equalsIgnoreCase(NavConsts.TOP_LEVEL_SHIPPING))
+						if(menuItem.getName()!=null && menuItem.getName().equalsIgnoreCase(NavConsts.TOP_LEVEL_SHIPPING))
 						{
 							menuItem.setUrl(NavConsts.SHIPPING_WAREHOUSE_CUSTOMER);
 						}
@@ -231,7 +232,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		ActionContext.getContext().getSession().put(ShiplinxConstants.USERNAME, user.getFullName());
 		ActionContext.getContext().getSession().put("customerId", user.getCustomerId());
 		Common.setCookie("businessId", String.valueOf(user.getBusiness().getId()), ShiplinxConstants.COOKIE_EXPIRED_TIME);
-
+		BusinessFilterUtil.setCustomersByUserLevel(user);
 		
 		return result;
 	}
@@ -376,6 +377,148 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		
 		String adminUser = (String) getSession().get(ShiplinxConstants.ADMIN_USER);
 		String strUserLogin = (String) getSession().get("userlogin");
+		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+		Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+		Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+		Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+		Long logInBusId=null;
+		if(UserUtil.getMmrUser()!=null){
+			 logInBusId=UserUtil.getMmrUser().getBusinessId();
+		}
+		if((businessId!=null)&& partnerId==null && countryPartnerId==null && branchId==null ){
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				//getSession().remove(Constants.BUSINESS_ID_SESSION );
+			return	reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+ 				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.BUSINESS_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allbus";
+			
+		}else if((businessId!=null || logInBusId!=null) && partnerId!=null && countryPartnerId==null && branchId==null){
+			
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+			//getSession().remove(Constants.PARTNER_ID_SESSION);
+				return reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.PARTNER_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allpartner";
+			
+		}else if((businessId!=null || logInBusId!=null) && partnerId!=null && countryPartnerId!=null && branchId==null){
+		
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+			//getSession().remove(Constants.NATION_ID_SESSION);
+			return reloadUser(adminUser);
+		}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.NATION_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allnation";
+			
+		}else if((businessId!=null || logInBusId!=null)&& partnerId!=null && countryPartnerId!=null && branchId!=null){
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				//getSession().remove(Constants.BRANCH_ID_SESSION);
+				return reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.BRANCH_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allbranch";
+		}else if((businessId!=null || logInBusId!=null)&& partnerId==null && countryPartnerId==null && branchId!=null){
+			 
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+		//getSession().remove(Constants.BRANCH_ID_SESSION);
+				return reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+			getSession().remove(ShiplinxConstants.ADMIN_USER);
+			getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			
+			getSession().remove(Constants.BRANCH_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allbranch";
+		}else if((businessId!=null || logInBusId!=null) && partnerId==null && countryPartnerId!=null && branchId==null) {
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				//getSession().remove(Constants.NATION_ID_SESSION);
+				return reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.NATION_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allnation";
+		}else if((businessId!=null || logInBusId!=null) && partnerId==null && countryPartnerId!=null && branchId!=null){
+			if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+				//getSession().remove(Constants.BRANCH_ID_SESSION);
+				return reloadUser(adminUser);
+			}else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)&& businessId!=null){
+				
+				getSession().remove(ShiplinxConstants.ADMIN_USER);
+				getSession().remove("userlogin");
+				UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+				UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+				ActionContext.getContext().getSession().put("username", adminUser);
+				return "return2";
+			}
+			getSession().remove(Constants.BRANCH_ID_SESSION);
+			String menu = "Admin";
+			getSession().remove("HighLightMenu");
+			getSession().put("HighLightMenu", menu);
+			return "allbranch";
+		}
 		if(adminUser==null){	
 			//check if there is a URL defined int he business record to direct the customer to.
 			String customLogoutURL = determineCustomLogout();
@@ -411,13 +554,30 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		
 	}
 
+	public String reloadUser(String adminUser){
+						getSession().remove(ShiplinxConstants.ADMIN_USER);
+						getSession().remove("userlogin");
+						UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+					UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+						ActionContext.getContext().getSession().put("username", adminUser);
+						String menu = "Admin";
+						getSession().remove("HighLightMenu");
+						getSession().put("HighLightMenu", menu);
+						return "return";
+					}
+	
 	public String loginAsUser() throws Exception {
 		
 		String currentUser = UserUtil.getMmrUser().getUsername();
 		String customerId = request.getParameter("id");
 		
 		UserSearchCriteria criteria = new UserSearchCriteria();
-		criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+								if(businessId!=null){
+									criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
+								}else {
+									criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
+								}
 		if(customerId!=null)
 			criteria.setCustomerId(Long.valueOf(customerId));
 		else
@@ -428,11 +588,15 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 			getSession().put("userlogin", "yes");
 		}
 		
-		List<User> users = service.findUsers(criteria,0,0);
+		List<User> users =null;
+						if(criteria!=null){
+						 /* users = BusinessFilterUtil.getUserListByBusinessLevel(criteria.getBusinessId(),criteria.getCustomerId());*/
+							users = service.findUsers(criteria,0,0);
+					}
 		
 		if(users==null || users.size()==0){
 		     addActionError(getText("login.request.notes1"));
-   	         return INPUT;
+		     return "fail";
    	    }
 		
 		User firstUserFound = users.get(0);
@@ -450,6 +614,8 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		//to get the customerId from the user logged in.
 		getSession().put("uCustomerId", firstUserFound.getCustomerId());
 		if(request.getParameter("username") != null && !request.getParameter("username").isEmpty()){
+			if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_ADMIN))
+							  ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCustomersForCustomerAdmin(UserUtil.getMmrUser()));
 			   return "SUCCESS1";
 			  }
 		

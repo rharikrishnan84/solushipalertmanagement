@@ -17,6 +17,8 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
+import java.util.ArrayList;
+import com.meritconinc.mmr.model.common.MenuScreenVO;
 
 public class MenusDAOImpl extends SqlMapClientDaoSupport implements MenusDAO {
 
@@ -139,5 +141,201 @@ public LocaleVO getLanguageByUserName(String user) {
 @Override
 public MenuItemVO getWelcomeMenuBylocale(String locale) {
 	return (MenuItemVO) getSqlMapClientTemplate().queryForObject("getWelcomeMenuBylocale",locale);
+}
+
+@Override
+public List<MenuItemVO> getMenuByBusiness(String businessId) {
+	List<MenuItemVO> menuList = null;
+	try{
+		Map map = new HashMap();
+	    map.put("businessId", Integer.valueOf(businessId));
+		menuList = getSqlMapClientTemplate().queryForList(
+	        "getMenuByBusiness",map);
+	}catch(Exception e){
+		return new ArrayList<MenuItemVO>();
+	}
+	return menuList;
+}
+@Override
+public List<MenuItemVO> getTopMenuByBusiness(String businessId,String locale) {
+	Map map = new HashMap();
+    map.put("businessId", businessId);
+    map.put("locale", locale);
+    
+    List<MenuItemVO> menuList = null;
+   try{
+	menuList = getSqlMapClientTemplate().queryForList(
+	        "getTopMenuByBusiness",map);
+	}catch(Exception e){
+		return new ArrayList<MenuItemVO>();
+	}
+	return menuList;
+}
+
+@Override
+public List<MenuItemVO> getFirstMenuByTop(String businessId, String topId) {
+	Map map = new HashMap();
+    map.put("businessId", businessId);
+    map.put("parentId", topId);
+    List<MenuItemVO> menuList = null;
+    try{
+		menuList = getSqlMapClientTemplate().queryForList(
+	        "getFirstMenuByBusiness",map);
+	}catch(Exception e){
+		return new ArrayList<MenuItemVO>();
+	}
+	return menuList;
+}
+
+@Override
+public String saveMenu(MenuItemVO menuItemVO) {
+	int key = ((Integer) getSqlMapClientTemplate().insert("addMenu", menuItemVO)).intValue();
+	return new Integer(key).toString();
+}
+
+@Override
+public void saveBusinessMenu(String businessId, String menuId) {
+	Map map = new HashMap();
+    map.put("businessId", businessId);
+    map.put("menuId", menuId);
+    try {
+        getSqlMapClientTemplate().insert("addBusinessMenu", map);
+      } catch (Exception e) {
+        // log.debug("-----Exception-----"+e);
+        e.printStackTrace();
+      }
+}
+
+@Override
+public List<Integer> getMenuIdByRole(String roleName) {
+	List<Integer> menuIds = (List<Integer>)getSqlMapClientTemplate().queryForList("roleMenuIds",roleName);
+	return menuIds;
+}
+@Override
+public void deleteRoleMenu(String role, String menuId) {
+	Map map = new HashMap();
+    map.put("menuId", menuId);
+    map.put("role", role);
+   
+    getSqlMapClientTemplate().delete("deleteRoleMenu", map);
+
+}
+
+@Override
+public void deleteMenuByRole(String role) {
+	Map map = new HashMap();
+    map.put("role", role);
+    getSqlMapClientTemplate().delete("deleteMenuByRole", map);
+	
+}
+
+@Override
+public MenuItemVO getMenuOnlyById(String menuId) {
+	 Map map = new HashMap();
+	    map.put("menuId", menuId);
+
+	    return (MenuItemVO) getSqlMapClientTemplate().queryForObject("getMenuOnlyById", map);
+}
+
+@Override
+public List<String> getRoleByMenuId(String menuId) {
+	List<String> menuIds = (List<String>)getSqlMapClientTemplate().queryForList("getRoleIdFromMenu",menuId);
+	return menuIds;
+}
+
+@Override
+public List<Integer> getBusinessByMenuId(String menuId) {
+	List<Integer> menuIds = (List<Integer>)getSqlMapClientTemplate().queryForList("getBusinessByMenu",menuId);
+	return menuIds;
+}
+
+@Override
+public void deleteMenu(String menuId) {
+	Map map = new HashMap();
+    map.put("menuId", menuId);
+    
+    getSqlMapClientTemplate().delete("deleteMenu", map);
+	
+}
+
+@Override
+public void deleteMenuRole(String menuId) {
+	Map map = new HashMap();
+    map.put("menuId", menuId);
+    
+   getSqlMapClientTemplate().delete("deleteMenuRole", map);
+	
+}
+@Override
+public void deleteMenuBusiness(String menuId) {
+	Map map = new HashMap();
+    map.put("menuId", menuId);
+    
+    getSqlMapClientTemplate().delete("deleteMenuBusiness", map);
+	
+}
+
+@Override
+public List<MenuItemVO> getAllMenu() {
+List<MenuItemVO> menuList = getSqlMapClientTemplate().queryForList("getAllMenu");
+	return menuList;
+}
+
+@Override
+public void deleteBusinessMenuById(String businessId, String menuId) {
+	Map map = new HashMap();
+    map.put("menuId", menuId);
+    map.put("businessId", businessId);
+    
+    getSqlMapClientTemplate().delete("deleteMenuBusinessById", map);
+	
+}
+
+
+	@Override
+	public int getMenuIdByUrl(String url) {
+	// TODO Auto-generated method stub
+	return (Integer) getSqlMapClientTemplate().queryForObject("getMenuIdByUrl", url);
+	}
+
+	@Override
+	public long getParentIdByMenuId(long editMenuId) {
+		// TODO Auto-generated method stub
+		return (Long) getSqlMapClientTemplate().queryForObject("getParentIdByMenuId", editMenuId);
+}
+
+
+@Override
+public void updateMenu(MenuItemVO menuItemVO, MenuScreenVO menuScreenVO) {
+	// TODO Auto-generated method stub
+	Map map = new HashMap();
+    map.put("menuId", menuItemVO.getId());
+    map.put("name", menuItemVO.getName());
+    map.put("url", menuItemVO.getUrl());
+    map.put("displayorder",menuItemVO.getDisplayOrder());
+    map.put("menulevel",menuItemVO.getLevel());
+    map.put("parentId",menuItemVO.getParentId() );
+    getSqlMapClientTemplate().update("updateMenu",map);
+   //resource bunndle
+   Map map1 = new HashMap();
+    map1.put("msgcont", menuScreenVO.getMsgContent());
+    map1.put("msgkey",menuScreenVO.getMsgKey());
+    map1.put("locale",menuScreenVO.getLocale());
+    getSqlMapClientTemplate().update("updateResouceBunMenu",map1);
+}
+
+@Override
+public void insertBusinessMenyByBusiness(long newBusinessId,
+		long defaultBusinessId) {
+	Map map = new HashMap();
+    map.put("newBusinessId", newBusinessId);
+    map.put("defaultBusinessId", defaultBusinessId);
+   try {
+        getSqlMapClientTemplate().insert("addBusinessMenubyBusiness", map);
+      } catch (Exception e) {
+        // log.debug("-----Exception-----"+e);
+        e.printStackTrace();
+      }
+	
 }
 }

@@ -207,4 +207,43 @@
 	<select id="findUnpaidInvoiceDuration"  resultClass="int">
 		select count(*) from invoice where payment_status in(10,20)  and customer_id = #customerId# and DATEDIFF(curdate(), due_date) > #holdTerms#
 	</select>
+	
+		
+	
+	<select id="getAllCustomers" resultMap="CustomerMap">
+    	select * from customer where active=1
+    </select>
+    <select id="getAllCustomersByBusinessLevel" resultMap="CustomerMap">
+    	select c.* from customer c ,customer_business cb 
+		where cb.customer_id = c.customer_id and cb.business_id = #businessId# 
+			and (cb.ispartner_level = 1 
+	||cb.isnation_level = 1 || cb.isbranch_level = 1 || cb.isbusiness_level=1)
+    </select>
+    <select id="getAllCustomersByPartnerLevel" resultMap="CustomerMap">
+    select c.* from customer c ,customer_business cb 
+		where (cb.customer_id = c.customer_id  )  and cb.business_id = #businessId# 
+ and cb.partner_id = #partnerId#
+			and (cb.ispartner_level = 1 
+   ||cb.isnation_level = 1 || cb.isbranch_level = 1)
+    </select>
+    <select id="getAllCustomersByNationLevel" resultMap="CustomerMap">
+    	select c.* from customer c ,customer_business cb 
+		where (cb.customer_id = c.customer_id  )  and cb.business_id =  #businessId# 
+and cb.partner_id =  #partnerId# and cb.country_partner_id=#countryPartnerId#
+			and (cb.isnation_level = 1 || cb.isbranch_level = 1)
+    </select>
+    <select id="getAllCustomersByBranchLevel" resultMap="CustomerMap">
+    	select c.* from customer c ,customer_business cb 
+		where (cb.customer_id = c.customer_id  )  and cb.business_id =  #businessId# 
+and cb.partner_id =  #partnerId# and cb.country_partner_id=#countryPartnerId# and cb.branch_id=#branchId#
+			and (cb.isbranch_level = 1)
+    </select>
+
+
+	<select id="getCustomersBySalesUser" resultMap="CustomerMap">
+			select * from customer where customer_id in(
+			select customer_id from customer_sales where sales_user=#userName# )
+	</select>
+	
+	
 </sqlMap>

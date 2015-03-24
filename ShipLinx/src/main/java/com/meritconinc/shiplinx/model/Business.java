@@ -73,7 +73,19 @@ public class Business {
 	
 	private String reportPath;
 	private String reportPathInvoice;
-	
+
+	private String[] menuIds;
+		
+		
+	 //business filter
+		
+		private long partnerId;
+		private long countryPartnerId;
+		private long branchId;
+		private long parentBusinessId;
+		private boolean partnerLevel;
+	     private boolean nationLevel;
+  		private boolean branchLevel;
 	private int defaultHoldTerms;
 	public String getLtlEmail() {
 		return ltlEmail;
@@ -397,4 +409,59 @@ public class Business {
 			public void setDefaultHoldTerms(int defaultHoldTerms) {
 				this.defaultHoldTerms = defaultHoldTerms;
 			}
+			
+			
+			
+
+			public String[] getMenuIds() {
+												return menuIds;
+											}
+					public void setMenuIds(String[] menuIds) {
+						this.menuIds = menuIds;
+					}
+				 public long getBranchId() {
+						return branchId;
+					}
+					public void setBranchId(long branchId) {
+						this.branchId = branchId;
+					}
+					public long getCountryPartnerId() {
+						return countryPartnerId;
+					}
+					public void setCountryPartnerId(long countryPartnerId) {
+						this.countryPartnerId = countryPartnerId;
+					}
+					public long getPartnerId() {
+						return partnerId;
+					}
+					public void setPartnerId(long partnerId) {
+						this.partnerId = partnerId;
+					}
+					
+					public long getParentBusinessId() {
+						return parentBusinessId;
+					}
+					public void setParentBusinessId(long parentBusinessId) {
+						this.parentBusinessId = parentBusinessId;
+					}
+					public boolean isPartnerLevel() {
+					return partnerLevel;
+					}
+					public void setPartnerLevel(boolean partnerLevel) {
+						this.partnerLevel = partnerLevel;
+					}
+				public boolean isNationLevel() {
+				return nationLevel;
+					}
+				public void setNationLevel(boolean nationLevel) {
+						this.nationLevel = nationLevel;
+					}
+					public boolean isBranchLevel() {
+						return branchLevel;
+					}
+				public void setBranchLevel(boolean branchLevel) {
+						this.branchLevel = branchLevel;
+				}
+						
+			
 }

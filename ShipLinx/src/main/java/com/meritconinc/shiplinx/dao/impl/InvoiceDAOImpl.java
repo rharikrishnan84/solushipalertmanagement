@@ -112,7 +112,7 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 			for(ARTransaction arTran: list){
 				Map<String, Object> paramObj = new HashMap<String, Object>(1);
 				paramObj.put("id", arTran.getCustomerId());
-				paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());
+				/*paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());*/
 				Customer customer=(Customer)getSqlMapClientTemplate().queryForObject("getCustomerInfoByCustomerId",paramObj);
 				arTran.setCustomer(customer);
 			}

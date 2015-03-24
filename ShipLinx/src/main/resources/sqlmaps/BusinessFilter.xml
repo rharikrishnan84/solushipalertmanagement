@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="businessFilter">
+		<resultMap id="partnerMap" class="com.meritconinc.shiplinx.model.Partner">
+	 	<result property="partnerName"	column="partner_name"/>	
+	 	<result property="firstName"	column="first_name"/>	
+	 	<result property="lastName"	 column="last_name"/>	
+	 	<result property="partnerId"	column="partner_id"/>	
+	 	<result property="email"  column="email"/>
+	 	<result property="phoneNumber"   column="phone_number"/>
+	 	<result property="fax"   column="fax"/>
+	 	<result property="shortCode" column="short_code"/>
+	 	<result property="businessId" column="business_id"/>
+	 	<result property="partnerAddress" column="address_id" select="findAddressById"/>		
+	</resultMap> 
+	
+	<resultMap id="branchMap" class="com.meritconinc.shiplinx.model.Branch">
+	 	<result property="branchName"	column="name"/>	
+	 	<result property="partnerId"	column="partner_id"/>	
+	 	<result property="branchId"     column="branch_id"/>
+	 	<result property="description"   column="description"/>
+	 	<result property="countryPartnerId"   column="country_partner_id"/>
+	 	<result property="shortCode" column="short_code"/>
+	 	<result property="businessId" column="business_id"/>
+	 	<result property="branchAddress" column="address_id" select="findAddressById"/>	
+	</resultMap> 
+	
+	
+	
+	
+	
+	<!-- for mapping all the parters out side the all businesses
+	 -->
+	<resultMap id="partnerMapAll" class="com.meritconinc.shiplinx.model.Partner">
+	 	<result property="partnerName"	column="partner_name"/>	
+	 	<result property="firstName"	column="first_name"/>	
+	 	<result property="lastName"	 column="last_name"/>	
+	 	<result property="partnerId"	column="partner_id"/>	
+	 	<result property="email"  column="email"/>
+	 	<result property="phoneNumber"   column="phone_number"/>
+	 	<result property="fax"   column="fax"/>
+	 	<result property="shortCode" column="short_code"/>
+	 	 
+	 	<result property="partnerAddress" column="address_id" select="findAddressById"/>		
+	</resultMap> 
+	
+	<resultMap id="branchMapAll" class="com.meritconinc.shiplinx.model.Branch">
+	 	<result property="branchName"	column="name"/>	
+	 	<result property="partnerId"	column="partner_id"/>	
+	 	<result property="branchId"     column="branch_id"/>
+	 	<result property="description"   column="description"/>
+	 	<result property="countryPartnerId"   column="country_partner_id"/>
+	 	<result property="shortCode" column="short_code"/>
+	 	<result property="branchAddress" column="address_id" select="findAddressById"/>	
+	</resultMap> 
+	
+	
+	
+	
+	
+	<resultMap class="com.meritconinc.shiplinx.model.Filter" id="filterMap">
+	<result property="filterId" column="filter_id"/>
+	<result property="businessId" column="business_id"/>
+	 <result property="filterName" column="name"/>
+	 <result property="description" column="description"/>	
+	</resultMap>
+	<resultMap class="com.meritconinc.shiplinx.model.UserFilter" id="userfilterMap">
+	<result property="userFilterId" column="user_filter_id"/>
+	<result property="businessId" column="business_id"/>
+	<result property="userName" column="username"/>
+	<result property="partnerLevel" column="isPartner"/>
+	<result property="nationLevel" column="isNation"/>
+	<result property="branchLevel" column="isBranch"/> 
+	</resultMap>
+	<resultMap class="com.meritconinc.shiplinx.model.RelPartnerFilter" id="relPartnerFilterMap">
+		<result property="relPartnerFilId" column="rel_partner_fil_id"/>
+	<result property="filterId" column="filter_id"/>
+	<result property="partnerId" column="partner_id"/>
+	<result property="countryPatnerId" column="country_partner_id"/>
+	<result property="branchId" column="branch_id"/>
+	</resultMap>
+ 	<resultMap class="com.meritconinc.shiplinx.model.CountryPartner" id="countryPartnerMap">
+	<result property="partnerId" column="partner_id"/>
+	<result property="countryPartnerId" column="country_partner_id"/>
+	<!-- <result property="businessId" column="business_id"/> -->
+	<result property="countryAddress" column="address_id" select="findAddressById"/>
+	<result property="countryCode" column="country_code"/>
+	 
+	</resultMap>  
+	
+	<resultMap class="com.meritconinc.shiplinx.model.CustomerBusiness" id="customerBusinessMap">
+			<result property="customerBusinessId" column="customer_businesss_id"/>
+			<result property="partnerId" column="partner_id"/>
+			<result property="countryPartnerId" column="country_partner_id"/>
+			<result property="businessId" column="business_id"/>
+		    <result property="customerId" column="customer_id"/>
+		    <result property="branchId" column="branch_id"/>
+		    <result property="userName" column="username"/>
+		    <result property="partnerLevel" column="ispartner_level"/>
+		    <result property="nationLevel" column="isnation_level"/>
+		    <result property="branchLevel" column="isbranch_level"/>
+		    <result property="divitionLevel" column="isdivition_level"/>
+		    <result property="businessLevel" column="isbusiness_level"/>
+	</resultMap>  
+	<resultMap id="countryResult" class="com.meritconinc.shiplinx.model.Country">
+		<result property="countryCode" column="country_code"/>
+		<result property="msgId" column="msg_id"/>
+		<result property="countryName" column="msg_content"/>
+	</resultMap>
+	
+		
+	<insert id="addCustomerBusiness" parameterClass="com.meritconinc.shiplinx.model.CustomerBusiness">
+	
+	
+	INSERT INTO `customer_business`
+( `business_id`,`customer_id`,`username`,`partner_id`,`branch_id`,`country_partner_id`,`ispartner_level`,
+`isnation_level`,`isbranch_level`,`isdivition_level`,`isbusiness_level`)
+VALUES (#businessId#,#customerId#,#userName#,#partnerId#,#branchId#,#countryPartnerId#,#partnerLevel#,#nationLevel#,#branchLevel#,#divitionLevel# ,#businessLevel#);
+	
+	</insert>
+	<select id="getCountryPartnerList" resultMap="countryPartnerMap">
+	   SELECT distinct cp.*,rb.msg_content FROM country_partner cp , country c,
+resourcebundle rb
+where cp.country_code = c.country_code
+and rb.msg_id = c.msg_id
+and cp.partner_id=#partnerId#;
+	</select>
+	<insert id="addCountryPartner">
+	INSERT INTO `country_partner`
+(`partner_id`,`business_id`,`country_code`,`address_id`) VALUES
+(#partnerId#,#businessId#,#countryCode#,#addressId#);
+	</insert>
+	<select id="getCountryPartnerById" resultMap="countryPartnerMap">
+     	 select * from country_partner where country_partner_id=#countryPartnerId#
+	</select>
+  	
+	<update id="updateCountryPartner">
+	UPDATE  `country_partner` SET `country_code` = #countryCode# WHERE `country_partner_id` = #countryPartnerId#;
+	</update> 
+	<insert id="addPartner">
+	
+	INSERT INTO `partner`
+(`short_code`,`partner_name`,`first_name`,`last_name`,`fax`,`phone_number`,`email`,address_id)
+VALUES (#shortCode#,#partnerName#,#firstName#,#lastName#,#fax#,#phoneNumber#,#email#,#addressId#);
+	<selectKey resultClass="long" type="post" keyProperty="partnerId" >select LAST_INSERT_ID() as value
+	 		</selectKey>
+
+	</insert>
+	<insert id="addUserFilters">
+			INSERT INTO `user_filter` (`business_id`,`username`,`isPartner`,`isNation`,`isBranch`,isBusiness)  VALUES 
+			(#businessId#,#userName#,#partnerLevel#,#nationLevel#,#branchLevel#,#businessLevel#)
+	</insert>
+	<insert id="addBranch">
+	INSERT INTO `branch`
+(`name`,`short_code`,`description`,`country_partner_id`,`business_id`,`partner_id`,address_id)VALUES (#branchName#,#shortCode#,
+#description#,#countryPartnerId#,#businessId#,#partnerId#,#addressId#);
+		
+	</insert>
+	<insert id="addFilter">
+		INSERT INTO businessfilter
+		(`business_id`,`name`,`description`)
+		VALUES (#businessId#,#filterName#,#description#);
+
+	<selectKey resultClass="long" type="post" keyProperty="filterId" >
+		select LAST_INSERT_ID() as value	
+	</selectKey>
+	
+	</insert>
+	<insert id="addRelPartnerFilter">
+	INSERT INTO rel_partner_fil
+(`filter_id`,`partner_id`,`country_partner_id`,`branch_id`)
+VALUES (#filterId#,#partnerId#,#CPId#,#branchId#)
+	   <selectKey resultClass="long" type="post" keyProperty="filterId" >
+		select LAST_INSERT_ID() as value	
+	</selectKey>
+	
+	</insert>
+	<insert id="addRelPartnerCustomer">
+		INSERT INTO rel_partner_customer (`rel_partner_filter_id`,`customer_id`) VALUES (#relPartFilId#,#customerId#)
+	</insert>
+	<insert id="addCountryBypartner">
+	INSERT INTO `country_partner`(`country_code`,`partner_id`)VALUES (#countryCode#,#partnerId#);
+	</insert>
+	<delete id="deleteFilterCustomerById">
+	delete from filter_customer where customer_id=#customerId# and business_id=#businessId# and filter_id=#filterId#
+	</delete>
+	<update id="updatePartner" >
+			<!-- UPDATE `branch` SET `name` = #PartnerName#,`short_code` = #shortCode#,description = #description#,
+`country_partner_id` = #countryPartnerId#,
+`business_id` = #businessId#,
+`partner_id` = #partnerId#,
+WHERE `branch_id` = #branchId#
+			 -->
+<!-- 			 UPDATE partner
+SET
+
+`short_code` = #shortCode#,
+`business_id` = #businessId#,
+`partner_name` = #partnerName#
+`first_name` = #firstName#,
+`last_name` = #lastName#,
+`fax` = #fax#,
+`phone_number` = #phoneNumber#,
+`email` = #email#
+WHERE `partner_id` =#partnerId#;
+			  -->
+			  UPDATE partner
+SET `short_code` = #shortCode#,`business_id` =#businessId# ,`partner_name` = #partnerName#,
+`first_name` = #firstName# ,`last_name` =#lastName# ,`fax` = #fax#,`phone_number` = #phoneNumber#,
+`email` = #email# WHERE `partner_id` =#partnerId# 
+			  
+	
+	</update>
+	<update id="deleteUserFiltersByFilterId">
+		delete from user_filter where filter_id=#filterId#  and username=#userName#
+ 	</update>
+	<update id="updateFilter">
+		UPDATE businessfilter SET `business_id` = #businessId#, `partner_id` =#partnerId#,  `country_partner_id` = #countryPartnerId#,
+		`branch_id` = #branchId#, `name` = #filterName#, `description` = #description# WHERE `filter_id` = #filterId#;
+	</update>
+	<update id="updateBranch" parameterClass="com.meritconinc.shiplinx.model.Branch">
+UPDATE `branch`
+SET
+`name` = #branchName#,
+`short_code` = #shortCode#,
+`description` = #description#
+WHERE `branch_id` = #branchId#;
+	</update>
+	<select id="getFilterIdByUser" resultClass="java.lang.Long">
+	select filter_id from user_filter where username=#userName#
+	</select>
+	<select id="getAllCountryls" resultMap="countryResult">
+	select * from country
+	</select>
+	<select id="getCountryByCode" resultClass="java.lang.String">
+	 select  msg_content from resourcebundle where msg_id=( select msg_id from country where country_code=#countryCode# ) limit 1
+	</select>
+	<select id="getFilterList" resultMap="filterMap">
+	select filter_id,business_id,name,description from businessfilter where business_id=#businessId#;
+	</select>
+	<select id="getFilterById" resultMap="filterMap">
+	select * from businessfilter where filter_id=#filterId#
+	</select>
+	<select id="getFilteredCustomerIdsById" resultClass="long">
+	select customer_id from filter_customer where filter_id=#filterId#	
+	</select>
+	<select id="getBranchListByPCPId" resultMap="branchMap">
+	select * from branch where country_partner_id=#countryPartnerId# and partner_id=#partnerId#
+	</select>
+	<select id="getPartnerList" resultMap="partnerMap">
+	select * from partner where business_id=#businessId#;
+	</select>
+	<select id="getBranchList" resultMap="branchMap">
+	select * from branch where country_partner_id=#countryPartnerId#;
+	</select>
+	<select id="getBranchByPartnerId" resultMap="branchMap">
+	select * from branch where branch_id=#branchId#
+	</select>
+	<!-- <select id="getPartberByName" resultMap="partnerMap">
+	select * from partner where partner_id=#partner_id#
+	</select> -->
+	<select id="getPartnerById" resultMap="partnerMapAll">
+		select * from partner where partner_id=#partnerId#
+	</select>
+	<select id="getpartnerCountryIds" resultClass="java.lang.Long">
+	select country_id from country_partner where partner_id=#partnerId#
+	</select>
+	<select id="getCustomerIdsByFilterIds" resultClass="java.lang.Long">
+		
+
+	</select>
+	
+	<select id="getUserFilterByUser" resultMap="userfilterMap">
+	select * from user_filter where username=#userName#
+	</select>
+	<select id="getRelPartFilterIdByUF" parameterClass="com.meritconinc.shiplinx.model.UserFilter" resultClass="java.lang.Long">
+     select rel_partner_fil_id from rel_partner_fil where filter_id=#filterId#
+ 	<dynamic>
+	<isGreaterThan prepend="and" property="countryPartnerId" compareValue="0">
+				country_partner_id=#countryPartnerId#
+	</isGreaterThan>
+	<isGreaterThan prepend="and" property="partnerId" compareValue="0">
+				partner_id=#partnerId#
+	</isGreaterThan>
+	<isGreaterThan prepend="and" property="branchId" compareValue="0">
+				branch_id=#branchId#
+	</isGreaterThan>	
+	</dynamic> 
+	</select>
+	<select id="getCustomerIdByRelPartnerId" resultClass="java.lang.Long">
+	     select customer_id from rel_partner_customer where rel_partner_filter_id=#id#
+	</select>
+	
+	<delete id="deletePartner">
+	delete from partner where partner_id=#partnerId#
+	</delete>
+	<delete id="deleteBranchByPartnerName">
+	delete from branch where branch_id=#partnerId#
+	</delete>
+	<delete id="deleteFilter">
+	delete from businessfilter where filter_id=#filterId#
+	
+	</delete>
+	<delete id="deleteFilterCustomer">
+	delete from filter_customer where filter_id=#filterId#
+	</delete>
+	<update id="deleteCountryPartnerById">
+	delete from country_partner where country_id=#countryId# and partner_id=#partnerId#
+	</update>
+   <select id="getCountryIdByCode" resultClass="java.lang.Integer">
+  SELECT country_id FROM country where msg_id=(select distinct(msg_id) from resourcebundle where msg_content=#countrycode#);
+   </select>
+    <select id="getCountryCodeByPartnerId" resultClass="java.lang.String">
+		select country_code from country_partner where partner_id=#partnerId1#
+	</select>
+	<select id="getCountryBycountryCode" resultMap="countryResult">
+	 select  distinct c.msg_id,c.country_code,r.msg_content as msg_content from country c
+		left join resourcebundle r on (c.msg_id=r.msg_id)
+		 where c.country_code=#countryCode#
+	</select>
+	<select id="getCountryNameByid" resultClass="java.lang.String">
+	SELECT distinct(msg_content) FROM soluship.resourcebundle where msg_id=(select msg_id from country where country_id=#countryId#);
+	</select>
+	<select id="getCountryidByCPId" resultClass="long">
+	
+	select country_id from country_partner where country_partner_id=#countryPartnerId#
+	</select>
+	<select id="getCountryPartnerId"  resultClass="long">
+	select country_partner_id from country_partner where country_code=#countryCode# and partner_id=#partnerId#
+	</select>
+		<select id="getCountryById" resultMap="countryResult">
+		select * from country  where country_id=#countryId#;
+	</select>
+	<select id="getCountryNameBymsgId" resultClass="String">
+		SELECT distinct(msg_content) FROM resourcebundle where msg_id=#msgId#;
+	</select>
+	<select id="getCPIdlistBypartnerId" resultClass="java.lang.Long">
+	select country_partner_id from country_partner where partner_id=#partnerId#
+	
+	</select>
+	<select id="getFilterIdsByUserName" resultClass="java.lang.Long">
+	select filter_id from user_filter where username=#userName#
+	</select>
+	<select id="getpartnerListByFilter" resultMap="partnerMap">
+		select * from partner where partner_id in (select partner_id from rel_partner_fil where filter_id=#filterId#)
+	</select>
+	<select id="getRelParterFiltersByFilter"  resultMap="relPartnerFilterMap">
+	 select * from rel_partner_fil where filter_id=#filterId#
+	</select>
+	<delete id="deleteCountryByPartner">
+		delete from country_partner where partner_id=#partnerId#;
+	</delete>
+	<select id="getRelParterFilIdByFilter" resultClass="java.lang.Long">
+	 select rel_partner_fil_id from rel_partner_fil where partner_id=#partnerId# and branch_id=#branchId# and country_partner_id=#CPId# and filter_id=#filterId#
+	</select>
+	<update id="delRelPartFilCustomers">
+		delete from rel_partner_customer where rel_partner_filter_id=#relparfilId# and customer_id=#customerId#
+	</update>
+   <select id="getpartnerByPartnerName" resultMap="partnerMap">
+     select * from partner where partner_name=#partnerName#
+   </select>
+	   <select id="getpartnerByPartnerShortCode" resultMap="partnerMap">
+     select * from partner where partner_name=#shortCode#
+   </select>
+   <select id="getBranchByShortCode" resultMap="branchMap">
+   select * from branch where short_code=#shortCode#
+   </select>
+   <select id="getAllPartnerList" resultMap="partnerMapAll">
+   		select * from partner
+   </select>
+   <select id="getAllBranchList" resultMap="branchMapAll">
+	    select * from branch
+   </select>
+   <select id="getCountryObjByCode" resultMap="countryResult">
+      select r.msg_id,r.msg_content,c.country_code from resourcebundle r , country c where r.msg_id=(select msg_id from country where country_code=#Countrycode# limit 1) limit 1   
+   </select>
+</sqlMap>

@@ -18,6 +18,7 @@ import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.UserFilter;
 
 public class User implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -103,6 +104,27 @@ public class User implements Serializable {
   private int unitmeasure;
   private String unitOfMeasure;
 
+  /**
+  +     * BUSINESS FILTER LEVELS
+  +     * @return
+  +     */
+      private boolean partnerLevel=false;
+    private boolean nationLevel=false;
+     private boolean branchLevel=false;
+      private boolean divitionLevel=false;
+      private boolean businessLevel=false;
+   
+      private long partnerId;
+      private long countryPartnerId;
+      private long branchId;
+      private UserFilter userFilter;
+      
+      //division level filter
+      private boolean spdEnabled;
+      private boolean ltlEnabled;
+      private boolean chbEnabled;
+     private boolean fwdEnabled;
+    private boolean fpaEnabled;
   public String getUnitOfMeasure() {
     return unitOfMeasure;
   }
@@ -788,4 +810,114 @@ public void setCommissionPercentageFWD(double commissionPercentageFWD) {
 	this.commissionPercentageFWD = commissionPercentageFWD;
 }
 
+public boolean isDivitionLevel() {
+	return divitionLevel;
+}
+
+public void setDivitionLevel(boolean divitionLevel) {
+	this.divitionLevel = divitionLevel;
+}
+
+public boolean isBranchLevel() {
+	return branchLevel;
+}
+public void setBranchLevel(boolean branchLevel) {
+this.branchLevel = branchLevel;
+}
+
+public boolean isNationLevel() {
+	return nationLevel;
+}
+
+public void setNationLevel(boolean nationLevel) {
+	this.nationLevel = nationLevel;
+}
+
+public boolean isPartnerLevel() {
+	return partnerLevel;
+}
+
+public void setPartnerLevel(boolean partnerLevel) {
+	this.partnerLevel = partnerLevel;
+}
+
+public boolean isBusinessLevel() {
+	return businessLevel;
+}
+
+public void setBusinessLevel(boolean businessLevel) {
+	this.businessLevel = businessLevel;
+}
+
+public long getPartnerId() {
+	return partnerId;
+}
+
+public void setPartnerId(long partnerId) {
+	this.partnerId = partnerId;
+}
+
+public long getCountryPartnerId() {
+	return countryPartnerId;
+}
+
+public void setCountryPartnerId(long countryPartnerId) {
+	this.countryPartnerId = countryPartnerId;
+}
+
+public long getBranchId() {
+	return branchId;
+}
+
+public void setBranchId(long branchId) {
+	this.branchId = branchId;
+}
+
+public UserFilter getUserFilter() {
+	return userFilter;
+}
+
+public void setUserFilter(UserFilter userFilter) {
+	this.userFilter = userFilter;
+}
+
+public boolean isSpdEnabled() {
+	return spdEnabled;
+}
+
+public void setSpdEnabled(boolean spdEnabled) {
+	this.spdEnabled = spdEnabled;
+}
+
+public boolean isLtlEnabled() {
+	return ltlEnabled;
+}
+
+public void setLtlEnabled(boolean ltlEnabled) {
+	this.ltlEnabled = ltlEnabled;
+}
+
+public boolean isChbEnabled() {
+	return chbEnabled;
+}
+
+public void setChbEnabled(boolean chbEnabled) {
+	this.chbEnabled = chbEnabled;
+}
+
+public boolean isFwdEnabled() {
+	return fwdEnabled;
+}
+
+public void setFwdEnabled(boolean fwdEnabled) {
+	this.fwdEnabled = fwdEnabled;
+}
+
+public boolean isFpaEnabled() {
+	return fpaEnabled;
+}
+
+public void setFpaEnabled(boolean fpaEnabled) {
+	this.fpaEnabled = fpaEnabled;
+}
 }

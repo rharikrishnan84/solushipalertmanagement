@@ -69,6 +69,13 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReference;
 
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
+import java.util.Iterator;
+import com.meritconinc.mmr.dao.BusinessFilterDAO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.service.ShippingService;
+
+
+
 public class InvoiceManagerImpl implements InvoiceManager {
 
   private static final Logger log = LogManager.getLogger(InvoiceManagerImpl.class);
@@ -130,11 +137,51 @@ public class InvoiceManagerImpl implements InvoiceManager {
   // The shipments to be invoiced can be for 1 or more customers, and there
   // might be multiple currencies involved.
   // 1 invoice to be created per customer and currency.
-  public List<Invoice> createInvoices(List<Long> orderIds, Invoice invoice) {
+    @SuppressWarnings("rawtypes")
+    public List<Invoice> createInvoices(List<Long> orderIds1, Invoice invoice) {
+    	  
+    	  
+    	  List<Long> businessIds=shippingDAO.getBusinessIdsByorderIds(orderIds1);
+    	 
+          List<Invoice> allinvoices=new ArrayList<Invoice>();
+    	  
+    	  for(Long busid:businessIds){
+    		  List<Long> orderIds=new ArrayList<Long>();
+    		  
+    			List<ShippingOrder> orders1 =  shippingDAO.getUnbilledShipmentsBySinglebus(busid,0L,
+    			        UserUtil.getMmrUser().getBranch());
+    			
+    			
+    			if(orders1!=null && orders1.size()>0 && orderIds1!=null && orderIds1.size()>0){
+    				
+    				@SuppressWarnings("rawtypes")
+    				Iterator sos=orders1.iterator();
+    				Iterator oids=orderIds.iterator();
+    		        for(Long orderid:orderIds1){
+    				    for(ShippingOrder sp: orders1){
+    				       if(sp.getId().equals(orderid)){
+    				    	   orderIds.add(sp.getId());
+    				       }
+    			 	   
+    				   }
+    		        }
+    			} 
+    			
+    			
+    	/*	
+    			for(ShippingOrder so:orders1){
+    				orderIds.add(so.getId());
+    			}
+    		*/
+    		
+      
+    	  List<Invoice> invoices = new ArrayList<Invoice>();
+      
+    	  if(orderIds.size()>0){
 
     List<Long> customerIds = shippingDAO.getCustomerIdsByOrderIds(orderIds);
     List<String> currencies = shippingDAO.getCurrencyByOrderIds(orderIds);
-    List<Invoice> invoices = new ArrayList<Invoice>();
+     
 
     for (Long cus : customerIds) {
       for (String currency : currencies) {
@@ -193,10 +240,16 @@ public class InvoiceManagerImpl implements InvoiceManager {
           if (i != null)
             invoices.add(i);
         }
-      }
+      
     }
 
-    return invoices;
+    	  }
+    	          if(invoices.size()>0){
+    	          	allinvoices.addAll(invoices);
+    	          }
+    	         
+    	      	  }}
+    	      	  return allinvoices;
   }
 
   public Invoice createInvoice(List<ShippingOrder> orders, Invoice invoice, long customerId,
@@ -2528,10 +2581,10 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 		}
 		
 		@Override
-				public List<FutureReference> getFutureReference() {
+		public List<FutureReference> getFutureReference(List<Long> businessIds) {
 					// TODO Auto-generated method stub
 					
-					return shippingDAO.getFutureReference();
+			return shippingDAO.getFutureReference(businessIds);
 				}
 		
 				@Override

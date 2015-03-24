@@ -41,7 +41,12 @@ import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
-
+import com.meritconinc.shiplinx.model.UserFilter;
+import com.meritconinc.mmr.dao.BusinessFilterDAO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.model.CustomerBusiness;
+import com.meritconinc.shiplinx.model.Partner;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 public class CustomerManagerImpl implements CustomerManager {
 
 	private static final Logger log = LogManager
@@ -168,7 +173,69 @@ public class CustomerManagerImpl implements CustomerManager {
 			customer.setActive(true);
 			long customerId = customerDAO.addCustomer(customer);
 			customerDAO.addUser(customer, customerId);
-
+			
+						//Partner partner = (Partner) ActionContext.getContext().getSession().get(Constants.CURRENT_PAGE);
+												Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+												Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+												Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+												Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+												BusinessFilterDAO businessFilterDAO = (BusinessFilterDAO) MmrBeanLocator.getInstance().findBean("businessFilterDAO");
+												CustomerBusiness customerbus=new CustomerBusiness();
+												UserFilter uf=businessFilterDAO.getUserFilterByUsername(UserUtil.getMmrUser().getUsername());
+												//setting the user details
+												if(businessId==null || businessId==0 ){
+												businessId=UserUtil.getMmrUser().getBusinessId();
+												}
+												if(uf!=null){
+													if((partnerId==null || partnerId==0) ){
+														
+														partnerId=uf.getPartnerId();
+													}
+													
+													if(countryPartnerId==null || countryPartnerId==0){
+														
+														countryPartnerId=uf.getCountryPartnerId();
+													}
+													
+													if(branchId==null || branchId==0){
+														branchId=uf.getBranchId();
+													}
+												}
+												
+												customerbus.setUserName(UserUtil.getMmrUser().getUsername());
+												customerbus.setCustomerId(customerId);
+												if((businessId !=null && businessId !=0) &&(partnerId!=null && partnerId !=0)
+														&& (countryPartnerId!=null && countryPartnerId!=0 )
+														&& (branchId!=null && branchId !=0) ){
+													//setting the customer from the branch level
+													customerbus.setBusinessId(branchId);
+													/* customerbus.setPartnerId(partnerId);
+													customerbus.setCountryPartnerId(countryPartnerId);
+													customerbus.setBranchId(branchId);*/
+													customerbus.setBranchLevel(true);
+													
+												
+												}else if((businessId !=null && businessId !=0) &&(partnerId!=null && partnerId !=0)
+														&& (countryPartnerId!=null && countryPartnerId!=0 )){
+													//setting the customer from the country level
+													customerbus.setBusinessId(countryPartnerId);
+													/*customerbus.setPartnerId(partnerId);
+													customerbus.setCountryPartnerId(countryPartnerId);*/
+													customerbus.setNationLevel(true);
+												}else if((businessId !=null && businessId !=0) &&(partnerId!=null && partnerId !=0)){
+													//setting the customer from the country level
+													customerbus.setBusinessId(partnerId);
+													/*customerbus.setPartnerId(partnerId);*/
+													customerbus.setPartnerLevel(true);
+												}else if((businessId !=null && businessId !=0)){
+													//setting the customer from the busadmin level
+													customerbus.setBusinessId(businessId);
+													customerbus.setBusinessLevel(true);
+												}else if(businessId==null && UserUtil.getMmrUser().isBusinessLevel()){
+												customerbus.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+													customerbus.setBusinessLevel(true);
+												}
+												businessFilterDAO.addCustomerBusiness(customerbus);
 			List<CustomerTier> lstCustomerTier = new ArrayList<CustomerTier>();
 			lstCustomerTier = customerDAO.getCustomerByTier(customer);
 			if (lstCustomerTier.size() > 0) { // If it returns a row matching
@@ -428,6 +495,9 @@ public class CustomerManagerImpl implements CustomerManager {
 		// invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 		invoice.setBusinessId(busId);
 
+		List<Long> BusIds=new ArrayList<Long>();
+		        BusIds.add(busId);
+		        invoice.setBusinessIds(BusIds);
 		invoice.setPaymentStatusList(new int[] { Invoice.INVOICE_STATUS_UNPAID,
 				Invoice.INVOICE_STATUS_PARTIAL_PAID });
 
@@ -890,4 +960,44 @@ public class CustomerManagerImpl implements CustomerManager {
 			public int findUnpaidInvoiceDuration(long customerId, int holdTerms) {
 				return customerDAO.findUnpaidInvoiceDuration(customerId, holdTerms);
 			}
+			
+			@Override
+								public List<Customer> getAllCustomers() {
+									// TODO Auto-generated method stub
+									return customerDAO.getAllCustomers();
+								}
+							
+								@Override
+								public List<Customer> getAllCustomersByBusinessLevel(Long businessId) {
+									// TODO Auto-generated method stub
+									return customerDAO.getAllCustomersByBusinessLevel(businessId);
+								}
+							
+								@Override
+								public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
+										Long partnerId) {
+									// TODO Auto-generated method stub
+									
+									return customerDAO.getAllCustomersByPartnerLevel(businessId,partnerId);
+								}
+							
+								@Override
+								public List<Customer> getAllCustomersByNationLevel(Long businessId,
+										Long partnerId, Long countryPartnerId) {
+									// TODO Auto-generated method stub
+									return customerDAO.getAllCustomersByNationLevel(businessId,partnerId,countryPartnerId);
+								}
+							
+								@Override
+								public List<Customer> getAllCustomersByBranchLevel(Long businessId,
+										Long partnerId, Long countryPartnerId, long branchId) {
+								// TODO Auto-generated method stub
+									return customerDAO.getAllCustomersByBranchLevel(businessId,partnerId,countryPartnerId,branchId);
+								}
+			
+								 
+								public List<Customer> getCustomersBySalesUser(String usename) {
+									// TODO Auto-generated method stub
+									return customerDAO.getCustomersBySalesUser(usename);
+								}
 }

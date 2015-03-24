@@ -64,7 +64,7 @@ public interface InvoiceManager {
 			public List<Invoice> getInvoiceByEmailType(Long invoiceId);
 			public void updateBilledUOM(long id1);
 			
-			public List<FutureReference>getFutureReference();
+			public List<FutureReference>getFutureReference(List<Long> businessIds);
 			public void deleteFutureReference(Long id2);
 			public FutureReference showFutureReference(Long id1);
 			

@@ -46,4 +46,15 @@ public interface CustomerManager{
 	public void updateAvailableCredit(double availableCredit, long customerId);
 		public double getAvailableCredit(long customerId);
 		public int findUnpaidInvoiceDuration(long customerId, int holdTerms);
+		
+		public List<Customer> getAllCustomers();
+						public List<Customer> getAllCustomersByBusinessLevel(Long businessId);
+						public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
+								Long partnerId);
+						public List<Customer> getAllCustomersByNationLevel(Long businessId,
+								Long partnerId, Long countryPartnerId);
+						public List<Customer> getAllCustomersByBranchLevel(Long businessId,
+								Long partnerId, Long countryPartnerId, long branchId);
+						public List<Customer> getCustomersBySalesUser(String username);
+		
 }

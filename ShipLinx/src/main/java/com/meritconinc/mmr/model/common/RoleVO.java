@@ -11,9 +11,12 @@ import java.io.Serializable;
 public class RoleVO implements Serializable {
 	private static final long serialVersionUID 		= 6272007;
 
+	public static final String ROLE_BUSINESSADMIN = "busadmin";
 	private String role;
 	private String description;
-	
+	private String[] actionIds;
+						
+						private String[] menuIds;
 	/**
 	 * 
 	 */
@@ -50,5 +53,19 @@ public class RoleVO implements Serializable {
 		this.role = role;
 	}
 
-
+	public String[] getActionIds() {
+												return actionIds;
+											}
+										
+											public void setActionIds(String[] actionIds) {
+												this.actionIds = actionIds;
+											}
+										
+											public String[] getMenuIds() {
+												return menuIds;
+											}
+										
+											public void setMenuIds(String[] menuIds) {
+												this.menuIds = menuIds;
+						 				}
 }

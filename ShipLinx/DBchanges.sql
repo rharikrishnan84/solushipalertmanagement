@@ -2859,6 +2859,575 @@ SET SQL_SAFE_UPDATES = 0;
 
 
 update shipping_order set link_to_order=0;
+
+--Business Filter Query
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.managerole', 'Manage Role', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.menuName', 'Menu', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.Menuaction.actionName', 'Action', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.Menuaction.business', 'Business', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.name', 'Role', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.addNewMenu', 'Add New Menu', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.menuName', 'Menu Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.menuUrl', 'Url', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.menuLevel', 'Menu Level', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.menuLevel', 'Menu Level', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.resourcebundle', 'Resource Bundle', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.msgkey', 'Message key', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.msgContent', 'Message Content', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.locale', 'Locale', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.menuRole', 'Role', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.role', 'Role', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.business', 'Business', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.displayOrder', 'Display Order', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.topLevel', 'Top Level', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.firstLevel', 'First Level', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.msgLocale', 'Locale', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.actionName', 'Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.menu', 'Menu', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.highlight', 'isHighlighted', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.description', 'Description', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.shortCode', 'Short Code', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.name', 'Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.systemName', 'System Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.logOutUrl', 'Log Out URL', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.storeCC', 'Store CC', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.logoUrl', 'Logo URL', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.subDomain', 'SubDomain', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.supportUrl', 'Support URL', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.termsUrl', 'Terms URL', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.smtpHost', 'Smtp Host', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.smtpUsername', 'Smtp Username', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.smtpPassword', 'Smtp Password', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.smtpPort', 'Smtp Port', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.roleName', 'Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.roleDescription', 'Description', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.newRole', 'New Role', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.actions', 'Actions', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.roleActions', 'Action(s)', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.roleMenu', 'Menu(s)', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.titleAction', 'New Action', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.addNewBusiness', 'New Business', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.menuName', 'Menu', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('role.admin.roleHeader', 'Edit Role', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.editBusiness ', 'Edit Business', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.address ', 'Address', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.abbreviationName ', 'Abbreviation Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.addressone ', 'Address 1', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.addresstwo ', 'Address 2', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.city ', 'City', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.phoneno', 'Phone Number', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.faxno', 'Fax Number', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.mobilePhoneNumber', 'Mobile Number', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.emailAddress', 'E-Mail', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.contactName', 'Contact Name', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.postalCode', 'Postal Code', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.url', 'URL', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.residential', 'Residential', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.provinceCode', 'Province Code', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.residential', 'Residential Address', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.defaultFrom', 'Default From', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.defaultTo', 'Default To', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.sendNotification', 'Send Notification', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessfilter.labelName', 'Business Filter', 'en_CA', 1);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.edit.partner', 'EDIT PARTNER', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.add.partner', 'ADD PARTNER', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.partner.name', 'PARTNER NAME', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.short.code', 'SHORT CODE', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.partner', 'PARTNER', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.list', 'PARTNER LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.view.country', 'VIEW NATION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.country', 'ADD NATION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.nation', 'NATION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business', 'BUSINESS', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.nation.list', 'NATION LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.list', 'BRANCH LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.add', 'ADD BRANCH', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.view', 'VIEW BRANCH', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.name', 'BRANCH NAME', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.desc', 'DESCRIPTION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch', 'BRANCH', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.name', 'Role', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.add', 'ADD ACTION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.name', 'ACTION NAME', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.highlight', 'HIGHLIGHT', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action.list', 'ACTION LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.action', 'ACTION', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.add', 'ADD MENU', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.list', 'MENU LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.menu.parentid', 'PARENT ID', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.list', 'ROLE LIST', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.role.add', 'ADD ROLE', 'en_CA', 0);
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.newbranch', 'Add Branch', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.partner.country', 'PARTNER COUNTRY', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.default.loader', 'DEFAULT LOADERS', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.partner.allcountry', 'ALL COUNTRIES', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.nation.partner', 'SELECT A PARTNER AND COUNTRY', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.newbranch', 'Add Branch', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.newpartner', 'Add Partner', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.businessfilter', 'Business Filter', 'en_CA', 1, '');
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('433', 'Manage Role', '/admin/list.menu.action', '4', 'LEVEL_1', '1', '111', 'menu.admin.managerole', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('434', 'Menu', '/admin/list.menu.action', '1', 'LEVEL_2', '2', '433', 'menu.admin.menuName', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('435', 'Action', '/admin/list.strutsAction.action', '2', 'LEVEL_2', '0', '433', 'label.Menuaction.actionName', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('436', 'Role', '/admin/list.role.action', '3', 'LEVEL_2', '0', '436', 'label.role.name', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('437', 'Business Filter', '/admin/list.business.action', '5', 'LEVEL_1', '1', '111', 'menu.admin.businessfilter', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('438', 'Business ', '/admin/list.business.action', '1', 'LEVEL_2', '0', '437', 'label.Menuaction.business', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+
+);
+
+ INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('439', 'Partner', '/admin/list.partner.action', '2', 'LEVEL_2', '2', '437', 'menu.admin.partner', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+
+);
+
+ INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('440', 'Nation', '/admin/list.countrypartner.action', '3', 'LEVEL_2', '2', '437', 'menu.admin.countrypartner', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `menu`
+(`id`,
+`name`,
+`url`,
+`display_order`,
+`level`,
+`level_no`,
+`parent_id`,
+`label_id`,
+`image`,
+`image_over`,
+`help_tag`,
+`support_tag`)
+VALUES
+('441', 'Branch', '/admin/list.branch.action', '4', 'LEVEL_2', '2', '437', 'menu.admin.branch', '', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>'
+);
+
+INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('433', 'sysadmin', '');
+ INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('434', 'sysadmin', '');
+ INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('435', 'sysadmin', '');
+ INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('436', 'sysadmin', '');
+ 
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('438', 'sysadmin', '');
+  
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('437', 'sysadmin', '');
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('437', 'busadmin', '');
+
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('439', 'sysadmin', '');
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('439', 'busadmin', '');
+
+   INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('440', 'sysadmin', '');
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('440', 'busadmin', '');
+
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('441', 'sysadmin', '');
+  INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('441', 'busadmin', '');
+  
+  INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '433', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '434', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '435', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`) VALUES ('1', '436');
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '437', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '438', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`, `bm_id`) VALUES ('1', '439', '');
+INSERT INTO `business_menu` (`business_id`, `menu_id`) VALUES ('1', '440');
+INSERT INTO `business_menu` (`business_id`, `menu_id`) VALUES ('1', '441');
+
+ALTER TABLE `business` 
+ADD COLUMN `isPartner` BIT(1) NOT NULL DEFAULT b'0' AFTER `report_pathinvoice`,
+ADD COLUMN `isNation` BIT(1) NOT NULL DEFAULT b'0' AFTER `isPartner`,
+ADD COLUMN `isBranch` BIT(1) NOT NULL DEFAULT b'0' AFTER `isNation`,
+ADD COLUMN `partner_id` INT(10) NOT NULL DEFAULT 0 AFTER `isBranch`,
+ADD COLUMN `country_partner_id` INT(10) NOT NULL DEFAULT 0 AFTER `partner_id`,
+ADD COLUMN `branch_id` INT(10) NOT NULL DEFAULT 0 AFTER `country_partner_id`,
+ADD COLUMN `partner_business_id` INT(10) NOT NULL DEFAULT 0 AFTER `branch_id`;
+
+ALTER TABLE `user_history` 
+ADD COLUMN `ispartner_level` BIT(1) NULL DEFAULT b'0' AFTER `bo_id`,
+ADD COLUMN `isnation_level` BIT(1) NULL DEFAULT b'0' AFTER `ispartner_level`,
+ADD COLUMN `isbranch_level` BIT(1) NULL DEFAULT b'0' AFTER `isnation_level`,
+ADD COLUMN `isdivision_level` BIT(1) NULL DEFAULT b'0' AFTER `isbranch_level`,
+ADD COLUMN `spd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `isdivision_level`,
+ADD COLUMN `ltl_enabled` BIT(1) NULL DEFAULT b'0' AFTER `spd_enabled`,
+ADD COLUMN `chb_enabled` BIT(1) NULL DEFAULT b'0' AFTER `ltl_enabled`,
+ADD COLUMN `fwd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `chb_enabled`,
+ADD COLUMN `fpa_enabled` BIT(1) NULL DEFAULT b'0' AFTER `fwd_enabled`,
+ADD COLUMN `isbusiness_level` BIT(1) NULL DEFAULT b'0' AFTER `fpa_enabled`;
+
+ALTER TABLE `user` 
+ADD COLUMN `ispartner_level` BIT(1) NULL DEFAULT b'0' AFTER `bo_id`,
+ADD COLUMN `isnation_level` BIT(1) NULL DEFAULT b'0' AFTER `ispartner_level`,
+ADD COLUMN `isbranch_level` BIT(1) NULL DEFAULT b'0' AFTER `isnation_level`,
+ADD COLUMN `isdivision_level` BIT(1) NULL DEFAULT b'0' AFTER `isbranch_level`,
+ADD COLUMN `spd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `isdivision_level`,
+ADD COLUMN `ltl_enabled` BIT(1) NULL DEFAULT b'0' AFTER `spd_enabled`,
+ADD COLUMN `chb_enabled` BIT(1) NULL DEFAULT b'0' AFTER `ltl_enabled`,
+ADD COLUMN `fwd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `chb_enabled`,
+ADD COLUMN `fpa_enabled` BIT(1) NULL DEFAULT b'0' AFTER `fwd_enabled`,
+ADD COLUMN `isbusiness_level` BIT(1) NULL DEFAULT b'0' AFTER `fpa_enabled`;
+
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('addmenu.listTopMenu', '434', 0, 'addmenu.listTopMenu', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('save.menu', '434', 0, 'saving the menu', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.menu', '434', 0, 'edit the menu', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.strutsAction', '434', 0, ' list.strutsAction', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('new.strutsAction', '434', 0, 'new.strutsAction', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('add.strutsAction', '434', 0, 'add.strutsAction', 1, '');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('save.business', '434', 0, 'save.business', 1, '');
+	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.role', '434', 0, 'edit.role', 1, '');
+	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('save.role', '434', 0, 'save.role', 1, '');
+ 	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('new.role', '434', 0, 'new.role', 1, '');
+ 	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.role', '434', 0, 'list.role', 1, '');
+	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('delete.role', '434', 0, 'delete.role', 1, '');
+	INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.strutsAction', '434', 0, 'edit.strutsAction', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('delete.strutsAction', '434', 0, 'delete.strutsAction', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('delete.menu', '434', 0, 'delete.menu', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.menu', '434', 0, 'list.menu', 1, '');
+    INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('add.menu', '434', 0, 'add.menu', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('new.strutsAction', '434', 0, 'new.strutsAction', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.businessfilter', '434', 0, 'list.businessfilter', 1, '');
+    INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.business', '438', 0, 'edit.business', 1, '');
+     INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.business', '437', 0, 'list.business', 1, '');
+     INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('new.business', '437', 0, 'new.business', 1, '');
+     
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1025', '');
+INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1026', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1027', '');
+INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1028', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1029', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1030', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1031', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1032', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1033', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1034', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1035', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1036', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1037', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1038', '');
+  INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1040', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1041', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1042', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1043', '');
+  INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1044', '');
+   INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1039', '');
+  INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1045', '');
+   INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1046', '');
+   
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('addPartner', '439', 0, 'addPartner', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.partner', '439', 0, 'list.partner', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('createPartner', '439', 0, 'createPartner', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.partner', '439', 0, 'edit.partner', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('addNation', '439', 0, 'addNation', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('createNation', '439', 0, 'createNation', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('delete.partner', '439', 0, 'delete.partner', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.nation', '439', 0, 'edit.nation', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.branch', '439', 0, 'edit.branch', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('set.branch', '439', 0, 'set.branch', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('login.business', '439', 0, 'login.business', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('login.partner', '439', 0, 'login.partner', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('login.country', '439', 0, 'createNation', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('login.branch', '439', 0, 'login.branch', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('listCountryName', '439', 0, 'listCountryName', 1, '');
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('listBranchName', '439', 0, 'listBranchName', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('viewPartner', '439', 0, 'viewPartner', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('viewCountry', '439', 0, 'viewCountry', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('viewBranch', '439', 0, 'viewBranch', 1, '');
+  INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('viewBus', '439', 0, 'viewBus', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.countrypartner', '440', 0, 'list.countrypartner', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('list.branch', '441', 0, 'list.countrypartner', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('addbranch', '441', 0, 'addbranch', 1, '');
+   INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('saveBranch', '441', 0, 'saveBranch', 1, '');
+   
+   INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1047', '');
+INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1047', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1048', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1048', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1049', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1049', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1050', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1050', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1051', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1051', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1052', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1052', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1053', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1053', '');
+       INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1054', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1054', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1055', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1055', '');
+      INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1056', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1056', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1057', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1057', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1058', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1058', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1059', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1059', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1060', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1060', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1061', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1061', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1062', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1062', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1063', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1063', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1064', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1064', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1065', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1065', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1066', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1066', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1067', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1067', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1068', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1068', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1069', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1069', '');
+ INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1070', '');
+     INSERT INTO  `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1070', '');
+     
+     INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('111', 'sysadmin', '');
+INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('439', 'sysadmin', '');
+INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('440', 'sysadmin', '');
+INSERT INTO  `role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('441', 'sysadmin', '');
+
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.countrypartner', 'Nation', 'en_CA', 1, '');
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.branch', 'Branch', 'en_CA', 1, '');
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.business.headerKey', 'Header Key', 'en_CA', 1, '');
+
+ALTER TABLE  `quote` 
+ADD COLUMN `business_id` INT(10) NULL AFTER `followed_up_by`;
+
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('shippingOrder.unpaid.invoice.error', 'your account is on hold for severely past due invoices', 'en_CA', 1, '');
+
+CREATE TABLE `customer_business` (
+  `customer_business_id` int(10) NOT NULL AUTO_INCREMENT,
+  `business_id` int(10) DEFAULT NULL,
+  `customer_id` int(10) DEFAULT NULL,
+  `username` varchar(45) DEFAULT NULL,
+  `partner_id` int(10) DEFAULT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  `country_partner_id` int(10) DEFAULT NULL,
+  `ispartner_level` bit(1) DEFAULT b'0',
+  `isnation_level` bit(1) DEFAULT b'0',
+  `isbranch_level` bit(1) DEFAULT b'0',
+  `isdivition_level` bit(1) DEFAULT b'0',
+  `isbusiness_level` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`customer_business_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `partner` (
+  `partner_id` int(10) NOT NULL AUTO_INCREMENT,
+  `short_code` varchar(45) DEFAULT NULL,
+  `address_id` int(10) unsigned DEFAULT NULL,
+  `business_id` int(10) unsigned DEFAULT NULL,
+  `partner_name` varchar(45) DEFAULT NULL,
+  `first_name` varchar(45) DEFAULT NULL,
+  `last_name` varchar(45) DEFAULT NULL,
+  `fax` varchar(45) DEFAULT NULL,
+  `phone_number` varchar(45) DEFAULT NULL,
+  `email` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`partner_id`),
+  UNIQUE KEY `partner_name_UNIQUE` (`partner_name`),
+  UNIQUE KEY `short_code_UNIQUE` (`short_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `branch` (
+  `branch_id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `short_code` varchar(100) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `country_partner_id` int(10) DEFAULT NULL,
+  `business_id` int(10) DEFAULT NULL,
+  `partner_id` int(10) DEFAULT NULL,
+  `address_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`branch_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_filter` (
+  `user_filter_id` int(10) NOT NULL AUTO_INCREMENT,
+  `division_id` int(10) DEFAULT '0',
+  `business_id` int(10) unsigned DEFAULT NULL,
+  `username` varchar(45) DEFAULT NULL,
+  `country_partner_id` int(10) DEFAULT NULL,
+  `partner_id` int(10) DEFAULT NULL,
+  `branch_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`user_filter_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `country_partner` (
+  `country_partner_id` int(10) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(10) DEFAULT NULL,
+  `business_id` int(10) DEFAULT NULL,
+  `country_code` varchar(45) NOT NULL,
+  `address_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`country_partner_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `newsoluship`.`business` 
+CHANGE COLUMN `partner_business_id` `parent_business_id` INT(10) NOT NULL DEFAULT '0' ;
+
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`, `role_menu_id`) VALUES ('106', 'sysadmin', '');
+
+DELETE FROM `newsoluship`.`role_menu` WHERE `role_menu_id`='222';
+DELETE FROM `newsoluship`.`role_menu` WHERE `role_menu_id`='215';
+DELETE FROM `newsoluship`.`role_menu` WHERE `role_menu_id`='213';
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('432', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('428', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('419', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('418', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('417', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('416', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('410', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('409', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('408', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('407', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('405', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('402', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('401', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('400', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('271', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('270', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('261', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('222', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('202', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('185', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('184', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('182', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('181', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('172', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('171', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('162', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('161', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('152', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('151', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('142', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('141', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('123', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('122', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('121', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('113', 'sysadmin');
+INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('112', 'sysadmin');
+
+INSERT INTO `newsoluship`.`resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk` ) VALUES ('menu.admin.partner', 'Partner', 'en_CA', 1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 
 

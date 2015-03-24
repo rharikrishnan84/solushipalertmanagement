@@ -1305,5 +1305,64 @@ var currentDate="";
 				ajax_Country.send(this);
 		} // End function showState()  
 		
-		
+	function showMenuLevel() {
+		var e = document.getElementById("idLocale");
+		var locale = e.options[e.selectedIndex].value;
+	 // alert(locale);
+						businessId = document.getElementById('idBusiness').value;
+				    //alert(businessId);
+						if(businessId == "-1" || businessId=="") {
+							alert("Please Select any business");
+							document.getElementById("menuLevelList").value="-1";
+							return;
+						}
+						firstBox = document.getElementById('menuLevelList');
+						if(firstBox.value == '10'){
+							showSecondMenuLevel();
+						}
+						ajax_Country=ajaxFunction();
+						ajax_Country.onreadystatechange=function()
+						  {
+							   if(ajax_Country.readyState==4)
+								{
+								reponse=ajax_Country.responseText;
+								js_stateid=document.getElementById("levelOneMenu");
+								js_stateid.innerHTML= reponse;
+								}
+						  }
+						//alert(locale);
+						  url=contextPath+"/menu.listTopMenu.action?level=top&levelValue="+firstBox.value+"&businessId="+businessId+"&locale="+locale;
+							//param="objName=ref_state&country_id="+country_id;
+							ajax_Country.open("GET",url,true);
+							ajax_Country.send(this);
+					}
+					
+					function showSecondMenuLevel() {
+						businessId = document.getElementById('idBusiness').value;
+						topId = document.getElementById('idTopLevel').value;
+						//alert(topId);
+						if(businessId == "-1"){
+							alert("Please Select any business");
+							return;
+						}
+						firstBox = document.getElementById('menuLevelList');
+						if(firstBox.value == '20'){
+							alert("test");
+							return;
+						}
+						ajax_Country=ajaxFunction();
+						ajax_Country.onreadystatechange=function()
+						  {
+							   if(ajax_Country.readyState==4)
+								{
+								reponse=ajax_Country.responseText;
+								js_stateid=document.getElementById("levelTwoMenu");
+								js_stateid.innerHTML= reponse;
+								}
+					  }
+						  url=contextPath+"/menu.listTopMenu.action?level=second&levelValue="+firstBox.value+"&businessId="+businessId+"&topLevelId="+topId;
+							//param="objName=ref_state&country_id="+country_id;
+							ajax_Country.open("GET",url,true);
+							ajax_Country.send(this);
+					}
  

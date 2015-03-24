@@ -1,5 +1,6 @@
 package com.meritconinc.shiplinx.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,12 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
       // paramObj.put("toCountryCode", markup.getToCountryCode());
       // if (markup.getServiceId() != null)
       // paramObj.put("serviceId", markup.getServiceId());
-
+    	if((markup.getBusinessId()!=null ) && (markup.getBusinessIds()==null|| markup.getBusinessIds().size()<0) ){
+    	      List<Long> businessIds=new ArrayList<Long>();
+    	      businessIds.add(markup.getBusinessId());
+    	      markup.setBusinessIds(businessIds);
+    	      
+    	     }
       List<Markup> markupList = (List<Markup>) getSqlMapClientTemplate().queryForList(
           "findMarkupListForCustomer", markup);
       return markupList;
@@ -414,9 +420,61 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Markup> getAllMarkupsForCustomer(Long customerId){
+	public List<Markup> getAllMarkupsForCustomer(Long customerId,long businessId){
 		Map<String, Object> paramObj = new HashMap<String, Object>(1);
 		paramObj.put("customerId", customerId);
+		paramObj.put("businessId", businessId);
 		return (List<Markup>)getSqlMapClientTemplate().queryForList("getMarkupListForCustomerAndCarrier1", paramObj);
+		
 	}
+	
+	@Override
+			public void insertCustomerMarkupByBusiness(long newBusinessId,
+						long defaultBusinessId) {
+					Map map = new HashMap();
+				    map.put("newBusinessId", newBusinessId);
+				    map.put("defaultBusinessId", defaultBusinessId);
+				    try {
+				        getSqlMapClientTemplate().insert("addCustomerMarkupbyBusiness", map);
+				      } catch (Exception e) {
+				        // log.debug("-----Exception-----"+e);
+				        e.printStackTrace();
+				      }
+					
+				}
+			
+				@Override
+			public void insertLtlPoundrateByBusiness(long newBusinessId,
+						long defaultBusinessId) {
+					Map map = new HashMap();
+				    map.put("newBusinessId", newBusinessId);
+				    map.put("defaultBusinessId", defaultBusinessId);
+				    try {
+			        getSqlMapClientTemplate().insert("addLtlPoundratebyBusiness", map);
+				      } catch (Exception e) {
+			        // log.debug("-----Exception-----"+e);
+				        e.printStackTrace();
+				      }
+					
+				}
+			
+				@Override
+				public void insertLtlSkidRateByBusiness(long newBusinessId,
+						long defaultBusinessId) {
+					Map map = new HashMap();
+				    map.put("newBusinessId", newBusinessId);
+				    map.put("defaultBusinessId", defaultBusinessId);
+				    try {
+				        getSqlMapClientTemplate().insert("addLtlSkidRatebyBusiness", map);
+				      } catch (Exception e) {
+				        // log.debug("-----Exception-----"+e);
+				        e.printStackTrace();
+				      }
+					
+				}
+		
+		
+		
+	
+	
 }

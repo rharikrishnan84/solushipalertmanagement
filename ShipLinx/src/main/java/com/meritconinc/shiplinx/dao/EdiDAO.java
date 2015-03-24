@@ -15,4 +15,5 @@ public interface EdiDAO {
 	public List<EdiItem> getMatchingEdiItemList(EdiItem item);
 	public List<EdiItem> findEdiItems(EdiItem item);
 	public List<EdiItem> searchFileInEdiItem(String uploadFileName);
+	public void insertEdiInfoByBusiness(long newBusinessId,long defaultBusinessId);
 } 

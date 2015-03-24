@@ -144,6 +144,12 @@
 	<select id="getActiveCreditCardForCustomer" parameterClass="long"  resultMap="creditCardMap">
 		select * from credit_card cc where cc.customer_id = #value# and active is true
 	</select>
-
+<insert id="addMerchantAccountbyBusiness" parameterClass="map">
+	INSERT INTO merchant_account(business_id,processor,property1,property2,property3,property4,property5,test_property1
+							,test_property2,test_property3,test_property4,test_property5,active,currency)
+							(select #newBusinessId#,processor,property1,property2,property3,property4,property5,test_property1
+							,test_property2,test_property3,test_property4,test_property5,active,currency from merchant_account where business_id=#defaultBusinessId#)
+	
+	</insert>
 </sqlMap>
 

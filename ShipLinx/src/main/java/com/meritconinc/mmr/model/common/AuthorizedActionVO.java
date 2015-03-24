@@ -19,6 +19,11 @@ public class AuthorizedActionVO implements Serializable {
 	private boolean reloadSafe;
 	private String namespace=null;
 	private String parentNamespace=null;
+	private int id;
+						
+						private String[] roleNames;
+						
+						private int[] selectedActions;
 	 
 	/**
 	 * 
@@ -142,5 +147,27 @@ public class AuthorizedActionVO implements Serializable {
 		this.namespace = namespace;
 	}
 
+	public String[] getRoleNames() {
+		return roleNames;
+	}
 
+	public void setRoleNames(String[] roleNames) {
+		this.roleNames = roleNames;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+public int[] getSelectedActions() {
+		return selectedActions;
+	}
+
+public void setSelectedActions(int[] selectedActions) {
+	this.selectedActions = selectedActions;
+	}
 }

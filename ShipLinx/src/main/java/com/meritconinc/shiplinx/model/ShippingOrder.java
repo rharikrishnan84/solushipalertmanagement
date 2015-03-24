@@ -162,7 +162,7 @@ public class ShippingOrder implements Serializable {
   private Float quotedWeight;
   private String quotedWeightUOM;
   private Double ratedAsWeight;
-
+  private List<Long> businessIds;
   private BigDecimal dutiableAmount = new BigDecimal(0.00);
 
   private List<CCTransaction> ccTransactions = new ArrayList<CCTransaction>();;
@@ -2062,6 +2062,14 @@ public long getLinkToOrder() {
 
 public void setLinkToOrder(long linkToOrder) {
 	this.linkToOrder = linkToOrder;
+}
+
+public List<Long> getBusinessIds() {
+	return businessIds;
+}
+
+public void setBusinessIds(List<Long> businessIds) {
+	this.businessIds = businessIds;
 }
 
 }

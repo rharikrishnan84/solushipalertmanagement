@@ -26,4 +26,8 @@ public interface MessageDAO {
   public List<LocaleVO> getLanguagesByLocale(String locale);
 
 public String getPath(String url);
+
+public void saveResource(String msgId,String msgContent,String locale);
+
+public LocaleVO getLocaleByMsgId(String msgId);
 }

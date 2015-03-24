@@ -22,6 +22,13 @@ public class MenuItemVO  implements Serializable{
 	private String image;
 	private String imageOver;
 	private String msgContent;
+	public static final String BUSINESSFILTER_URL_PARTNERLEVEL = "/admin/list.partner.action";
+				public static final String BUSINESSFILTER_URL_NATIONALLEVEL = "/admin/list.countrypartner.action";
+				public static final String BUSINESSFILTER_URL_BRANCHLEVEL = "/admin/list.branch.action";
+				public static final String BUSINESSFILTER_URL_BUSINESSLEVEL = "/admin/list.business.action";
+				private int displayOrder;
+							
+							private String labelId;
 	public String getMsgContent() {
 		return msgContent;
 	}
@@ -139,6 +146,17 @@ public class MenuItemVO  implements Serializable{
 	public void setSupporttag(String supporttag) {
 		this.supporttag = supporttag;
 	}
-	
+	public int getDisplayOrder() {
+												return displayOrder;
+											}
+											public void setDisplayOrder(int displayOrder) {
+												this.displayOrder = displayOrder;
+											}
+											public String getLabelId() {
+											return labelId;
+											}
+											public void setLabelId(String labelId) {
+												this.labelId = labelId;
+											}
 	
 }

@@ -1,7 +1,7 @@
 package com.meritconinc.shiplinx.model;
 
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
-
+import java.util.List;
 public class Markup {
 	
 	private Long customerId;
@@ -24,6 +24,8 @@ public class Markup {
 	private Long sourceCustomerId;
 //	private String typeText;
 	private int serviceType;
+	private List<Long> customerIds;
+	private List<Long> businessIds;
 	
 	private int variable;
 	 
@@ -202,5 +204,17 @@ public class Markup {
 			}
 			public void setVariable(int variable) {
 				this.variable = variable;
+			}
+			public List<Long> getBusinessIds() {
+				return businessIds;
+			}
+			public void setBusinessIds(List<Long> businessIds) {
+				this.businessIds = businessIds;
+			}
+			public List<Long> getCustomerIds() {
+				return customerIds;
+			}
+			public void setCustomerIds(List<Long> customerIds) {
+				this.customerIds = customerIds;
 			}
 }

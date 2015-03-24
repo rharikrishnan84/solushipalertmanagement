@@ -44,6 +44,10 @@ import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.meritconinc.shiplinx.model.FutureReference;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.model.Business;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingDAO {
   private static final Logger log = LogManager.getLogger(ShippingDAOImpl.class);
 
@@ -563,8 +567,21 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
   public List<ShippingOrder> getUnbilledShipments(long businessId, long customerId, String branch) {
     // TODO Auto-generated method stub
     try {
+    	    	List<Long> businessIds=new ArrayList<Long>();
+    	    	    	if(businessId>0){
+    	    	              businessIds=BusinessFilterUtil.getBusIdParentId(businessId);
+    	    	    	}else if(businessId==0){
+    	    	    		 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+    	    		  		   List<Business>	allbusList=businessDAO.getHoleBusinessList();
+    	    	    	   List<Long> busids=new ArrayList<Long>();
+    	    					for(Business bs:allbusList){
+    	    						 busids.add(bs.getId());
+    	    					}
+    	    				businessIds=busids;
+    	    	    	}
+
       Map<String, Object> paramObj = new HashMap<String, Object>();
-      paramObj.put("businessId", businessId);
+      paramObj.put("businessIds",businessIds);
       paramObj.put("customerId", customerId);
       paramObj.put("branch", branch);
       paramObj.put("statusId", ShiplinxConstants.CHARGE_READY_TO_INVOICE);
@@ -714,7 +731,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       }
       so.setPurpose(""); // Clear purpose
       List<ShippingOrder> list = getSqlMapClientTemplate().queryForList(queryId1, so);
-      if (role.equalsIgnoreCase("busadmin")) {
+      if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
           List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
           if(list.size()==0 && so.getId()!=null && so.getId()>0){
           	list2 = getSqlMapClientTemplate().queryForList(queryId2, so);
@@ -1439,9 +1456,12 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 										}
 		
 										@Override
-										public List<FutureReference> getFutureReference() {
+										public List<FutureReference> getFutureReference(List<Long> businessIds) {
 											// TODO Auto-generated method stub
-											List<FutureReference> fc1 =getSqlMapClientTemplate().queryForList("getFutureReference");
+											Map<String, Object> paramObj = new HashMap<String, Object>();
+											paramObj.put("businessIds", businessIds);
+											List<FutureReference> fc1 =getSqlMapClientTemplate().queryForList("getFutureReference",paramObj);
+											 											
 											
 											return fc1;
 										}
@@ -1471,4 +1491,54 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 											List<FutureReferencePackages>frpList=getSqlMapClientTemplate().queryForList("showFutureReferencePackage", id1);
 											return frpList;
 										}
+												
+												
+												 @Override
+												 												 	public List<Long> getBusinessIdsByorderIds(
+												 												 			List<Long> orderIds) {
+												 												 		// TODO Auto-generated method stub
+												 												 	  try {
+												 												 	      return (List<Long>)getSqlMapClientTemplate().queryForList("getBusinessIdsByorderIds", orderIds);
+												 												 	    } catch (Exception e) {
+												 												 	      e.printStackTrace();
+												 												 	    }
+												 												     return null;
+												 												 	}	
+												 												 
+												 												 
+												 												 
+												 												 @Override
+												 												 								public List<ShippingOrder> getUnbilledShipmentsBySinglebus(
+												 												 										Long businessId, long customerId, String branch) {
+												 												 									// TODO Auto-generated method stub
+												 												 									try {
+												 												 								    	List<Long> businessIds=new ArrayList<Long>();
+												 												 								    	if(businessId>0){
+												 												 								              businessIds.add(businessId);
+												 												 							    	} 
+												 												 								      
+												 												 								      Map<String, Object> paramObj = new HashMap<String, Object>();
+												 												 								   /*   paramObj.put("businessId", businessId);*/
+												 												 								      paramObj.put("businessIds",businessIds);
+												 												 								      paramObj.put("customerId", customerId);
+												 												 								      paramObj.put("branch", branch);
+												 												 								      paramObj.put("statusId", ShiplinxConstants.CHARGE_READY_TO_INVOICE);
+												 												 
+												 												 								      return getSqlMapClientTemplate().queryForList("searchUnbilledShipments2", paramObj);
+												 												 								    } catch (Exception e) {
+												 												 								      e.printStackTrace();
+												 												 								    }
+												 												 							    return null;
+												 												 							}
+												 													
+												
+												
+												
+												
+												
+												
+												
+												
+												
+												
 		}

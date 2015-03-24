@@ -221,10 +221,15 @@ public interface ShippingDAO {
   public void updateBilledUOM(long id1);
   
   public Long insertFutureReference(FutureReference fc);
-  public List<FutureReference>getFutureReference();
+  public List<FutureReference>getFutureReference(List<Long> businessIds);
   public void deleteFutureReference(Long id2);
   public FutureReference showFutureReference(Long id1);
 
   public void insertFuturePackages(FutureReferencePackages futureRefPack);
   public List<FutureReferencePackages> showFutureReferencePackage(Long id1);
+  public List<Long> getBusinessIdsByorderIds(List<Long> orderIds);
+    
+    public List<ShippingOrder> getUnbilledShipmentsBySinglebus(Long busid, long l,
+    		String branch);
+  
   }

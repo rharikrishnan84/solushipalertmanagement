@@ -1,4 +1,4 @@
-package com.meritconinc.shiplinx.service;
+	package com.meritconinc.shiplinx.service;
 
 import java.io.InputStream;
 import java.util.List;
@@ -76,5 +76,5 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public Markup findBaseMarkup(Markup markup);
   public boolean isCustomerMarkupByDisabled(long customerId);
   
-  public List<Markup> getAllMarkupsForCustomer(Long customerId);
+  public List<Markup> getAllMarkupsForCustomer(Long customerId, long l);
 }

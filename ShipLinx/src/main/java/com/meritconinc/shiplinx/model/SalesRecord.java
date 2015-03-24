@@ -1,5 +1,5 @@
 package com.meritconinc.shiplinx.model;
-
+import java.util.List;
 public class SalesRecord {
 
 	private double totalCost;
@@ -15,7 +15,7 @@ public class SalesRecord {
 	private String monthName="0";
 	private String totalCostDisplay;
 	private String totalAmountDisplay;
-
+	private List<Long> businessIds;
 	//web only
 	private String branch;
 		
@@ -127,6 +127,14 @@ public class SalesRecord {
 
 	public void setTotalAmountDisplay(String totalAmountDisplay) {
 		this.totalAmountDisplay = totalAmountDisplay;
+	}
+
+	public List<Long> getBusinessIds() {
+		return businessIds;
+	}
+
+	public void setBusinessIds(List<Long> businessIds) {
+		this.businessIds = businessIds;
 	}
 
 	

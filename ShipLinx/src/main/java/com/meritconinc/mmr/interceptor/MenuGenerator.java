@@ -11,6 +11,13 @@ import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.model.common.MenuItemVO;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.opensymphony.xwork2.ActionContext;
+import java.util.Iterator;
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.model.common.RoleVO;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class MenuGenerator {
 	private Collection<String> roles = null;
@@ -103,6 +110,78 @@ public class MenuGenerator {
 				if (menu != null) {
 					menu.setSelected(true);
 				}
+				User user = null;
+				if(UserUtil.getMmrUser()!=null){
+					user = UserUtil.getMmrUser();
+					}
+			//removing the menu according to the user level
+				if(user!=null){
+					Long countryPartnerId =(Long) ActionContext.getContext().getSession().get("countryPartnerId");
+					Long branchId =(Long) ActionContext.getContext().getSession().get("branchId");
+			Iterator menuTwoLevelItr=levelTwoMenus.iterator();
+					while(menuTwoLevelItr.hasNext()){
+						MenuItemVO menuitemVO=(MenuItemVO) menuTwoLevelItr.next();
+						if(user.getUserRole()!=null && user.getUserRole().equals(RoleVO.ROLE_BUSINESSADMIN) &&
+								menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL)){
+						menuTwoLevelItr.remove();
+						}else if(user.isBusinessLevel() && menuitemVO.getUrl()!=null
+							&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))){
+						menuTwoLevelItr.remove();
+						}else if(user.isPartnerLevel() && menuitemVO.getUrl()!=null
+							&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) || 
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL))){
+							menuTwoLevelItr.remove();
+						}else if((user.isNationLevel() || countryPartnerId!=null) && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) || 
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL) ||
+								menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL))){
+							menuTwoLevelItr.remove();
+						}else if((user.isBranchLevel()||branchId!=null) && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) || 
+									menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL) ||
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL) ||
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BRANCHLEVEL))){
+							menuTwoLevelItr.remove();
+						}/*else if(){
+							
+						}
+						*/	
+					}
+				
+				}
+			
+				//removing the user according to the sysadmin user
+		if(user!=null && user.getUserRole()!=null){
+					Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+					Long loginUserBusId = UserUtil.getMmrUser().getBusinessId();
+					Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+					Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+					Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+					
+					Iterator menuTwoLevelItr=levelTwoMenus.iterator();
+					while(menuTwoLevelItr.hasNext()){
+						MenuItemVO menuitemVO=(MenuItemVO) menuTwoLevelItr.next();
+						if(	(businessId!=null && partnerId ==null && countryPartnerId==null && branchId==null) && menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL)){
+							menuTwoLevelItr.remove();
+						}else if(((businessId!=null || loginUserBusId!=null) && partnerId!=null && countryPartnerId==null && branchId==null) && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL)  || 
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL)) ){
+							menuTwoLevelItr.remove();
+						}else if(((businessId!=null||loginUserBusId!=null) && partnerId!=null && countryPartnerId!=null && branchId==null)  && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) || 
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL) ||
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL))){
+							menuTwoLevelItr.remove();
+						}else if((businessId!=null ||loginUserBusId!=null) && partnerId!=null && countryPartnerId!=null && branchId!=null && menuitemVO.getUrl()!=null
+							&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) || 
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL) ||
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL) ||
+										menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BRANCHLEVEL))){
+							menuTwoLevelItr.remove();
+					}
+							
+				}
+				}	
 				return levelTwoMenus;
 			}
 		}
@@ -136,6 +215,69 @@ public class MenuGenerator {
 							levelOneMenus);
 				if (menu != null) {
 					menu.setSelected(true);
+				}
+				User user = null;
+				if(UserUtil.getMmrUser()!=null){
+					user = UserUtil.getMmrUser();
+					}
+				//updating the level one url according to the user level
+				if(user!=null){
+					Iterator menuOneLevelItr=levelOneMenus.iterator();
+					Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+				while(menuOneLevelItr.hasNext()){
+						MenuItemVO menuitemVO=(MenuItemVO) menuOneLevelItr.next();
+					if(menuitemVO.getUrl()!=null && user.getUserRole().equals(RoleVO.ROLE_BUSINESSADMIN)
+								&& menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL) && branchId ==null){
+						menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL);
+						}else if(user.isPartnerLevel() && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))){
+							menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL);
+							
+						}else if(user.isNationLevel() && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))){
+							
+						menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_BRANCHLEVEL);
+						}
+							
+							
+					}
+					
+				}
+				
+				//updating the level one url to sysadmin
+				if(user!=null && user.getUserRole()!=null  ){
+					Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+					Long loginUserBusId = UserUtil.getMmrUser().getBusinessId();
+					Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+					Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+					Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+					Iterator menuOneLevelItr=levelOneMenus.iterator();
+					while(menuOneLevelItr.hasNext()){
+						MenuItemVO menuitemVO=(MenuItemVO) menuOneLevelItr.next();
+						if((businessId!=null && partnerId ==null && countryPartnerId==null && branchId==null)  && menuitemVO.getUrl()!=null && user.getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
+							&& menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL)){
+							menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL);
+						}else if(((businessId!=null || loginUserBusId!=null) && partnerId!=null && countryPartnerId==null && branchId==null) && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))){
+							menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL);
+							
+						}else if(((businessId!=null ||loginUserBusId!=null) && partnerId!=null && countryPartnerId!=null && branchId==null) && menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))){
+							
+							menuitemVO.setUrl(MenuItemVO.BUSINESSFILTER_URL_BRANCHLEVEL);
+						}else if((businessId!=null || loginUserBusId!=null) && partnerId!=null && countryPartnerId!=null && branchId!=null&& menuitemVO.getUrl()!=null
+								&& (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_BUSINESSLEVEL))  ){
+							menuOneLevelItr.remove();
+						}else if((businessId!=null || loginUserBusId!=null) && branchId!=null && user.isPartnerLevel() && (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_NATIONALLEVEL))){
+							 menuOneLevelItr.remove();
+						}else if((businessId!=null || loginUserBusId!=null) && branchId==null && user.isBranchLevel() && (menuitemVO.getUrl().equals(MenuItemVO.BUSINESSFILTER_URL_PARTNERLEVEL))){
+							 menuOneLevelItr.remove();
+						}
+					
+							
+							
+					}
+					
 				}
 				return levelOneMenus;
 			}

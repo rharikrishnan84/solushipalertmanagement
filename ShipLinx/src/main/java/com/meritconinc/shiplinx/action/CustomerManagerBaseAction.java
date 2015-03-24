@@ -28,6 +28,7 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.utils.TimeZoneBean;
 import com.meritconinc.shiplinx.utils.TimeZonesFactory;
 import com.opensymphony.xwork2.Preparable;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class CustomerManagerBaseAction extends BaseAction implements Preparable,ServletRequestAware {
 	private static final long serialVersionUID	= 2509200786001L;
@@ -193,8 +194,9 @@ public class CustomerManagerBaseAction extends BaseAction implements Preparable,
 		
 		//get the sales users for this business
 		UserSearchCriteria criteria = new UserSearchCriteria();
-		criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-		criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
+		criteria.setBusinessId(null);
+			    criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
+			    criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
 		salesUsers = userService.findUsers(criteria, 0, 0);
 		
 	}

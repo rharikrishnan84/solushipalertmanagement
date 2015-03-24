@@ -14,6 +14,19 @@
 	</bean>
 			
 			
+	<!-- Business Filter -->
+		
+    <bean id="businessFilterAction" scope="prototype" class="com.meritconinc.mmr.action.admin.BusinessFilterAction">
+		<property name="businessFilterDAO" ref="businessFilterDAO"/>
+		<property name="businessDAO" ref="businessDAO"/>
+		<property name="addressDAO" ref="addressDAO"/>
+		<property name="customerService" ref="customerService"/>
+	</bean>
+	<bean id="businessFilterDAO" class="com.meritconinc.mmr.dao.ibatis.BusinessFilterDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient"/>
+	</bean>
+
+
 	<!-- Address book management -->
 	<bean id="AddressbookAction" scope="prototype" class="com.meritconinc.shiplinx.action.AddressbookAction">
 		<property name="addressService" ref="addressService"/>
@@ -26,7 +39,31 @@
 	<bean id="menuAction" scope="prototype" class="com.meritconinc.shiplinx.action.MenuAction">
 	<property name="menuItemDAO" ref="menuItemDAO"/>
 	<property name="propertyDAO" ref="propertyDAO"/>
+	<property name="businessDAO" ref="businessDAO"/>
+	<property name="messageDAO" ref="messageDAO"/>
+	<property name="rolesDAO" ref="rolesDAO"/>
 	</bean>
+	
+	<bean id="strutsAction" scope="prototype" class="com.meritconinc.shiplinx.action.StrutsActionMappingAction">
+		<property name="menuItemDAO" ref="menuItemDAO"/>
+		<property name="actionsDAO" ref="actionsDAO"/>
+		<property name="rolesDAO" ref="rolesDAO"/>
+	</bean>
+	
+	<bean id="businessAction" scope="prototype" class="com.meritconinc.shiplinx.action.BusinessAction">
+	<property name="businessDAO" ref="businessDAO"/>
+	<property name="businessFilterDAO" ref="businessFilterDAO"/>
+	<property name="userDAO" ref="userDAO"/>
+	<property name="menuItemDAO" ref="menuItemDAO"/>
+	<property name="addressDAO" ref="addressDAO"/>
+	</bean>
+	
+	<bean id="roleAction" scope="prototype" class="com.meritconinc.shiplinx.action.RoleAction">
+	<property name="rolesDAO" ref="rolesDAO"/>
+	<property name="menuItemDAO" ref="menuItemDAO"/>
+	<property name="actionsDAO" ref="actionsDAO"/>
+	</bean>
+
 	<bean id="menuItemDAO" class="com.meritconinc.mmr.dao.ibatis.MenusDAOImpl">
 		<property name="sqlMapClient" ref="sqlMapClient"/>
 	</bean>	
@@ -541,6 +578,7 @@
 	<bean id="userDAO" class="com.meritconinc.mmr.dao.ibatis.UserDAOImpl">
 		<property name="sqlMapClient" ref="sqlMapClient"/>
 		<property name="userExtensionDAO" ref="userExtensionDAO"/>
+		<property name="menuItemDAO" ref="menuItemDAO"/>
 	</bean>
 	
 	<bean id="fuelSurchargeDAO" class="com.meritconinc.shiplinx.dao.FuelSurchargeDAOImpl">

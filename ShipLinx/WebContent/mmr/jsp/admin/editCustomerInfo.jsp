@@ -60,7 +60,7 @@
                 <tr>
                   <td colspan="6">&nbsp;</td>
             	</tr>
-                <tr>
+  <%--               <tr>
                   <td class="text_03"><mmr:message messageId="label.customer.username"/>:</td>
                   <td><s:textfield size="24" key="customer.username" readonly="true" name="customer.username" cssClass="text_02" /></td>
 				  <td>&nbsp;</td>
@@ -80,7 +80,7 @@
 					<td>&nbsp;</td>
                   <td class="text_03"><mmr:message messageId="label.customer.address2"/>:</td>
                   <td><s:textfield size="24" key="customer.address2" name="customer.address2" cssClass="text_02"/></td>
-                </tr>
+                </tr> --%>
                
                <tr>
                   <td class="text_03"><mmr:message messageId="label.customer.city"/>:</td>

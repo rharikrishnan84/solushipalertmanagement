@@ -12,7 +12,23 @@
 		<result property="imageOver" 	    column="image_over" 	/>
 		<result property="helptag" column="help_tag"/>
 		<result property="supporttag" column="support_tag"/>
+		<result property="displayOrder" column="display_order"/>
+		
 	</resultMap>
+	<resultMap id="resultInsert" class="com.meritconinc.mmr.model.common.MenuItemVO">
+		<result property="id" 			column="id" 			columnIndex="1"/>
+		<result property="name" 		column="msg_content" 	columnIndex="2"/>
+		<result property="url" 			column="url" 			columnIndex="3"/>
+		<result property="level" 		column="level" 			columnIndex="5"/>
+		<result property="parentId" 	column="parent_id" 		columnIndex="6"/>
+		<result property="image" 	    column="image" 	/>
+	<result property="imageOver" 	    column="image_over" 	/>
+	  <result property="helptag" column="help_tag"/>
+		<result property="supporttag" column="support_tag"/>
+		<result property="displayOrder" column="display_order"/>
+		</resultMap>
+ 	
+	
 	<resultMap class="com.meritconinc.mmr.model.common.MenuItemVO" id="welcomeResultMap">
 	 <result property="msgContent" column="msg_content"/> 
 	</resultMap>
@@ -97,4 +113,116 @@
 <select id="getWelcomeMenuBylocale" resultMap="welcomeResultMap">
 	   select msg_content from resourcebundle where msg_id='menu.welcome' and locale=#locale#
 	</select>
+	
+<select id="getMenuByBusiness" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, business_menu bm,resourcebundle b
+		<dynamic prepend="WHERE">
+			m.id = bm.menu_id and
+			bm.business_id=#businessId# and m.label_id=b.msg_id and b.locale='en_CA' 
+		</dynamic>
+  		order by display_order
+	</select>
+	
+	<select id="getAllMenu"  resultMap="result" cacheModel="menu-cache">
+	select m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, resourcebundle b
+		Where
+			m.label_id=b.msg_id and b.locale='en_CA' 
+	</select>
+	
+<select id="getTopMenuByBusiness" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+	SELECT distinct m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, business_menu bm,resourcebundle b
+		<dynamic prepend="WHERE">
+		bm.menu_id = m.id and
+			m.level_no = 0 and  b.msg_id = m.label_id and bm.business_id = #businessId#  and b.locale=#locale#
+		</dynamic>
+  		order by display_order
+	</select>
+	
+	<select id="getFirstMenuByBusiness" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		SELECT  m.id, b.msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag
+		from menu m, business_menu bm,resourcebundle b
+		<dynamic prepend="WHERE">
+			bm.menu_id = m.id and
+m.level_no = 1 and bm.business_id = #businessId# and b.msg_id = m.label_id and m.parent_id= #parentId#
+		</dynamic>
+   		order by display_order
+	</select>
+	
+<insert id="addMenu" parameterClass="com.meritconinc.mmr.model.common.MenuItemVO">
+			 insert into menu(name,url,display_order,level,level_no,parent_id, label_id) 
+		  values (#name#,#url#,#displayOrder#,#level#,0,#parentId#,#labelId#)
+ 			<selectKey resultClass="int" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+</insert>
+	
+	<insert id="addBusinessMenu" parameterClass="map">
+			 insert into business_menu(business_id,menu_id) 
+			  values (#businessId#,#menuId#)
+ 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	 		</selectKey>			
+	</insert>
+	
+	<select id="getMenuOnlyById" parameterClass="map" resultMap="result" cacheModel="menu-cache">
+		select m.id, m.label_id as msg_content, m.url, m.level, m.parent_id, m.display_order, m.image, m.image_over, m.help_tag, m.support_tag 
+		from menu m
+			where m.id = #menuId#
+	</select>
+	
+	<select id="roleMenuIds" resultClass="java.lang.Integer">
+	        select menu_id from role_menu where role=#role#
+	</select>
+	
+	<update id="deleteRoleMenu">
+		delete from role_menu where role=#role# and menu_id=#menuId#
+	</update>
+	
+	<update id="deleteMenuByRole">
+		delete from role_menu where role=#role#
+	</update>
+	
+	<select id="getRoleIdFromMenu" resultClass="java.lang.String">
+        select role from role_menu where menu_id=#menuId#
+	</select>
+	
+	<select id="getBusinessByMenu" resultClass="java.lang.Integer">
+	        select business_id from business_menu where menu_id=#menuId#
+</select>
+	
+	<update id="deleteMenu">
+	        delete from menu where id=#menuId#
+</update>
+	
+	<update id="deleteMenuRole">
+        delete from role_menu where menu_id=#menuId#
+	</update>
+	
+	<update id="deleteMenuBusiness">
+	        delete from business_menu where menu_id=#menuId#
+</update>
+	
+	<update id="deleteMenuBusinessById">
+        delete from business_menu where menu_id=#menuId# and business_id=#businessId#
+	</update>
+	<select id="getMenuIdByUrl" resultClass="java.lang.Integer">
+	    select id from menu where url=#url# and level='LEVEL_2'
+	</select>
+		<select id="getParentIdByMenuId" resultClass="java.lang.Long">
+     select parent_id from menu where id=#editMenuId#
+</select>
+		<update id="updateMenu">
+	   		update menu set name=#name#, url=#url#, display_order=#displayorder#,level=#menulevel#,parent_id=#parentId# where id=#menuId#
+	</update>
+	<update id="updateResouceBunMenu"> 
+			update resourcebundle set msg_content=#msgcont# , locale=#locale# where msg_id=#msgkey#
+	</update>
+	<insert id="addBusinessMenubyBusiness" parameterClass="map">
+	INSERT INTO business_menu(business_id,menu_id) (select #newBusinessId#,menu_id from business_menu where business_id=#defaultBusinessId#)
+	</insert>
+
+
+
+	
 </sqlMap>

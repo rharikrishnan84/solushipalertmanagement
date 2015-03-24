@@ -314,4 +314,8 @@
  	<select id="getCurrencyByAccount" resultClass="String">
 	 select currency_code from currency_symbol where country_code=(SELECT country FROM customer_carrier where account_number1=#accountNumber1# or account_number2=#accountNumber1# limit 1)
 	</select>
+	
+	<insert id="addBusinessCarrierByBusiness" parameterClass="map">
+	    INSERT INTO business_carrier(business_id,carrier_id,business_carrier_discount,display_name) (select #newBusinessId#,carrier_id,business_carrier_discount,display_name from business_carrier where business_id = #defaultBusinessId#)
+	    	</insert> 
 </sqlMap>

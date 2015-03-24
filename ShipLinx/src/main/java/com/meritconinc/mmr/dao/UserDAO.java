@@ -67,4 +67,8 @@ public interface UserDAO {
   public List<User> getUserEmailById(long id,String role,String userName);
   public User getUserByUsercode(String userCode);
   public LocaleVO getDisplayTextByLocale(String locale);
+  
+  public void insertRole(String username,String role);
+    
+    List<User> getAllUsers();
 }

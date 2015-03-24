@@ -25,6 +25,10 @@ import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.EdiManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 
+import com.meritconinc.mmr.constants.Constants;
+import com.opensymphony.xwork2.ActionContext;
+
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 import com.opensymphony.xwork2.Preparable;
 
 public class EdiManagerAction extends BaseAction implements Preparable,
@@ -166,20 +170,28 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 	public EdiItem init() throws Exception {
 		EdiItem item = this.getEdiItem();
 		try {
+			Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
 			if (item == null) {
 				item = new EdiItem();
-				item.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+				if(businessId!=null && !businessId.equals("")){
+																				item.setBusinessId(businessId);
+																			}else{
+																			item.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+																			}
 //				item.setCarrierId(1L);
 				this.setEdiItem(item);
 			}
 			if (this.carrierServiceManager != null) {
-				carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+				if(businessId!=null && !businessId.equals("")){
+							carriers = this.carrierServiceManager.getCarriersForBusiness(businessId);
+						}else{
+					carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
 				getSession().put("CARRIERS", carriers);
 			}
 			if (getSession().get("EDI_STATUS_LIST") == null) {
 				getSession().put("EDI_STATUS_LIST", EdiItem.ediStatusList);
 			}
-	    } catch (Exception e) {
+	    }} catch (Exception e) {
 	    	e.printStackTrace();
 	    	addActionError(getText("content.error.unexpected"));
 		}
@@ -238,25 +250,29 @@ public class EdiManagerAction extends BaseAction implements Preparable,
 	public String uploadAndProcess() throws Exception {
 		try {
 			EdiInfo ediInfo = this.getEdiInfo();
-			List<EdiItem> file=ediManagerService.searchFileInEdiItem(uploadFileName);
-						if(!file.isEmpty()){
-							log.error("File already exist");
-							addActionError(getText("edifile.already.exist"));
-							//return null;
-						}else{
-			if (ediInfo != null && ediInfo.getCarrierId() > 0 && this.getUpload() != null && this.getUploadFileName() != null) {
-				InputStream is = new DataInputStream(new FileInputStream(this.getUpload()));
-				if (is != null) {
-					EdiItem ediItem = this.ediManagerService.uploadEdiFile(ediInfo, 
-													this.getUploadFileName(), is, true, 
-													UserUtil.getMmrUser().getBusinessId());
-					if (ediItem == null) {
-						addActionError(getText("content.error.unexpected"));
-					} else {
-						addActionMessage(getText("edifile.uploaded.successfully.process.started"));
-					}
-				}
-			}
+			Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+									if(businessId!=null && businessId!=0){
+										List<EdiItem> file=ediManagerService.searchFileInEdiItem(uploadFileName);
+										if(!file.isEmpty()){
+											log.error("File already exist");
+											addActionError(getText("edifile.already.exist"));
+											//return null;
+										}else{
+												if (ediInfo != null && ediInfo.getCarrierId() > 0 && this.getUpload() != null && this.getUploadFileName() != null) {
+													InputStream is = new DataInputStream(new FileInputStream(this.getUpload()));
+													if (is != null) {
+															EdiItem ediItem = this.ediManagerService.uploadEdiFile(ediInfo, 
+																						this.getUploadFileName(), is, true, 
+																							businessId);
+														if (ediItem == null) {
+																addActionError(getText("content.error.unexpected"));
+														} else {
+																addActionMessage(getText("edifile.uploaded.successfully.process.started"));
+														}
+													}
+												}
+										}
+			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

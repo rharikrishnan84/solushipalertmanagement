@@ -451,4 +451,9 @@ public class ShiplinxConstants {
 	 public static final String SHIPMENT_CANCELLED="Shipment Cancelled";
 	 
 	 public static final String CUSTOMER_STATUS="Customer";
+	 public static final String ROLE_BUSINESSADMIN="busadmin";
+	 	 			public static final String ROLE_SYSADMIN = "sysadmin";
+	 	 			public static final String SESSION_BUSINESSFILTER_CUSTOMERID = "customerBusinessFilter";
+	 	 				public static final String EMAIL_REGEX="^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 }
+	

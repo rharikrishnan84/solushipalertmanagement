@@ -183,5 +183,22 @@ public class EdiDAOImpl extends SqlMapClientDaoSupport implements EdiDAO {
 			List<EdiItem> i=getSqlMapClientTemplate().queryForList("searchFileInEdiItem", uploadFileName);
 			return i;
 		}
+	
+	
+		@Override
+				public void insertEdiInfoByBusiness(long newBusinessId,
+						long defaultBusinessId) {
+					Map map = new HashMap();
+				    map.put("newBusinessId", newBusinessId);
+				    map.put("defaultBusinessId", defaultBusinessId);
+				    try {
+				        getSqlMapClientTemplate().insert("addEDIInfobyBusiness", map);
+			      } catch (Exception e) {
+	        // log.debug("-----Exception-----"+e);
+				        e.printStackTrace();
+				      }
+					
+				}
+
 
 }

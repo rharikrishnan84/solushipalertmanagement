@@ -40,6 +40,7 @@ public interface CarrierServiceDAO {
       String country, String toCountry);
 
   public List<Carrier> getCarriersForBusiness(long businessId);
+  public void setupNewBusinessCarrier(long newBusinessId,long defaultBusinessId);
 
   public Long getMaxServiceIdForCarrier(long carrierId);
 

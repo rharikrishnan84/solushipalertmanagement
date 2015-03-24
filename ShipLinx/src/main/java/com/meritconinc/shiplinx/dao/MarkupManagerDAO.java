@@ -74,5 +74,11 @@ public interface MarkupManagerDAO {
   public Markup findBaseMarkup(Markup markup);
   public boolean isCustomerMarkupByDisabled(long customerId);
   
-  public List<Markup> getAllMarkupsForCustomer(Long customerId);
+  public List<Markup> getAllMarkupsForCustomer(Long customerId, long businessId);
+  public void insertCustomerMarkupByBusiness(long newBusinessId,long defaultBusinessId);
+        
+        public void insertLtlPoundrateByBusiness(long newBusinessId,long defaultBusinessId);
+        
+        public void insertLtlSkidRateByBusiness(long newBusinessId,long defaultBusinessId);
+    
 }

@@ -69,7 +69,11 @@ import com.meritconinc.shiplinx.utils.TimeZonesFactory;
 import com.octo.captcha.service.CaptchaServiceException;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
-
+import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.BusinessFilterDAO;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.UserFilter;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 
 /**
@@ -163,7 +167,9 @@ public String execute() throws Exception {
 	 public void setServletResponse(HttpServletResponse httpServletResponse) {
 	    	this.response = httpServletResponse;     
 	    }
-  public String list() throws Exception {
+	 @SuppressWarnings("unchecked")
+	 	public String list() throws Exception {
+	 		 System.out.println(UserUtil.getMmrUser().getUserRole());
     String strmethod = request.getParameter("method");
    getSession().remove("customer");
     initialize();
@@ -177,10 +183,18 @@ public String execute() throws Exception {
     if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch())) {
       customer.setBranch(UserUtil.getMmrUser().getBranch());
     }
+    setBusinessFilterCustomers();
+    List<Customer> customers = (List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+                if(customers!=null){
+                	    	customerList=new ArrayList<Customer>();
+               	    	customerList.addAll(customers);
+                	    }else if (strmethod == null || strmethod.equalsIgnoreCase("edit")) {
+                	    	/*if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SALES)){
+                	    		customer.setSalesAgent(UserUtil.getMmrUser().getUsername());
+                	    	}
 
-    if (strmethod == null || strmethod.equalsIgnoreCase("edit")) {
       customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-      customerList = getService().search(customer);
+      customerList = getService().search(customer);*/
     } else {
       customerList = null;
       setCustomer(new Customer());
@@ -192,14 +206,120 @@ public String execute() throws Exception {
     // getSession().put("CUSTOMERLISTSIZE",customerList.size());
     // if (!(customerList.size() != 0))
     // addActionError(getText("error.no.address.found"));
+    if(customerList!=null)
+    	    System.out.println(customerList.size());
+    	    else
+    	    	 System.out.println("null");
     return SUCCESS;
   }
 
+	 public void setBusinessFilterCustomers(){
+		    BusinessFilterDAO businessFilterDAO=(BusinessFilterDAO)MmrBeanLocator.getInstance().findBean("businessFilterDAO");
+	        // long businessId=UserUtil.getMmrUser().getBusinessId();
+	         BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	         Business bs=businessDAO.getBusiessById(UserUtil.getMmrUser().getBusinessId());
+	         User logInuser=UserUtil.getMmrUser();
+	         Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	    	 Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+	    	 Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+	    	 Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+	    	
+	   	 if(logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN)||logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+		        if(UserUtil.getMmrUser().isBusinessLevel() && partnerId==null && countryPartnerId==null && branchId==null ){
+		        	
+		        	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(bs.getId()));
+		       	
+		        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() )&& partnerId!=null && countryPartnerId==null && branchId==null)){
+		       	
+		       	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getPartnerLevelCustomers(bs.getId(), partnerId));
+		        	
+		        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		       	|| UserUtil.getMmrUser().isNationLevel()) && partnerId!=null && countryPartnerId!=null && branchId==null)){
+		       	
+		        	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCountryLevelCustomers(bs.getId(), partnerId, countryPartnerId));
+		        	
+		        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()) && partnerId!=null && countryPartnerId!=null && branchId!=null)){
+		        	
+		      	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(bs.getId(), partnerId, countryPartnerId,branchId));
+		       	
+		       }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+		            	&& partnerId==null && countryPartnerId==null && branchId==null	
+		      		){
+		       	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
+		       		
+		        	/*UserFilter uf=businessFilterDAO.getUserFilterByUsername(UserUtil.getMmrUser().getUsername());
+		       		if(UserUtil.getMmrUser().isPartnerLevel()){
+		        				getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getPartnerLevelCustomers(UserUtil.getMmrUser().getBusinessId(), uf.getPartnerId()));
+		       		}else if(UserUtil.getMmrUser().isNationLevel()){
+		       			getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCountryLevelCustomers(UserUtil.getMmrUser().getBusinessId(), uf.getPartnerId(), uf.getCountryPartnerId()));
+		        		}else if(UserUtil.getMmrUser().isBranchLevel()){
+		       			getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(UserUtil.getMmrUser().getBusinessId(), uf.getPartnerId(), uf.getCountryPartnerId(),uf.getBranchId()));
+		        		}*/
+		        		
+		             if(logInuser.isBusinessLevel()){
+							
+							ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(logInuser.getBusinessId()));
+							
+						}else if(logInuser.isPartnerLevel()){
+							 
+							ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getPartnerLevelCustomers(bs.getParentBusinessId(),logInuser.getBusinessId()));
+						
+					}else if(logInuser.isNationLevel()){
+							
+							ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCountryLevelCustomers(bs.getParentBusinessId(),bs.getPartnerId(),logInuser.getBusinessId()));
+							
+						}else if(logInuser.isBranchLevel()){
+							
+							ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(bs.getParentBusinessId(),bs.getPartnerId(),bs.getCountryPartnerId(),logInuser.getBusinessId()));
+							
+						}
+		        	}
+		        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+		            	&& partnerId==null && countryPartnerId!=null && branchId==null	
+		        		){
+		        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) ){  
+		        		ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCountryLevelCustomers(bs.getParentBusinessId(),bs.getPartnerId(),countryPartnerId));
+		        	
+		        	}
+		        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+		            	&& partnerId==null && countryPartnerId!=null && branchId!=null	
+		        		){
+		        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
+		        		ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(bs.getParentBusinessId(),bs.getPartnerId(),countryPartnerId,branchId));
+		        	/*UserFilter uf=businessFilterDAO.getUserFilterByUsername(UserUtil.getMmrUser().getUsername());
+		        	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(UserUtil.getMmrUser().getBusinessId(), uf.getPartnerId(), countryPartnerId,branchId));*/
+		        	}
+		       }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+		            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()))
+		            	&& partnerId==null && countryPartnerId==null && branchId!=null){
+		    	   ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(bs.getParentBusinessId(),bs.getPartnerId(),bs.getCountryPartnerId(),branchId));
+		        	/*UserFilter uf=businessFilterDAO.getUserFilterByUsername(UserUtil.getMmrUser().getUsername());
+		        	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(UserUtil.getMmrUser().getBusinessId(), uf.getPartnerId(), uf.getCountryPartnerId(),branchId));*/
+		         }
+	    	 }else if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SALES)){
+	       	 ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getSalesUserCustomers(logInuser)); 
+	         }
+	  }
   public String init() throws Exception {
 	    try {
 	      getSession().remove("customer");
 	      getSession().remove("edit");
 	      getSession().remove("ActiveCC");
+	      Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	      	      	    	Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+	      	      	    	Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+	      	      	    	Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+	      	      
+	      	      	    	if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId==null ){
+	      	      	    		
+	      	      	    		addActionMessage("Please Select Any business to Add Customer");
+	      	      	    		return "fail";
+	      	          	 
+	      	      	    	}
 	      initialize();
 	      // getSession().remove("edit");
 	      // String country = "US";
@@ -422,16 +542,20 @@ public String execute() throws Exception {
   public String save() throws Exception {
 	    try {
 	      Customer customer = this.getCustomer();
+	      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 	      String username[]=customer.getUsername().split(",");
 	     	      customer.setUsername(username[0]);
 	      carrierListSelected = new ArrayList<Carrier>(); // list to capture only selected carriers.
 	      carrierList = (List<Carrier>) getSession().get("CARRIERS");
 	      for (int i = 0; i < select.size(); i++) {
 	        // If this checkbox was selected:
+	    	  
+	    	  if(select!=null){
 	        if (select.get(i) != null && select.get(i)) {
 	          carrierListSelected.add(carrierList.get(i)); // Add only the selected carriers by the
 	                                                       // customer.
 	        }
+	    	  }
 	      }
 	      // Set the selected Carriers to the Customer Object
 	      customer.setCustomerSelectedCarriers(carrierListSelected);
@@ -441,7 +565,121 @@ public String execute() throws Exception {
 	        customer.setBranch(UserUtil.getMmrUser().getBranch());
 	      if (StringUtil.isEmpty(customer.getDefaultCurrency()))
 	        customer.setDefaultCurrency("");
-	      getService().add(customer, null);
+	     // getService().add(customer, null);
+	      Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+            
+  			Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+  			Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+  			Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+  			Long loginBusId=UserUtil.getMmrUser().getBusinessId();
+  			if((businessId ==null) &&(partnerId==null) && (countryPartnerId==null) 
+  					&& (branchId==null)  && loginBusId==null){	
+  	          	 addActionError(getText("please select any business"));
+  			      return INPUT;
+  			}else{
+  				//setting the selected business in to the business when login user is sysadmin
+  				User sysAdminUser = UserUtil.getMmrUser();
+  			    if(sysAdminUser.getUserRole()!=null && sysAdminUser.getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
+  			     // customer.setBusinessId(businessId);
+  			    }
+  			    
+  			    if(UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
+  			     
+  			  if(businessId !=null &&(partnerId==null)
+      					&& (countryPartnerId==null )
+      					&& (branchId==null)){
+  				  customer.setBusinessId(businessId);
+      				   }else if(businessId !=null &&(partnerId!=null)
+      							&& (countryPartnerId==null )
+      							&& (branchId==null)){
+      				      
+      				      customer.setBusinessId(partnerId);
+      			   }else if(businessId !=null &&(partnerId!=null)
+      							&& (countryPartnerId!=null )
+      							&& (branchId==null)){
+      					 customer.setBusinessId(countryPartnerId);
+      				   }else if(businessId !=null &&(partnerId!=null)
+      							&& (countryPartnerId!=null )
+  							&& (branchId!=null)){
+      					   customer.setBusinessId(branchId);
+      				   }
+      			
+  			    }else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
+  			    	
+  			    	Business bs=businessDAO.getBusiessById(UserUtil.getMmrUser().getBusinessId());
+  			         User logInuser=UserUtil.getMmrUser();
+  			        if(UserUtil.getMmrUser().isBusinessLevel() && partnerId==null && countryPartnerId==null && branchId==null ){
+  			        	
+			        	customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+			        	
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() )&& partnerId!=null && countryPartnerId==null && branchId==null)){
+  			        	
+  			        customer.setBusinessId(partnerId);
+  			        	
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			       	|| UserUtil.getMmrUser().isNationLevel()) && partnerId!=null && countryPartnerId!=null && branchId==null)){
+  			        
+  			        	customer.setBusinessId(countryPartnerId);
+  			        	
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()) && partnerId!=null && countryPartnerId!=null && branchId!=null)){
+  			        	
+  			        	customer.setBusinessId(branchId);
+  			        	
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+  			            	&& partnerId==null && countryPartnerId==null && branchId==null	
+  			        		){
+  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
+  			    
+  			        		customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+  			        	}
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+  			            	&& partnerId==null && countryPartnerId!=null && branchId==null	
+  			        		){
+  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) ){  
+  			        		
+  			        		customer.setBusinessId(countryPartnerId);
+  			        	
+  			        	}
+  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
+  			            	&& partnerId==null && countryPartnerId!=null && branchId!=null	
+  			        		){
+  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
+  			        		customer.setBusinessId(branchId);
+  			        	}
+  			       }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
+  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()))
+  			            	&& partnerId==null && countryPartnerId==null && branchId!=null){
+  			    	 customer.setBusinessId(branchId);
+  			         }
+  			    	
+  			    	
+  			    	
+  			    }
+  			   
+  			    
+  				   getService().add(customer, null);
+  				   if(businessId !=null &&(partnerId==null)
+  					&& (countryPartnerId==null )
+  					&& (branchId==null)){
+  					   getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(businessId));
+  				   }else if(businessId !=null &&(partnerId!=null)
+  							&& (countryPartnerId==null )
+  							&& (branchId==null)){
+  				   getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getPartnerLevelCustomers(businessId, partnerId));
+  			   }else if(businessId !=null &&(partnerId!=null)
+  							&& (countryPartnerId!=null )
+  							&& (branchId==null)){
+  					   getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCountryLevelCustomers(businessId, partnerId, countryPartnerId));
+  				   }else if(businessId !=null &&(partnerId!=null)
+  							&& (countryPartnerId!=null )
+  							&& (branchId!=null)){
+  					   getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(businessId, partnerId, countryPartnerId, branchId));
+  				   }
+  			}
 	      sendAddCustomerEmailNotification();
 	    } catch (UsernameAlreadyTakenException ue) {
 	      addActionError(getText("error.username.taken"));
@@ -455,6 +693,9 @@ public String execute() throws Exception {
 	      addActionError(getText("customer.account.notCreated"));
 	      return INPUT;
 	    }
+	    if(UserUtil.getMmrUser().isBusinessLevel()){
+	    		    		    	    	getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(UserUtil.getMmrUser().getBusinessId()));
+	    		    		    		    }
 	    addActionMessage(getText("customer.save.successfully"));
 	    return SUCCESS;
 	  }
@@ -561,8 +802,14 @@ public String execute() throws Exception {
         }
       }
       getSession().remove("edit");
+      Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+                  if(businessId==null){
       customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
           UserUtil.getMmrUser().getBusinessId(), customer.getId());
+                  }else {
+                	              	    	   customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
+                	              	    		          businessId, customer.getId());
+                	              	      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -719,8 +966,9 @@ public String execute() throws Exception {
     if (UserUtil.getMmrUser() == null)
       return;
     UserSearchCriteria criteria = new UserSearchCriteria();
-    criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+    criteria.setBusinessId(null);
     criteria.setRoleCode(ShiplinxConstants.ROLE_SALES);
+    criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
     salesUsers = userService.findUsers(criteria, 0, 0);
   }
 
@@ -1022,9 +1270,9 @@ public String execute() throws Exception {
 		}
 
 		
-			customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+		customer.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
 			
-			List<Customer> cust= getService().search(customer);
+		List<Customer> cust=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
 			if("xml".equalsIgnoreCase(type)){
 				String shippingLabelFileName =getUniqueTempxmlFileName("customer");
 				write_XML_File_cust(cust,shippingLabelFileName);

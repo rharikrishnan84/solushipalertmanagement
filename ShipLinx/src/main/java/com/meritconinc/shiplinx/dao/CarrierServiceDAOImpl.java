@@ -277,4 +277,19 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
   	
   }
   
+  
+  @Override
+        public void setupNewBusinessCarrier(long newBusinessId, long defaultBusinessId) {
+        	// TODO Auto-generated method stub
+        	Map paramObj = new HashMap();
+        	
+        	paramObj.put("newBusinessId", newBusinessId);
+      	paramObj.put("defaultBusinessId", defaultBusinessId);
+            try {
+              getSqlMapClientTemplate().insert("addBusinessCarrierByBusiness", paramObj);
+        	}catch(Exception e){
+       		e.printStackTrace();
+        	}
+        }
+  
 }

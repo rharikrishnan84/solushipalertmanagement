@@ -68,4 +68,6 @@ public interface UserService {
   public List<LocaleVO> findLocale();
   public Customer getCustomerReference(long id);
   public User getUserByUsercode(String userCode);
+   
+public List<User> getAllUsers();
 }

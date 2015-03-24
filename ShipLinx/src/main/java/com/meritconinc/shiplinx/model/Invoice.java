@@ -47,7 +47,7 @@ public class Invoice {
 	private String salesUsername;
 	private double commissionAmount;
 	private String branch;
-	
+	private List<Long> businessIds;
 	private boolean cancelled;
 	private Double balanceDue;
 	public void setBalanceDue(Double balanceDue) {
@@ -393,6 +393,12 @@ public class Invoice {
 		
 			public void setCancelled(boolean cancelled) {
 				this.cancelled = cancelled;
+			}
+			public List<Long> getBusinessIds() {
+				return businessIds;
+			}
+			public void setBusinessIds(List<Long> businessIds) {
+				this.businessIds = businessIds;
 			}
 			
 			

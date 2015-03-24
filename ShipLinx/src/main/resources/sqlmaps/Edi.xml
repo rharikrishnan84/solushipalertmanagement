@@ -141,5 +141,9 @@
 	</select> 		
 	<select id="searchFileInEdiItem" resultMap="EdiItemResult">
 		select  * from edi_item where edi_file_name=#uploadFileName#
-		 </select>	
+		 </select>
+		  <insert id="addEDIInfobyBusiness" parameterClass="map">
+	INSERT INTO edi_info (business_id,carrier_id,edi_folder,file_type,edi_format,version) 
+					 (select #newBusinessId#,carrier_id,edi_folder,file_type,edi_format,version from edi_info where business_id=#defaultBusinessId#)
+	</insert>	
 </sqlMap>

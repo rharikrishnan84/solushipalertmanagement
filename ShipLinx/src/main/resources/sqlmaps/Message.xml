@@ -6,6 +6,13 @@
 	  <flushInterval hours="24"/>
 	  <property name="cache-size" value="1000" />
 	</cacheModel>
+	
+	<resultMap id="resultLocaleDetail" class="com.meritconinc.mmr.model.common.LocaleVO">
+  		<result property="locale" column="locale" />
+  		<result property="description" column="description"/>
+ 		<result property="localeText" />
+	</resultMap>
+	
 	<!--  the sql statements for the DAO -->
 	<select id="getMessage" resultClass="java.lang.String" cacheModel="message">
 		SELECT msg_content from resourcebundle 
@@ -83,4 +90,15 @@
 	<select id="getPath" resultClass="java.lang.String" cacheModel="message">
 	SELECT msg_content FROM resourcebundle where msg_id = #url#;
 	</select>
+	<insert id="addResource" parameterClass="map">
+			 insert into resourcebundle(msg_id,msg_content,locale,is_fmk) 
+			  values (#msgId#,#msgContent#,#locale#,0)
+ 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+		</selectKey>			
+	</insert>
+
+	<select id="getResourceByMsgId" resultMap="resultLocaleDetail" cacheModel="message" parameterClass="map">
+	SELECT msg_id AS localeText, msg_content AS description,locale AS locale FROM resourcebundle where msg_id = #msgId# and locale=#locale#;
+	</select>
+
 </sqlMap>

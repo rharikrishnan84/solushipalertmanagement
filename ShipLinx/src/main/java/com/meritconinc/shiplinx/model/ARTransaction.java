@@ -22,7 +22,7 @@ public class ARTransaction {
 	private String toTransactionDate_web;
 	private Date fromTransactionDate;
 	private Date toTransactionDate;
-
+	private List<Long> businessIds;
 	
 	private String paymentDate_web;
 	
@@ -115,6 +115,12 @@ public class ARTransaction {
 			}
 			public void setInvoiceNum(Long invoiceNum) {
 				this.invoiceNum = invoiceNum;
+			}
+			public List<Long> getBusinessIds() {
+				return businessIds;
+			}
+			public void setBusinessIds(List<Long> businessIds) {
+				this.businessIds = businessIds;
 			}
 	
 	

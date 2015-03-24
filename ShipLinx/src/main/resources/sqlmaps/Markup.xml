@@ -185,7 +185,18 @@
 		select m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type, m.variable
 		 from customer_markup m, service s, carrier c
 		<dynamic prepend="where">
-			m.service_id=s.service_id and s.carrier_id=c.carrier_id and m.customer_id = #customerId#  and m.business_id = #businessId#
+			m.service_id=s.service_id and s.carrier_id=c.carrier_id 
+			 <!--  and m.business_id = #businessId# -->
+		 <isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+					and m.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>
+			<isNotNull  property="customerIds">
+			 	<isNotEmpty property = "customerIds">
+			 and m.customer_id IN <iterate  open="(" close=")" conjunction="," property="customerIds"> #customerIds[]# </iterate>
+				 </isNotEmpty>
+			</isNotNull>
 			<isNotNull  property="serviceId">
 				 and m.service_id=#serviceId#
 			</isNotNull>
@@ -513,6 +524,7 @@
         where  s.carrier_id=c.carrier_id  
         and m.service_id=s.service_id
         and m.customer_id = #customerId#  
+        and m.business_id = #businessId#
         and c.carrier_id = #carrierId#
         and disabled = #disabled#
    </select>
@@ -539,4 +551,43 @@
 		and (m.customer_id = #customerId# or m.customer_id=0)
 		and disabled = 0
 	</select>
+	
+	
+	
+	
+	<insert id="addCustomerMarkupbyBusiness" parameterClass="map">
+	INSERT INTO customer_markup(business_id,customer_id,service_id,from_country,to_country,mu_perc
+							,disabled,flat_mu,type,from_weight,to_weight,variable) (select #newBusinessId#,customer_id,service_id,from_country,to_country,mu_perc
+							,disabled,flat_mu,type,from_weight,to_weight,variable from customer_markup where business_id=#defaultBusinessId# and customer_id=0)
+	
+</insert>
+	<insert id="addLtlPoundratebyBusiness" parameterClass="map">
+	INSERT INTO ltl_pound_rate(business_id,customer_id,service_id,account_num,from_zone,to_zone,equipment
+						   ,currency,fsc_percent,minimum,range_from,range_to,rate,ttm1,ttm2,effective_date
+						    , expiry_date,p1,p2,p3,dim_factor,freight_class) 
+			(select #newBusinessId#,0,service_id,account_num,from_zone,to_zone,equipment
+						   ,currency,fsc_percent,minimum,range_from,range_to,rate,ttm1,ttm2,effective_date
+						    , expiry_date,p1,p2,p3,dim_factor,freight_class from ltl_pound_rate where business_id=#defaultBusinessId#)
+	
+	</insert>
+
+	<insert id="addLtlSkidRatebyBusiness" parameterClass="map">
+	INSERT INTO ltl_skid_rate(business_id,customer_id,service_id,account_num,from_zone,to_zone,equipment
+							,currency,fsc_percent,less_500lb_flat,rate_skid_1,rate_skid_2,rate_skid_3
+							,rate_skid_4,rate_skid_5,rate_skid_6,rate_skid_7,rate_skid_8,rate_skid_9
+							,rate_skid_10,rate_skid_11,rate_skid_12,rate_skid_13,rate_skid_14,rate_skid_15
+							,rate_skid_16,rate_skid_17,rate_skid_18,rate_skid_19,rate_skid_20,rate_skid_21
+							,rate_skid_22,rate_skid_23,rate_skid_24,rate_skid_25,rate_skid_26,ttm1,ttm2,effective_date
+							,expiry_date,p1,p2,p3) (select 5,0,service_id,account_num,from_zone,to_zone,equipment
+							,currency,fsc_percent,less_500lb_flat,rate_skid_1,rate_skid_2,rate_skid_3
+						,rate_skid_4,rate_skid_5,rate_skid_6,rate_skid_7,rate_skid_8,rate_skid_9
+							,rate_skid_10,rate_skid_11,rate_skid_12,rate_skid_13,rate_skid_14,rate_skid_15
+							,rate_skid_16,rate_skid_17,rate_skid_18,rate_skid_19,rate_skid_20,rate_skid_21
+							,rate_skid_22,rate_skid_23,rate_skid_24,rate_skid_25,rate_skid_26,ttm1,ttm2,effective_date
+							,expiry_date,p1,p2,p3 from ltl_skid_rate where business_id=1)
+
+	</insert>
+	
+	
+	
 </sqlMap>

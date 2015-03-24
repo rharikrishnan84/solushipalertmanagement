@@ -9,6 +9,9 @@ import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.utilities.DateUtil;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class UserSearchCriteria implements Serializable {
 
@@ -43,9 +46,20 @@ public class UserSearchCriteria implements Serializable {
 	public static final String SORT_BY_USERNAME = "username";
 	public static final String SORT_BY_FIRSTNAME = "firstname";
 	
+	private Collection<String> customerIds = new ArrayList<String>();
+			private boolean partnerLevel=false;
+				private boolean nationLevel=false;
+				private boolean branchLevel=false;
+				private boolean divitionLevel=false;
+				private boolean businessLevel=false;
+		
+				private long partnerId;
+				private long countryPartnerId;
+			private long branchId;
+			    private List<Long> businessIds;
 	public UserSearchCriteria() {
-		if (UserUtil.getMmrUser() != null)
-			setBusinessId(UserUtil.getMmrUser().getBusinessId());
+		/*if (UserUtil.getMmrUser() != null)
+			setBusinessId(UserUtil.getMmrUser().getBusinessId());*/
 	}
 
 	public String getSortBy() {
@@ -238,6 +252,83 @@ public class UserSearchCriteria implements Serializable {
 	public void setUserCode(String userCode) {
 		this.userCode = userCode;
 	}
-	
+	public Collection<String> getCustomerIds() {
+		return customerIds;
+	}
+
+public void setCustomerIds(Collection<String> customerIds) {
+		this.customerIds = customerIds;
+	}
+
+	public boolean isPartnerLevel() {
+		return partnerLevel;
+	}
+
+	public void setPartnerLevel(boolean partnerLevel) {
+		this.partnerLevel = partnerLevel;
+	}
+
+	public boolean isNationLevel() {
+		return nationLevel;
+	}
+
+	public void setNationLevel(boolean nationLevel) {
+		this.nationLevel = nationLevel;
+	}
+
+	public boolean isBranchLevel() {
+	return branchLevel;
+	}
+
+	public void setBranchLevel(boolean branchLevel) {
+		this.branchLevel = branchLevel;
+	}
+
+public boolean isDivitionLevel() {
+	return divitionLevel;
+	}
+
+	public void setDivitionLevel(boolean divitionLevel) {
+		this.divitionLevel = divitionLevel;
+	}
+			public boolean isBusinessLevel() {
+		return businessLevel;
+	}
+
+	public void setBusinessLevel(boolean businessLevel) {
+		this.businessLevel = businessLevel;
+	}
+
+	public long getPartnerId() {
+		return partnerId;
+	}
+
+	public void setPartnerId(long partnerId) {
+	this.partnerId = partnerId;
+	}
+
+	public long getCountryPartnerId() {
+		return countryPartnerId;
+	}
+
+	public void setCountryPartnerId(long countryPartnerId) {
+	this.countryPartnerId = countryPartnerId;
+	}
+
+	public long getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(long branchId) {
+		this.branchId = branchId;
+	}
+
+public List<Long> getBusinessIds() {
+		return businessIds;
+	}
+
+	public void setBusinessIds(List<Long> businessIds) {
+		this.businessIds = businessIds;
+	}
 
 }

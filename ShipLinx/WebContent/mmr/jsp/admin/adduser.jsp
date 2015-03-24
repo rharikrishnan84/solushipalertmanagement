@@ -431,6 +431,52 @@ window.onload = function() {
 							</div>
 						
 						</div>
+						
+						  <s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
+						<div class="content_table">
+							<div class="content_header">
+							
+								<div class="cont_hdr_title">SELECT DIVISION</div>
+							</div>
+							<div class="cont_data_body">
+							
+								<div class="rows">
+									<div class="fieldsl">
+									<label style="width:200px !important;">SPD  </label>
+										<div class="controls"><span>:</span>
+										 <s:checkbox key="user.spdEnabled" name="user.spdEnabled" />
+									</div></div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">LTL </label>
+										<div class="controls"><span>:</span>
+										 <s:checkbox key="user.ltlEnabled" name="user.ltlEnabled" />
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">CHB </label>
+										<div class="controls"><span>:</span>
+										 <s:checkbox key="user.chbEnabled" name="user.chbEnabled" />
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">FWD </label>
+										<div class="controls"><span>:</span>
+										 <s:checkbox key="user.fwdEnabled" name="user.fwdEnabled" />
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">FPA </label>
+										<div class="controls"><span>:</span>
+										 <s:checkbox key="user.fpaEnabled" name="user.fpaEnabled" />
+									</div>
+									</div>
+									
+								</div>
+								
+							</div>
+						
+						</div>
+						</s:if>
 		</s:form> 
 	</div>
 </div>	

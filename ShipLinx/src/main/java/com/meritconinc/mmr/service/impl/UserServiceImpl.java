@@ -367,4 +367,9 @@ public class UserServiceImpl implements UserService {
   	
   	return (User)siteUserDAO.getUserByUsercode(userCode);
     }
+  
+  public List<User> getAllUsers() {
+    	// TODO Auto-generated method stub
+    	return (List<User>)siteUserDAO.getAllUsers();
+    }
 }
