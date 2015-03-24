@@ -808,7 +808,7 @@ public String execute() throws Exception {
           UserUtil.getMmrUser().getBusinessId(), customer.getId());
                   }else {
                 	              	    	   customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
-                	              	    		          businessId, customer.getId());
+                	              	    			 customer.getBusinessId(), customer.getId());
                 	              	      }
     } catch (Exception e) {
       e.printStackTrace();

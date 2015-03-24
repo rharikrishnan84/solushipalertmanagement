@@ -258,7 +258,7 @@ function loadTrackingURL(url){
 	</s:else>
 	</div>	-->
 
-	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
   <s:hidden value="busadmin" id="role" />
  </s:if>
  <s:elseif test="%{#session.ROLE.contains('customer_admin')}">
@@ -330,7 +330,7 @@ function loadTrackingURL(url){
     <thead>
 		<tr>
 			<th><input id="check_all" type="checkbox" name="check_uncheck" onclick="checkUncheck('check_uncheck_row')" style="margin: 0 0 0 4px" /></th>
-			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}"> 
+			<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">  
 			<th><span style="width:90px !important; float:left;"><mmr:message messageId="label.ghead.company"/></th>
 			</s:if>
 			<th><span style="width:80px !important; float:left;"><mmr:message messageId="label.ghead.order"/> #</span></th>
@@ -353,7 +353,7 @@ function loadTrackingURL(url){
 			<th ><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.billedcharge"/></span></th>
 			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.ghead.fromaddress"/></span></th>
 			<th><span style="width:100px !important; float:left;"><mmr:message messageId="label.ghead.toaddress"/></span></th>
-			<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager')}">
+			<s:if test="%{statusName == 'Sent to Warehouse' && #session.ROLE.contains('busadmin')||statusName == 'Sent to Warehouse' && #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 			<th><span style="width:70px !important; float:left;"><mmr:message messageId="label.ghead.status"/></span></th>
 			</s:if>
 			<s:else>
@@ -375,7 +375,7 @@ function loadTrackingURL(url){
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />
 				
 				</td>
-				<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager')}">
+				<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 					<td title="<s:property value="customerName"/>"><div style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customerName"/></div></td>
 					
 				</s:if>
@@ -442,7 +442,7 @@ function loadTrackingURL(url){
 					<s:else>
 					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
 					</s:else>
-					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 					<s:if test="%{shipments[#index].quoteTotalCost !=null}">
 					 /<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="%{shipments[#index].quoteTotalCost}"/></s:text>
 					</s:if>
@@ -458,7 +458,7 @@ function loadTrackingURL(url){
 					<s:else>
 					<s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>0.00
 					</s:else>
-					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+					<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 					<s:if test="%{shipments[#index].actualTotalCost !=null}">
 				/ <s:label name="curr" value="%{#session.DefaultCurrencySymbol}"/>
 					<s:text name="format.customMoney" ><s:param value="%{shipments[#index].actualTotalCost}"/></s:text>
@@ -501,7 +501,7 @@ function loadTrackingURL(url){
  	<s:if test="%{#request.shippingOrder.carrierId == 80}" >
  	&nbsp;<a href="javascript:midlandEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
- 	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
+ 	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
  	&nbsp;<a href="javascript:manifestEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
 </div>

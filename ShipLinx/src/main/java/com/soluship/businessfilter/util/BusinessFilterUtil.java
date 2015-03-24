@@ -308,7 +308,9 @@ public static Object getBranchLevelCustomers(Long businessId, Long partnerId,
 					ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getCustomersForCustomerAdmin(logInuser));
 				}else if(logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_BASE) || logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_SHIPPER)){
 					ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(logInuser.getBusinessId()));
-				}
+				}else if(logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SOLUTIONMANAGER) || logInuser.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_SHIPPER)){
+					ActionContext.getContext().getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBusinessLevelCustomers(logInuser.getBusinessId()));
+ 				}
 			}	
 	   }
 		

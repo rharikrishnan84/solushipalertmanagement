@@ -493,7 +493,7 @@ window.onload = hideImages;
 						<display:column headerClass="tableTitle2_product_upby" property="message" title="Comments" maxLength="50" style="text-align:center;"/>
 						<display:column headerClass="tableTitle2_product_upby" property="eventUsername" title="Updated By" maxLength="10" style="text-align:center;"/>
 						<display:column headerClass="tableTitle2_product_upby" property="systemLog" title="Event Log" maxLength="75" style="text-align:center;"/>
-						<s:if test="%{#session.ROLE.contains('busadmin')}">
+						<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 						<display:column headerClass="tableTitle2_product_bit" title="Private" style="text-align:center;">
 						<s:if test="%{#attr.row.privateMessage != true}">
 							<img src="<s:url value="/mmr/images/cross.png" includeContext="true" />" alt="Cross" border="0">

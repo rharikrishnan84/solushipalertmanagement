@@ -11,7 +11,7 @@
 		<td class="tableTitle2_wh_summary_hdr" align="center"><mmr:message messageId="label.batch.num"/></td>
 		<td class="tableTitle2_wh_summary_hdr" align="center"><mmr:message messageId="label.customer.dateCreated"/></td>
 		<td class="tableTitle2_wh_summary_hdr" align="center"><mmr:message messageId="label.shippingOrder.additionalServices.quantity"/></td>
-		<s:if test="%{#session.ROLE.contains('busadmin')}">
+		<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				<td class="tableTitle2_wh_summary_hdr" width="30%">&nbsp;</td>
 				<td class="tableTitle2_wh_summary_hdr" width="6%">&nbsp;</td>
 				<td class="tableTitle2_wh_summary_hdr" width="5%">&nbsp;</td>
@@ -30,7 +30,7 @@
 			<td class="odd" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].batchNum}"/></td>
 			<td class="odd" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].dateCreated}"/></td>
 			<td class="odd" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].quantity}"/></td>
-			<s:if test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId == 1 && #session.ROLE.contains('busadmin')}">
+			<s:if test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId == 1 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}">
 				<td class="odd" align="center" valign="middle" width="30%">
 					<mmr:message messageId="label.move"/>&nbsp; <s:textfield id="qty_%{warehouseInventoryList[#counterIndex.index].productId}_%{#counterIndex.index}" cssClass="text_02_tf_small" onkeypress="return typenumbers(event,\'0123456789\')" theme="simple" cssStyle="width: 40px;"/>
 					<mmr:message messageId="label.units.to.wip"/>&nbsp;
@@ -46,7 +46,7 @@
 				 <img src="<%=request.getContextPath()%>/mmr/images/move_new_small_btn.png" border="0" style="cursor: pointer;" onclick="moveProductToWIP('<s:property value="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouse.warehouseId}"/>','<s:property value="%{#counterIndex.index}"/>','<s:property value="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.locationId}"/>','<s:property value="%{warehouseInventoryList[#counterIndex.index].batchNum}"/>');"/>
 				 </td>
 			</s:if>
-			<s:elseif test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId != 1 && #session.ROLE.contains('busadmin')}">
+			<s:elseif test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId != 1 && (#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))}">
 				<td class="odd" width="28%">&nbsp;</td>
 				<td class="odd" width="7%">&nbsp;</td>
 				<td class="odd" width="5%">&nbsp;</td>
@@ -62,7 +62,7 @@
 			<td class="even" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].batchNum}"/></td>
 			<td class="even" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].dateCreated}"/></td>
 			<td class="even" align="center"><s:property value="%{warehouseInventoryList[#counterIndex.index].quantity}"/></td>
-			<s:if test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId == 1 && #session.ROLE.contains('busadmin')}">
+			<s:if test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId == 1 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}">
 				<td class="even" align="center" valign="middle" width="30%">
 					<mmr:message messageId="label.move"/>&nbsp; <s:textfield id="qty_%{warehouseInventoryList[#counterIndex.index].productId}_%{#counterIndex.index}" cssClass="text_02_tf_small" onkeypress="return typenumbers(event,\'0123456789\')" theme="simple" cssStyle="width: 40px;"/>
 					<mmr:message messageId="label.units.to.wip"/>&nbsp;
@@ -78,7 +78,7 @@
 				 <img src="<%=request.getContextPath()%>/mmr/images/move_new_small_btn.png" border="0" style="cursor: pointer;" onclick="moveProductToWIP('<s:property value="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouse.warehouseId}"/>','<s:property value="%{#counterIndex.index}"/>','<s:property value="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.locationId}"/>','<s:property value="%{warehouseInventoryList[#counterIndex.index].batchNum}"/>');"/>
 				 </td>
 			</s:if>
-			<s:elseif test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId != 1 && #session.ROLE.contains('busadmin')}">
+			<s:elseif test="%{warehouseInventoryList[#counterIndex.index].warehouseLocation.warehouseLocationType.warehouseLocationTypeId != 1 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}">
 				<td class="even" width="28%">&nbsp;</td>
 				<td class="even" width="7%">&nbsp;</td>
 				<td class="even" width="8%">&nbsp;</td>

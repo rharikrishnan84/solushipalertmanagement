@@ -1224,7 +1224,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</div>
 									</div>	
 							<s:if test="%{selectedOrder.statusId==50}"> 
-							<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager'))">
+							<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin'))">
 							<div class="fields">
 										<label><s:a 
 									href="javascript: clearExceptionStatus()" 
@@ -1238,7 +1238,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</s:if>
 								</s:if>
 								
-										<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+										<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 						<s:if test="%{selectedOrder.markType == 1}">
 							<div class="fields"><mmr:message messageId="label.viewship.markup"/> </div>
 						</s:if>
@@ -1338,7 +1338,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<s:text name="format.customMoney" ><s:param name="value" value="%{selectedOrder.totalChargeQuoted}" /></s:text>
 								</s:if>	
 								</div>
-								<s:if test="%{selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('busadmin') || selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('solutions_manager')}">
+								<s:if test="%{selectedOrder.actualCharges.size ==0 && (#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')) || selectedOrder.actualCharges.size ==0 && #session.ROLE.contains('solutions_manager')}">
 								
 								
 					<div id="copy2actual" class="" style="float:right; width:321px; margin-top:-2px; ">
@@ -1365,7 +1365,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.carrier"/> </strong></td>
 							    <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.code"/> </strong></td>
    								<td class="ordrdtl_title_hdng"><strong style="width:auto; min-width:120px; float:left;"><mmr:message messageId="label.ghead.chargename"/> </strong></td>
-								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')||  #session.ROLE.contains('sysadmin')}">
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.tariff"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
@@ -1374,7 +1374,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
 								</s:if>
-								 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+								 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
                                 <td class="ordrdtl_title_hdng"><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
                                <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.exrate"/> </strong></td>
                                </s:if>
@@ -1387,7 +1387,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<tr>
 										<!-- status=30=Billed -- >
 										<!-- Unbilled charges will only be displayed to Business Admin -->
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 											<td class="ordrdtl_title_val">
 													<s:property value="carrierName" />
 											</td>
@@ -1400,7 +1400,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</s:else>
 										<td  class="ordrdtl_title_val">
 										<s:if test="%{name == 'Freight'}">
-											<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
+											<s:if test="%{(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')) && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId>0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
 										    </s:if>
 										    <s:else>
@@ -1412,7 +1412,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</s:else>
 											</td>
 
-										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') ||status != 30 && #session.ROLE.contains('solutions_manager')}">
+										<s:if test="%{status != 30 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) ||status != 30 && #session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val">
 											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 												<s:textfield size="10"
@@ -1528,7 +1528,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</s:if>
 										<s:else>
 											<td class="ordrdtl_title_val"><s:property value="name" /></td>
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))||#session.ROLE.contains('solutions_manager')}">
 											<td class="ordrdtl_title_val"><s:property
 												value="tariffRate" /></td>	
 												<td class="ordrdtl_title_val"><s:property value="cost" /></td>
@@ -1548,7 +1548,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
  											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
 											</s:if>
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||#session.ROLE.contains('solutions_manager')}">
                                           
                                            <td class="ordrdtl_title_val">
                                            <s:if test="%{chargecurrency==1}">
@@ -1577,7 +1577,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								</s:iterator></td>
 							</tr>
 							<s:if test="%{selectedOrder.actualCharges.size ==0}">
-							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
+							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && ( #session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="6" class="ordrdtl_title_val" style="padding:10px 3px;">
 										<a href="javascript: updateQuotedCharge()" style="padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;">
@@ -1592,7 +1592,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</s:if>
 							</s:if>
 							</table>
-							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')||  #session.ROLE.contains('sysadmin')}">
 							<s:if test="%{selectedOrder.actualCharges.size ==0}"> 
 						 <table width="940px" cellpadding="2" cellspacing="0" style="font-size:12px; background-color:#e7e7e7;">
 							<tr style="background-color:#d1d1d1; width:100%;">
@@ -1696,7 +1696,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</s:if>
 							</table>
 							</div>
-							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 								<!--<table width="960px" cellpadding="3" cellspacing="0" style="margin-left: 10px;">
 								
 								
@@ -1712,7 +1712,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<s:text name="format.customMoney" ><s:param name="value" value="%{selectedOrder.totalChargeActual}" /></s:text>
 								</s:if>
 					</div>
-					<s:if test="%{selectedOrder.actualCharges.size >0 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size >0 && #session.ROLE.contains('solutions_manager')}">
+					<s:if test="%{selectedOrder.actualCharges.size >0 && ( #session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.actualCharges.size >0 && #session.ROLE.contains('solutions_manager')}">
 					<div id="copy2actual" style="float:right; width:285px; margin-top:-2px; ">
 						<div class="fields" >
 							<label style=" width:130px !important; text-align:right; padding-right:5px;">
@@ -1737,20 +1737,20 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							   <td class="ordrdtl_title_hdng" ><strong style="width:58px !important; float:left;"><mmr:message messageId="label.ghead.code"/> </strong></td>
 								<td class="ordrdtl_title_hdng" ><strong style="width:110px; float:left;"><mmr:message messageId="label.ghead.chargename"/></strong></td>
 
-								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+								<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||#session.ROLE.contains('solutions_manager')}">
 									<td class="ordrdtl_title_hdng"  ><strong style="width:60px; float:left;"><mmr:message messageId="label.ghead.tariff"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cost"/> </strong></td>
 									<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
  								</s:if>
 
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
-								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+								<s:if test="%{(#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
                                <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
                                <td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> </strong></td>
                                </s:if>
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
 								<td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.invoice"/> #</strong></td>
-								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 									<td class="ordrdtl_title_hdng" ><strong>&nbsp;<mmr:message messageId="label.ghead.edi"/> #</strong></td>
 								</s:if>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
@@ -1772,7 +1772,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									          </td> -->
 										<td style="text-align: left" class="ordrdtl_title_val">
 											<s:if test="%{name == 'Freight'}">
-												<s:if test="%{#session.ROLE.contains('busadmin') && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0}">
+												<s:if test="%{(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')) && selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0||#session.ROLE.contains('solutions_manager')&& selectedOrder.slaveServiceId !=null && selectedOrder.slaveServiceId > 0}">
 										    	<s:property value="selectedOrder.slaveServiceId" />
 										    </s:if>
 										    <s:else>
@@ -1783,7 +1783,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<s:property value="chargeCode" />
 											</s:else>
 										</td>
-										<s:if test="%{status != 30 && #session.ROLE.contains('busadmin') && cancelledInvoice!='Yes'||status != 30 && #session.ROLE.contains('solutions_manager')&& cancelledInvoice!='Yes'}">
+										<s:if test="%{status != 30 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && cancelledInvoice!='Yes'||status != 30 && #session.ROLE.contains('solutions_manager')&& cancelledInvoice!='Yes'}">	
 											<td style="width:100px !important; ">
 												<s:textfield size="10"
 													key="actualChargeName" name="actualChargeName"
@@ -1793,7 +1793,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<s:property value="tariffRate" />
 											</td> --%>
 
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 											<td class="ordrdtl_title_val"  >
 												<s:property value="tariffRate" />
 											</td>
@@ -1837,7 +1837,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<td class="ordrdtl_title_val">
 												<s:property value="invoiceNum" />
 											</td>
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 												<s:if test="%{ediInvoiceNumber == null || ediInvoiceNumber ==''}">
 													<td class="ordrdtl_title_val"><s:textfield size="4" key="actualEdiInvoiceNumber" 
 													name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/></td>
@@ -1860,7 +1860,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										</s:if>
 										<s:else>
 											<td ><s:property value="name" /></td>
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 											<td class="ordrdtl_title_val">
 												<s:property value="tariffRate" />
 											</td>
@@ -1880,7 +1880,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<s:if test="%{!#session.ROLE.contains('customer_shipper')}">
  											<td class="ordrdtl_title_val"><s:property value="charge" /></td>
 											</s:if>
-											 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
                                            
                                            <td class="ordrdtl_title_val">
                                            <s:if test="%{chargecurrency==1}">
@@ -1910,7 +1910,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<!--<s:if test="%{#session.ROLE.contains('busadmin')}">
 												<td class="ordrdtl_title_val"><s:property value="ediInvoiceNumber" /></td>
 											</s:if>-->
-											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 												<s:if test="%{ediInvoiceNumber == null || ediInvoiceNumber ==''}">
 													<td class="ordrdtl_title_val"><s:textfield size="4" key="actualEdiInvoiceNumber" 
 													name="actualEdiInvoiceNumber" value="%{ediInvoiceNumber}"/></td>
@@ -1933,7 +1933,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</div>
 							<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
                            <table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px;">
-                           <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('busadmin')||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
+                           <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><a
 										href="javascript: updateActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; text-decoration:none; padding:3px 10px;">
@@ -1948,7 +1948,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</tr>
 							</s:if>
 							
-							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+							<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 								<tr style="background-color:#d1d1d1;">
 									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.carrier"/> :</strong></td>
 									<td  class="ordrdtl_title" align=""><strong><mmr:message messageId="label.ghead.code"/> :</strong></td>
@@ -2059,7 +2059,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 					<display:column headerClass="payment_info_tableTitle" property="processorTransactionId"  sortable="true" title="Processor Ref #" ></display:column>
 					<display:column headerClass="payment_info_tableTitle" property="cardNumCharged"  sortable="true" title="CC #" ></display:column>
 					<!-- Implementation of Refund Charge based on Role and Status: Status should be 30 for 'Processed' -->
-					<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
+					<s:if test="%{(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')) && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
 						<display:column headerClass="payment_info_tableTitle" sortable="true" title="">
 						<a href="">Refund Charge</a> <!-- Implementation of Refund Charge Logic. -->
 						</display:column>
@@ -2080,7 +2080,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 			"><mmr:message messageId="label.ghead.processorref"/> #</span></th>
 			<th style="width:70px !important;"><span style="width:70px !important; float:left;color:#fff;font-weight: bold;
 			"><mmr:message messageId="label.ghead.cc"/> #</span></th>
-			<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
+			<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
 			<th></th>
 			</s:if>
 		</tr>
@@ -2094,7 +2094,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
  <td style="padding-left: 3px;background-color: #E7E7E7 !important;"><s:property value="referenceNumber"/></td>
  <td style="padding-left: 55px;background-color: #E7E7E7 !important;"><s:property value="processorTransactionId"/></td>
  <td style="padding-left: 15px;background-color: #E7E7E7 !important;"><s:property value="cardNumCharged"/></td> 
-<s:if test="%{#session.ROLE.contains('busadmin') && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
+<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && #status==30||#session.ROLE.contains('solutions_manager') && #status==30}">
 	<td><a href=""><mmr:message messageId="label.btn.refundcharge"/></a></td> 
 	</s:if>		
             </tr>			

@@ -11,7 +11,7 @@
 													headerKey="-1" id="secondBox" theme="simple"/>		
 											</div>
 										</div>
-					<s:if test="%{!#session.ROLE.contains('busadmin')}">					
+					<s:if test="%{!#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">					
 					<div id="pickup_inner">
 						<jsp:include page="pickupAddress_inner.jsp"/>
 					</div>

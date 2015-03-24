@@ -79,7 +79,7 @@
 			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.ghead.status"/> </span></th>
 			<th><span style="width:200px !important; float:left;"><mmr:message messageId="label.ghead.message"/> </span></th>
 			<th><span style="width:300px !important; float:left;"><mmr:message messageId="label.ghead.log"/> </span></th>
-				<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+				<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 			<th><span style="width:150px !important; float:left;"><mmr:message messageId="label.ghead.updatedby"/> </span></th>
 			<th><span style="width:110px !important; float:left;"><mmr:message messageId="label.ghead.private"/> </span></th>
 			<th><span style="width:110px !important; float:left;"><mmr:message messageId="label.ghead.delete"/> </span></th>
@@ -149,7 +149,7 @@
 				</td>
 				   <td style="text-align: left;"><s:property value="message"/></td>
 				      <td style="text-align: left;"><s:property value="systemLog"/></td>
-					  	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+					  	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 					   <td style="text-align: left;"><s:property value="eventUsername"/></td>
 					     <td style="text-align: left;"><s:property value="Private"/>
 						 <s:if test="%{privateMessage != true}">

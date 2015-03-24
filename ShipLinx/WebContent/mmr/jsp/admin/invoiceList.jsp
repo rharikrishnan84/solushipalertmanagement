@@ -404,7 +404,7 @@
 						<th><mmr:message messageId="label.invoices.company"/></th>
 						<th><mmr:message messageId="label.invoices.datecreated"/></th>
 						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.amount"/></th>
-						<s:if test="%{#session.ROLE.contains('busadmin')}">
+						<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.cost"/></th>
 						</s:if>
 						<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.invoices.tax"/></th>
@@ -427,7 +427,7 @@
 						<td><s:property value="customer.name" /></td>
 						<td><s:date name="dateCreated" format="dd/MM/yyyy" /></td>
 						<td style="text-align:right"><s:label name="curr" value="%{#session.customerDefaultCurrency}" /><s:property value="getText('{0,number,#,##0.00}',{invoiceAmount})"/></td>
-						<s:if test="%{#session.ROLE.contains('busadmin')}">
+						<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 						<td style="text-align:right"><s:label name="curr" value="%{#session.customerDefaultCurrency}" /><s:property value="getText('{0,number,#,##0.00}',{invoiceCost})"/></td>
 						</s:if>
 		

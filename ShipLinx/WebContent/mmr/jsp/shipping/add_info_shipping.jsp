@@ -106,7 +106,7 @@
 		
 </SCRIPT>
 <div class="cont_data_body">
- <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+ <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 	<div id="add_comment_panel">
 
 				<div class="content_header">

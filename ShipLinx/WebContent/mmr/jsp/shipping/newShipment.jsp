@@ -1163,7 +1163,7 @@ var count=parseInt(prevQuantity);
 	<div class="content_body">	
 		<div class="content_table borderLeftRight " style=" overflow:auto; width:955px !important; padding:0px 3px 10px 0px; ">
 			<div class="form_buttons id="img_get_rates" style=" width:200px; float:right !important;">
-				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager')) }">
+				<s:if test="%{(#session.ROLE.contains('busadmin')  || #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin') ) }">
 					<div align="left" style="float:right !important;"><a  href="javascript:quickShip()" onclick="return (validateOrder(3,1))">Create</a></div>
 				</s:if>
 			</div>

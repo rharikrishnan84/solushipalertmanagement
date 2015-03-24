@@ -1049,7 +1049,7 @@ var count=parseInt(prevQuantity);
 </div>	
 	<!-- End: Implementation of Quick Ship UI-->
 	
-		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false}">
+		<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<s:include value="shipping_additional_fields.jsp"/>
 		<div class="form_buttons id="img_save_shipment">
 			<a href="javascript:updateShipment()"> <mmr:message messageId="label.btn.save.shipment"/></a>

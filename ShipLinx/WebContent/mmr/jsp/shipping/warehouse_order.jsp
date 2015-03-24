@@ -448,7 +448,7 @@ var prodkey = "";
 		</tr>
 		</table>
 	</div>
-	<s:if test="%{#session.ROLE.contains('busadmin') && !shippingOrder.isAdditionalFieldsEditable() == true}">
+	<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && !shippingOrder.isAdditionalFieldsEditable() == true}">
 		<jsp:include page="shipping_additional_fields.jsp"/>
 		<div id="img_save_shipment">
 			<a href="javascript:updateShipment()">

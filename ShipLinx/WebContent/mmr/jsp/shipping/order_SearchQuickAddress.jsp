@@ -30,7 +30,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 </style>
 <div class="content">
 <div id="srch_address">
-<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('solutions_manager')}">
+<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 <div class="content_body">
 							<div class="content_table">
 								<div class="content_header">

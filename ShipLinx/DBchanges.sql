@@ -3428,6 +3428,10 @@ INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('113', 'sysadm
 INSERT INTO `newsoluship`.`role_menu` (`menu_id`, `role`) VALUES ('112', 'sysadmin');
 
 INSERT INTO `newsoluship`.`resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk` ) VALUES ('menu.admin.partner', 'Partner', 'en_CA', 1);
+
+update user set isnation_level=false and default_menu_id=437 where username='jcook35'
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.error.exception', 'Exception Details', 'en_CA', 1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 
 

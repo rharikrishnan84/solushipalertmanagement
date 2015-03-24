@@ -240,7 +240,7 @@
 											 readonly="readonly"/>
 										</div>
 									</div>
-									<s:if test="%{#session.ROLE.contains('busadmin')}">
+									<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 									<div class="fields_topdown">
 										<label><mmr:message messageId="label.salesAgent" /></label>
 										<div class="controls">
@@ -307,7 +307,7 @@
 			<th style="text-align:right;padding-right:30px"><mmr:message messageId="label.currency" /> </span></th>
 			<th style="width: auto !important;text-align:right;padding-right:10px"> <span style="width: 120px !important; float:left;"><mmr:message messageId="label.commission.commission" /></span></th>
 			<th style="text-align:right;padding-right:10px"><mmr:message messageId="label.commission.amount" /></th>
-			 <s:if test="%{#session.ROLE.contains('busadmin')}">
+			 <s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 			<th style="text-align:right;padding-right:20px"> <mmr:message messageId="label.commission.cost" /> </th>			
 			</s:if>
 			<th style="width: 175px !important;text-align:left;padding-right:10px"><mmr:message messageId="label.commission.status" /></th>	
@@ -342,7 +342,7 @@
 					<td style="text-align:right;right;padding-left:20px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="commissionPayable" /></s:text></td>
 				
 				<td style="text-align:right;"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="invoiceTotal" /></s:text></td>
-				<s:if test="%{#session.ROLE.contains('busadmin')}">
+				<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				<td style="text-align:right;padding-right:20px"><s:label name="curr" value="%{#session.commissionCurrencySymbol}"/><s:text name="format.customMoney" ><s:param value="costTotal" /></s:text></td>
 				</s:if>
 				

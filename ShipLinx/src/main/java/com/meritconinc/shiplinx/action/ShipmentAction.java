@@ -1335,7 +1335,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		     
 
 		      } else {
-		        addressbookFrom = shippingOrder.getFromAddress();
+		        /*addressbookFrom = shippingOrder.getFromAddress();*/
+		    	  addressbookFrom= addressService.findAddressById(addressId);
+		    	  if(addressbookFrom!=null){
+		    		  shippingOrder.setFromAddress(addressbookFrom);
+		    	  }else{
+		    		  addressbookFrom = shippingOrder.getFromAddress();
+		    	  }
 		       
 		      }
 
@@ -1399,7 +1405,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			      shippingOrder.setToAddress(addressbookTo);		    		
 	    	
 	    } else {
-	      addressbookTo = shippingOrder.getToAddress();
+	      /*addressbookTo = shippingOrder.getToAddress();*/
+	    	addressbookTo= addressService.findAddressById(addressId);
+	    	if(addressbookTo!=null){
+	    		shippingOrder.setToAddress(addressbookTo);
+	    	}else{
+	    		addressbookTo = shippingOrder.getToAddress();
+	    	}
 
 	    }
 

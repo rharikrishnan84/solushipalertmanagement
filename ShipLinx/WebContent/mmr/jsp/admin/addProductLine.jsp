@@ -119,7 +119,7 @@
 </tr>
 </table>
 </div>
-<s:if test="%{#session.ROLE.contains('busadmin')}">
+<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin')}">
 <s:hidden name="busadmin" value="true"/>
 </s:if>
 <s:if test="#session.edit != 'true'">

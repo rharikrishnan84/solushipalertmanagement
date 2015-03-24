@@ -455,5 +455,6 @@ public class ShiplinxConstants {
 	 	 			public static final String ROLE_SYSADMIN = "sysadmin";
 	 	 			public static final String SESSION_BUSINESSFILTER_CUSTOMERID = "customerBusinessFilter";
 	 	 				public static final String EMAIL_REGEX="^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+	 	 				public static final String ROLE_SOLUTIONMANAGER = "solutions_manager";
 }
 	

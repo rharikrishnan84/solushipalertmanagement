@@ -265,7 +265,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 												 />
 											</div>
 										</div>
-										 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager')}">
+										 <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 										 <div class="fields">
 											<label><mmr:message messageId="label.edi.invoiceNumber"/></label>
 											<div class="controls"><span>:</span>
@@ -289,7 +289,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 												 list="#session.orderStatusList" theme="simple" onchange="disableChk()"/>
 											</div>
 										</div>
-										<s:if test="%{#session.ROLE.contains('busadmin')}">
+										<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.billing.status"/></label>
 											<div class="controls"><span>:</span>
@@ -305,7 +305,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 												 />
 											</div>
 										</div>
-										<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager')}">
+										<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 										<div class="fields">
 											<label><mmr:message messageId="label.customer.name" /></label>
 											<s:url id="customerList" action="listCustomers" />
