@@ -237,7 +237,7 @@ window.onload = function() {
 								
 								<div class="fields">
 										<label><mmr:message messageId="label.business.logoUrl"/> </label>
-										<div  class="controls"><span>:</span><s:textfield  key="business.storeCC" name="business.storeCC" /></div>
+										<div  class="controls"><span>:</span><s:textfield  key="business.logoUrl" name="business.logoUrl" /></div>
 									</div>
 									
 									<div class="fields">

@@ -152,6 +152,8 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
         	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.countrypartner.action"));
           }else if(user.isNationLevel()){
         	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/list.branch.action"));
+           }else if(user.isBranchLevel()){
+        	           	   paramObj.put("default_menuId",menuItemDAO.getMenuIdByUrl("/admin/searchcustomer.action"));
            }
       }
     getSqlMapClientTemplate().insert("createUser", paramObj);

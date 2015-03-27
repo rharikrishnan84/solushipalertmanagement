@@ -27,6 +27,8 @@ public class Markup {
 	private List<Long> customerIds;
 	private List<Long> businessIds;
 	
+	private List<String> fromCountries;
+	private List<String> toCountries;
 	private int variable;
 	 
 	public Long getCustomerId() {
@@ -217,4 +219,17 @@ public class Markup {
 			public void setCustomerIds(List<Long> customerIds) {
 				this.customerIds = customerIds;
 			}
+			
+			public List<String> getFromCountries() {
+						return fromCountries;
+					}
+					public void setFromCountries(List<String> fromCountries) {
+						this.fromCountries = fromCountries;
+					}
+					public List<String> getToCountries() {
+						return toCountries;
+					}
+					public void setToCountries(List<String> toCountries) {
+						this.toCountries = toCountries;
+					}
 }

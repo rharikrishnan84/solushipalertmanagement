@@ -540,6 +540,11 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 		getSession().put("CountryList", MessageUtil.getCountriesList());
 		setAllCountryList((List<Country>) getSession().get("CountryList"));
 		loadNewBussinessDepencies();
+		Long businessId=(Long)getSession().get(Constants.BUSINESS_ID_SESSION);
+				if(businessId > 0){
+					Business business1 = businessDAO.getBusiessById(businessId);
+					this.setBusiness(business1);
+				}
 		return SUCCESS;
 	}
 	public String savePartnerBusiness(){
@@ -570,7 +575,8 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 						    long addressId=addressDAO.add(business.getAddress());
 						    business.setUsAddressId(addressId);
 						    business.setAddressId(addressId);
-						    
+						 // method to add default fields of business
+						    						    business = addDefaultBusiness(parentbus, business);
 						    long partnerBusinessId=businessDAO.addParterLevelBusienss(business);
 						    if(partnerBusinessId>0){
 						    	List<Long> busids=new ArrayList<Long>();
@@ -672,6 +678,11 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 		log.debug(" CHECK METHOD IN newCountry" );
 		  loadNewBussinessDepencies();
 		   getSession().put("CountryList", MessageUtil.getCountriesList()); 
+		   Long businessId=(Long)getSession().get(Constants.PARTNER_ID_SESSION);
+		   			if(businessId > 0){
+		   				Business business1 = businessDAO.getBusiessById(businessId);
+		   				this.setBusiness(business1);
+		   			}
 		   return SUCCESS;
 	 
 	}
@@ -695,6 +706,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 					    }
 					    if(businessId!=null && partnerId!=null){
 						    Business parentbus=businessDAO.getBusiessById(businessId);
+						    Business parentbus2=businessDAO.getBusiessById(partnerId);
 						    business.setDefaultNetTerms(15);
 						    business.setNationLevel(true);
 						    business.setPartnerId(partnerId);
@@ -702,7 +714,8 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 						    long addressId=addressDAO.add(business.getAddress());
 						    business.setUsAddressId(addressId);
 						    business.setAddressId(addressId);
-						    
+						    // method to add default fields of business
+						    						    business = addDefaultBusiness(parentbus2, business);
 						    long countryBusinessId=businessDAO.addCountryLevelBusienss(business);
 						    if(countryBusinessId>0){
 //						    	loadDefaultPropertyForBusiness(countryBusinessId);
@@ -817,6 +830,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 					    }
 					    if(businessId!=null && partnerId!=null && countryParterId !=null){
 						    Business parentbus=businessDAO.getBusiessById(businessId);
+						    Business parentbus2=businessDAO.getBusiessById(countryParterId);
 						    business.setDefaultNetTerms(15);
 						    business.setBranchLevel(true);
 						    business.setPartnerId(partnerId);
@@ -825,6 +839,8 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 						    long addressId=addressDAO.add(business.getAddress());
 						    business.setUsAddressId(addressId);
 						    business.setAddressId(addressId);
+						 // method to add default fields of business
+						    						    business = addDefaultBusiness(parentbus2, business);
 						    long BranchBusId=businessDAO.addBranchLevelBusiness(business);
 						    if(BranchBusId>0){
 						    	List<Long> busids=new ArrayList<Long>();
@@ -937,6 +953,11 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
     	log.debug(" CHECK METHOD IN newBranchBusiness" );
 		  loadNewBussinessDepencies();
 		   getSession().put("CountryList", MessageUtil.getCountriesList()); 
+		   Long businessId=(Long)getSession().get(Constants.NATION_ID_SESSION);
+		   			if(businessId > 0){
+		   				Business business1 = businessDAO.getBusiessById(businessId);
+		   				this.setBusiness(business1);
+		   			}
 		   return SUCCESS;
     	
     	
@@ -1342,7 +1363,62 @@ public String editBranchBusiness(){
 	}
 	
 
-	
+private Business addDefaultBusiness(Business parentbus,Business business){
+		
+		// adding default business
+		if(parentbus.getLogoFileName() != null && !(parentbus.getLogoFileName().isEmpty())){
+	    	business.setLogoFileName(parentbus.getLogoFileName());
+	    }
+	    if(parentbus.getLogoHiResFileName() != null && !(parentbus.getLogoHiResFileName().isEmpty())){
+	    	business.setLogoHiResFileName(parentbus.getLogoHiResFileName());
+	    }
+	    if(parentbus.getTaxInfo() != null && !(parentbus.getTaxInfo().isEmpty())){
+	    	business.setTaxInfo(parentbus.getTaxInfo());
+	    }
+	    if(parentbus.getFinanceEmail() != null && !(parentbus.getFinanceEmail().isEmpty())){
+	    	business.setFinanceEmail(parentbus.getFinanceEmail());
+	    }
+	    if(parentbus.getWarehouseEmail() != null && !(parentbus.getWarehouseEmail().isEmpty())){
+	    	business.setWarehouseEmail(parentbus.getWarehouseEmail());
+	    }
+	    if(parentbus.getInvoiceNotificationBody() != null && !(parentbus.getInvoiceNotificationBody().isEmpty())){
+	    	business.setInvoiceNotificationBody(parentbus.getInvoiceNotificationBody());
+	    }
+	    if(parentbus.getCustomerNotificationBody() != null && !(parentbus.getCustomerNotificationBody().isEmpty())){
+	    	business.setCustomerNotificationBody(parentbus.getCustomerNotificationBody());
+	    }
+	    if(parentbus.getCustomerNotificationSubject() != null && !(parentbus.getCustomerNotificationSubject().isEmpty())){
+	    	business.setCustomerNotificationSubject(parentbus.getCustomerNotificationSubject());
+	    }
+	    if(parentbus.getRatesNotificationBody() != null && !(parentbus.getRatesNotificationBody().isEmpty())){
+	    	business.setRatesNotificationBody(parentbus.getRatesNotificationBody());
+	    }
+	    if(parentbus.getAddCustomerNotificationBody() != null && !(parentbus.getAddCustomerNotificationBody().isEmpty())){
+	    	business.setAddCustomerNotificationBody(parentbus.getCustomerNotificationBody());
+	    }
+	    if(parentbus.getAddCustomerNotificationSubject() != null && !(parentbus.getAddCustomerNotificationSubject().isEmpty())){
+	    	business.setAddCustomerNotificationSubject(parentbus.getAddCustomerNotificationSubject());
+	    }
+	    if(parentbus.getLtlEmail() != null && !(parentbus.getLtlEmail().isEmpty())){
+	    	business.setLtlEmail(parentbus.getLtlEmail());
+	    }
+	    if(parentbus.getReportPath() != null && !(parentbus.getReportPath().isEmpty())){
+	    	business.setReportPath(parentbus.getReportPath());
+	    }
+	    if(parentbus.getReportPathInvoice() != null && !(parentbus.getReportPathInvoice().isEmpty())){
+	    	business.setReportPathInvoice(parentbus.getReportPathInvoice()); 
+	    }
+	    if(parentbus.getOrderNotificationBody() != null && !(parentbus.getOrderNotificationBody().isEmpty())){
+	    	business.setOrderNotificationBody(parentbus.getOrderNotificationBody());
+	    }
+	    if(parentbus.getShipOrderNotificationBody() != null && !(parentbus.getShipOrderNotificationBody().isEmpty())){
+	    	business.setShipOrderNotificationBody(parentbus.getShipOrderNotificationBody());
+	    }
+	    if(parentbus.getShipOrderNotificationSubject() != null && !(parentbus.getShipOrderNotificationSubject().isEmpty())){
+	    	business.setShipOrderNotificationSubject(parentbus.getShipOrderNotificationSubject());
+	    }
+	    return business;
+	}
 	
 	
 	

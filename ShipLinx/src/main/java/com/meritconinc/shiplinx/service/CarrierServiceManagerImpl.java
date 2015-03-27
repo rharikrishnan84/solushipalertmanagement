@@ -1108,6 +1108,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         // Most likely this order is from Batch Shipment and it was
         // already saved
         // therefore order needs to be updated
+
         shippingService.update(order);
       } else {
         shippingService.save(order);

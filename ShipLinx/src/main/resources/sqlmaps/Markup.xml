@@ -205,11 +205,15 @@
 				 	and c.carrier_id=#carrierId#
 				</isGreaterThan>
 			</isNotNull>
-			<isNotNull property="fromCountryCode">
-				and m.from_country=#fromCountryCode#
+			<isNotNull property="fromCountries">
+			<isNotEmpty property = "fromCountries">
+					and m.from_country IN <iterate   open="(" close=")" conjunction="," property="fromCountries"> #fromCountries[]# </iterate>
+				</isNotEmpty>
 			</isNotNull>
-			<isNotNull property="toCountryCode">
-				and m.to_country=#toCountryCode#
+			<isNotNull property="toCountries">
+			<isNotEmpty property = "toCountries">
+					and m.to_country IN <iterate   open="(" close=")" conjunction="," property="toCountries"> #toCountries[]# </iterate>
+				</isNotEmpty>
 			</isNotNull>
 			<isNotNull  property="type">
 				 and m.type=#type#

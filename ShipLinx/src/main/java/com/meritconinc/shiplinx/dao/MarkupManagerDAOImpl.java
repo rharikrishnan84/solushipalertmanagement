@@ -14,7 +14,7 @@ import com.meritconinc.shiplinx.model.LtlPoundRate;
 import com.meritconinc.shiplinx.model.LtlSkidRate;
 import com.meritconinc.shiplinx.model.Markup;
 import com.meritconinc.shiplinx.model.Zone;
-
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements MarkupManagerDAO {
 
   public List<Markup> getMarkupListForCustomer(Markup markup) {
@@ -35,6 +35,34 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
     	      markup.setBusinessIds(businessIds);
     	      
     	     }
+    	
+    	String fromCountry = markup.getFromCountryCode();
+    	String toCountry = markup.getToCountryCode();
+    	
+    	List<String> countries = new ArrayList<String>();
+    	countries.add(ShiplinxConstants.COUNTRY_ANY);
+    	countries.add(ShiplinxConstants.COUNTRY_CA);
+    	countries.add(ShiplinxConstants.COUNTRY_US);
+    	countries.add(ShiplinxConstants.COUNTRY_MX);
+    	countries.add(ShiplinxConstants.COUNTRY_CN);
+    	
+    	if(fromCountry != null && !fromCountry.isEmpty() && ShiplinxConstants.COUNTRY_ANY.equalsIgnoreCase(fromCountry)){
+    		markup.setFromCountries(countries);
+    	}
+    	else if(fromCountry != null && !fromCountry.isEmpty() && !ShiplinxConstants.COUNTRY_ANY.equalsIgnoreCase(fromCountry)){
+    		List<String> fromCountryCode = new ArrayList<String>();
+    		fromCountryCode.add(fromCountry);
+    		markup.setFromCountries(fromCountryCode);
+    	}
+    	
+    	if(toCountry != null && !toCountry.isEmpty() && ShiplinxConstants.COUNTRY_ANY.equalsIgnoreCase(toCountry)){
+    		markup.setToCountries(countries);
+    	}
+    	else if(toCountry != null && !toCountry.isEmpty() && !ShiplinxConstants.COUNTRY_ANY.equalsIgnoreCase(toCountry)){
+    		List<String> toCountryCode = new ArrayList<String>();
+    		toCountryCode.add(toCountry);
+    		markup.setToCountries(toCountryCode);
+    	}
       List<Markup> markupList = (List<Markup>) getSqlMapClientTemplate().queryForList(
           "findMarkupListForCustomer", markup);
       return markupList;

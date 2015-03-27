@@ -697,6 +697,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        String orderId = request.getParameter("order_id");
 	        if (!StringUtil.isEmpty(orderId)) {
 	          order = shippingService.getShippingOrder(Long.valueOf(orderId));
+	          if(order!=null && order.getFromAddress()!=null ){
+	        	  Long shipfrom=order.getFromAddress().getAddressId();
+	        	  getSession().put("ship_from_update",shipfrom);
+	          }
+	          if(order!=null && order.getToAddress()!=null){
+	        	  Long shipto=order.getToAddress().getAddressId();
+	        	  getSession().put("ship_to_update",shipto);
+	          }
 	        } else {
 	          order = this.getShippingOrder();
 	        }
@@ -2735,7 +2743,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    // if quick ship option is chosen, then redirect to ship
 	    getSession().put("shippingOrder", shippingOrder);
 	    if (((shippingOrder.getServiceId_web() != null && shippingOrder.getServiceId_web() > 0)
-	    	|| shippingOrder.isCheapestMethod() || shippingOrder.isFastestMethod())&&(stagethree!=null && stagethree.equalsIgnoreCase("false")))
+	    	|| shippingOrder.isCheapestMethod() || shippingOrder.isFastestMethod())&&(stagethree!=null && stagethree.equalsIgnoreCase("false1")))
 	      if (shippingOrder.getRateList().size() == 1) {
 	        return "ship";
 	      }

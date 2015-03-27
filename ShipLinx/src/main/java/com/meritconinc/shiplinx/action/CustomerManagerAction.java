@@ -1032,10 +1032,11 @@ public String execute() throws Exception {
     String searchParameter = request.getParameter("searchString");
     log.debug("Search string is : " + searchParameter);
 
-    Customer c = new Customer();
+  /*  Customer c = new Customer();
     c.setName(searchParameter);
-    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-    List<Customer> customers = getService().search(c);
+    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());*/
+    List<Customer> customers =(List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+   // List<Customer> customers = getService().search(c);
 
     // First record is empty
     customerSearchResult.put("ORPHAN", 0L);

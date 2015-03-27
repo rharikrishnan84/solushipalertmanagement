@@ -356,7 +356,7 @@ var count=parseInt(prevQuantity);
 		var quick = document.getElementById("qkship_fastest").checked;
 		if(carrierId==10 && serviceId>0){
 	    var key="1";	
-	    document.userform.action = "shipment.stageThree.action?key="+key+"&getrates=false";
+	    document.userform.action = "shipment.stageThree.action?key="+key+"&getrates=false1";
 	 	document.userform.submit();
 		}else if(carrierId!= 10){
 			alert("Quick Ship Only for Generic Carrier");
@@ -1143,7 +1143,7 @@ var count=parseInt(prevQuantity);
 </div>	
 	<!-- End: Implementation of Quick Ship UI-->
 	<div class="content">
-		<s:if test="%{#session.ROLE.contains('busadmin') && shippingOrder.isAdditionalFieldsEditable() != false || #session.ROLE.contains('solutions_manager') && shippingOrder.isAdditionalFieldsEditable() != false}">
+		<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin') || #session.ROLE.contains('solutions_manager'))   && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<jsp:include page="shipping_additional_fields.jsp"/>
 	
 		<div class="content_body">	

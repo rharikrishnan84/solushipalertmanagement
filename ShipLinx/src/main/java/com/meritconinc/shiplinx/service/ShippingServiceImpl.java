@@ -278,6 +278,20 @@ public class ShippingServiceImpl implements ShippingService {
           this.customerDAO.editCustomerCarrier(customerCarrier, Long.valueOf(carrierAccountId));
         }
       }
+      
+      if(so!=null && so.getFromAddress()!=null){
+    	 Object fromUpdate =  ActionContext.getContext().getSession().get("ship_from_update");
+    	 if(fromUpdate!=null){
+    		 so.getFromAddress().setAddressId((Long) fromUpdate);
+    		 
+    	 }
+      }
+      if(so!=null && so.getToAddress()!=null){
+    	  Object toUpdate = ActionContext.getContext().getSession().get("ship_to_update");
+    	  if(toUpdate!=null){
+    		  so.getToAddress().setAddressId((Long)toUpdate);
+    	  }
+      }
       this.shippingDAO.updateShippingOrderExtended(so);
 
       // update From and To Addresses
