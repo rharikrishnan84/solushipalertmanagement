@@ -52,6 +52,7 @@ public interface MarkupManagerDAO {
   public LtlPoundRate getPoundRate(LtlPoundRate poundRateTobeSearched, Double totalWeight);
 
   public LtlSkidRate getSkidRate(LtlSkidRate skidRateTobeSearched);
+  //public List<LtlSkidRate> getSkidRate(LtlSkidRate skidRateTobeSearched);
 
   public Zone findZone(Long zoneStructureId, Address address);
 

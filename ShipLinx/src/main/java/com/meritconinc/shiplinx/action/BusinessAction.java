@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.BusinessFilterDAO;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.UserDAO;
+import com.meritconinc.shiplinx.model.BusinessFilter;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.mmr.model.common.MenuItemVO;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.MessageUtil;
@@ -82,11 +85,103 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	
 	private List<Country> allCountryList;
 	
+	private UserBusiness userBusiness;
+	
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
 		this.request = request ; 
 	}
 
+	public String ajaxLoadChildBusiness(){
+	       
+	       String rootBusId=request.getParameter("rootBusId");
+	       String partnerBusId=request.getParameter("partnerBusId");
+	       String nationBusId=request.getParameter("nationBusId");
+	       Long parentBusId;
+	       if(rootBusId!=null && !rootBusId.equals("")){
+	           parentBusId=Long.parseLong(rootBusId);
+	           businessList=businessDAO.getBusinessListByLevel(parentBusId);
+	           return "partner";
+	       }else if(partnerBusId!=null && !partnerBusId.equals("")){
+	           parentBusId=Long.parseLong(partnerBusId);
+	           businessList=businessDAO.getBusinessListByLevel(parentBusId);
+	           return "nation";
+	       }else if(nationBusId!=null && !nationBusId.equals("")){
+	           parentBusId=Long.parseLong(nationBusId);
+	           businessList=businessDAO.getBusinessListByLevel(parentBusId);
+	       return "branch";
+	       }
+	       return SUCCESS;
+	   }
+	   public String newUserBus(){
+	       long count=0;
+	       String rv=request.getParameter("root");
+	       String pv=request.getParameter("partner");
+	       String nv=request.getParameter("nation");
+	       String bv=request.getParameter("branch");
+	       userBusiness=new UserBusiness();
+	       Long rid,pid,nid,bid;
+	        BusinessFilter bf=new BusinessFilter();
+	        
+	        
+	       if(rv!=null  ){
+	           rid=Long.parseLong(rv);
+	           if(rid!=-1){
+	       bf.setParentBus(businessDAO.getBusiessById(rid));
+	           }else{
+	               Business b=new Business();
+	               b.setId(-1);
+	               b.setName("ANY");
+	           
+	           }
+	           
+	       }
+	       if(pv!=null){
+	           pid=Long.parseLong(pv);
+	           if(pid!=-1){
+	           bf.setPartnerBus(businessDAO.getBusiessById(pid));
+	           }else{
+	               Business b=new Business();
+	               b.setId(-1);
+	               b.setName("ANY");
+	               bf.setPartnerBus(b);
+	           }
+	           
+	       }
+	       if(nv!=null){
+	           nid=Long.parseLong(nv);
+	           if(nid!=-1){
+	           bf.setNationBus(businessDAO.getBusiessById(nid));
+	           }else {
+	               Business b=new Business();
+	               b.setId(-1);
+	               b.setName("ANY");
+	               bf.setNationBus(b);
+	           }
+	       }
+	       if(bv!=null){
+	           bid=Long.parseLong(bv);
+	           if(bid!=-1){
+	           bf.setBranchBus(businessDAO.getBusiessById(bid));
+	           }else{
+	               Business b=new Business();
+	               b.setId(-1);
+	               b.setName("ANY");
+	               bf.setBranchBus(b);
+	           }
+	       }
+	       
+	       
+	       
+	         count = (int)(Math.random()*9000)+1000;
+	        
+	       count++;
+	        
+	       bf.setId(count);
+	       userBusiness.getBusinessFilterList().add(bf);
+	       return SUCCESS;
+	   }
+	   
 	public String newBusiness(){
 		try{
 			log.debug(" CHECK METHOD IN newBusiness " );
@@ -1420,6 +1515,13 @@ private Business addDefaultBusiness(Business parentbus,Business business){
 	    return business;
 	}
 	
+public UserBusiness getUserBusiness() {
+       return userBusiness;
+   }
+
+   public void setUserBusiness(UserBusiness userBusiness) {
+       this.userBusiness = userBusiness;
+   }
 	
 	
 }

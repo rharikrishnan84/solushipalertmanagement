@@ -3033,6 +3033,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                 }
               }
             }
+            
+            /*if(groupLtlSkidRate != null && groupLtlSkidRate.size()>1){
+            	                Collections.sort(groupLtlSkidRate, Rating.PriceComparatorForPound);
+            	            }*/
             if (groupLtlSkidRate.size() > 1) {
               Collections.sort(groupLtlSkidRate, LtlSkidRate.LtlSkidFscPercentage);
             }
@@ -4056,6 +4060,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                      order.getBusinessId(), carrierServicesList.get(serviceSlice).getId(),
 		                      fromZone.getZoneName(), toZone.getZoneName());
 		                  LtlSkidRate pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+				                 /* List <LtlSkidRate> pr = new ArrayList<LtlSkidRate>();
+				                 	                  pr = this.markupDAO.getSkidRate(skidRateTobeSearched);*/
 		                  // if pr is null for the customer id then set the customer to zero.
 		                  if (pr == null) {
 		                    skidRateTobeSearched.setCustomerId(0L);
@@ -4212,4 +4218,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		public void setCur(CreditUsageReport cur) {
 			this.cur = cur;
 		}
+		
+		@Override
+				public Carrier getCarrierBycarrierId(Long carrierId) {
+					// TODO Auto-generated method stub
+					return this.carrierServiceDAO.getCarrierBycarrierId(carrierId);
+				}
 }

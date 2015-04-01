@@ -217,7 +217,9 @@
     <thead>
 		<tr>
 			<th><input id="check_all" type="checkbox" /></th>
+			<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 			<th></th>
+			</s:if>
 			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.ghead.username"/></span></th>
 			<th><span style="width:250px !important; float:left;"><mmr:message messageId="btn.email"/></span></th>
 			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.list.datecreated"/></span></th>
@@ -232,11 +234,13 @@
 	         <td class="odd1" width="2%">
 			 <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/> 
 	             </td>
+	             <s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				 <td width="2%">
 		            <s:a href="logInAs.action?username=%{username}"> 
 					<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0">
 					</s:a>
 	   			</td>
+	   			</s:if>
 			   <td><span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td><td ><s:property value="email"/></td>
 				<td><span title="<s:property value="email"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="email"/></div></td>
 	            <td><s:date name="createdAt" format="dd/MM/yyyy" /></td>
@@ -246,11 +250,13 @@
 		        <td class="odd1" width="2%">
 		        <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="username"/>"/>  
 	   			</td>
+	   			<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				 <td width="2%">
 		            <s:a href="logInAs.action?username=%{username}"> 
 					<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0">
 					</s:a>
 	   			</td>
+	   			</s:if>
 				<td style="text-align: left;"><span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td>
 	            <td style="text-align: left;"> <span title="<s:property value="email"/>"></span><div style="width:200px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="email"/></div></td>
 				<td style="text-align: left;"><s:date name="createdAt" format="dd/MM/yyyy" /></td>

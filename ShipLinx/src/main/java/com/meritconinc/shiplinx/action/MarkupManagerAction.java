@@ -864,8 +864,11 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  	    Customer c = new Customer();
 	  	    c.setName(searchParameter);
 	  	    c.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-	  	    List<Customer> customers = this.customerService.search(c);
-	  
+
+	  	  List<Customer> customers =	  (List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	  	  if(customers==null || customers.size()==0){
+	  	      customers = this.customerService.search(c);
+	  	  }
 	  	    // First record is empty
 	  	    customerSearchResult.put("", 0L);
 	  

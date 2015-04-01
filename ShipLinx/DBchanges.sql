@@ -3434,4 +3434,28 @@ update user set isnation_level=false and default_menu_id=437 where username='jco
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.error.exception', 'Exception Details', 'en_CA', 1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.user.business', 'User Business', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.business', 'Business', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.rootBusiness', 'Root Business', 'en_CA', 1, '');
+
+
+select * from action order by id desc
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('ajax.getchildBus', '437', 0, 'get partner business', 1, '');
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1071', '');
+ 
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('new.userBus', '437', 0, 'add user bus', 1);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sysadmin', '1072', '');
+
+
+
+CREATE TABLE `user_business` (
+  `user_business_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(45) NOT NULL,
+  `parent_buiness_id` int(10) DEFAULT '-1',
+  `partner_id` int(10) DEFAULT '-1',
+  `nation_id` int(10) DEFAULT '-1',
+  `branch_id` int(10) DEFAULT '-1',
+  PRIMARY KEY (`user_business_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 

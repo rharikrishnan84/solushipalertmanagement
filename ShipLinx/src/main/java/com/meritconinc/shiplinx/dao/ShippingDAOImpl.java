@@ -40,6 +40,7 @@ import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
@@ -580,6 +581,21 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     	    				businessIds=busids;
     	    	    	}
 
+    	    	    	List<UserBusiness> ubs=null;
+    	    	    	    	    	    	if(UserUtil.getMmrUser()!=null){
+    	    	    		    	    	    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+    	    	    		    	    	    	
+    	    	    		    	    	    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
+    	    	    		    	    	    		List<Long> userBusIds=new ArrayList<Long>();
+    	    	    		    	    	    		userBusIds.addAll(businessIds);
+    	    	    		    	    	    		businessIds.clear();
+    	    	    		    	    	    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+    	    	    		    	    	    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
+    	    	    		    	    	    		
+    	    	    		    	    	    	}
+    	    	    	    	    	    	}
+    	    	    	    	    	    	
+    	    	    	
       Map<String, Object> paramObj = new HashMap<String, Object>();
       paramObj.put("businessIds",businessIds);
       paramObj.put("customerId", customerId);

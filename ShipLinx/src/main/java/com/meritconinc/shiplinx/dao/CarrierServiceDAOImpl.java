@@ -292,4 +292,10 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
         	}
         }
   
+  @Override
+  public Carrier getCarrierBycarrierId(Long carrierId) {
+  	// TODO Auto-generated method stub
+  	return (Carrier) getSqlMapClientTemplate().queryForObject("getCarrierBycarrierId",carrierId);
+  }
+  
 }

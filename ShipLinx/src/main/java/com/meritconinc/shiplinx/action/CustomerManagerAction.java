@@ -805,7 +805,7 @@ public String execute() throws Exception {
       Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
                   if(businessId==null){
       customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
-          UserUtil.getMmrUser().getBusinessId(), customer.getId());
+    		  customer.getBusinessId(), customer.getId());
                   }else {
                 	              	    	   customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
                 	              	    			 customer.getBusinessId(), customer.getId());
@@ -845,7 +845,7 @@ public String execute() throws Exception {
       customerCarrier = customer.getCustomerCarrier();
       customerCarrier.setCustomerId(customer.getId());
       customerCarrier.setCountry(country);
-      customerCarrier.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+      customerCarrier.setBusinessId(customer.getBusinessId());
 
       String strCustomerCarrierId = request.getParameter("customerCarrierId");
 
@@ -890,7 +890,7 @@ public String execute() throws Exception {
       request.setAttribute("customerCarrierId", customerCarrierId);
 
       customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
-          UserUtil.getMmrUser().getBusinessId(), customer.getId());
+    		  customer.getBusinessId(), customer.getId());
 
       getSession().put("edit", "true");
 

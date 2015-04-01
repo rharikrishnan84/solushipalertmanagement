@@ -294,7 +294,7 @@
 	</insert>
 	<select id="getCustomerCarrierForBusiness"  resultMap="CarrierResult3">
        
-       select * from carrier c where c.carrier_id in(select s.carrier_id from service s where s.service_id in(select cm.service_id from customer_markup cm where cm.customer_id=#customerId# and cm.business_id=1 and cm.disabled=0))
+       select * from carrier c where c.carrier_id in(select s.carrier_id from service s where s.service_id in(select cm.service_id from customer_markup cm where cm.customer_id=#customerId# and cm.disabled=0))
    </select>
 <select id="getCustomerforServicesForCarrier" resultMap="CarrierServicesResult">
  
@@ -318,4 +318,8 @@
 	<insert id="addBusinessCarrierByBusiness" parameterClass="map">
 	    INSERT INTO business_carrier(business_id,carrier_id,business_carrier_discount,display_name) (select #newBusinessId#,carrier_id,business_carrier_discount,display_name from business_carrier where business_id = #defaultBusinessId#)
 	    	</insert> 
+	<select id="getCarrierBycarrierId" resultMap="CarrierResult">
+	    	    select * from carrier where carrier_id=#carrierId#
+	    	    
+	    	</select>
 </sqlMap>

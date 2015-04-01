@@ -489,4 +489,20 @@ public class Customer {
 					public void setHoldTerms(int holdTerms) {
 						this.holdTerms = holdTerms;
 					}
+					
+					public int hashCode(){
+											        return (int) this.id;
+											    }
+											     
+											 public boolean equals(Object o){
+												    if(o == null)                return false;
+												    if(!(o instanceof Customer)) return false;
+						
+												    Customer c = (Customer) o;
+												    if(this.id != c.getId())      return false;
+												 
+												    return true;
+												  }
+						
+						
 }

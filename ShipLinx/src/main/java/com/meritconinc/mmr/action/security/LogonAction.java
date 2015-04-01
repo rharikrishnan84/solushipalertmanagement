@@ -1,6 +1,7 @@
 package com.meritconinc.mmr.action.security;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,15 +30,17 @@ import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.service.BusinessManager;
-import com.soluship.businessfilter.util.BusinessFilterUtil;
 import com.meritconinc.shiplinx.service.CaptchaServiceSingleton;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.octo.captcha.service.CaptchaServiceException;
 import com.opensymphony.xwork2.ActionContext;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 
 public class LogonAction extends BaseAction implements ServletRequestAware {
@@ -571,15 +574,40 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		String currentUser = UserUtil.getMmrUser().getUsername();
 		String customerId = request.getParameter("id");
 		
-		UserSearchCriteria criteria = new UserSearchCriteria();
+		//UserSearchCriteria criteria = new UserSearchCriteria();
 		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		UserSearchCriteria criteria = new UserSearchCriteria();
 								if(businessId!=null){
 									criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
 								}else {
-									criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
+									if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)
+																						&& businessId==null){
+																					 List<Long> busIDs=new ArrayList<Long>();
+																					List<Business> allbus=businessDAO.getHoleBusinessList();
+																					if(allbus!=null && allbus.size()>0){
+																						for(Business b:allbus){
+																							busIDs.add(b.getId());
+																						}
+																						criteria.setBusinessIds(busIDs);
+																					}
+																				}else{
+																				
+																					criteria.setBusinessIds(BusinessFilterUtil.getBusIdParentId(BusinessFilterUtil.setBusinessIdbyUserLevel()));
+																				}
 								}
-		if(customerId!=null)
+								List<UserBusiness> ubs=new ArrayList<UserBusiness>();
+																ubs=BusinessFilterUtil.getUserBusinessByUserName(currentUser);
+																if(ubs!=null && ubs.size()>0){
+																	List<Long> bsIDs=BusinessFilterUtil.getUserBusinessIds(currentUser,ubs);
+																	if(bsIDs!=null && bsIDs.size()>0){
+																	criteria.getBusinessIds().addAll(bsIDs);
+																	}
+																	criteria.setBusinessIds(BusinessFilterUtil.getvalidatedBusIds(criteria.getBusinessIds()));
+																}
+										if(customerId!=null){
 			criteria.setCustomerId(Long.valueOf(customerId));
+										}
 		else
 		{
 			criteria.setCustomerId(0L);

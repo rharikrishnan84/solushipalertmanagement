@@ -455,8 +455,8 @@
 		select * from  ltl_skid_rate where business_id	= #businessId# 		and
 										 customer_id	= #customerId# 		and										 
 										 service_id		= #serviceId#   	and
-										 from_zone 		= #fromZone#		and
-										 to_zone 		= #toZone#			
+										from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#				
 	</select>	
 		
 	<select id="findZoneByPostalCode" resultMap="zoneResultMap">

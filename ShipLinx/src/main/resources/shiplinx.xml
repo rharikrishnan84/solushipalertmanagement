@@ -1436,9 +1436,30 @@
          <result type="tiles" name="success">view.business</result>
        </action>
        	
-      <action name="edit.nation" method="editNationBusiness" class="businessAction">
+      <!-- <action name="edit.nation" method="editNationBusiness" class="businessAction">
        	    <result type="tiles" name="success">addnation</result>
+       	</action> -->
+       	
+       	<action name="ajax.getchildBus" method="ajaxLoadChildBusiness" class="businessAction">
+			<result name="partner">
+         /mmr/jsp/admin/ajax_getPartnerBus.jsp
+             </result>
+            	<result name="nation">
+         /mmr/jsp/admin/ajax_getNationBus.jsp
+             </result> 
+             	<result name="branch">
+         /mmr/jsp/admin/ajax_getBranchBus.jsp
+             </result>
+			
        	</action>
+      	<action name="new.userBus" method="newUserBus" class="businessAction">
+      	    <result  name="success">
+      	        /mmr/jsp/admin/ajax_user_business.jsp
+      	        
+      	    </result>
+      	    
+      	</action>
+      
       <!-- end of business filter  -->
         
         

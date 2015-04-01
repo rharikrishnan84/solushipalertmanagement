@@ -280,6 +280,7 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
     List<LtlSkidRate> lsrList = (List) getSqlMapClientTemplate().queryForList("getLtlSkidRate",
         skidRateTobeSearched);
     if (lsrList != null && lsrList.size() > 0)
+    	//return  lsrList;
       return lsrList.get(0);
     return null;
   }

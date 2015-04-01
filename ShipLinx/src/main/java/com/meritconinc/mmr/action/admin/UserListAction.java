@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Iterator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,17 @@ import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.mmr.dao.BusinessFilterDAO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.Branch;
+import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.BusinessFilter;
+import com.meritconinc.shiplinx.model.CountryPartner;
+
+import com.meritconinc.shiplinx.model.Partner;
+import com.meritconinc.shiplinx.model.UserBusiness;
+import com.meritconinc.shiplinx.model.UserFilter;
 import com.meritconinc.shiplinx.service.AddressManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
@@ -77,7 +89,8 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
       private BusinessFilterDAO businessFilterDAO;
       private List<Branch> branchList;
   private Collection<RoleVO> availableRoles = new ArrayList<RoleVO>();
-
+  private UserBusiness userBusiness;
+    private List<Business> businessList;
   public void setDataGridPages() {
     this.setNoOfRowsPerPage(10);
     setDataGrid(new DataGrid(noOfRowsPerPage));
@@ -148,6 +161,15 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
            }
           
             userList=getuserlistbyBusId();
+            if(userList!=null && userList.size()>0){
+	            Iterator itr1=userList.iterator();
+	                       while(itr1.hasNext()){
+	                    	   User u=(User) itr1.next();
+	                    	   if(u.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+	                    		itr1.remove();
+	                    	   }
+	                       }
+            }
     if (!(userList.size() != 0))
       addActionError(getText("error.no.user.found"));
                   }else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)&& businessId==null){
@@ -388,6 +410,11 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
       String username = request.getParameter("username");
 
       service.save(user, UserUtil.getSignedInUser().getUsername());
+      if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+    	           
+    	      	 updateUserBusiness(user);
+    	      	  
+    	        }
       log.debug("EDITTED SUCCESSFULLY ");
       addActionMessage(getText("user.info.update.successfully"));
       // session.remove("method");
@@ -511,6 +538,10 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
         }*/
         service.create(user, UserUtil.getSignedInUser().getUsername());
         
+        if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+        	        addUserBusiness(user);
+        	        }
+        
         BusinessFilterDAO businessFilterDAO = (BusinessFilterDAO) MmrBeanLocator.getInstance().findBean("businessFilterDAO");
                                 //UserFilter
                                  addUserFilter(user);
@@ -531,6 +562,144 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
     return SUCCESS;
   }
 
+  /*update the user_business only for sysadmin can 
+   *edit the access of multiple business 
+   *for this user
+   */
+  private void updateUserBusiness(User user2) {
+  	// TODO Auto-generated method stub
+  	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+  	  
+  	  List<UserBusiness> userBusinessList=businessDAO.getUserBusinessListByUser(user.getUsername());
+  	   String[] parentIds=request.getParameterValues("parentBusIds");
+  	   String[] partnerIds=request.getParameterValues("partnerBusIds");
+  	   String[] nationIds=request.getParameterValues("nationBusIds");
+  	   String[] branchIds=request.getParameterValues("branchBusIds");
+  	   List<Long> parentIdL=new ArrayList<Long>();
+  	   List<Long> partnerIdL=new ArrayList<Long>();
+  	   List<Long> nationIdL=new ArrayList<Long>();
+  	   List<Long> branchIdL=new ArrayList<Long>();
+  	   if(parentIds !=null){
+  	   for(int i=0;i<parentIds.length;i++){
+  		   
+  		   parentIdL.add(Long.parseLong(parentIds[i]));
+  		   partnerIdL.add(Long.parseLong(partnerIds[i]));
+  		   nationIdL.add(Long.parseLong(nationIds[i]));
+  		   branchIdL.add(Long.parseLong(branchIds[i]));
+  	   }
+  	   }
+  	   
+  	   List<UserBusiness> updateduserBus=new ArrayList<UserBusiness>();
+  	   List<UserBusiness> toAdduserBus=new ArrayList<UserBusiness>();
+  	   List<UserBusiness> tempOldubs=new ArrayList<UserBusiness>();
+  	   List<UserBusiness> tempubs=new ArrayList<UserBusiness>();
+  	   if(parentIdL!=null){
+  	  for(int i=0;i<parentIdL.size();i++){
+  		  
+  		  UserBusiness ub=new UserBusiness();
+  		  ub.setUsername(user2.getUsername());
+  		  ub.setParentId(parentIdL.get(i));
+  		  ub.setPartnerId(partnerIdL.get(i));
+  		  ub.setNationId(nationIdL.get(i));
+  		  ub.setBranchId(branchIdL.get(i));
+  		  updateduserBus.add(ub);
+  	  }
+  	   }
+  	   if(updateduserBus.size()>0){
+  	  tempubs.addAll(updateduserBus);
+  	   }
+  	   if(userBusinessList.size()>0){
+  	  tempOldubs.addAll(userBusinessList);
+  	   }
+  	  @SuppressWarnings("rawtypes")
+  	Iterator old=userBusinessList.iterator();	
+  	  @SuppressWarnings("rawtypes")
+  	Iterator lat=updateduserBus.iterator();
+  	  Iterator lat1=tempubs.iterator();
+  	  Iterator old1=tempOldubs.iterator();
+  	  while(lat.hasNext()){
+  		  UserBusiness ubl=(UserBusiness) lat.next();
+  		  while(old.hasNext()){
+  			  UserBusiness ubo=(UserBusiness)old.next();
+  			  if(ubo.getUsername().equals(ubl.getUsername()) && 
+  					  ubo.getParentId().equals(ubl.getParentId()) && ubo.getPartnerId().equals(ubl.getPartnerId()) &&
+  					  ubo.getNationId().equals(ubl.getNationId()) && ubo.getBranchId().equals(ubl.getBranchId())){
+  				  lat.remove();
+  			  }
+  		  }
+  	  }
+  	  
+
+  		 
+  			  while(lat1.hasNext()){
+  				  UserBusiness ubl=(UserBusiness) lat1.next();
+  				  while(old1.hasNext()){
+  					  UserBusiness ubo=(UserBusiness)old1.next();
+  			  if(ubo.getUsername().equals(ubl.getUsername()) && 
+  					  ubo.getParentId().equals(ubl.getParentId()) && ubo.getPartnerId().equals(ubl.getPartnerId()) &&
+  					  ubo.getNationId().equals(ubl.getNationId()) && ubo.getBranchId().equals(ubl.getBranchId())){
+  				  old1.remove();
+  			  }
+  		  }
+  	  }
+  	  
+  	  //to add
+  	  for(UserBusiness ub:updateduserBus){
+  	    	 businessDAO.adduserBusiness(ub);
+  	     }
+  		
+  	  //to delete
+  	  for(UserBusiness ub:tempOldubs){
+  		  businessDAO.deleteUserBusiness(ub.getUserBusId());
+  	  }
+  	   
+  }
+  /* 
+  *  Allocate multiple business for 
+  *   various business
+  */
+  private void addUserBusiness(User user2) {
+  	// TODO Auto-generated method stub
+  	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+  	 String[] parentIds=request.getParameterValues("parentBusIds");
+  	   String[] partnerIds=request.getParameterValues("partnerBusIds");
+  	   String[] nationIds=request.getParameterValues("nationBusIds");
+  	   String[] branchIds=request.getParameterValues("branchBusIds");
+  	   List<Long> parentIdL=new ArrayList<Long>();
+  	   List<Long> partnerIdL=new ArrayList<Long>();
+  	   List<Long> nationIdL=new ArrayList<Long>();
+  	   List<Long> branchIdL=new ArrayList<Long>();
+  	   if(parentIds!=null){
+  	   for(int i=0;i<parentIds.length;i++){
+  		   
+  		   parentIdL.add(Long.parseLong(parentIds[i]));
+  		   partnerIdL.add(Long.parseLong(partnerIds[i]));
+  		   nationIdL.add(Long.parseLong(nationIds[i]));
+  		   branchIdL.add(Long.parseLong(branchIds[i]));
+  	   }
+  	   }
+  	   
+  	   List<UserBusiness> toaddubs=new ArrayList<UserBusiness>();
+  	   if(parentIdL!=null){
+  	  for(int i=0;i<parentIdL.size();i++){
+  		  
+  		  UserBusiness ub=new UserBusiness();
+  		  ub.setUsername(user2.getUsername());
+  		  ub.setParentId(parentIdL.get(i));
+  		  ub.setPartnerId(partnerIdL.get(i));
+  		  ub.setNationId(nationIdL.get(i));
+  		  ub.setBranchId(branchIdL.get(i));
+  		  toaddubs.add(ub);
+  	  }
+  	  if(toaddubs!=null && toaddubs.size()>0){
+       for(UserBusiness ub:toaddubs){
+      	 businessDAO.adduserBusiness(ub);
+       }
+       }
+  	   }
+  	
+  }
+  
   private void addUserFilter(User user2) {
 	 	// TODO Auto-generated method stub
 	   
@@ -568,7 +737,7 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   }
 
   public String edit() throws Exception {
-
+	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
     String username = request.getParameter("name");
     log.debug("CHECK EIDT NAME " + username);
     user = service.findUserByUsername(request.getParameter("name"));
@@ -596,9 +765,86 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
     setAvailableRoles(user.getCustomerId());
     List<LocaleVO> localeList = service.findLocale();
     getSession().put("localeList", localeList);
+    if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+    	    userbuinessDepencies();
+    	    }
+    
     return SUCCESS;
   }
 
+  
+  
+  private void userbuinessDepencies() {
+	// TODO Auto-generated method stub
+  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  
+		
+  	  businessList=businessDAO.getAllBusiness();
+	  userBusiness=new UserBusiness();
+	  userBusiness.setUsername(user.getUsername());
+	  BusinessFilter bf=new BusinessFilter();
+      List <Business> allRootbus=businessDAO.getAllBusiness();
+	  bf.setParentBusList(allRootbus);
+      userBusiness.setBusinessFilter(bf);
+      
+      List<UserBusiness> userBusinessList=businessDAO.getUserBusinessListByUser(user.getUsername());
+      List<BusinessFilter> bfList=new ArrayList<BusinessFilter>();
+ 
+  if(userBusinessList!=null){
+		  
+		  for(UserBusiness ub:userBusinessList){
+			  ub.setBusinessFilter(new BusinessFilter());
+			  ub.getBusinessFilter().setId(ub.getUserBusId());
+			 if(ub.getParentId()!=null){
+				 if(ub.getParentId()!=-1){
+				 ub.getBusinessFilter().setParentBus(businessDAO.getBusiessById(ub.getParentId()));
+				 }else{
+					 Business b=new Business();
+					 b.setName("ANY");
+					 b.setId(-1);
+					 ub.getBusinessFilter().setParentBus(b);
+				 }
+			 }
+			 if(ub.getPartnerId()!=null){
+				 if(ub.getPartnerId()!=-1){
+				 ub.getBusinessFilter().setPartnerBus(businessDAO.getBusiessById(ub.getPartnerId()));
+				 }else{
+					 Business b=new Business();
+					 b.setName("ANY");
+					 b.setId(-1);
+					 ub.getBusinessFilter().setPartnerBus(b);
+				 }
+			 }
+			 if(ub.getNationId()!=null ){
+				 if( ub.getNationId()!=-1){
+				 ub.getBusinessFilter().setNationBus(businessDAO.getBusiessById(ub.getNationId()));
+				 }else{
+					 Business b=new Business();
+					 b.setName("ANY");
+					 b.setId(-1);
+					 ub.getBusinessFilter().setNationBus(b);
+				 }
+			 }
+			 if(ub.getBranchId()!=null){
+				 
+				 if(ub.getBranchId()!=-1){
+				 ub.getBusinessFilter().setBranchBus(businessDAO.getBusiessById(ub.getBranchId()));
+				 }else{
+					 Business b=new Business();
+					 b.setName("ANY");
+					 b.setId(-1);
+					 ub.getBusinessFilter().setBranchBus(b);
+				 }
+			 }
+			  bfList.add(ub.getBusinessFilter());
+		  }
+		  
+		
+	  }
+  userBusiness.setBusinessFilterList(bfList);
+  
+}
+  
   /**
    * Prepares the data for the New User page
    * 
@@ -606,7 +852,7 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
    * @throws Exception
    */
   public String newUser() throws Exception {
-
+	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
     /*// check if customer id is set, it means admin user is creating customer user
     long customerId = 0;
     if (getUser() != null)
@@ -646,6 +892,19 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
 	  	  	    getSession().put("localeList", localeList);
 	  	      getSession().put("user", user);
 	  	  	    // setEdit("false");
+	  	    if(UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+	  	    		  	    	
+	  	    		  	    	businessList=businessDAO.getAllBusiness();
+	  	    		  	  	  userBusiness=new UserBusiness();
+	  	    		  	  	userBusiness.setUsername(user.getUsername());
+	  	    		  	  	BusinessFilter bf=new BusinessFilter();
+	  	    		  	  	List <Business> allRootbus=businessDAO.getAllBusiness();
+	  	    		  	  	bf.setParentBusList(allRootbus);
+	  	    		  	    userBusiness.setBusinessFilter(bf);  	
+	  	    		  	    userBusiness.setBusinessFilterList(new ArrayList<BusinessFilter>());
+	  	    		  	    
+	  	    		  	    }
+	  	    
 	  	  	    return SUCCESS;
   }
 
@@ -819,4 +1078,20 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
 	  public void setBranchList(List<Branch> branchList) {
 	  	this.branchList = branchList;
 	  }
+	  
+	  public UserBusiness getUserBusiness() {
+		  		return userBusiness;
+		  	}
+		  
+		  	public void setUserBusiness(UserBusiness userBusiness) {
+		  		this.userBusiness = userBusiness;
+		  	}
+		  
+		  	public List<Business> getBusinessList() {
+		  		return businessList;
+		  	}
+		  
+		  	public void setBusinessList(List<Business> businessList) {
+		  		this.businessList = businessList;
+		  	}
 }

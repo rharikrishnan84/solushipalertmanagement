@@ -61,6 +61,14 @@
 			<result property="branchLevel" column="isBranch"/>
 	</resultMap>
 	
+	<resultMap class="com.meritconinc.shiplinx.model.UserBusiness" id="userBusinessMap">
+	    <result property="userBusId" column="user_business_id"/>
+	    <result property="parentId" column="parent_buiness_id"/>
+	    <result property="partnerId" column="partner_id"/>
+	    <result property="nationId" column="nation_id"/>
+	    <result property="branchId" column="branch_id"/>
+	    <result property="username" column="username"/>
+	</resultMap>
 	
 	<select id="isBusinessRegistered" resultClass="int">
 			select count(1) as count from business where name = #name#
@@ -192,5 +200,19 @@ from pins where business_id=#oldBusinessId#
 	  SELECT * FROM business where business_id in (select parent_business_id from business where business_id in (
   	  select partner_id from business where business_id=#businessId#) or business_id=#businessId#)   and parent_business_id=0 and isNation=false and isPartner=false and isBranch=false limit 1
   </select> 
+  
+  <select id="getUserBusinessListByUser" resultMap="userBusinessMap">
+      
+      select * from user_business where username=#username#
+  </select>
+  
+  <insert id="adduserBusiness" parameterClass="com.meritconinc.shiplinx.model.UserBusiness">
+      
+      INSERT INTO  `user_business` 	(	`username`,	`parent_buiness_id`,	`partner_id`,	`nation_id`,
+	`branch_id`) VALUES (#username#,#parentId#,#partnerId#,#nationId#,#branchId#)
+  </insert>
+  <update id="deleteUserBusiness">
+      delete from user_business where user_business_id=#userBusId#
+  </update>
   <!--end of business filter  -->
 </sqlMap>

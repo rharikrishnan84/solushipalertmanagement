@@ -11,6 +11,30 @@
 <body> 
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.autocomplete.js"></script>
+
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />
+	
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/ipad.css" media="screen and (min-width:768px) and (max-width:1024px)"/>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/smartphone.css" media="screen and (min-width:320px) and (max-width:767px)"/>
+
+<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
+<script type="text/javascript">
+		$(document).ready(function() {
+			$('#sample1').dataTable(); 
+			$("#check_all").click(function(){
+				var temp=$(".dataTable-checkbox").attr("checked");
+				if(temp == null){
+			    $(".dataTable-checkbox").attr("checked","checked");
+				}
+				else{
+				$(".dataTable-checkbox").removeAttr("checked");
+				}
+			});
+		} );
+	</script>
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
+
 <script>
 
   $(document).ready(function(){
@@ -32,6 +56,7 @@
 
 var default_address_id_from =0;
 var default_address_id_to =0;
+var ecount=0;
 
 window.onload = function() {
 
@@ -163,6 +188,221 @@ window.onload = function() {
          }});		
 			
 		});
+	
+	
+	
+function setPartnerBus(rootbusid){
+	       
+		
+		resetfrpartner();
+			 
+		  if(rootbusid != "" && rootbusid!= "-1"){
+		    
+				ajax_Carrier=ajaxFunction();
+				ajax_Carrier.onreadystatechange=function()
+			  	{    
+			  		 if(ajax_Carrier.readyState==4)
+						{
+					 	   reponse=ajax_Carrier.responseText;
+					  	  chargeCodeElement = document.getElementById("partnerBus");
+					  	   
+					   	  chargeCodeElement.innerHTML= reponse;
+					  	
+						}
+			  		 
+			  	 
+			 	 };
+			url="ajax.getchildBus.action?rootBusId="+rootbusid;
+				ajax_Carrier.open("GET",url,true);
+				ajax_Carrier.send(this);
+							 
+			}/* else{
+				
+				if(count==1){
+					 reponse="<select id='cid'><option value=\"-1\">ANY</option></select>";
+				  	  chargeCodeElement = document.getElementById("countyCode1");
+			   	  chargeCodeElement.innerHTML= reponse;
+			}else if(count==2){
+			  reponse="<select id='cid'><option value=\"-1\"></option></select>";
+			  	  chargeCodeElement = document.getElementById("countyCode2");
+			   	  chargeCodeElement.innerHTML= reponse;
+				}
+				setBranch("");
+				
+				
+			} */
+			
+		 
+		
+	}	
+	
+	function setNationBus(partnerId){
+	 
+			 resetfrNation();
+		  if(partnerId != "" && partnerId!= "-1"){
+		    
+				ajax_Carrier=ajaxFunction();
+				ajax_Carrier.onreadystatechange=function()
+			  	{    
+			  		 if(ajax_Carrier.readyState==4)
+						{
+					 	   reponse=ajax_Carrier.responseText;
+					  	  chargeCodeElement = document.getElementById("nationBus");
+					  	   
+					   	  chargeCodeElement.innerHTML= reponse;
+					  	
+						}
+			  		
+			  	 
+			 	 };
+			url="ajax.getchildBus.action?partnerBusId="+partnerId;
+				ajax_Carrier.open("GET",url,true);
+				ajax_Carrier.send(this);
+							 
+			}
+		 
+		
+	}	
+		
+	
+	function setBranchBus(nationId){
+		 
+		resetBranch();
+		  if(nationId != "" && nationId!= "-1"){
+		    
+				ajax_Carrier=ajaxFunction();
+				ajax_Carrier.onreadystatechange=function()
+			  	{    
+			  		 if(ajax_Carrier.readyState==4)
+						{
+					 	   reponse=ajax_Carrier.responseText;
+					  	  chargeCodeElement = document.getElementById("branchBus");
+					  	   
+					   	  chargeCodeElement.innerHTML= reponse;
+					  	
+						}
+			  		 
+			  	 
+			 	 };
+			url="ajax.getchildBus.action?nationBusId="+nationId;
+				ajax_Carrier.open("GET",url,true);
+				ajax_Carrier.send(this);
+							 
+			}
+		 
+		
+	}	
+		
+	function checkToAddAjax(){
+		if(document.getElementById("userbustable").style.display==="none"){
+		document.getElementById("userbustable").style.display = "block";
+		}
+		 
+		var root1= document.getElementById("rid");
+		 
+		var partner= document.getElementById("pid");
+		var nation= document.getElementById("cid");
+	
+		var branch = document.getElementById("bid");
+	
+	
+		var rv = root1.options[root1.selectedIndex].value;
+		 
+		var pv=partner.options[partner.selectedIndex].value;
+	
+		var nv=nation.options[nation.selectedIndex].value;
+		var bv=branch.options[branch.selectedIndex].value;
+		 
+		 if(rv != "" && rv!= "-1"){
+			    
+				ajax_Carrier=ajaxFunction();
+				ajax_Carrier.onreadystatechange=function()
+			  	{    
+			  		 if(ajax_Carrier.readyState==4)
+						{
+					 	   reponse=ajax_Carrier.responseText;
+					 	  $("#rowuser").append(reponse);
+					   	 
+					  	
+						}
+			  		 
+			  	 
+			 	 };
+			 	var url="new.userBus.action?root="+rv+"&partner="+pv+"&nation="+nv+"&branch="+bv;
+				ajax_Carrier.open("GET",url,true);
+				ajax_Carrier.send(this);
+							 
+			}else{
+				
+				alert("Select Any Root Business...")
+			}
+		
+		 
+		}
+	function deleteuserBus(){
+		var xmlhttp;
+		var deleteUserId = document.getElementsByName("salesUseCheckBox");
+		var i1,txt1 = 0;
+	   for (i1=0;i1<deleteUserId.length;i1++){
+		if (deleteUserId[i1].checked){
+		 txt1 += 1;      
+		}
+	   }
+	   if(txt1 < 1){
+		alert('Please select at least one');
+	   }
+	    else if(txt1 > 1){
+		alert('Please check atmost one');
+	   }
+	   else{
+			var i,txt;
+			for (i=0;i<deleteUserId.length;i++){
+				if (deleteUserId[i].checked){
+					txt = deleteUserId[i].value ;					
+				}
+			}
+			
+			var rowid="ub"+txt;
+			var element = document.getElementById(rowid);
+			element.outerHTML = "";
+		
+	}
+	}
+	
+	
+function	resetfrpartner(){
+		reponse="<select id='pid'><option value=\"-1\">ANY</option></select>";
+	  	  chargeCodeElement = document.getElementById("partnerBus");
+ 	  chargeCodeElement.innerHTML= reponse;
+ 	  
+ 	 reponse="<select id='cid'><option value=\"-1\">ANY</option></select>";
+ 	  chargeCodeElement = document.getElementById("nationBus");
+	  chargeCodeElement.innerHTML= reponse;
+	  
+	  
+	  reponse="<select id='bid'><option value=\"-1\">ANY</option></select>";
+  	  chargeCodeElement = document.getElementById("branchBus");
+	  chargeCodeElement.innerHTML= reponse;
+	  
+	  
+	}
+	function resetfrNation(){
+	 	  
+	 	 reponse="<select id='cid'><option value=\"-1\">ANY</option></select>";
+	 	  chargeCodeElement = document.getElementById("nationBus");
+		  chargeCodeElement.innerHTML= reponse;
+		  
+		  
+		  reponse="<select id='bid'><option value=\"-1\">ANY</option></select>";
+	  	  chargeCodeElement = document.getElementById("branchBus");
+		  chargeCodeElement.innerHTML= reponse;
+	}
+	function resetBranch(){
+		 
+		  reponse="<select id='bid'><option value=\"-1\">ANY</option></select>";
+	  	  chargeCodeElement = document.getElementById("branchBus");
+		  chargeCodeElement.innerHTML= reponse;
+	}
 </script> 
 
 <div id="messages">
@@ -476,6 +716,132 @@ window.onload = function() {
 							</div>
 						
 						</div>
+						</s:if>
+						
+						<s:if test="%{#session.ROLE.contains('sysadmin')}">
+					<div class="content_table">
+						<div class="form-container" style="background-color: #FFF;" id="userbustable">
+							<div id="srchusr_results">
+								<div id="srchusr_res">
+									<span><mmr:message messageId="" />User Business</span>
+								</div>
+
+								<div class="form_buttons">	<s:if test="#session.edit == 'true'">
+									 
+											</s:if> <a href="#"
+										onclick="deleteuserBus();"><mmr:message
+											messageId="btn.delete" /></a>
+								</div>
+							</div>
+
+							<div id="accnt_bottom_table" style="background-color: #FFF;">
+								<table cellpadding="0" cellspacing="0" border="0px" class="display" id="bdmtable"
+									style="float: left; background-color: #FFF; width: 100%; height: auto;">
+									<thead>
+										<tr height="25px">
+											<th><input id="check_all" type="checkbox" name="salesUseCheckBox" /></th>
+											
+											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.rootBusiness" /> </th>
+											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.partner" /> <mmr:message messageId="label.business" /></th>
+											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.countrypartner" /> <mmr:message messageId="label.business" /></th>
+											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.branch" /> <mmr:message messageId="label.business" /></th>
+										</tr>
+									</thead>
+									
+									<tbody id="rowuser">
+										<s:set var="index" value="0" />
+										<s:iterator value="userBusiness.businessFilterList" status="status">
+	 
+	<tr id="ub<s:property value="%{id}"/>">
+				<td class="odd1" width="2%"><input class="dataTable-checkbox"
+					type="checkbox" name="salesUseCheckBox"
+					value="<s:property value='%{id}'/>" /> <s:hidden
+						value="%{id}" id="index_%{custsalesid}" /></td>
+				
+				<td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				<s:property value="%{parentBus.name}"/>
+				</label>
+				<input type="hidden" value="<s:property value='%{parentBus.id}'/>" name="parentBusIds" id=""/>
+				</td>
+				 <td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				<s:property value="%{partnerBus.name}"/>
+				</label>
+				<input type="hidden" value="<s:property value='%{partnerBus.id}'/>" name="partnerBusIds" id=""/>
+				</td>
+				 
+				 <td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				<s:property value="%{nationBus.name}"/>
+				</label>
+				<input type="hidden" value="<s:property value='%{nationBus.id}'/>" name="nationBusIds" id=""/>
+				</td>
+				 
+				 <td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				<s:property value="%{branchBus.name}"/>
+				</label>
+				<input type="hidden" value="<s:property value='%{branchBus.id}'/>" name="branchBusIds" id=""/>
+				</td>
+				 
+			</tr>
+			 
+		</s:iterator>
+	
+									</tbody>
+								</table>
+							</div>
+						</div>
+							<div class="content_header">
+								<div class="cont_hdr_title"><mmr:message messageId="label.user.business"/></div>
+								<div class="form_buttons" id="sales_user_bck">
+							<a href="searchcustomer.action"><mmr:message messageId="btn.back" /></a>
+							 <a href="#" onclick=" checkToAddAjax();"><mmr:message messageId="btn.add"/></a>
+						</div>
+							</div>
+						
+						<div class="form-container" style="background-color: #FFF;">
+							 <div class="cont_data_body">
+							
+								<div class="rows">
+									<div class="fieldsl">
+									<label style="width:200px !important;">Root Business:  </label>
+										<div class="controls"><span>:</span>
+										 <s:select id="rid" list="userBusiness.businessFilter.ParentBusList" listKey="id" listValue="name"  headerKey="-1" headerValue="ANY" onchange="setPartnerBus(this.value)"></s:select>
+									</div></div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">Partner Business: </label>
+										<div class="controls"><span>:</span>
+										<div id="partnerBus">
+										<s:select id="pid" list="userBusiness.businessFilter.partnerBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"></s:select>
+										</div>
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;">Nation Business: </label>
+										<div class="controls"><span>:</span>
+										<div id="nationBus">
+										 <s:select id="cid" list="userBusiness.businessFilter.nationBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"></s:select>
+										 </div>
+									</div>
+									</div>
+							    	<div class="fieldsl">
+										<label style="width:200px !important;">Branch Business: </label>
+										<div class="controls"><span>:</span>
+										<div id="branchBus">
+										 <s:select id="bid"list="userBusiness.businessFilter.branchBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"> </s:select>
+										 </div>
+									</div>
+									</div>
+									
+									
+								</div>
+								
+							</div>
+						</div>
+						
+					</div>
 						</s:if>
 		</s:form> 
 	</div>

@@ -1,6 +1,5 @@
 package com.meritconinc.shiplinx.action;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -11,16 +10,12 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringBufferInputStream;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -34,13 +29,10 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import com.meritconinc.mmr.model.common.KeyValueVO;
-
 import java.util.TimeZone;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,9 +66,11 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.exception.CardProcessingException;
+import com.meritconinc.mmr.model.common.KeyValueVO;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.service.UserService;
 import com.meritconinc.mmr.utilities.DateUtil;
@@ -87,6 +81,7 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.carrier.CarrierService;
 import com.meritconinc.shiplinx.carrier.dhl.model.DhlShipValidateResponse;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ServiceAvailabilityWebServiceClient;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
@@ -95,6 +90,7 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
 import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.BillingStatus;
+import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
@@ -104,9 +100,12 @@ import com.meritconinc.shiplinx.model.Country;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomsInvoice;
 import com.meritconinc.shiplinx.model.CustomsInvoiceProduct;
 import com.meritconinc.shiplinx.model.DangerousGoods;
+import com.meritconinc.shiplinx.model.FutureReference;
+import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.LoggedEvent;
 import com.meritconinc.shiplinx.model.ManifestBean;
@@ -124,8 +123,8 @@ import com.meritconinc.shiplinx.model.RecordList;
 import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.model.UnitOfMeasure;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.service.AddressManager;
-import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.service.InvoiceManager;
@@ -138,11 +137,6 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.EODManifestCreator;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
-import com.meritconinc.shiplinx.model.FutureReferencePackages;
-import com.meritconinc.mmr.constants.Constants;
-import com.meritconinc.mmr.model.common.KeyValueVO;
-import com.meritconinc.shiplinx.dao.BusinessDAO;
-import com.meritconinc.shiplinx.model.Business;
 import com.opensymphony.xwork2.ActionContext;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
 /**
@@ -4313,7 +4307,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 													so.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 												}*/
 									   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
-									  
+
+									   List<UserBusiness> ubs=null;
+									   if(UserUtil.getMmrUser()!=null){
+									  ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+									  }
 												so.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
 												List<Business>	allbusList=businessDAO.getHoleBusinessList();
 												List<Long> busids=new ArrayList<Long>();
@@ -4334,6 +4332,23 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 											     	so.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 											     	
 												}
+												
+												
+												
+																							  if(ubs!=null && ubs.size()>0){
+																									if(so.getBusinessIds()!=null && so.getBusinessIds().size()>0 && UserUtil.getMmrUser()!=null){
+																										
+																										so.getBusinessIds().addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+																										List<Long> busIds=so.getBusinessIds();
+																										so.getBusinessIds().clear();
+																										so.setBusinessIds(BusinessFilterUtil.getvalidatedBusIds(busIds));
+																									}else{
+																										so.setBusinessIds(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(),ubs));
+																									}
+																								}
+																						
+												
+												
 			//if the user belongs to a branch, then search only those shipments that belong to customers of that branch
 			if(!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
 				so.setBranch(UserUtil.getMmrUser().getBranch());
@@ -4709,7 +4724,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	private void initCarrierList() {
 		// TODO Auto-generated method stub
-		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+		/*Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
 								List<Carrier> cList = new ArrayList<Carrier>();
 								if(businessId!=null && !businessId.equals("")){
 									cList = this.carrierServiceManager.getCarriersForBusiness(businessId);
@@ -4720,7 +4735,26 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		c.setId(-1L);
 		c.setName("");
 		cList.add(0, c);
-		getSession().put("CARRIERS", cList);
+		getSession().put("CARRIERS", cList);*/
+		
+		List<Carrier> cList = new ArrayList<Carrier>();
+		if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_ADMIN) && !UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_BASE) && !UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_SHIPPER) ){
+					
+					Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+					if(businessId!=null && !businessId.equals("")){
+						cList = this.carrierServiceManager.getCarriersForBusiness(businessId);
+					}else{
+						cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+					}
+					Carrier c = new Carrier();
+					c.setId(-1L);
+					c.setName("");
+					cList.add(0, c);
+					getSession().put("CARRIERS", cList);
+				}else {
+					 initCustomerCarriersByCustomer(UserUtil.getMmrUser().getCustomerId());
+					
+				}
 	}
 	private void initCustomerCarrierList(long customerId) {
     // TODO Auto-generated method stub
@@ -4751,13 +4785,53 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	private void initCarrierListANY() {
 		// TODO Auto-generated method stub
+		if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_ADMIN) && !UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_BASE) && !UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_SHIPPER) ){
 		List<Carrier> cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
 //		Carrier c = new Carrier();
 //		c.setId(-1L);
 //		c.setName("ANY");
 //		cList.add(0, c);
 		getSession().put("CARRIERS", cList);
+		}else{
+						initCustomerCarriersByCustomer(UserUtil.getMmrUser().getCustomerId());
+						
+					}
 	}
+	
+	private void initCustomerCarriersByCustomer(long customerId) {
+				// TODO Auto-generated method stub
+				 List<CustomerCarrier> customerCarrierAccountList;
+				 if(customerId>0){
+				 Customer cu = null;
+				try {
+					cu = customerService.getCustomerInfoByCustomerId(customerId);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				 List<Carrier> cList=new ArrayList<Carrier>();
+					if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getCustomerId()>0){
+						 customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
+		      	    			 cu.getBusinessId(), cu.getId());
+						for(CustomerCarrier cc: customerCarrierAccountList){
+							if(cc!=null){
+							Carrier c=this.carrierServiceManager.getCarrierBycarrierId(cc.getCarrierId());
+							
+							if(c!=null){
+							cList.add(c);	
+								
+							}
+							
+							}
+						}
+					}else{
+						cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+					}
+					
+				 
+					getSession().put("CARRIERS", cList);
+				 }
+			}
 	
 	private List<Service> getCarrierServices(Long carrierCode) {
 		// TODO Auto-generated method stub

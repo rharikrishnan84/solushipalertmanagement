@@ -4,6 +4,7 @@ package com.meritconinc.shiplinx.dao.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Invoice;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import java.util.Date;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 
@@ -242,5 +244,26 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 				}
 
 
+				@Override
+								public List<UserBusiness> getUserBusinessListByUser(
+										String username) {
+									// TODO Auto-generated method stub
+									return (List<UserBusiness>) getSqlMapClientTemplate().queryForList("getUserBusinessListByUser",username);
+								}
+				
+				
+								@Override
+								public void adduserBusiness(UserBusiness ub) {
+									// TODO Auto-generated method stub
+									getSqlMapClientTemplate().insert("adduserBusiness",ub);
+								}
+				
+				
+								@Override
+								public void deleteUserBusiness(Long userBusId) {
+									// TODO Auto-generated method stub
+									getSqlMapClientTemplate().update("deleteUserBusiness",userBusId);
+								}
+				
 
 }

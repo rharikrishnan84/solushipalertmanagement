@@ -4,6 +4,7 @@ package com.meritconinc.shiplinx.dao;
 import java.util.List; 
 
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.UserBusiness;
 
 public interface BusinessDAO{
 	
@@ -35,5 +36,10 @@ public interface BusinessDAO{
 						public Business getBranchBusinessByName(String name,
 								Long partnerId, Long countryParterId);
 					public Business getSuperParentBusiness(Long businessId);
+					
+					public List<UserBusiness> getUserBusinessListByUser(
+														String username);
+												public void adduserBusiness(UserBusiness ub);
+												public void deleteUserBusiness(Long userBusId);
 			 
 }

@@ -3,6 +3,7 @@ package com.soluship.businessfilter.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -13,9 +14,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.swing.text.StyledEditorKit.BoldAction;
 
-import com.ibatis.sqlmap.engine.mapping.sql.dynamic.elements.IsParameterPresentTagHandler;
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.BusinessFilterDAO;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
@@ -30,7 +29,7 @@ import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CountryPartner;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Partner;
-import com.meritconinc.shiplinx.model.UserFilter;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.BusinessDefaultLoaderDaoImpl;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
@@ -135,8 +134,10 @@ public class BusinessFilterUtil implements Runnable {
 		System.out.println("...INTO THE METHOD getSysadminLevelCustomers");
 		CustomerManager customerService=(CustomerManager)MmrBeanLocator.getInstance().findBean("customerService");
 		List<Customer> sysadminCustomerIds= customerService.getAllCustomers();
-		 
+		if(sysadminCustomerIds!=null && sysadminCustomerIds.size()>0){ 
 		return sysadminCustomerIds;
+		}
+		        return new ArrayList<Customer>();
 	}
 
 	public static List<Customer> getBusinessLevelCustomers(Long businessId){
@@ -153,7 +154,18 @@ public class BusinessFilterUtil implements Runnable {
         	businessLevelCustomers= getCustomersByBusiness(businessList1);
         	
         }
+        if(UserUtil.getMmrUser() !=null && businessLevelCustomers!=null && businessLevelCustomers.size()>0){
+        	        businessLevelCustomers.addAll(getUserBusinessCustomers(UserUtil.getMmrUser().getUsername()));
+        	        }
+        	        if(businessLevelCustomers!=null && businessLevelCustomers.size()>0){
+        	        HashSet<Customer> hs = new HashSet<Customer>();
+        	        hs.addAll(businessLevelCustomers);
+        	       businessLevelCustomers.clear();
+        	        businessLevelCustomers.addAll(hs);
+        	
 		return businessLevelCustomers;
+        	        }
+        	                return new ArrayList<Customer>();
 	}
 
    public static List<Customer> getCustomersByBusiness(List<Business> businessList1){
@@ -162,20 +174,35 @@ public class BusinessFilterUtil implements Runnable {
 	   if(businessList1!=null && businessList1.size()>0){
     	   List<Customer> customers=null;
     	   for(Business bus:businessList1){
-    		   Customer c=new Customer();
+    		  /* Customer c=new Customer();
     		   c.setBusinessId(bus.getId());
     		   customers=customerService.search(c);
     		   
-    		   if(customers!=null && customers.size()>0){
+    		   if(customers!=null && customers.size()>0){*/
+    		   customers=getCustomerByBusiness(bus.getId());
+    		   if(customers!=null && customers.size()>0 ){
     			   businessLevelCustomers.addAll(customers);
     		   }
     	   }
+    	   return businessLevelCustomers;
        }
 	   
 	   
-   return businessLevelCustomers;
+	   return new ArrayList<Customer>();
    }
 
+   public static List<Customer> getCustomerByBusiness(Long id){
+	        CustomerManager customerService=(CustomerManager)MmrBeanLocator.getInstance().findBean("customerService");
+	        List<Customer> customers=null;
+	        Customer c=new Customer();
+	        if(id!=null && id>0){
+	         c.setBusinessId(id);
+	         customers=customerService.search(c);
+	          return customers;
+	        }
+	        return new ArrayList<Customer>();
+	     }
+   
 	public static List<Customer> getPartnerLevelCustomers(Long businessId,
 			Long partnerId) {
 		// TODO Auto-generated method stub
@@ -185,11 +212,20 @@ public class BusinessFilterUtil implements Runnable {
 			businessList1=BusinessFilterUtil.getBusinessListByBusinessId(partnerId);
 			}
  
-	     if(businessList1!=null && businessList1.size()>0){
+		if(businessList1!=null && businessList1.size()>0){
 	    	 partnerLevelCustomers=getCustomersByBusiness(businessList1);
 	     }
-	 
+		if(UserUtil.getMmrUser() !=null){
+			          partnerLevelCustomers.addAll(getUserBusinessCustomers(UserUtil.getMmrUser().getUsername()));
+			        }
+			        if(partnerLevelCustomers!=null && partnerLevelCustomers.size()>0){
+			      HashSet<Customer> hs = new HashSet<Customer>();
+			      hs.addAll(partnerLevelCustomers);
+			      partnerLevelCustomers.clear();
+			      partnerLevelCustomers.addAll(hs);
 		return partnerLevelCustomers;
+			        }
+			              return new ArrayList<Customer>();
 		 
 	}
 	
@@ -207,9 +243,122 @@ public class BusinessFilterUtil implements Runnable {
 	 		 
 		
 		
-		return nationLevelCustomers;
+	     if(UserUtil.getMmrUser() !=null && nationLevelCustomers!=null && nationLevelCustomers.size()>0){
+	    	         nationLevelCustomers.addAll(getUserBusinessCustomers(UserUtil.getMmrUser().getUsername()));
+	    	         }
+	    	         if(nationLevelCustomers!=null && nationLevelCustomers.size()>0){
+	    	         HashSet<Customer> hs = new HashSet<Customer>();
+	    	         hs.addAll(nationLevelCustomers);
+	    	         nationLevelCustomers.clear();
+	    	         nationLevelCustomers.addAll(hs);
+	    	         return nationLevelCustomers;
+	    	         }
+	    	         return new ArrayList<Customer>();
 		 
 	}
+ 
+ public static List<Customer> getUserBusinessCustomers(String username){
+	    List<Customer> ubsCustomers=new ArrayList<Customer>();
+	     BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	     List<UserBusiness> ubs=businessDAO.getUserBusinessListByUser(username);
+	     if(ubs!=null && ubs.size()>0){
+	     for(UserBusiness ub:ubs){
+	       if(ub.getParentId()!=null && ub.getParentId()!=UserUtil.getMmrUser().getBusinessId()){
+	           List<Customer>   customers=null;
+	           if(ub.getParentId()>0){
+	                 customers=getCustomerByBusiness(ub.getParentId());
+	               if(customers!=null){
+	                   ubsCustomers.addAll(customers);
+	               }
+	               
+	           }else if(ub.getParentId()==-1){
+	           /*  List<Business> buslist=BusinessFilterUtil.getBusinessListByBusinessId(ub.getPartnerId());
+	               if(buslist!=null && buslist.size()>0){
+	               customers=getCustomersByBusiness(buslist);
+	               ubsCustomers.addAll(customers);
+	               }*/
+	               continue;
+	           }
+	       }
+	       
+	       if(ub.getPartnerId()!=null && ub.getPartnerId()!=UserUtil.getMmrUser().getBusinessId()){
+	           
+	           List<Customer> customers=null;
+	           if(ub.getPartnerId()>0){
+	                      customers=getCustomerByBusiness(ub.getPartnerId());
+	               if(customers!=null){
+	                   ubsCustomers.addAll(customers);
+	               }
+	           }else if(ub.getPartnerId()==-1){
+	               List<Business> buslist=BusinessFilterUtil.getBusinessListByBusinessId(ub.getParentId());
+	               if(buslist!=null && buslist.size()>0){
+	                   Iterator itr= buslist.iterator();
+	                   while(itr.hasNext()){
+	                       Business b=(Business) itr.next();
+	                          if(b.getId()==ub.getParentId()){
+	                           itr.remove();
+	                       }
+	                   }
+	               customers=getCustomersByBusiness(buslist);
+	               ubsCustomers.addAll(customers);
+	               }
+	               continue;   
+	           }
+	       }
+	       
+	       if(ub.getNationId()!=null && ub.getNationId()!=UserUtil.getMmrUser().getBusinessId()){
+	           List<Customer>   customers=null;
+	           if(ub.getNationId()>0){
+	                 customers=getCustomerByBusiness(ub.getNationId());
+	               if(customers!=null){
+	                   ubsCustomers.addAll(customers);
+	               }
+	           }else if(ub.getNationId() ==-1){
+	               List<Business> buslist=BusinessFilterUtil.getBusinessListByBusinessId(ub.getPartnerId());
+	               if(buslist!=null && buslist.size()>0){
+	                   Iterator itr= buslist.iterator();
+	                   while(itr.hasNext()){
+	                       Business b=(Business) itr.next();
+	                          if(b.getId()==ub.getPartnerId()){
+	                           itr.remove();
+	                       }
+	                   }
+	               customers=getCustomersByBusiness(buslist);
+	               ubsCustomers.addAll(customers);
+	               }
+	               continue;   
+	               
+	           }
+	       }
+	       if(ub.getBranchId()!=null && ub.getBranchId()!=UserUtil.getMmrUser().getBusinessId()){
+	           List<Customer>   customers=null;
+	           if(ub.getBranchId()>0){
+	               customers=getCustomerByBusiness(ub.getBranchId());
+	               if(customers!=null){
+	                   ubsCustomers.addAll(customers);
+	               }
+	           }else if(ub.getBranchId()==-1){
+	               List<Business> buslist=BusinessFilterUtil.getBusinessListByBusinessId(ub.getNationId());
+	               if(buslist!=null && buslist.size()>0){
+	               Iterator itr= buslist.iterator();
+	               while(itr.hasNext()){
+	                   Business b=(Business) itr.next();
+	                      if(b.getId()==ub.getNationId()){
+	                       itr.remove();
+	                   }
+	               }
+	               customers=getCustomersByBusiness(buslist);
+	               ubsCustomers.addAll(customers);
+	               }
+	               continue;   
+	               
+	           }
+	       }
+
+	     }
+	     }
+	     return ubsCustomers;
+	 }
  
  public static List<Customer> getSalesUserCustomers(User logInuser) {
 	// TODO Auto-generated method stub
@@ -224,10 +373,20 @@ public class BusinessFilterUtil implements Runnable {
 	   }
 	   
 	   System.out.println("Sales User....."+logInuser.getUsername()+"...... into the get customers..."+salesCustomers.size());
-	return salesCustomers;
+	   if(UserUtil.getMmrUser() !=null  && salesCustomers!=null && salesCustomers.size()>0){
+		         salesCustomers.addAll(getUserBusinessCustomers(UserUtil.getMmrUser().getUsername()));
+		         }
+		         HashSet<Customer> hs = new HashSet<Customer>();
+		         if(salesCustomers !=null && salesCustomers.size()>0){
+		         hs.addAll(salesCustomers);
+		         salesCustomers.clear();
+		         salesCustomers.addAll(hs);
+		         return salesCustomers;
+		         }
+		         return new ArrayList<Customer>();
 }
 
-public static Object getBranchLevelCustomers(Long businessId, Long partnerId,
+ public static List<Customer> getBranchLevelCustomers(Long businessId, Long partnerId,
 		Long countryPartnerId, Long branchId) {
 	// TODO Auto-generated method stub
 	List<Customer>  branchLevelCustomers=new ArrayList<Customer>();
@@ -238,8 +397,17 @@ public static Object getBranchLevelCustomers(Long businessId, Long partnerId,
      if(businessList1!=null && businessList1.size()>0){
     	 branchLevelCustomers=getCustomersByBusiness(businessList1);
      }
- 		
+     if(UserUtil.getMmrUser() !=null && branchLevelCustomers!=null && branchLevelCustomers.size()>0){
+    	        branchLevelCustomers.addAll(getUserBusinessCustomers(UserUtil.getMmrUser().getUsername()));
+    	      }
+    	      if(branchLevelCustomers!=null && branchLevelCustomers.size()>0){
+    	        HashSet<Customer> hs = new HashSet<Customer>();
+    	           hs.addAll(branchLevelCustomers);
+    	          branchLevelCustomers.clear();
+    	         branchLevelCustomers.addAll(hs);
 	return branchLevelCustomers;
+    	      }
+    	           return new ArrayList<Customer>();
 }
 	
 // public static  List<Customer> get (Long businessId){
@@ -331,8 +499,9 @@ public static List<Customer> getCustomersForCustomerAdmin(User logInuser) {
 		c.setId(logInuser.getCustomerId());
 		c.setBusinessId(logInuser.getBusinessId());
          c=customerService.getCustomerInfoByCustomerId(c.getId());
+         if(c!=null){
          Customers.add(c);
-		
+         }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -342,25 +511,31 @@ public static List<Customer> getCustomersForCustomerAdmin(User logInuser) {
 	   }
 	   
 	   System.out.println("customer admin....."+logInuser.getUsername()+"...... into the get customers..."+Customers.size());
+	   if(Customers!=null && Customers.size()>0){ 
 	return  Customers;
+	   }
+	        return new ArrayList<Customer>();
 }
 public static List<Business> getBusinessListByBusinessId(Long businessId){
 	   businessList =new ArrayList<Business>();
 	   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 	  
 	   
-	   
+	   if(businessId!=null && businessId>0){
 	   List<Business> businessListTemp = getBusinessByParentBusiness(businessId);
 	   businessListTemp.add(businessDAO.getBusiessById(businessId));
 	   
 	   
 	   return businessListTemp;
+	   }
+	         return new ArrayList<Business>();
    }
    
    //fetching the child business list based on the business id
    public static List<Business> getBusinessByParentBusiness(Long businessId){
 	   
 	   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	   if(businessId!=null && businessId>0){
 	   List<Business> businessListLoc=businessDAO.getBusinessListByLevel(businessId);
 	   boolean isBranchLevel = false;
 	   for(Business business :businessListLoc){
@@ -382,9 +557,11 @@ public static List<Business> getBusinessListByBusinessId(Long businessId){
 	   if(businessList!=null && businessList.size()>0){
 		   
 		   return businessList;
-	   }else{
-		   return new ArrayList<Business>();
+	   /*}else{
+		   return new ArrayList<Business>();*/
 	   }
+	   }
+	         return new ArrayList<Business>();
 	   
    }
    
@@ -392,18 +569,21 @@ public static List<Business> getBusinessListByBusinessId(Long businessId){
 	 
 	   UserService userService=(UserService)MmrBeanLocator.getInstance().findBean("userService");
 	   Long cid=(Long) ActionContext.getContext().getSession().get("cid");
+	   if(businessId!=null && businessId>0){
 	   if(cid!=null){
  	   return getUserListByBusinessLevel(businessId,cid);
 	   }else{
 		   return getUserListByBusinessLevel(businessId,cid);
 	   }
+	   }
+	         return new ArrayList<User>();
 		   
    }
    
    
    public static List<User> getUserListByBusinessLevel(Long businessId ,Long cid) throws Exception{
 	   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
-		  
+	   if(businessId !=null && businessId>0){ 
 	   if(cid>0L && businessId==0){
 		   businessId=UserUtil.getMmrUser().getBusinessId();
 		   
@@ -428,6 +608,8 @@ public static List<Business> getBusinessListByBusinessId(Long businessId){
 	   }
 	   
 	   return userList;
+	   }
+	           return new ArrayList<User>();
    }
    
    
@@ -609,7 +791,7 @@ public static long setBusinessIdbyUserLevel() {
 
 public static List<Long> getBusIdParentId(long businessId) {
 	//get child businessid by parent business_id
-	
+	if(businessId >0){
    List<Long> businessIds=new ArrayList<Long>();
    List<Business> businessList=getBusinessListByBusinessId(businessId);
    if(businessList!=null && businessList.size()>0){
@@ -625,6 +807,8 @@ public static List<Long> getBusIdParentId(long businessId) {
    businessIds.addAll(hs);
 	
 	return businessIds;
+	}
+	 return new ArrayList<Long>();
 }
 
 @Override
@@ -639,6 +823,7 @@ public void loadDefaultPropertyForBusiness(List<Long> businessIds){
 	
 	
 	BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	if(businessIds!=null && businessIds.size()>0){
 	for(Long businessId:businessIds){
 	addDefaultBusinessLoaders(businessId);
 	
@@ -646,6 +831,7 @@ public void loadDefaultPropertyForBusiness(List<Long> businessIds){
 	System.out.println("......  customer carrier added for business......."+businessId);
     businessDAO.addDefaultPinsToBusiness(businessId);
 	System.out.println("......  pins carrier added for business......."+businessId);
+	 }
 	}
 }
 
@@ -653,6 +839,7 @@ public void loadDefaultPropertyForBusiness(List<Long> businessIds){
 private void addDefaultBusinessLoaders(long businessId) {
 	// TODO Auto-generated method stub
 	 BusinessDefaultLoaderDaoImpl defLoader=new BusinessDefaultLoaderDaoImpl(businessId, 1);
+	 if(businessId>0){
     List<Integer> toUpdateLoader =new ArrayList<Integer>();
 	 if(getSelect()!=null && getSelect().size()>0){
 		
@@ -697,7 +884,7 @@ private void addDefaultBusinessLoaders(long businessId) {
 		
 	}
 	
-	 
+	 }
 	
 }
 
@@ -722,6 +909,7 @@ public void setBusinessIds(List<Long> businessIds) {
 }
 
 public static Business getSuperParentBusiness(Long businessId){
+	if(businessId !=null && businessId >0) {
 	 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 	 Business inBusiness=businessDAO.getBusiessById(businessId);
 	 Business parentBusiness=null;
@@ -737,7 +925,84 @@ public static Business getSuperParentBusiness(Long businessId){
 			 return inBusiness;
 		 }
 	 }
+	}
 	return null;
 }
+
+/*
+ * get the business Ids of user if user_business table is affected
+ * by the sysadmin of any user
+ */
+public static List<Long> getUserBusinessIds(String username, List<UserBusiness> ubs) {
+	// TODO Auto-generated method stub
+	List<Long> userBusIds=new ArrayList<Long>();
+	if(username!=null && ubs !=null && ubs.size()>0){
+		for(UserBusiness ub:ubs){
+			//Root Busienss
+			if(ub.getParentId()!=null && ub.getParentId()>0){
+				userBusIds.add(ub.getParentId());
+			}
+			//Partner business
+			if(ub.getPartnerId()!=null && ub.getPartnerId()>0){
+				userBusIds.add(ub.getPartnerId());
+			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+				userBusIds.addAll(getBusIdParentId(ub.getParentId()));
+				continue;
+			}
+			//NAtion business
+			if(ub.getNationId()!=null && ub.getNationId()>0){
+				userBusIds.add(ub.getNationId());
+			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+				userBusIds.addAll(getBusIdParentId(ub.getPartnerId()));
+				continue;
+			}
+			//Branch business
+			if(ub.getBranchId()!=null && ub.getBranchId()>0){
+				userBusIds.add(ub.getBranchId());
+			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+				userBusIds.addAll(getBusIdParentId(ub.getNationId()));
+				continue;
+			}
+			
+		}
+		return getvalidatedBusIds(userBusIds);
+	}
+	return null;
+}
+
+
+/*
+ * get the redancy less business list
+ */
+public static List<Long> getvalidatedBusIds(List<Long> userBusIds) {
+	// TODO Auto-generated method stub
+	if(userBusIds!=null && userBusIds.size()>0){
+	HashSet<Long> hs = new HashSet<Long>();
+    hs.addAll(userBusIds);
+    userBusIds.clear();
+    userBusIds.addAll(hs);
+	return userBusIds;
+	}
+	return new ArrayList<Long>();
+}
    
+/*
+ * get the userBusiness of the 
+ * any user 
+ */
+public static List<UserBusiness> getUserBusinessByUserName(String username){
+	 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  List<UserBusiness> ubs=new ArrayList<UserBusiness>();
+	  if(UserUtil.getMmrUser()!=null){
+	  ubs=businessDAO.getUserBusinessListByUser(UserUtil.getMmrUser().getUsername());
+	  }
+	  if(ubs!=null && ubs.size()>0){
+		  return ubs;
+	  }
+		return new ArrayList<UserBusiness>(); 
+				
+	
+}
+
+
 }

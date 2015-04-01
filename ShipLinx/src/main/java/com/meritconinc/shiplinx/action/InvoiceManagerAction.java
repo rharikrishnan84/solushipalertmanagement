@@ -67,6 +67,7 @@ import com.meritconinc.shiplinx.model.InvoiceCharge;
 import com.meritconinc.shiplinx.model.InvoiceStatus;
 import com.meritconinc.shiplinx.model.SalesRecord;
 import com.meritconinc.shiplinx.model.ShippingOrder;
+import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.service.InvoiceManager;
 import com.meritconinc.shiplinx.service.ShippingService;
@@ -77,8 +78,10 @@ import com.meritconinc.shiplinx.model.FutureReference;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.opensymphony.xwork2.ModelDriven;
 import com.opensymphony.xwork2.Preparable;
+
 import java.util.Locale;
 import java.util.Iterator;
+
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.Business;
@@ -459,6 +462,27 @@ public String getSalesRep() {
 	  		  					}else{
 	  		  					i.setBusinessIds(BusinessFilterUtil.getBusIdParentId(i.getBusinessId()));
 	  		  				}
+	  		  		    	
+	  		  		    List<Long> businessIds=null;
+	  		  			  		            if(i.getBusinessIds()!=null & i.getBusinessIds().size()>0){
+	  		  			  		            	businessIds=i.getBusinessIds();
+	  		  			  		            }
+	  		  			  		            List<UserBusiness> ubs=null;
+	  		  			  			    	if(UserUtil.getMmrUser()!=null){
+	  		  			  		    	    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+	  		  			  		    	    	
+	  		  			  		    	    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
+	  		  			  		    	    		List<Long> userBusIds=new ArrayList<Long>();
+	  		  			  		    	    		userBusIds.addAll(businessIds);
+	  		  			  		    	    		businessIds.clear();
+	  		  			  		    	    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+	  		  			  		    	    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
+	  		  			  		    	    		i.setBusinessIds(businessIds);
+	  		  			  		    	    	}
+	  		  			  			    	}
+	  		  			  		  		  
+	  		  		    	
+	  		  		    	
 	  		    if (UserUtil.getMmrUser().getCustomerId() > 0)
 	  		      i.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 	  		    if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -606,7 +630,10 @@ public String getSalesRep() {
 	  	  	  businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
 	  	  	    if(businessId!=null && businessId>0){
 	  	  	    	c.setBusinessId(businessId);
-	  	  	    } 
+	  	  	    } else{
+	  	  	   	  	  	    	businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  	  	    }
+	  	  	    
 	  	  	    customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
     log.debug("In generateInvoice");
     getSession().remove("invoice");
@@ -623,6 +650,25 @@ public String getSalesRep() {
             }else{
             	i.setBusinessId(businessId);
             }
+            
+            List<Long> businessIds=null;
+                        if(i.getBusinessIds()!=null & i.getBusinessIds().size()>0){
+                        	businessIds=i.getBusinessIds();
+                        }
+                        List<UserBusiness> ubs=null;
+            	    	if(UserUtil.getMmrUser()!=null){
+                	    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+                	    	
+                	    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
+                	    		List<Long> userBusIds=new ArrayList<Long>();
+                	    		userBusIds.addAll(businessIds);
+                	    		businessIds.clear();
+                	    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+                	    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
+                	    		i.setBusinessIds(businessIds);
+                	    	}
+            	    	}
+                        
     i.setCustomerId(new Long(0));
 
     if(i.getBusinessId()!=null){
@@ -862,7 +908,9 @@ public String getSalesRep() {
 	  		  		      }else{
 	  		  		      	customers=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
 	  		  		      }
-	    customers = customerService.search(c);
+	  		  		  if(customers==null){
+	  		  			            	customers=new ArrayList<Customer>();
+	  		  			            }
 	    if (method != null){	  
 	    		    Invoice i = this.getInvoice();
 	    		    if((i.getCustomerId() == null || i.getCustomerId()==0 )&&( i.getInvoiceId()==null || i.getInvoiceId()==0)){
@@ -880,6 +928,26 @@ public String getSalesRep() {
 	    		    					invoice.setBusinessIds(busids);
 	    		    	    	  invoice.setBusinessId(UserUtil.getMmrUser().getBusinessId());
 	    		    		      }
+	    List<Long> businessIds=null;
+	           if(invoice.getBusinessIds()!=null & invoice.getBusinessIds().size()>0){
+	            	businessIds=invoice.getBusinessIds();
+	            }
+	            List<UserBusiness> ubs=null;
+	        	if(UserUtil.getMmrUser()!=null){
+	    	    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+	    	    	
+	    	    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
+	    	    		List<Long> userBusIds=new ArrayList<Long>();
+	    	    		userBusIds.addAll(businessIds);
+	    	    		businessIds.clear();
+	    	    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+	    	    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
+	    	    		invoice.setBusinessIds(businessIds);
+	    	    	}
+	        	}
+	    	  
+	    
+	    
 	      if (UserUtil.getMmrUser().getCustomerId() > 0)
 	        invoice.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 	      if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
@@ -905,6 +973,28 @@ public String getSalesRep() {
     	    				i.setBusinessIds(busids);
     	    	   	  i.setBusinessId(UserUtil.getMmrUser().getBusinessId());
     	    	      }
+    
+
+    List<Long> businessIds=null;
+    if(i.getBusinessIds()!=null & i.getBusinessIds().size()>0){
+    	businessIds=i.getBusinessIds();
+    }
+    List<UserBusiness> ubs=null;
+	if(UserUtil.getMmrUser()!=null){
+    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
+    	
+    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
+    		List<Long> userBusIds=new ArrayList<Long>();
+    		userBusIds.addAll(businessIds);
+    		businessIds.clear();
+    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
+    		i.getBusinessIds().clear();
+    		i.setBusinessIds(businessIds);
+    	}
+	}
+    
+    
     invoices = invoiceManager.searchInvoicesAr(i);
    // log.debug("Found : " + invoices.size() + " invoices");
 
