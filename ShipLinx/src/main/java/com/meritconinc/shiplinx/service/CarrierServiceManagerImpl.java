@@ -2981,13 +2981,22 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           }
           String fromZoneName = "";
           String toZoneName = "";
+          String fromCity = "";
+                    String toCity ="";
+                    Long fromZoneStructureId=0l;
+                    Long toZoneStructureId=0l;
           if (fromZone != null) {
             fromZoneName = fromZone.getZoneName();
+            fromCity = fromZone.getCityName();
+                        fromZoneStructureId = fromZone.getZoneStructureId();
           }
           if (toZone != null) {
             toZoneName = toZone.getZoneName();
+            toCity = toZone.getCityName();
+                        toZoneStructureId = toZone.getZoneStructureId();
           }
           List<LtlSkidRate> groupLtlSkidRate = new ArrayList<LtlSkidRate>();
+          List<LtlSkidRate> tempgroupLtlSkidRate = new ArrayList<LtlSkidRate>();
           List<com.meritconinc.shiplinx.model.Package> packageList = order.getPackages();
           List<BigDecimal> lengthList = new ArrayList<BigDecimal>();
           List<BigDecimal> widthList = new ArrayList<BigDecimal>();
@@ -3015,10 +3024,28 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             maxWeight = Collections.max(weightList).longValue();
           }
           LtlSkidRate ltlSkidRate = null;
-          if (fromZoneName != null && toZoneName != null && !fromZoneName.isEmpty()
+          /*if (fromZoneName != null && toZoneName != null && !fromZoneName.isEmpty()
               && !toZoneName.isEmpty()) {
             groupLtlSkidRate = markupManagerService.groupingLTLSkidRate(serviceId, maxLength,
-                maxWidth, maxHeight, maxWeight, fromZoneName, toZoneName);
+                maxWidth, maxHeight, maxWeight, fromZoneName, toZoneName);*/
+          List<Zone> overAllfromZones = new ArrayList<Zone>();
+                    List<Zone> overAlltoZones = new ArrayList<Zone>();
+                    overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
+                    overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);
+          
+                    if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty()
+                        && !overAlltoZones.isEmpty()) {
+                  	  for(Zone fz : overAllfromZones){
+                  		  for(Zone tz : overAlltoZones ){
+                  			  tempgroupLtlSkidRate = markupManagerService.groupingLTLSkidRate(serviceId, maxLength,
+                  		                maxWidth, maxHeight, maxWeight, fz.getZoneName(), tz.getZoneName());
+                  			  if(tempgroupLtlSkidRate!=null && !tempgroupLtlSkidRate.isEmpty() && tempgroupLtlSkidRate.size()>0){
+                  				  for(LtlSkidRate lsr:tempgroupLtlSkidRate){
+                  				  groupLtlSkidRate.add(lsr);
+                  				  }
+                  			  }
+                  		  }
+                  	  } 
           }
 
           if (groupLtlSkidRate != null && groupLtlSkidRate.size() > 0) {

@@ -4751,6 +4751,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					c.setName("");
 					cList.add(0, c);
 					getSession().put("CARRIERS", cList);
+					 initCustomerCarriersByCustomer(0L);
+					 
 				}else {
 					 initCustomerCarriersByCustomer(UserUtil.getMmrUser().getCustomerId());
 					
@@ -4792,6 +4794,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 //		c.setName("ANY");
 //		cList.add(0, c);
 		getSession().put("CARRIERS", cList);
+		initCustomerCarriersByCustomer(0L);
 		}else{
 						initCustomerCarriersByCustomer(UserUtil.getMmrUser().getCustomerId());
 						
@@ -4801,35 +4804,54 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private void initCustomerCarriersByCustomer(long customerId) {
 				// TODO Auto-generated method stub
 				 List<CustomerCarrier> customerCarrierAccountList;
-				 if(customerId>0){
-				 Customer cu = null;
-				try {
-					cu = customerService.getCustomerInfoByCustomerId(customerId);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				 List<Carrier> cList=new ArrayList<Carrier>();
-					if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getCustomerId()>0){
-						 customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
-		      	    			 cu.getBusinessId(), cu.getId());
-						for(CustomerCarrier cc: customerCarrierAccountList){
-							if(cc!=null){
-							Carrier c=this.carrierServiceManager.getCarrierBycarrierId(cc.getCarrierId());
-							
-							if(c!=null){
-							cList.add(c);	
-								
-							}
-							
-							}
-						}
-					}else{
-						cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+				 if(customerId>0 ){
+					 Customer cu = null;
+					try {
+						cu = customerService.getCustomerInfoByCustomerId(customerId);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					
-				 
-					getSession().put("CARRIERS", cList);
+					 List<Carrier> cList=new ArrayList<Carrier>();
+						if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getCustomerId()>0){
+							 customerCarrierAccountList = getCarrierServiceManager().getAllCutomerCarrier(
+			      	    			 cu.getBusinessId(), cu.getId());
+							for(CustomerCarrier cc: customerCarrierAccountList){
+								if(cc!=null){
+								Carrier c=this.carrierServiceManager.getCarrierBycarrierId(cc.getCarrierId());
+								
+								if(c!=null){
+								cList.add(c);	
+								}
+								}
+							}
+						}else{
+							cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+						}
+						
+					 
+						 if(cList!=null && cList.size()>0){
+							getSession().put("CARRIERS1", cList);
+						 
+							 cList=new ArrayList<Carrier>();
+							cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+		 					getSession().put("CARRIERS", cList);
+						 }else{
+							 cList=new ArrayList<Carrier>();
+								cList = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+			 					getSession().put("CARRIERS", cList);
+			 					getSession().put("CARRIERS1", cList);
+							 
+						 }
+				 }else{
+					 List<Carrier> calist=(List<Carrier>)getSession().get("CARRIERS");
+					 if(calist!=null && calist.size()>0){
+						 getSession().put("CARRIERS1", calist);
+					 }else{
+						 calist = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+						 getSession().put("CARRIERS1", calist);
+						 getSession().put("CARRIERS", calist);
+					 }
 				 }
 			}
 	

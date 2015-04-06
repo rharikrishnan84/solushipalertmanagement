@@ -945,21 +945,21 @@ public static List<Long> getUserBusinessIds(String username, List<UserBusiness> 
 			//Partner business
 			if(ub.getPartnerId()!=null && ub.getPartnerId()>0){
 				userBusIds.add(ub.getPartnerId());
-			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+			}else if(ub.getParentId()!=null && ub.getPartnerId()==-1){
 				userBusIds.addAll(getBusIdParentId(ub.getParentId()));
 				continue;
 			}
 			//NAtion business
 			if(ub.getNationId()!=null && ub.getNationId()>0){
 				userBusIds.add(ub.getNationId());
-			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+			}else if(ub.getPartnerId()!=null && ub.getNationId()==-1){
 				userBusIds.addAll(getBusIdParentId(ub.getPartnerId()));
 				continue;
 			}
 			//Branch business
 			if(ub.getBranchId()!=null && ub.getBranchId()>0){
 				userBusIds.add(ub.getBranchId());
-			}else if(ub.getPartnerId()!=null && ub.getPartnerId()==-1){
+			}else if(ub.getNationId()!=null && ub.getBranchId()==-1){
 				userBusIds.addAll(getBusIdParentId(ub.getNationId()));
 				continue;
 			}

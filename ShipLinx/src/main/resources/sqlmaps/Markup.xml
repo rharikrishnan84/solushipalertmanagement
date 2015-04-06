@@ -160,6 +160,10 @@
        <result property="serviceType" column="service_type"/>
    </resultMap>	
 	
+	<resultMap id="zoneResultMap1" class="com.meritconinc.shiplinx.model.Zone">
+			<result property="zoneName" column="zone_name"/>
+	</resultMap>
+
 	<select id="selectChargeGroup" parameterClass="long" resultMap="chargeGroupResultMap">
   		select * from charge_group where id = #value#
 	</select>
@@ -592,6 +596,11 @@
 
 	</insert>
 	
+	<select id="getoverAllZones" resultMap="zoneResultMap1">
+		select zone_name from zones where 
+			zone_structure_id	= #ZoneStructureId# and 
+			city_name			= #City#
+	</select>
 	
 	
 </sqlMap>

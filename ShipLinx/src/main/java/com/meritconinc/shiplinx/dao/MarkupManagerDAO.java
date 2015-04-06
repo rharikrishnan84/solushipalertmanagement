@@ -81,5 +81,7 @@ public interface MarkupManagerDAO {
         public void insertLtlPoundrateByBusiness(long newBusinessId,long defaultBusinessId);
         
         public void insertLtlSkidRateByBusiness(long newBusinessId,long defaultBusinessId);
+        
+        public List<Zone> getOverallZones(String City, Long ZoneStructureId);
     
 }

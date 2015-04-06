@@ -720,4 +720,9 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	public List<Markup> getAllMarkupsForCustomer(Long customerId,long businessId){
 		return markupDAO.getAllMarkupsForCustomer(customerId,businessId);
 	}
+	
+	@Override
+		public List<Zone> getOverallZones(String City, Long ZoneStructureId){
+			return markupDAO.getOverallZones(City,ZoneStructureId);
+		}
 }
