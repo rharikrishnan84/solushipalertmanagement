@@ -971,17 +971,20 @@ var radioselected = 0;
 
 														<s:set var="markupTypeText"
 															value="%{shippingOrder.rateList[#rowstatus.index].markupTypeText}" />
-														<s:if test="#markupTypeText.equals('Flat')">
+														<%-- <s:if test="#markupTypeText.equals('Flat')">
 															<s:property value="%{markupTypeText}"/> :<s:label name="curr" value="%{#session.LocalCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{markupFlat}" /></s:text>
+ --%><%-- <s:if test="#markupTypeText.equals('Flat')">  --%>
+															 <%-- <s:property value="%{markupTypeText}"/> --%> <mmr:message messageId="add.label.flat" /> :<s:label name="curr" value="%{#session.LocalCurrencySymbol}"/><s:text name="format.customMoney" ><s:param name="value" value="%{markupFlat}" /></s:text>
+														<%-- </s:if> --%>
 
-														</s:if>
+														<%-- <s:else> --%>
 
-														<s:else>
+															<%-- <s:property value="%{markupTypeText}" /> : <s:property
+																value="%{markupPercentage}" />%	 --%>
+																<%-- <s:property value="%{markupTypeText}" /> --%>  <mmr:message messageId="add.label.markup" /> : <s:property
+																value="%{markupPercentage}" />%				
 
-															<s:property value="%{markupTypeText}" /> : <s:property
-																value="%{markupPercentage}" />%					
-
-				        </s:else>
+				        <%-- </s:else> --%>
 
 														<div class="closebtn"></div>
 													</div>

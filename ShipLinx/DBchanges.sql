@@ -3432,8 +3432,6 @@ INSERT INTO `newsoluship`.`resourcebundle` (`msg_id`, `msg_content`, `locale`, `
 update user set isnation_level=false and default_menu_id=437 where username='jcook35'
 
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.error.exception', 'Exception Details', 'en_CA', 1);
---------------------------------------END of LIVE SERVER COMMIT---------------------------------------
-
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.user.business', 'User Business', 'en_CA', 1, '');
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.business', 'Business', 'en_CA', 1, '');
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('menu.admin.rootBusiness', 'Root Business', 'en_CA', 1, '');
@@ -3458,4 +3456,7 @@ CREATE TABLE `user_business` (
   `branch_id` int(10) DEFAULT '-1',
   PRIMARY KEY (`user_business_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.flat', 'Flat', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.markup', 'Markup', 'en_CA', 1);
+--------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 

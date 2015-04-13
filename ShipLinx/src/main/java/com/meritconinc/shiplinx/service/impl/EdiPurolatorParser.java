@@ -485,7 +485,9 @@ public class EdiPurolatorParser extends EdiParser {
 								}
 							}
 				 		}
-		
+		if(charge !=null && charge.getChargeCode()!=null && charge.getChargeCode().equals(ShiplinxConstants.CHARGE_CODE_PURO_ACC) && isAddressCorrection){
+						charge.setCharge(charge.getCost());
+					}
 		charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
 		return charge;
 	}

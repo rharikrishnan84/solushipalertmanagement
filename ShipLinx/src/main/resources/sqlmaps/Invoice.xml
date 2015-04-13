@@ -576,7 +576,7 @@ group by res.email_type
            select c.charge, c.cost, c.exchange_rate, c.charge_currency from charges c left join invoice_charges ic on(c.id=ic.charge_id) where ic.invoice_id=#invoiceId# group by c.id;
 		</select>	
 		<update id="updateInvoiceTotalByEMail">
-update invoice set spd_total=#totalSPD# ,ltl_total=#totalLTL# , chb_total=#totalCHB# ,fwd_total=#totalFWD# ,fpa_total=#totalFWD# where invoice_id=#invoiceId#
+update invoice set spd_total=#totalSPD# ,ltl_total=#totalLTL# , chb_total=#totalCHB# ,fwd_total=#totalFWD# ,fpa_total=#totalFPA# where invoice_id=#invoiceId#
  </update>
  
  <select id="getcommissionbyIdd"  resultMap="subtotalMap">

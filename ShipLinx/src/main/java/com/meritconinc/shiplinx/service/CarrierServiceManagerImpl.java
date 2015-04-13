@@ -3175,7 +3175,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                             ratingList.get(i).setMarkupPercentage(0);
                                           }                   	
                                                 	if(markup1 !=null && totalCost<=markup1.getToWeight()){
-                                                		if (markup1.getMarkupPercentage() != 0
+                                                		/*if (markup1.getMarkupPercentage() != 0
                                                                 || (markup1.getMarkupPercentage() == 0 && markup1
                                                                     .getMarkupFlat() == 0)) {
                                                               freightCharge.setCharge(freightCharge.getCost()
@@ -3186,11 +3186,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                                 		if (markup1.getMarkupPercentage() == 0
                                                                 && markup1.getMarkupFlat() != 0) {
                                                 		freightCharge.setCharge(freightCharge.getCost() + markup1.getMarkupFlat());
-                            /* if(fuelCharge.getCost()>0){
+                             if(fuelCharge.getCost()>0){
                             	 fuelCharge.setCharge(fuelCharge.getCost() + markup1.getMarkupFlat());
                                	}else{
                                		 fuelCharge.setCharge(0.0);
-                               	}*/
+                               	}
                                  ratingList.get(i).setMarkupTypeText("Flat");
                                                 		}
                                                 		if(baseMarkup!=null){
@@ -3205,11 +3205,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                                 			                                          }else if (baseMarkup.getMarkupPercentage() == 0
                                                 			                                              && baseMarkup.getMarkupFlat() != 0) {
                                                 			                                        	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
-                                                			                                        	 /* if(fuelCharge.getCost()>0){
+                                                			                                        	  if(fuelCharge.getCost()>0){
                                                 			                                        		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
                                                 			                                                	}else{
                                                 			                                                		baseFuelCharge.setCharge(0.0);
-                                                			                                                	}*/
+                                                			                                                	}
                                                 			                                       	  baseMarkupFlatText=true;                        				
                                                 			                        			}
                                                 			                        			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
@@ -3224,12 +3224,96 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                                 			                        				}
                                                 			                        				ratingList.get(i).setMarkupPercentage(baseMarkup.getMarkupPercentage());                                       
                                                 			                                        ratingList.get(i).setMarkupType(baseMarkup.getType());                                        
-                                                			                                        ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
-                                                			                        		}   
-                                                		}
+                                                			                                        ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());*/
+                                                			                        	//	}   
+                                                		//}
+                                                		if (markup1.getMarkupPercentage() != 0 && markup1
+                                                                .getMarkupFlat() == 0) {
+                                                          freightCharge.setCharge(freightCharge.getCost()
+                                                              + (freightCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                                                          fuelCharge.setCharge(fuelCharge.getCost()
+                                                              + (fuelCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                                                        }
+                                            		
+                                            		if (markup1.getMarkupPercentage() == 0
+                                                            && markup1.getMarkupFlat() != 0) {
+                                            		freightCharge.setCharge(freightCharge.getCost() + markup1.getMarkupFlat());
+                        /* if(fuelCharge.getCost()>0){
+                        	 fuelCharge.setCharge(fuelCharge.getCost() + markup1.getMarkupFlat());
+                           	}else{
+                           		 fuelCharge.setCharge(0.0);
+                           	}*/
+                             ratingList.get(i).setMarkupTypeText("Flat");
+                                            		}
+                                            		if(markup1.getMarkupPercentage() != 0 && markup1.getMarkupFlat() != 0){
+                                            			
+                                            			 double freightCharge1,fuelCharge1;
+                     	                            	   freightCharge1= (freightCharge.getCost() + (freightCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                     	                            	   fuelCharge1= (fuelCharge.getCost() + (fuelCharge.getCost() * markup1.getMarkupPercentage() / 100));
+                     	                            	   double frieghtChargeFlat,fuelChargeFlat;
+                     	                            	   frieghtChargeFlat=  (freightCharge.getCost() + markup1.getMarkupFlat());
+                     	                            	   fuelChargeFlat=  (fuelCharge.getCost() + markup1.getMarkupFlat());
+                     	                            	   
+                     	                            	   double totalcostPercentage;
+                    	                            	   double totalFlat;
+                     	                            	   totalcostPercentage=freightCharge1+fuelCharge1;
+                     	                            	   totalFlat=freightCharge.getCost()+fuelCharge.getCost()+markup1.getMarkupFlat();
+                     	                            	   if(totalcostPercentage>totalFlat){
+                     	                            		   freightCharge.setCharge(freightCharge1);
+                    	                            		   fuelCharge.setCharge(fuelCharge1);
+                     	                            		   
+                     	                            		  
+                     	                            	   }
+                     	                            	   else{
+                     	                            		   frieghtChargeFlat=freightCharge.getCost()+markup1.getMarkupFlat();
+                     	                            		   freightCharge.setCharge(frieghtChargeFlat);
+                    	                            		   fuelCharge.setCharge(fuelCharge.getCost());
+                     	                            	   }
+                                            		}
+                                            		
+                                            		 if(markup1.getMarkupPercentage() == 0 && markup1.getMarkupFlat() == 0){
+              	                            	   freightCharge.setCharge(freightCharge.getCost());
+                	                               fuelCharge.setCharge(fuelCharge.getCost());
+              	                            	   
+              	                               }
+                                            		 
+                                            		if(baseMarkup!=null){
+            	                        			if (baseMarkup.getMarkupPercentage() != 0
+            	                                            || (baseMarkup.getMarkupPercentage() == 0 && baseMarkup
+            	                                                .getMarkupFlat() == 0)) {
+            	                        				baseFreightCharge.setCharge(freightCharge.getCost()
+            	                                                + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+            	                        				baseFuelCharge.setCharge(fuelCharge.getCost()
+            	                                               + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));  
+            	                        				
+            	                                          }else if (baseMarkup.getMarkupPercentage() == 0
+            	                                              && baseMarkup.getMarkupFlat() != 0) {
+            	                                        	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+            	                                        	 /* if(fuelCharge.getCost()>0){
+            	                                        		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
+            	                                                	}else{
+            	                                                		baseFuelCharge.setCharge(0.0);
+            	                                                	}*/
+            	                                       	  baseMarkupFlatText=true;                        				
+            	                        			}
+            	                        			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
+            	                        				freightCharge.setCharge(baseFreightCharge.getCharge());
+            	                        				if(fuelCharge.getCost()>0){
+            	                        				fuelCharge.setCharge(baseFuelCharge.getCharge());
+            	                        					}
+            	                        				if(baseMarkupFlatText){
+            	                        					ratingList.get(i).setMarkupTypeText("Flat");
+            	                        				}else{
+            	                        					ratingList.get(i).setMarkupTypeText(baseMarkup.getTypeText());
+            	                        				}
+            	                        				ratingList.get(i).setMarkupPercentage(baseMarkup.getMarkupPercentage());                                       
+            	                                        ratingList.get(i).setMarkupType(baseMarkup.getType());                                        
+            	                                        ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
+            	                        		}   
+                                        }
                         }
                                    }else{                        	           
-                                	                               	markup1 = markupManagerService.getUniqueMarkup(markup1);            
+                                	                               	/*markup1 = markupManagerService.getUniqueMarkup(markup1);            
                                 	                              if (markup1 != null) {
                                 	                                 ratingList.get(i).setMarkupPercentage(markup1.getMarkupPercentage());
                                 	                                 ratingList.get(i).setMarkupTypeText(markup1.getTypeText());
@@ -3249,11 +3333,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                 	                                   } else if (ratingList.get(i).getMarkupPercentage() == 0
                                 	                                       && ratingList.get(i).getMarkupFlat() != 0) {
                                 	                                   	freightCharge.setCharge(freightCharge.getCost() + ratingList.get(i).getMarkupFlat());
-                                	                                  	            /*  if(fuelCharge.getCost()>0){
+                                	                                  	              if(fuelCharge.getCost()>0){
                                 	                                  	            	                  fuelCharge.setCharge(fuelCharge.getCost() + ratingList.get(i).getMarkupFlat());
                                 	                                   	            	                	}else{
                                 	                                   	            	                		 fuelCharge.setCharge(0.0);
-                                	                                   	            	                	}*/
+                                	                                   	            	                	}
                                 	                                     ratingList.get(i).setMarkupTypeText("Flat");
                                 	                                   }
                                 	                               if(baseMarkup!=null){
@@ -3268,11 +3352,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                 	                            	                                         }else if (baseMarkup.getMarkupPercentage() == 0
                                 	                            	                                             && baseMarkup.getMarkupFlat() != 0) {
                                 	                            	                                       	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
-                                	                            	                                       	  /*if(fuelCharge.getCost()>0){
+                                	                            	                                       	  if(fuelCharge.getCost()>0){
                                 	                            	                                       		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
                                 	                            	                                               	}else{
                                 	                            	                                               		baseFuelCharge.setCharge(0.0);
-                                	                            	                                               	}*/
+                                	                            	                                               	}
                                 	                            	                                       	  baseMarkupFlatText=true;                        				
                                 	                            	                       			}
                                 	                            	                       			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
@@ -3290,7 +3374,100 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                 	                            	                                       ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
                                 	                            	                      		}
                                 	                            	                       }
-                                	                            	                          }
+                                	                            	                          }*/
+                                	   markup1 = markupManagerService.getUniqueMarkup(markup1);            
+     	                              if (markup1 != null) {
+     	                                 ratingList.get(i).setMarkupPercentage(markup1.getMarkupPercentage());
+     	                                 ratingList.get(i).setMarkupTypeText(markup1.getTypeText());
+     	                                 ratingList.get(i).setMarkupType(markup1.getType());
+     	                                 ratingList.get(i).setMarkupFlat(markup1.getMarkupFlat());
+     	                               }            
+     	                               else {
+     	                                 ratingList.get(i).setMarkupPercentage(0);
+     	                               } 
+     	                               if ((ratingList.get(i).getMarkupPercentage() != 0 && ratingList.get(i).getMarkupFlat() == 0)) {
+     	                                     freightCharge.setCharge(freightCharge.getCost()
+     	                                         + (freightCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+     	                                     fuelCharge.setCharge(fuelCharge.getCost()
+     	                                         + (fuelCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+     	                                   } else if (ratingList.get(i).getMarkupPercentage() == 0&& ratingList.get(i).getMarkupFlat() != 0) {
+     	                                   	freightCharge.setCharge(freightCharge.getCost() + ratingList.get(i).getMarkupFlat());
+     	                                  	            /*  if(fuelCharge.getCost()>0){
+     	                                  	            	                  fuelCharge.setCharge(fuelCharge.getCost() + ratingList.get(i).getMarkupFlat());
+     	                                   	            	                	}else{
+     	                                   	            	                		 fuelCharge.setCharge(0.0);
+     	                                   	            	                	}*/
+     	                                     ratingList.get(i).setMarkupTypeText("Flat");
+     	                                   }
+     	                               
+     	                               if(ratingList.get(i).getMarkupPercentage() == 0 && ratingList.get(i).getMarkupFlat() == 0){
+     	                            	   freightCharge.setCharge(freightCharge.getCost()
+       	                                         + (freightCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+       	                                     fuelCharge.setCharge(fuelCharge.getCost()
+       	                                         + (fuelCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+     	                            	   
+     	                               }
+     	                               
+     	                               if(ratingList.get(i).getMarkupPercentage()!= 0 && ratingList.get(i).getMarkupFlat() != 0){
+     	                            	   
+    	                            	   double freightCharge1,fuelCharge1;
+    	                            	   freightCharge1= (freightCharge.getCost() + (freightCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+    	                            	   fuelCharge1= (fuelCharge.getCost() + (fuelCharge.getCost() * ratingList.get(i).getMarkupPercentage() / 100));
+    	                            	   double frieghtChargeFlat,fuelChargeFlat;
+    	                            	   frieghtChargeFlat=  (freightCharge.getCost() + ratingList.get(i).getMarkupFlat());
+    	                            	   fuelChargeFlat=  (fuelCharge.getCost() + ratingList.get(i).getMarkupFlat());
+    	                            	   
+    	                            	   double totalcostPercentage;
+   	                            	   double totalFlat;
+    	                            	   totalcostPercentage=freightCharge1+fuelCharge1;
+    	                            	   totalFlat=freightCharge.getCost()+fuelCharge.getCost()+ratingList.get(i).getMarkupFlat();
+    	                            	   
+    	                            	   if(totalcostPercentage>totalFlat){
+    	                            		   freightCharge.setCharge(freightCharge1);
+   	                            		   fuelCharge.setCharge(fuelCharge1);
+    	                            		   
+    	                            		  } else{
+    	                            		   frieghtChargeFlat=freightCharge.getCost()+ratingList.get(i).getMarkupFlat();
+    	                            		   freightCharge.setCharge(frieghtChargeFlat);
+   	                            		   fuelCharge.setCharge(fuelCharge.getCost());
+    	                            	   }
+    	                            	                         	   
+                            	   }
+                             	      if(baseMarkup!=null){
+                			if (baseMarkup.getMarkupPercentage() != 0
+                                    || (baseMarkup.getMarkupPercentage() == 0 && baseMarkup
+                                       .getMarkupFlat() == 0)) {
+                				baseFreightCharge.setCharge(freightCharge.getCost()
+                                        + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+                				baseFuelCharge.setCharge(fuelCharge.getCost()
+                                        + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));  
+                				
+                                  }else if (baseMarkup.getMarkupPercentage() == 0
+                                      && baseMarkup.getMarkupFlat() != 0) {
+                                	  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+                                	  /*if(fuelCharge.getCost()>0){
+                                		  baseFuelCharge.setCharge(fuelCharge.getCost() + baseMarkup.getMarkupFlat());
+                                        	}else{
+                                        		baseFuelCharge.setCharge(0.0);
+                                        	}*/
+                                	  baseMarkupFlatText=true;                        				
+                			}
+                			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
+                				freightCharge.setCharge(baseFreightCharge.getCharge());
+                				if(fuelCharge.getCost()>0){
+               				fuelCharge.setCharge(baseFuelCharge.getCharge());
+                					}
+                				if(baseMarkupFlatText){
+                					ratingList.get(i).setMarkupTypeText("Flat");
+                				}else{
+                					ratingList.get(i).setMarkupTypeText(baseMarkup.getTypeText());
+               				}
+                				ratingList.get(i).setMarkupPercentage(baseMarkup.getMarkupPercentage());                                       
+                                ratingList.get(i).setMarkupType(baseMarkup.getType());                                        
+                                ratingList.get(i).setMarkupFlat(baseMarkup.getMarkupFlat());
+               		}
+                }
+            }
                                if(freightCharge!=null && freightCharge.getCharge()==null){
                             	   freightCharge.setCharge(0.0);
                             	   ratingList.get(i).getCharges().add(freightCharge); 
@@ -3308,6 +3485,38 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             ratingList.get(i).setTotalCost(freightCharge.getCost() + fuelCharge.getCost());
             ratingList.get(i).setTotal(total);
           }
+          else{
+        	  
+              
+           	 if(ratingList.get(i).getMarkupPercentage()!=null && ratingList.get(i).getMarkupPercentage()!= 0 &&  ratingList.get(i).getMarkupFlat() != 0 &&ratingList.get(i).getTotalCost()!=0.0){
+             	  double totalCost=ratingList.get(i).getTotalCost();
+             	  double totalCostPer=0;
+             	  double totalCostFlat=0;
+             	
+             	           	  
+             	             	  
+             	   totalCostPer=totalCostPer+(totalCost+(totalCost*ratingList.get(i).getMarkupPercentage()/100));
+             	  totalCostFlat=totalCostFlat+totalCost+ratingList.get(i).getMarkupFlat();
+                	   if(totalCostPer>totalCostFlat){
+                		for(Charge cha:ratingList.get(i).getCharges()){
+               		
+               		  cha.setCharge(cha.getCost()+cha.getCost()*ratingList.get(i).getMarkupPercentage()/100);
+               	     }
+                		   ratingList.get(i).setTotal(totalCostPer);
+                	   }else{
+                		
+                   	ratingList.get(i).getCharges().get(0).setCharge(ratingList.get(i).getCharges().get(0).getCost()+ratingList.get(i).getMarkupFlat());
+                 		  
+                 	 ratingList.get(i).getCharges().get(1).setCharge(ratingList.get(i).getCharges().get(1).getCost());    
+                		
+                		  ratingList.get(i).setTotal(totalCostFlat);
+                		   
+                	   }
+                	   
+                	             	                         	   
+        	   }
+           	
+           }
         }
       }
       }

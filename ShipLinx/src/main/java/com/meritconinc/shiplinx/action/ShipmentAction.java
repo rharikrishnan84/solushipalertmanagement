@@ -2514,7 +2514,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  	        		            mark.setCustomerId(0l);
 	    		  	        		            baseMarkup=markupManagerService.findBaseMarkup(mark);
 	    		  	        		   }
-	    		  	        		    if (baseMarkup!=null){
+	    		  	        		    /*if (baseMarkup!=null){
 	    		  	        		    	if(baseMarkup.getMarkupPercentage() == 0
 	    		  	        		    		                                  && baseMarkup.getMarkupFlat() != 0) {        		    		                        	  
 	    		  	        		    		                        	  baseAmount=baseMarkup.getMarkupFlat()+rating.getTotalCost();
@@ -2522,7 +2522,28 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  	        		    		                              }else{	        		    		                            	  
 	    		  	        		    		                            	  baseAmount = rating.getTotalCost()+(rating.getTotalCost()*baseMarkup.getMarkupPercentage());
 	    		  	        		    		                            	  }
-	    		  	        		    		                              }
+	    		  	        		    		                              }*/
+	    		  	        		  if (baseMarkup!=null){
+	    		  	        			  	        		    	if(baseMarkup.getMarkupPercentage() == 0
+	    		  	        			  	        		    		                                  && baseMarkup.getMarkupFlat() != 0) {        		    		                        	  
+	    		  	        			  	        		    		                        	  baseAmount=baseMarkup.getMarkupFlat()+rating.getTotalCost();
+	    		  	        			          		    		                        	  baseMarkupFlat=true;	        		    		                        	  
+	    		  	        			  	        		    		                              }else{	        		    		                            	  
+	    		  	        			  	        		    		                            	  baseAmount = rating.getTotalCost()+(rating.getTotalCost()*baseMarkup.getMarkupPercentage()/100);
+	    		  	        			  	        		    		                            	  }
+	    		  	        			  	        		    	if(baseMarkup.getMarkupPercentage() !=0 && baseMarkup.getMarkupFlat() != 0){
+	    		  	        			  	        		    		if(rating.getTotalCost()!=0.0){
+	    		  	        			  	        		    		double baseAmountFlat=baseMarkup.getMarkupFlat()+rating.getTotalCost();
+	    		  	        			  	        		    		double baseAmountPercentage=rating.getTotalCost()+(rating.getTotalCost()*baseMarkup.getMarkupPercentage()/100);
+	    		  	        			  	        		    		if(baseAmountFlat>=baseAmountPercentage){
+	    		  	        			  	        		    			baseAmount=baseAmountFlat;
+	    		  	        			  	        		    			baseMarkupFlat=true;
+	    		  	        			  	        		    			}else{
+	    		  	        			  	        		    			baseAmount=baseAmountPercentage;
+	    		  	        			  	        		    		}
+	    		  	        			  	        		    }
+	    		  	        			  	        		}
+	    		  	        				    		}
 	    		  	        		    if(baseMarkup!=null && rating.getTotal()<baseAmount){
 	    		  	        		    	baseMarkupCharge=true;
 	    		          		    	if(baseMarkupFlat){

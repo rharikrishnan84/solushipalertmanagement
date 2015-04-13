@@ -358,14 +358,16 @@ public class PickUpServiceClient{
 		else if(location.equalsIgnoreCase("Garage"))
 			return "Garage";
 		else if(location.equalsIgnoreCase("Upstairs"))
-			return "BackDoor";
+			return "Office";
 		else if(location.equalsIgnoreCase("Downstairs"))
 			return "Basement";
 		else if(location.equalsIgnoreCase("Guard House"))
-			return "GateHouse";
+			return "Security";
 		else if(location.equalsIgnoreCase("Third Party"))
 			return "BackDoor";
 		else if(location.equalsIgnoreCase("Warehouse"))
+			return "Shipping";
+		else if(location.equalsIgnoreCase("Shipping"))
 			return "Shipping";
 		else return "FrontDesk";
 			

@@ -504,11 +504,11 @@ public class GenericCarrierAPI implements CarrierService {
       if (totWeight != null && totWeight > 0 && totWeight < 500 && maxLength > 0 && maxWidth > 0
           && maxHeight > 0 && maxLength < 49 && maxWidth < 49 && maxHeight < 49
 
-          && sr.getRateFlatWeight() != null && sr.getRateFlatWeight().doubleValue() > 0) {
+          && sr.getRateFlatWeight() != null && sr.getRateFlatWeight().doubleValue() > 0 && (shippingOrder.getQuantity() != null && shippingOrder.getQuantity().intValue() ==1)) {
         rate = sr.getRateFlatWeight().doubleValue();
       } else if (totWeight != null && totWeight > 0 && totWeight < 500 && maxLength > 0
           && maxWidth > 0 && maxHeight > 0 && maxLength <= service.getMaxLength()
-          && maxWidth <= service.getMaxWidth() && maxHeight <= service.getMaxHeight()) {
+          && maxWidth <= service.getMaxWidth() && maxHeight <= service.getMaxHeight() && (shippingOrder.getQuantity() != null && shippingOrder.getQuantity().intValue() ==1)) {
         rate = sr.getRateSkid1();
       } else if (shippingOrder.getQuantity() != null && shippingOrder.getQuantity().intValue() > 0) {
         rate = sr.getSkidRate(shippingOrder.getQuantity().intValue());

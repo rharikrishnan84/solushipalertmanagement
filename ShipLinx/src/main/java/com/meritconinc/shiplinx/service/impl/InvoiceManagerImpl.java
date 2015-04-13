@@ -902,9 +902,26 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     // Here we are attaching the charges to the shipments based on a
     // specific invoice.
     for (ShippingOrder order : invoice.getOrders()) {
-      order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+     /* order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
           invoice.getInvoiceId()));
-    }
+    }*/
+    	List<Charge> charges = shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+    			      	          invoice.getInvoiceId());
+    			        if(charges!=null && charges.size()>0){
+    			        	
+    			        
+    			        for(int index=0; index < charges.size(); index++) {
+    			      	  int totalsize = charges.size(); 
+    			      	  System.out.println(charges.get(index).getName());
+    			      	  if((charges.get(index).getName().equals("HST ON"))||(charges.get(index).getName().equals("HST")) ||
+    			      		 (charges.get(index).getName().equals("GST"))||(charges.get(index).getName().equals("GST ON"))){
+    			      		  Collections.swap(charges, index, totalsize-1);
+    			      		  break;
+    			      	  } 
+    			      	}
+    			        }
+    			        order.setChargesForInvoice(charges);
+    			      }
 
     return invoice;
   }

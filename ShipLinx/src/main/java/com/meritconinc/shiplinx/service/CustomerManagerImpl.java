@@ -552,7 +552,13 @@ public class CustomerManagerImpl implements CustomerManager {
 		try {
 			Customer customer = getCustomerInfoByCustomerId(customerId);
 			UserSearchCriteria criteria = new UserSearchCriteria();
+			if(customer!=null && UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+								
+									criteria.setBusinessId(customer.getBusinessId());
+								
+							}else{
 			criteria.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+							}
 			criteria.setCustomerId(Long.valueOf(customerId));
 			criteria.setRoleCode(ShiplinxConstants.ROLE_CUSTOMER_ADMIN);
 
