@@ -4314,11 +4314,26 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                  if (rateError) {
 		                    // iterating the child service for corresponding master service
 		                    for (Service skidService : tempServiceListForLTL) {
-		                      fromZone = getZone(skidService.getZoneStructureId(), order.getFromAddress());
-		                      toZone = getZone(skidService.getZoneStructureId(), order.getToAddress());
+		                      /*fromZone = getZone(skidService.getZoneStructureId(), order.getFromAddress());
+		                      toZone = getZone(skidService.getZoneStructureId(), order.getToAddress());*/
+		                    	String fromCity = "";
+			                      String toCity ="";
+			                      Long fromZoneStructureId=0l;
+			                      Long toZoneStructureId=0l;
+			                      fromCity = order.getFromAddress().getCity();
+			                      toCity =  order.getToAddress().getCity(); 
+			                      fromZoneStructureId = skidService.getZoneStructureId(); 
+			                      toZoneStructureId = skidService.getZoneStructureId();
+			                      List<Zone> overAllfromZones = new ArrayList<Zone>();
+			                      List<Zone> overAlltoZones = new ArrayList<Zone>();
+			                      overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
+			                      overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);
+			                      if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
+	            		          	  for(Zone fromZoneVar : overAllfromZones){
+	            		          		  for(Zone toZoneVar : overAlltoZones ){
 		                      LtlSkidRate childServiceSkid = LtlSkidRate.getObject(order.getCustomerId(),
-		                          order.getBusinessId(), skidService.getId(), fromZone.getZoneName(),
-		                          toZone.getZoneName());
+		                          order.getBusinessId(), skidService.getId(), fromZoneVar.getZoneName(),
+		                          toZoneVar.getZoneName());
 		                      pr = this.markupDAO.getSkidRate(childServiceSkid);
 		                      boolean skidChildRateError = false;
 		                      // if pr is null for the customer id then set the customer to zero.
@@ -4338,15 +4353,23 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                     if (!skidChildRateError) {
 		                        rateError = false;
 		                        addService = true;
+		                        if(!tempCarrierServiceListToCopy.contains(carrierServicesList.get(serviceSlice))){
+		                        	tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
+			                	}
 		                        break;
-		
+		                     }
+	            		          		  }
+	            		          	  }
 		                      }
 		                    }
 		
 		                  }
 		                }
 		                if (addService) {
-		                  tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
+		                  //tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
+		                	if(!tempCarrierServiceListToCopy.contains(carrierServicesList.get(serviceSlice))){
+		                	 tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice));
+		                	}
 		                } /*
 		                   * else if (repitiveRate && availableGroupRate) {
 		                   * tempCarrierServiceListToCopy.add(carrierServicesList.get(serviceSlice)); }

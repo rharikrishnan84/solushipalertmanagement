@@ -14,6 +14,7 @@ import com.meritconinc.shiplinx.dao.EdiDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
+import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.EdiInfo;
 import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Customer;
@@ -296,6 +297,87 @@ public class EdiPurolatorParser extends EdiParser {
 							{
 								shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
 							}
+			
+			//CODE FOR PUROLATOR WITH NO TAX SHOULD POPULATE MANUAL TAX
+			try{
+					Boolean taxFlag=false;
+					Boolean manualTaxFlag=false;
+					Double taxableCharge=0.0;
+					String chargeCodeLevel2 = "HST";
+					String province=null;
+					for(Charge c:shipment.getCharges()){
+						if(c.getChargeCodeLevel2().equals("HST")){
+							chargeCodeLevel2 = new String(ShiplinxConstants.TAX_HST + " " + shipment.getToAddress().getProvinceCode());
+							c.setChargeCodeLevel2(chargeCodeLevel2);
+							c.setName(chargeCodeLevel2);
+						}
+						CarrierChargeCode ccc = shippingService.getChargeByCarrierAndCodes(c.getCarrierId(),
+			        	          c.getChargeCode(), c.getChargeCodeLevel2());
+						if(ccc==null && c.getChargeCodeLevel2().contains("HST")){
+							ccc=new CarrierChargeCode();
+							province=shipment.getToAddress().getProvinceCode();
+							ChargeGroup cc=shippingService.getChargeDetailsByProvince(province);
+							if(cc==null){
+								ccc.setTax(true);
+								ccc.setTaxRate(new Long(0));
+								ccc.setIsTaxable("No");
+							}else{
+							ccc.setTax(cc.isTax());
+							ccc.setTaxRate(cc.getTaxRate());
+							ccc.setIsTaxable(cc.getIsTaxable());
+							}
+							}
+						if(ccc!=null && (!ccc.isTax() && ccc.getIsTaxable().equals("Yes"))){
+						taxableCharge = taxableCharge+c.getCharge();
+									}
+						else{
+							if(c.getChargeCodeLevel2().contains("HST") && (c.getCharge()==1 && c.getCost()==1)){
+								manualTaxFlag=true;
+							}
+							else{
+								taxFlag=true;
+							}
+						}
+					}
+					if(!taxFlag && manualTaxFlag){
+						int i=0;
+						for(Charge c:shipment.getCharges()){
+							if(c.getChargeCodeLevel2().contains("HST") && (c.getCharge()==1 && c.getCost()==1)){
+								c.setCost(0.0);
+								CarrierChargeCode ccc = shippingService.getChargeByCarrierAndCodes(c.getCarrierId(),
+		      	        	          c.getChargeCode(), c.getChargeCodeLevel2());
+								if(ccc==null && c.getChargeCodeLevel2().contains("HST")){
+									province=shipment.getToAddress().getProvinceCode();
+									ChargeGroup cc=shippingService.getChargeDetailsByProvince(province);
+									if(cc==null){
+										shipment.getCharges().remove(i);
+										break;
+									}
+									ccc=new CarrierChargeCode();
+									ccc.setTax(cc.isTax());
+									ccc.setTaxRate(cc.getTaxRate());
+									ccc.setIsTaxable(cc.getIsTaxable());
+								}
+								c.setCharge(taxableCharge*ccc.getTaxRate()/100);
+							}
+							i++;	
+							}
+						}
+					if(taxFlag && manualTaxFlag){
+						int i=0;
+						for(Charge c:shipment.getCharges()){
+							if(c.getChargeCodeLevel2().contains("HST") && (c.getCharge()==1 && c.getCost()==1)){
+								shipment.getCharges().remove(i);
+								break;
+							}
+							i++;
+						}
+					}
+					}catch(Exception e){
+						log.error("Charge code HST adding error");
+					}
+		//CODE FOR PUROLATOR WITH NO TAX SHOULD POPULATE MANUAL TAX EDNS HERE
+
 			// Verify Total Shipment
 			double ediShipmentTotAmount = StringUtil.getDouble(getEdiField(SHIPMENT_TOTAL_AMT));
 			double shipmentTotCharges = shipment.getTotalCostActual();
@@ -358,7 +440,7 @@ public class EdiPurolatorParser extends EdiParser {
 		String chargeName = chargeCodeMapInfo[0];
 		//if this is HST,  we need to set to appropriate HST (ON,BC,NS,NB,NF) as the charge code in UPS EDI file does not indicate which HST
 		if (chargeCodeLevel2.equalsIgnoreCase(ShiplinxConstants.TAX_HST)) {
-			chargeCodeLevel2 = new String(ShiplinxConstants.TAX_HST + " " + shipment.getFromAddress().getProvinceCode());
+			chargeCodeLevel2 = new String(ShiplinxConstants.TAX_HST + " " + shipment.getToAddress().getProvinceCode());
 		}
 		if (chargeCode.equals(ShiplinxConstants.TAX_GST) || 
 			chargeCode.equals(ShiplinxConstants.TAX_HST) || 
@@ -489,6 +571,16 @@ public class EdiPurolatorParser extends EdiParser {
 						charge.setCharge(charge.getCost());
 					}
 		charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
+		
+		//CODE FOR PUROLATOR WITH NO TAX SHOULD POPULATE MANUAL TAX
+				if(chargeCode.equals("TAX")  && charge.getCost()==0){
+					if(chargeCodeLevel2.contains("HST")){
+						charge.setCharge(1.0);
+						charge.setCost(1.0);
+						}
+						}
+				//CODE FOR PUROLATOR WITH NO TAX SHOULD POPULATE MANUAL TAX EDNS HERE
+
 		return charge;
 	}
 

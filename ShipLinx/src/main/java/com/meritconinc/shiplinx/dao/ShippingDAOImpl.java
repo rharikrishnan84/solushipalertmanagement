@@ -1547,7 +1547,17 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 												 												 							    return null;
 												 												 							}
 												 													
-												
+												 												@Override
+												 												public ChargeGroup getChargeDetailsByProvince(String province) {
+												 													
+												 													Map<String, Object> paramObj = new HashMap<String, Object>();
+												 													paramObj.put("provinceCode", province);
+												 													paramObj.put("CountryCode", "CA");
+												 													ChargeGroup cc=(ChargeGroup) getSqlMapClientTemplate().queryForObject(
+												 															"getChargeDetailsByProvince",paramObj);
+												 													return cc;
+												 												}
+
 												
 												
 												

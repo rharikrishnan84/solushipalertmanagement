@@ -69,4 +69,13 @@ public class ChargeGroup implements Serializable {
 		this.displayOrder = displayOrder;
 	}
 
+	public String getIsTaxable() {
+		return isTaxable;
+	}
+
+	public void setIsTaxable(String isTaxable) {
+		this.isTaxable = isTaxable;
+	}
+
+	private String isTaxable;
 }

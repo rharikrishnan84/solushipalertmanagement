@@ -214,4 +214,6 @@ public List<ShippingOrder> getOrdersByAddressId(long fromAddressId);
 
 public Long insertFutureReference(FutureReference fc);
 public void insertFuturePackages(FutureReferencePackages futureRefPack);
+
+public ChargeGroup getChargeDetailsByProvince(String province);
 }

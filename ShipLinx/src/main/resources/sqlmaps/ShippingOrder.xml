@@ -389,6 +389,7 @@
 			<result property="tax" column="is_tax"/>
 			<result property="taxRate" column="tax_rate"/>
 			<result property="displayOrder" column="display_order"/>
+			<result property="isTaxable" column="is_taxable" />
 	</resultMap>
 	
 	<resultMap id="carrierChargeCodeGroupResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
@@ -424,6 +425,7 @@
 			<result property="tax" column="is_tax"/>
 			<result property="taxRate" column="tax_rate"/>
 			<result property="displayOrder" column="display_order"/>
+			<result property="isTaxable" column="is_taxable" />
 	</resultMap>
 	
 	<resultMap id="carrierChargeCode" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
@@ -891,7 +893,7 @@
 	</select>
 
 	<select id="getChargeByCarrierAndCodes" resultMap="carrierChargeCodeResultMap" >
-		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
+		select ccc.id, ccc.carrier_id, ccc.charge_code, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order',cg.is_taxable as 'is_taxable' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
 		where ccc.carrier_id=#carrierId#
 		<isNotNull  property="chargeCode">
 		 and ccc.charge_code=#chargeCode# 
@@ -1776,5 +1778,8 @@
 	select * from quote_packages where future_reference_id=#futureReferenceId#
 	</select>
 	
+	<select id="getChargeDetailsByProvince" resultMap="chargeGroupResultMap">
+		SELECT cc.* FROM province p,charge_group cc where (p.tax_charge_group=cc.id)and name=#provinceCode#and p.country_code=#CountryCode#
+	</select>
 </sqlMap>
 

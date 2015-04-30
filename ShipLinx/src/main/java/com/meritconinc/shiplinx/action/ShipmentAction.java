@@ -2736,7 +2736,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    			  rate.setTotalCostLocalCurrency(0.00);
 	    		  }
 	    	  }
-	      }
+	      }Collections.sort(ratingList, Rating.PriceComparator1);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	      for (CarrierErrorMessage carrierErrorMessage : carrierServiceManager.getErrorMessages()) {

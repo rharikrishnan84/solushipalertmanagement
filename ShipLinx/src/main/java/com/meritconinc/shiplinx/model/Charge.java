@@ -41,6 +41,40 @@ public class Charge implements Serializable {
 
   private Double customerTarrifRate;
   
+  private String showSubTotal;
+    private Double totalTax;
+    private String taxName;
+  
+    
+    public String getShowSubTotal() {
+  	  	return showSubTotal;
+  	  }
+  	  
+  	  public void setShowSubTotal(String showSubTotal) {
+  	  	this.showSubTotal = showSubTotal;
+  	  }
+  	  
+  	  public String getTaxName() {
+  		  		return taxName;
+  		  	}
+  		  
+  		  	public void setTaxName(String taxName) {
+  		  		this.taxName = taxName;
+  		  	}
+  		  
+  
+  		   	  
+  		   	  
+  		   
+  
+    public Double getTotalTax() {
+  	  	return totalTax;
+    }
+  	  
+  	  public void setTotalTax(Double totalTax) {
+  	  	this.totalTax = totalTax;
+  	  }
+  	  
 public int getCalculateTax() {
 	return calculateTax;
 }

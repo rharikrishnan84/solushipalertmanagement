@@ -231,5 +231,7 @@ public interface ShippingDAO {
     
     public List<ShippingOrder> getUnbilledShipmentsBySinglebus(Long busid, long l,
     		String branch);
+
+	public ChargeGroup getChargeDetailsByProvince(String province);
   
   }

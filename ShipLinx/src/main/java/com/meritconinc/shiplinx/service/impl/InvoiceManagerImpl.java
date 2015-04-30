@@ -195,6 +195,11 @@ public class InvoiceManagerImpl implements InvoiceManager {
             + " / " + currency);
 
         if (orders.size() > 0) {
+        	invoice.setTotalSPD(0.0);
+        	        	invoice.setTotalCHB(0.0);
+        	        	invoice.setTotalLTL(0.0);
+        	        	invoice.setTotalFWD(0.0);
+        	        	invoice.setTotalFPA(0.0);
           Invoice i = createInvoice(orders, invoice, cus, currency);
           		groupedInvoiceCharges=getInvoiceChargeDetails(i.getInvoiceId());
           		for(Invoice grpInv:groupedInvoiceCharges){
@@ -893,7 +898,7 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     return invoiceDAO.searchInvoices(invoice);
   }
 
-  public Invoice getInvoiceById(long invoiceId) {
+  /*public Invoice getInvoiceById(long invoiceId) {
     Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
 
     // Not all charges of a shipment will necessarily belong to a given
@@ -902,9 +907,9 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     // Here we are attaching the charges to the shipments based on a
     // specific invoice.
     for (ShippingOrder order : invoice.getOrders()) {
-     /* order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+      order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
           invoice.getInvoiceId()));
-    }*/
+    }
     	List<Charge> charges = shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
     			      	          invoice.getInvoiceId());
     			        if(charges!=null && charges.size()>0){
@@ -924,7 +929,102 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     			      }
 
     return invoice;
-  }
+  }*/
+  
+  public Invoice getInvoiceById(long invoiceId) {
+	  	    Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
+	  
+	  	    // Not all charges of a shipment will necessarily belong to a given
+	  	    // invoice. The charges of a shipment may be spread across several
+	  	    // invoices.
+	      // Here we are attaching the charges to the shipments based on a
+	  	    // specific invoice.
+	  	    for (ShippingOrder order : invoice.getOrders()) {
+	       /* order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+	  	          invoice.getInvoiceId()));
+	  	          
+	  	          
+	  	    }*/
+	  	    	 List<Charge> chargesNonTax = new ArrayList<Charge>();
+	  		        List<Charge> chargesTax = new ArrayList<Charge>();
+	  		        List<Charge> chargesOrderedTemp = new ArrayList<Charge>();
+	      	
+	     	List<Charge> charges = shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+	  	    			      	          invoice.getInvoiceId());
+	  				int lastCharge = 0;
+	  				boolean isFoudTax=false;
+	  				if (charges != null && charges.size() > 0) {
+	          for(int index=0; index < charges.size(); index++) {
+	  				    	if (charges.get(index).getName().contains("HST")
+	  								|| charges.get(index).getName().contains("GST")
+	  								|| charges.get(index).getName().contains("QST")
+	  								|| charges.get(index).getName().contains("GOV")
+	  								|| (charges.get(index).getName().contains("Duty")
+	  										&& charges.get(index).getName().equalsIgnoreCase("Duty"))) {
+	  			    		
+	  					    	 if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	  					    		 chargesNonTax.add(charges.get(index)); 
+	  				    	 }
+	  					    	 else
+	  					    	 {
+	  					    		 chargesTax.add(charges.get(index));
+	  					    	 }
+	  				    	}
+	  				    	
+	  				    	else{
+	  				    		chargesNonTax.add(charges.get(index));
+	  				    	}
+	  				        }
+	  				        chargesOrderedTemp.addAll(chargesNonTax);
+	  				        chargesOrderedTemp.addAll(chargesTax);
+	  				        double charge=0.0;
+	  					
+	  					for (int index = 0; index < chargesOrderedTemp.size(); index++) {
+	  						if (chargesOrderedTemp.get(index).getName().contains("HST")
+	  								|| chargesOrderedTemp.get(index).getName().contains("GST")
+	  								|| chargesOrderedTemp.get(index).getName().contains("QST")
+	  								|| chargesOrderedTemp.get(index).getName().contains("GOV")
+	  								|| (chargesOrderedTemp.get(index).getName().contains("Duty")
+	  									&& chargesOrderedTemp.get(index).getName().equalsIgnoreCase("Duty"))) {
+	  						
+	  							if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	  								chargesOrderedTemp.get(index).setShowSubTotal("false1");
+	  								lastCharge = index;
+	  							}
+	  							
+	  							else{
+	  							chargesOrderedTemp.get(index).setShowSubTotal("true");
+	  							charge = charge+chargesOrderedTemp.get(index).getCharge();
+	  							chargesOrderedTemp.get(index).setTotalTax(charge);
+	  							isFoudTax=true;
+	  							}
+	  							
+	  						} else {
+	  							chargesOrderedTemp.get(index).setShowSubTotal("false1");
+	  							lastCharge = index;
+	  						}
+	  					}
+	  				}
+	   
+	  				if (lastCharge + 1 < chargesOrderedTemp.size()) {
+	  					chargesOrderedTemp.get(lastCharge + 1).setShowSubTotal("false");
+	  				} else {
+	  					if (2 == chargesOrderedTemp.size()) {
+	  						chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+	  					} else if (1 == chargesOrderedTemp.size()) {
+	  						chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+	  					}
+	  					else if(!isFoudTax){
+	  					chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+	  					}
+	  					else {
+	  						chargesOrderedTemp.get(lastCharge).setShowSubTotal("false");
+	  					}
+	  				}
+	  				order.setChargesForInvoice(chargesOrderedTemp);
+	  			}
+	  	    return invoice;
+	  	  }
 
   public List<ShippingOrder> getShippingOrders(long invoiceId) {
     return null;

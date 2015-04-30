@@ -2236,4 +2236,10 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 	public List<ShippingOrder> getOrdersByAddressId(long fromAddressId){
 		return this.shippingDAO.getOrdersByAddressId(fromAddressId);
 	}
+	
+	@Override
+	public ChargeGroup getChargeDetailsByProvince(String province) {
+		// TODO Auto-generated method stub
+		return this.shippingDAO.getChargeDetailsByProvince(province);
+	}
 }

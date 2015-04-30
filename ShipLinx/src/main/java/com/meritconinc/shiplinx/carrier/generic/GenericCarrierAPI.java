@@ -361,6 +361,46 @@ public class GenericCarrierAPI implements CarrierService {
                         }
             List<Rating> ratingList = new ArrayList<Rating>();
 
+            
+            for (Service service : masterServices) {
+                if (s.getId() != service.getId()) {
+                  skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
+                      shippingOrder.getBusinessId(), service.getId(), fromZone.getZoneName(),
+                      toZone.getZoneName());
+                  sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                  if (sr == null) {
+                    skidRateTobeSearched.setCustomerId(0L);
+                    sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                  }
+                  if (sr == null) {
+                    Zone fromZones = getZone(service.getZoneStructureId(),
+                        shippingOrder.getFromAddress());
+                    Zone toZones = getZone(service.getZoneStructureId(), shippingOrder.getToAddress());
+                    skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
+                        shippingOrder.getBusinessId(), service.getId(), fromZones.getZoneName(),
+                        toZones.getZoneName());
+                    skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
+                    sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if (sr == null) {
+                      skidRateTobeSearched.setCustomerId(0L);
+                      sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    }
+                  }
+                 /* if(sr!=null && sr.size()>0){
+                  	                	for(LtlSkidRate srr:sr){
+                  	                		rate = ltlSkidRate(srr, s, shippingOrder);
+                  	                    	ratingList.add(rate);	
+                  	                	}
+                  	                }*/
+                  if (sr != null) {
+                    rate = ltlSkidRate(sr, s, shippingOrder);
+                    ratingList.add(rate);
+                  }
+                }
+              }
+            
+            
+            if(ratingList==null || ratingList.size()==0){
             for (Service service : masterServices) {
               if (s.getId() != service.getId()) {
                 skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
@@ -371,19 +411,47 @@ public class GenericCarrierAPI implements CarrierService {
                   skidRateTobeSearched.setCustomerId(0L);
                   sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
                 }
+                if (sr != null) {
+                    rate = ltlSkidRate(sr, s, shippingOrder);
+                    ratingList.add(rate);
+                  }
                 if (sr == null) {
-                  Zone fromZones = getZone(service.getZoneStructureId(),
+                  /*Zone fromZones = getZone(service.getZoneStructureId(),
                       shippingOrder.getFromAddress());
-                  Zone toZones = getZone(service.getZoneStructureId(), shippingOrder.getToAddress());
+                  Zone toZones = getZone(service.getZoneStructureId(), shippingOrder.getToAddress());*/
+                	String fromCity = "";
+                    String toCity ="";
+                    Long fromZoneStructureId=0l;
+                    Long toZoneStructureId=0l;
+                    fromCity = shippingOrder.getFromAddress().getCity();
+                    toCity =  shippingOrder.getToAddress().getCity(); 
+                    fromZoneStructureId = service.getZoneStructureId(); 
+                    toZoneStructureId = service.getZoneStructureId();
+                    List<Zone> overAllfromZones = new ArrayList<Zone>();
+                    List<Zone> overAlltoZones = new ArrayList<Zone>();
+                    overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId);
+                    overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId);
+                    if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
+                     for(Zone fromZoneVar : overAllfromZones){
+                      for(Zone toZoneVar : overAlltoZones ){
                   skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
-                      shippingOrder.getBusinessId(), service.getId(), fromZones.getZoneName(),
-                      toZones.getZoneName());
+                      shippingOrder.getBusinessId(), service.getId(), fromZoneVar.getZoneName(),
+                      toZoneVar.getZoneName());
                   skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
                   sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
                   if (sr == null) {
                     skidRateTobeSearched.setCustomerId(0L);
                     sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
                   }
+                  if (sr != null) {
+                      rate = ltlSkidRate(sr, s, shippingOrder);
+                      ratingList.add(rate);
+                    }
+                }
+                     }
+                     
+                    }
+                    
                 }
                /* if(sr!=null && sr.size()>0){
                 	                	for(LtlSkidRate srr:sr){
@@ -391,11 +459,8 @@ public class GenericCarrierAPI implements CarrierService {
                 	                    	ratingList.add(rate);	
                 	                	}
                 	                }*/
-                if (sr != null) {
-                  rate = ltlSkidRate(sr, s, shippingOrder);
-                  ratingList.add(rate);
-                }
               }
+            }
             }
             if (ratingList != null && ratingList.size() > 0) {
               Collections.sort(ratingList, Rating.PriceComparator);
@@ -431,7 +496,6 @@ public class GenericCarrierAPI implements CarrierService {
         return rate;
       }
     }
-
     return null;
   }
 
@@ -524,6 +588,13 @@ public class GenericCarrierAPI implements CarrierService {
       rating.setTransitDays(sr.getTtm2());
     else
       rating.setTransitDays(sr.getTtm1());
+    for(int i=0;i<rating.getCharges().size();i++){
+    	    	  if(rating.getCharges().get(i).getCurrency()!=null){
+    	    	              if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
+    	    	              	rating.setCurrency(sr.getCurrency());;
+    	    	            }
+    	    	  }
+    	      }
     log.debug("SUCCESS");
     return rating;
   }
@@ -732,6 +803,11 @@ public class GenericCarrierAPI implements CarrierService {
           rating.setTransitDays(pr.getTtm2());
         else
           rating.setTransitDays(pr.getTtm1());
+        for(int i=0;i<rating.getCharges().size();i++){
+        	        	            if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
+        	        	            	rating.setCurrency(pr.getCurrency());;
+        	        	          }
+        	        	        }
         log.debug("SUCCESS");
         return rating;
       
@@ -1449,6 +1525,11 @@ public class GenericCarrierAPI implements CarrierService {
               rating.setTransitDays(pr.getTtm2());
             else
               rating.setTransitDays(pr.getTtm1());
+            for(int i=0;i<rating.getCharges().size();i++){
+            	            	            if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
+            	            	            	rating.setCurrency(pr.getCurrency());;
+            	            	          }
+            	            	        }
             log.debug("SUCCESS");
             return rating;
           }

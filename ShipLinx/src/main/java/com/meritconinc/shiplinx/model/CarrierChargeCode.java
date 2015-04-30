@@ -179,5 +179,15 @@ public class CarrierChargeCode implements Serializable {
 		this.carrierName = carrierName;
 	}
 
+	public String getIsTaxable() {
+		return isTaxable;
+	}
+
+	public void setIsTaxable(String isTaxable) {
+		this.isTaxable = isTaxable;
+	}
+
+	private String isTaxable;
+
 	
 }
