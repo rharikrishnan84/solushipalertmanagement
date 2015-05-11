@@ -113,7 +113,7 @@ public class ShippingDocumentsServiceClient{
 				if(user.getPreferredLabelSize()!=null && user.getPreferredLabelSize().equals("8 x 11")){	
 					documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading);
 				}else{
-					documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading_Thermal);
+				documenttypes.getDocumentType().add(PurolatorAPI.Intl_Bill_of_Lading_Thermal);
 				}
 			}
 			else
@@ -176,7 +176,10 @@ public class ShippingDocumentsServiceClient{
 				logger.error("Error occured while printing the puralotor response :"+e.getMessage());
 			}
 			// Display the response
-			getResponseError(response.getResponseInformation());
+			
+			if(response!=null && response.getResponseInformation()!=null){
+				getResponseError(response.getResponseInformation());
+			}
 
 			ArrayOfDocument documents = response.getDocuments().getValue(); 
 
@@ -347,7 +350,7 @@ public class ShippingDocumentsServiceClient{
 
 			
 			((BindingProvider)client).getRequestContext().put(Header.HEADER_LIST, headers);
-
+			((BindingProvider)client).getRequestContext().put("set-jaxb-validation-event-handler", false);
 			response = client.getDocuments(request);
 			
 			logger.debug("Response:" + response);
