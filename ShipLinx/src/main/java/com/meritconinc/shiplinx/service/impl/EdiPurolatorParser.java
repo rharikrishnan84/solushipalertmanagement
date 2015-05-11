@@ -306,7 +306,7 @@ public class EdiPurolatorParser extends EdiParser {
 					String chargeCodeLevel2 = "HST";
 					String province=null;
 					for(Charge c:shipment.getCharges()){
-						if(c.getChargeCodeLevel2().equals("HST")){
+						if(c.getChargeCodeLevel2().equals("HST") && (c.getCharge()==1 && c.getCost()==1)){
 							chargeCodeLevel2 = new String(ShiplinxConstants.TAX_HST + " " + shipment.getToAddress().getProvinceCode());
 							c.setChargeCodeLevel2(chargeCodeLevel2);
 							c.setName(chargeCodeLevel2);
@@ -357,7 +357,9 @@ public class EdiPurolatorParser extends EdiParser {
 									ccc.setTax(cc.isTax());
 									ccc.setTaxRate(cc.getTaxRate());
 									ccc.setIsTaxable(cc.getIsTaxable());
-								}
+									c.setName(cc.getGroupCode());
+									c.setChargeCodeLevel2(cc.getGroupCode());
+									}
 								c.setCharge(taxableCharge*ccc.getTaxRate()/100);
 							}
 							i++;	
