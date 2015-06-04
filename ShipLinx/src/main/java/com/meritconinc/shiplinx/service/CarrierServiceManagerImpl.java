@@ -27,13 +27,16 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
-
+import com.meritconinc.mmr.model.security.User;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.meritconinc.mmr.exception.CardProcessingException;
 import com.meritconinc.mmr.exception.CreditOverrunException;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
+import com.meritconinc.shiplinx.model.CurrencySymbol;
+import com.meritconinc.shiplinx.model.Package;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
@@ -1466,6 +1469,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     try {
     	boolean flag=false;
     	boolean flag1=false;
+    	boolean customs=false;
+    	    	boolean shippingLabel=false;
+    	    	boolean summaryLabel=false;
+    	    	int shippingCopies=0;
+    	    	boolean flag2=false;
       ArrayList<String> srcList = new ArrayList<String>();
 
       for (int i = 0; i < lstOrders.size(); i++) {
@@ -1539,9 +1547,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    			  String[] splitFileName=fileName.split("_");
           		    			  if(id==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("ICBOL")){
           		    				  flag=true;
+          		    				          		    				shippingCopies=scopies;
           		    				  for (int s = 0; s < scopies; s++){
           		    					  srcList.add(file.toString());
           		    					fLabelPDF = new File(file.toString());
+          		    					shippingLabel=true;
           		    				  }
           		    			  }
           		    		  }
@@ -1560,11 +1570,13 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           	                // customerCarrierList){
           	                CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
           	                carrierService.generateShippingLabel(labelBOS, Long.valueOf(lstOrders.get(i)), customerCarrier);
+          	              shippingCopies=scopies;
           	                for (int s = 0; s < scopies; s++) // generate Shipping Label
                           // for the no of copies
           	                // selected.
           	                {
           	                	srcList.add(shippingLabelFileName);
+          	                	shippingLabel=true;
           	                }
           	                		                	          	  
           	       }// carrierService.generateShippingLabel(outputStream,54);
@@ -1584,6 +1596,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           			    				  flag1=true;
           			    				  for (int c = 0; c < ccopies; c++) {
           			    					  srcList.add(file.toString());
+          			    					  customs=true;
           			    				  }
           			    			  }
           			    		  }
@@ -1592,11 +1605,113 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    	  for (int c = 0; c < ccopies; c++) {
           		    		  if (getCustomsInvoice(shippingOrder, customsInvoicePDF)) {
           		    			  srcList.add(customsInvoicePDF);
+          		    			customs=true;
           		    		  }
           		    	  }
           		      }
-          		 // if the label size is 0 then it should not store it
-		      	if(fLabelPDF!=null && fLabelPDF.length() > 0){
+          		      
+          		    /*if(((customs==true&&shippingLabel==true)||(shippingLabel==true&&customs==false)) && shippingOrder!=null && shippingOrder.getCarrierId()!=null && (shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_FEDEX || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_UPS || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_PUROLATOR || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_DHL))
+          		    	          		      {
+          		    	          		    String reportPathc1 = business.getReportPath();
+          		    	          	      	String summaryPDF = pdfRenderer.getUniquePDFFileName(reportPathc1,"summary_"
+          		    	          	  	          + shippingOrder.getId()+"_");
+          		    	          	      	long id2=shippingOrder.getId();
+          		    	          		      File folderPathc1 = new File(reportPathc1);
+          		    	          		      if (folderPathc1.isDirectory()) {
+          		    	          			   	  File[] fList = folderPathc1.listFiles();
+          		    	          			    	  if(fList!=null){
+          		    	          			    		  for(File file:fList){
+          		    	          			    			  String fileName=file.getName();
+          		    	          			    			  String[] splitFileName=fileName.split("_");
+          		    	          			    			  if(id2==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("summary")){
+          		    	          			    				  flag1=true;
+          		    	          			    				summaryLabel=true;
+          		    	          			    					  srcList.add(file.toString());
+          		    	          			    			  }
+          		    	          			    		  }
+          		    	          			    	  }
+          		    	          		      }if(flag1==false){
+          		    	          		    	BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
+          		    	          		    	User user1 = UserUtil.getMmrUser();
+          		    	          		    		if(user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
+          		    	          		    		  if (getSummaryLabel(shippingOrder,summaryPDF,outputStream,user1)) {
+          		    	          		    			  srcList.add(summaryPDF);
+          		    	          		    			summaryLabel=true;
+          		    	          		    		  }
+          		    	          		    		}
+          		    	          		      }
+          		    	          		      }
+          		    	          		    User user1 = UserUtil.getMmrUser();
+          		    	          		    if(user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
+          		    	    			    	  getSummaryLabel(shippingOrder,shippingLabelFileName,outputStream,user1);
+          		    	    			    	  srcList.add(shippingLabelFileName);
+          		    	          		    } 	
+          		    	          		      
+          		    	          		      // if the label size is 0 then it should not store it
+          		    	          		    
+          		    	          		    if(customs==true&&shippingLabel==true&&summaryLabel==true)
+          		    	          		    {
+          		    	          		    	
+          		    	          		    	Collections.swap(srcList, shippingCopies, srcList.size()-1);
+          		    	          		    }*/
+          		      
+          		    if(((customs==true&&shippingLabel==true)||(shippingLabel==true&&customs==false)) && shippingOrder!=null && shippingOrder.getCarrierId()!=null && (shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_FEDEX || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_UPS || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_PUROLATOR || shippingOrder.getCarrierId()==ShiplinxConstants.CARRIER_DHL))
+          		    	          		             		      {
+          		    	          		              		    String reportPathc1 = business.getReportPath();
+          		    	          		              	      	String summaryPDF = pdfRenderer.getUniquePDFFileName(reportPathc1,"summary_"
+          		    	          		              	  	          + shippingOrder.getId()+"_");
+          		    	          		              	      	long id2=shippingOrder.getId();
+          		    	          		              		      File folderPathc1 = new File(reportPathc1);
+          		    	          		              		      if (folderPathc1.isDirectory()) {
+          		    	          		             			   	  File[] fList = folderPathc1.listFiles();
+          		    	          		              			    	  if(fList!=null){
+          		    	          		              			    		BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
+          		    	          		              			    	        		    	User user1 = UserUtil.getMmrUser();
+          		    	          		              			    		  for(File file:fList){
+          		    	          		              			    			  String fileName=file.getName();
+          		    	          		              			    			  String[] splitFileName=fileName.split("_");
+          		    	          		              			    			  if(id2==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("summary")){
+          		    	          		              			    				if(user1.isSummaryLabel())
+          		    	          		              			    				{          			    				  
+          		    	          		              			    				flag2=true;
+          		    	          		             			    				summaryLabel=true;
+          		    	          		              			    					  srcList.add(file.toString());
+          		    	          		              			    				}
+          		    	          		              			    				else
+          		    	          		              			    				{
+          		    	          		              			    				summaryLabel=false;
+          		    	          		              			    			    srcList.remove(file.toString());
+          		    	          		              			    			flag2=true;
+          		    	          		              			    				}
+          		    	          		              			    			  }
+          		    	          		              			    		  }
+          		    	          		             			    	  }
+          		    	          		              		      }if(flag2==false){
+          		    	          		              		    	BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
+          		    	          		              		    	User user1 = UserUtil.getMmrUser();
+          		    	          		              		    		if(user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
+          		    	          		              		    		  if (getSummaryLabel(shippingOrder,summaryPDF,outputStream,user1)) {
+          		    	          		             		    			  srcList.add(summaryPDF);
+          		    	          		              		    			summaryLabel=true;
+          		    	          		              		    		  }
+          		    	          		              		    		}
+          		    	          		             		      }
+          		    	          		              		      }
+          		    	          		              		    /*User user1 = UserUtil.getMmrUser();
+          		    	          		              		    if(user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
+          		    	          		        			    	  getSummaryLabel(shippingOrder,shippingLabelFileName,outputStream,user1);
+          		    	          		        			    	  srcList.add(shippingLabelFileName);
+          		    	          		              		    } 	
+          		    	          		              		      */
+          		    	          		              		      // if the label size is 0 then it should not store it
+          		    	          		              		    
+          		    	          		             		    if(customs==true&&shippingLabel==true&&summaryLabel==true)
+          		    	          		              		    {
+          		    	          		              		    	
+          		    	          		              		    	Collections.swap(srcList, shippingCopies, srcList.size()-1);
+          		    	          		              		    }
+          		    	          		 // if the label size is 0 then it should not store it
+          		    	          		             		if((fLabelPDF!=null && fLabelPDF.length() > 0)||customs){
 		    		pdfRenderer.concatPDF(srcList, outputStream);
 		    	}else{
 		    		pdfRenderer.deleteFiles(srcList);
@@ -2985,6 +3100,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                     String toCity ="";
                     Long fromZoneStructureId=0l;
                     Long toZoneStructureId=0l;
+                    String fromCountry = "";
+                                        String toCountry = "";
+                                        String fromProvince = "";
+                                        String toProvince = "";
           if (fromZone != null) {
             fromZoneName = fromZone.getZoneName();
             fromCity = fromZone.getCityName();
@@ -2994,6 +3113,22 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             toZoneName = toZone.getZoneName();
             toCity = toZone.getCityName();
                         toZoneStructureId = toZone.getZoneStructureId();
+          }
+                    
+                    if(fromZone != null){
+                  	  fromCountry = fromZone.getCountryCode();
+                    }
+                    
+                    if (toZone != null){
+                  	  toCountry = toZone.getCountryCode();
+                    }
+                    
+                    if(fromZone != null){
+                  	  fromProvince = fromZone.getProvinceCode();
+                    }
+                    
+                    if(toZone != null){
+                  	  toProvince = toZone.getProvinceCode();
           }
           List<LtlSkidRate> groupLtlSkidRate = new ArrayList<LtlSkidRate>();
           List<LtlSkidRate> tempgroupLtlSkidRate = new ArrayList<LtlSkidRate>();
@@ -3030,8 +3165,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                 maxWidth, maxHeight, maxWeight, fromZoneName, toZoneName);*/
           List<Zone> overAllfromZones = new ArrayList<Zone>();
                     List<Zone> overAlltoZones = new ArrayList<Zone>();
-                    overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
-                    overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);
+                    /*overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
+                    overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);*/
+                    overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId,fromCountry,fromProvince);
+                                        overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId,toCountry,toProvince);
           
                     if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty()
                         && !overAlltoZones.isEmpty()) {
@@ -3972,6 +4109,147 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     // ratingList.add(rating);
   }
 
+  
+  
+  public boolean getSummaryLabel(ShippingOrder order,String shippingLabelFileName, OutputStream outputStream, User user){
+		/*Customer customer = customerService.getCustomerInfoByCustomerId(order.getCustomerId(),
+		        order.getBusinessId());*/
+		ShippingDAO shippingDAO=(ShippingDAO)MmrBeanLocator.getInstance().findBean("shippingDAO");
+		CurrencySymbol currencySymbol = new CurrencySymbol();
+        if(order.getCurrency()!=null && !order.getCurrency().isEmpty()){
+            currencySymbol =shippingDAO.getSymbolByCurrencycode(order.getCurrency());  
+        }
+		   String carrierName="";
+		   int id=order.getCarrierId().intValue();
+			   switch (id) {
+			case ShiplinxConstants.CARRIER_FEDEX:
+				carrierName="fedex";
+				break;
+
+			case ShiplinxConstants.CARRIER_UPS:
+				carrierName="ups";
+				break;
+			
+			case ShiplinxConstants.CARRIER_DHL:
+				carrierName="dhl";
+				break;
+			
+			case ShiplinxConstants.CARRIER_PUROLATOR:
+				carrierName="purolator";
+				break;
+			default:
+				break;
+			}
+			try {
+				 InputStream stream=null;
+				if(!carrierName.equalsIgnoreCase("dhl")){
+				if(user.getPreferredLabelSize().equalsIgnoreCase("8 x 11")){
+					if(carrierName.equalsIgnoreCase("purolator")){
+						stream = this
+						          .getClass()
+						          .getClassLoader()
+						          .getResourceAsStream(
+						              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/purolatorSummaryLabel.jasper");
+					}
+					else if(carrierName.equalsIgnoreCase("ups")){
+						 stream = this
+						          .getClass()
+						          .getClassLoader()
+						          .getResourceAsStream(
+						              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/summaryLabel.jasper");
+					}
+					else{
+					stream = this
+					          .getClass()
+					          .getClassLoader()
+					          .getResourceAsStream(
+					              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/summaryLabel2.jasper");
+				}}
+				else{
+		      stream = this
+		          .getClass()
+		          .getClassLoader()
+		          .getResourceAsStream(
+		              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/summaryLabel.jasper");
+				}
+				}else{
+						if(user.getPreferredLabelSize().equalsIgnoreCase("8 x 11")){
+							stream = this
+							          .getClass()
+							          .getClassLoader()
+							          .getResourceAsStream(
+							              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/dhl2SummaryLabel.jasper");
+						}
+						else{
+				      stream = this
+				          .getClass()
+				          .getClassLoader()
+				          .getResourceAsStream(
+				              "./jasperreports/src/main/java/com/meritconinc/shiplinx/carrier/generic/jasperreports/dhl2SummaryLabel.jasper");
+						}
+					
+				}
+		      if (stream == null) {
+		        log.error("Stream is NULL!");
+		      }
+		      JasperReport jasperReport = (JasperReport) JRLoader.loadObject(stream);
+		      Map<String, Object> parameters = new HashMap<String, Object>();
+		      Business business = businessDAO.getBusiessById(order.getBusinessId());
+		      String logoPath = "/images/" + business.getLogoHiResFileName();
+		      URL logo = (InvoiceManagerImpl.class.getResource(logoPath));
+
+		      String packageType = "", type,weight = "";
+		      ArrayList<String> trackingNumber = new ArrayList<String>();
+		      for (Package p : order.getPackages()) {
+		        trackingNumber.add(p.getTrackingNumber());
+		        weight=p.getWeight().toString();
+		      }
+		      parameters.put("ic_logo", logo);
+		      parameters.put("carrier_name", order.getCarrierName());
+		      parameters.put("service_name", order.getService().getName());
+		      parameters.put("ship_to_company", order.getToAddress().getAbbreviationName());
+		      parameters.put("tracking_number", order.getPackages().get(0).getTrackingNumber());
+		      parameters.put("Package", order.getPackages());
+		      /*parameters.put("reference2",order.getReferenceOneName());
+		      parameters.put("reference3",order.getReferenceTwoName());
+		      parameters.put("reference1",order.getReferenceCodeName());*/
+		      parameters.put("reference2",order.getReferenceOne()); 
+		      parameters.put("reference3",order.getReferenceTwo()); 
+		      parameters.put("reference1",order.getReferenceCode()); 
+
+		      parameters.put("quantity",order.getQuantity().toString());
+		      parameters.put("weight",order.getQuotedWeight());
+		      //parameters.put("cost",currencySymbol.getCurrencySymbol()+order.getQuoteTotalCost());
+		      parameters.put("cost",currencySymbol.getCurrencySymbol()+order.getQuoteTotalCharge());
+		      //String summaryLabelFileName="/home/system4/temp/soluship/solushipfiles/summaryLabel/summaryLabel.pdf";
+		      //String summaryLabelFileName="/home/system4/temp/soluship/solushipfiles/labels";
+		      //OutputStream output = new FileOutputStream(new File(summaryLabelFileName));
+		      OutputStream output = new FileOutputStream(new File(shippingLabelFileName));
+		      JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(order.getPackages());
+		      JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, ds);
+		      /*jasperPrint.setPageHeight(430);
+		      jasperPrint.setPageWidth(289);*/
+		      JasperExportManager.exportReportToPdfStream(jasperPrint, output);
+		      
+		      /*PDFRenderer pdfRenderer = new PDFRenderer();
+		      ArrayList<String> srcList = new ArrayList<String>();
+		            // Source pdfs
+		      srcList.add((new File(shippingLabelFileName)).toString());
+		      srcList.add((new File(summaryLabelFileName)).toString());
+		      srcList.add((new File(shippingLabelFileName)).toString());
+		      //srcList.add((new File(summaryLabelFileName)).toString());
+		      pdfRenderer.mergePDF(srcList, outputStream);*/
+		      return true;
+		      
+		    } catch (Exception e) {
+		      log.error("Could not generate label for order with id " + order.getId() + " and customer "
+		         /* + customer.getName()*/, e);
+		      return false;
+		      //throw new ShiplinxException();
+		    }
+
+	}
+
   public MarkupManagerDAO getMarkupDAO() {
     return markupDAO;
   }
@@ -4320,14 +4598,25 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 			                      String toCity ="";
 			                      Long fromZoneStructureId=0l;
 			                      Long toZoneStructureId=0l;
+			                      String fromCountry = "";
+			                      			                      String toCountry = "";
+			                      			                      String fromProvince = "";
+			                      			                      String toProvince = "";
 			                      fromCity = order.getFromAddress().getCity();
-			                      toCity =  order.getToAddress().getCity(); 
+			                      /*toCity =  order.getToAddress().getCity();*/ 
+			                      toCity =  order.getToAddress().getCity();
+			                      			                      fromProvince = order.getFromAddress().getProvinceCode();
+			                      			                      toProvince = order.getToAddress().getProvinceCode();
 			                      fromZoneStructureId = skidService.getZoneStructureId(); 
 			                      toZoneStructureId = skidService.getZoneStructureId();
+			                      fromCountry = order.getFromAddress().getCountryCode();
+			                      			                      toCountry = order.getToAddress().getCountryCode();
 			                      List<Zone> overAllfromZones = new ArrayList<Zone>();
 			                      List<Zone> overAlltoZones = new ArrayList<Zone>();
-			                      overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
-			                      overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);
+			                      /*overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId);
+			                      overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId);*/
+			                      overAllfromZones=markupManagerService.getOverallZones(fromCity,fromZoneStructureId,fromCountry,fromProvince);
+			                      			                      overAlltoZones=markupManagerService.getOverallZones(toCity,toZoneStructureId,toCountry,toProvince);
 			                      if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
 	            		          	  for(Zone fromZoneVar : overAllfromZones){
 	            		          		  for(Zone toZoneVar : overAlltoZones ){

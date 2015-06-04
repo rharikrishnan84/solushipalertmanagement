@@ -137,6 +137,8 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
     paramObj.put("chbEnabled", user.isChbEnabled());
     paramObj.put("fwdEnabled", user.isFwdEnabled());
     
+  //For Summary Label
+        paramObj.put("summaryLabel",user.isSummaryLabel());
     
     if (user.getCustomerId() > 0)
         paramObj.put("default_menuId", ShiplinxConstants.MENU_ID_NEW_SHIPMENT_PAGE); // for customer
@@ -520,6 +522,8 @@ public class UserDAOImpl extends SqlMapClientDaoSupport implements UserDAO {
         paramObj.put("fpaEnabled", user.isFpaEnabled());
         paramObj.put("chbEnabled", user.isChbEnabled());
         paramObj.put("fwdEnabled", user.isFwdEnabled());
+      //for summary label
+            paramObj.put("summaryLabel", user.isSummaryLabel()); 
     getSqlMapClientTemplate().update("updateUser", paramObj);
     UserExtendedAttributes ea = userExtensionDAO
         .getExtendedAttributesByUsername(user.getUsername());

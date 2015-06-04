@@ -26,6 +26,8 @@ import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Business;
+import org.acegisecurity.userdetails.UserDetails;
+import com.meritconinc.mmr.service.acegi.CustomUser;
 import com.meritconinc.shiplinx.model.CountryPartner;
 import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Partner;
@@ -1003,6 +1005,22 @@ public static List<UserBusiness> getUserBusinessByUserName(String username){
 				
 	
 }
+
+/**
+ * reoload user withour
+ * restarting the server
+ */
+public static void reloadUser(String adminUser){
+	ActionContext.getContext().getSession().remove(ShiplinxConstants.ADMIN_USER);
+	ActionContext.getContext().getSession().remove("userlogin");
+	UserDetails userDetails = UserUtil.reloadUserContext(adminUser);  
+    UserUtil.setMmrUser((User)((CustomUser)userDetails).getUserInfo()); 
+	ActionContext.getContext().getSession().put("username", adminUser);
+	String menu = "Admin";
+	ActionContext.getContext().getSession().remove("HighLightMenu");
+	ActionContext.getContext().getSession().put("HighLightMenu", menu);
+ }
+
 
 
 }

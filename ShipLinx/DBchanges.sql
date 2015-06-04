@@ -3459,4 +3459,17 @@ CREATE TABLE `user_business` (
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.flat', 'Flat', 'en_CA', 1);
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('add.label.markup', 'Markup', 'en_CA', 1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
+ALTER TABLE `user` 
+ADD COLUMN `summary_label` BIT(1) NULL DEFAULT b'0' AFTER `isbusiness_level`;
 
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.summary.label', 'Summary Label', 'en_CA', 1);
+
+
+
+ALTER TABLE `user_history` 
+ADD COLUMN `summary_label` BIT(1) NULL DEFAULT b'0' AFTER `log_date`;
+
+
+ALTER TABLE `user_history` 
+CHANGE COLUMN `summary_label` `summary_label` BIT(1) NULL DEFAULT b'0' AFTER `isbusiness_level`;

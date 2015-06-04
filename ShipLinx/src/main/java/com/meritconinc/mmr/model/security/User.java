@@ -125,6 +125,9 @@ public class User implements Serializable {
       private boolean chbEnabled;
      private boolean fwdEnabled;
     private boolean fpaEnabled;
+    
+    //For Summary Label
+       private boolean summaryLabel;
   public String getUnitOfMeasure() {
     return unitOfMeasure;
   }
@@ -919,5 +922,13 @@ public boolean isFpaEnabled() {
 
 public void setFpaEnabled(boolean fpaEnabled) {
 	this.fpaEnabled = fpaEnabled;
+}
+
+public boolean isSummaryLabel() {
+	return summaryLabel;
+}
+
+public void setSummaryLabel(boolean summaryLabel) {
+	this.summaryLabel = summaryLabel;
 }
 }

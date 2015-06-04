@@ -78,5 +78,5 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   
   public List<Markup> getAllMarkupsForCustomer(Long customerId, long l);
   
-  public List<Zone> getOverallZones(String City, Long ZoneStructureId);
+  public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province);
 }

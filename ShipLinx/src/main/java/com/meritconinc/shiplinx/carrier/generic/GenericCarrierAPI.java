@@ -423,14 +423,24 @@ public class GenericCarrierAPI implements CarrierService {
                     String toCity ="";
                     Long fromZoneStructureId=0l;
                     Long toZoneStructureId=0l;
+                    String fromCountry = "";
+                                        String toCountry = "";
+                                        String fromProvince = "";
+                                        String toProvince = "";
+                                        fromProvince = shippingOrder.getFromAddress().getProvinceCode();
+                                        toProvince = shippingOrder.getToAddress().getProvinceCode();
                     fromCity = shippingOrder.getFromAddress().getCity();
                     toCity =  shippingOrder.getToAddress().getCity(); 
                     fromZoneStructureId = service.getZoneStructureId(); 
                     toZoneStructureId = service.getZoneStructureId();
+                    fromCountry = shippingOrder.getFromAddress().getCountryCode();
+                                        toCountry = shippingOrder.getToAddress().getCountryCode();
                     List<Zone> overAllfromZones = new ArrayList<Zone>();
                     List<Zone> overAlltoZones = new ArrayList<Zone>();
-                    overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId);
-                    overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId);
+                    /*overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId);
+                    overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId);*/
+                    overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId,fromCountry,fromProvince);
+                                        overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId,toCountry,toProvince);
                     if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
                      for(Zone fromZoneVar : overAllfromZones){
                       for(Zone toZoneVar : overAlltoZones ){

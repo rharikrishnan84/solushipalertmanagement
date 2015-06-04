@@ -722,7 +722,7 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	}
 	
 	@Override
-		public List<Zone> getOverallZones(String City, Long ZoneStructureId){
-			return markupDAO.getOverallZones(City,ZoneStructureId);
-		}
+	public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province){
+					return markupDAO.getOverallZones(City,ZoneStructureId,Country,Province);
+		 		}
 }

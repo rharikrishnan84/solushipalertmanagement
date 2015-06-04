@@ -504,10 +504,12 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 		
 		
 				@Override
-					public List<Zone> getOverallZones(String City,Long ZoneStructureId) {
+				public List<Zone> getOverallZones(String City,Long ZoneStructureId,String Country, String Province) {
 						Map<String, Object> paramObj = new HashMap<String, Object>();
 					    paramObj.put("City", City);
 					    paramObj.put("ZoneStructureId", ZoneStructureId);
+					    paramObj.put("Country", Country);
+					    					    paramObj.put("Province", Province);
 					    @SuppressWarnings("unchecked")
 						List<Zone> overAllZones = getSqlMapClientTemplate().queryForList(
 					        "getoverAllZones", paramObj);

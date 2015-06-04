@@ -590,7 +590,10 @@ function	resetfrpartner(){
 										<label><mmr:message messageId="label.auto.print"/> </label>
 										<div class="controls"><s:checkbox key="user.autoPrint" name="user.autoPrint" /></div>
 									</div>
-									
+									<div class="fields">
+										<label><mmr:message messageId="label.summary.label"/> </label>
+										<div class="controls"><s:checkbox key="user.summaryLabel" name="user.summaryLabel" /></div>
+									</div>
 								</div>
 								
 							</div>
@@ -624,13 +627,16 @@ function	resetfrpartner(){
 										<label><mmr:message messageId="label.auto.print"/> </label>
 										<div class="controls"><span>:</span><s:checkbox key="user.autoPrint" name="user.autoPrint" /></div>
 									</div>
-									
+									<div class="fieldsl">
+										<label><mmr:message messageId="label.summary.label"/> </label>
+										<div class="controls"><span>:</span><s:checkbox key="user.summaryLabel" name="user.summaryLabel" /></div>
+									</div>
 								</div>
 								
 							</div>	
 							</s:else>
 						</div>
-						
+						</div>
 						
 						
 						

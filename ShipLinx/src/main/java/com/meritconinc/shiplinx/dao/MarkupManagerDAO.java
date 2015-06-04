@@ -82,6 +82,6 @@ public interface MarkupManagerDAO {
         
         public void insertLtlSkidRateByBusiness(long newBusinessId,long defaultBusinessId);
         
-        public List<Zone> getOverallZones(String City, Long ZoneStructureId);
+        public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province);
     
 }

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="summaryLabel" language="groovy" pageWidth="842" pageHeight="600" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ic_logo" class="java.lang.Object"/>
+	<parameter name="carrier_name" class="java.lang.String"/>
+	<parameter name="service_name" class="java.lang.String"/>
+	<parameter name="ship_to_company" class="java.lang.String"/>
+	<parameter name="tracking_number" class="java.lang.String"/>
+	<parameter name="reference1" class="java.lang.String"/>
+	<parameter name="reference2" class="java.lang.String"/>
+	<parameter name="reference3" class="java.lang.String"/>
+	<parameter name="quantity" class="java.lang.String"/>
+	<parameter name="weight" class="java.lang.String"/>
+	<parameter name="cost" class="java.lang.String"/>
+	<title>
+		<band height="150" splitType="Stretch">
+			<image>
+				<reportElement x="76" y="-15" width="193" height="52"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{ic_logo}]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="76" y="37" width="536" height="20"/>
+				<textElement>
+					<font size="16" isBold="true" pdfFontName="Times-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{carrier_name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="76" y="57" width="536" height="20"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{service_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="76" y="77" width="51" height="20"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[SHIP TO:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="127" y="77" width="485" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ship_to_company}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="76" y="101" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ref #1:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="101" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ref #2:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="286" y="101" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Ref #3:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="119" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[QTY   :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="173" y="119" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[WGHT:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="286" y="119" width="28" height="19"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[COST :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="104" y="101" width="59" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{reference1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="200" y="101" width="69" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{reference2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="313" y="101" width="131" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{reference3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="104" y="119" width="34" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{quantity}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="201" y="119" width="33" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{weight}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="314" y="119" width="33" height="18"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{cost}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="76" y="133" width="270" height="1"/>
+			</line>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="76" y="-11" width="123" height="20"/>
+				<textElement/>
+				<text><![CDATA[TRACKING NUMBER #]]></text>
+			</staticText>
+			<line>
+				<reportElement x="76" y="6" width="270" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="76" y="-13" width="156" height="13"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{tracking_number}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
