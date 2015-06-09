@@ -322,7 +322,9 @@ public class GenericCarrierAPI implements CarrierService {
     Rating rate = null;
 		carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance()
 				.findBean("carrierServiceDAO");
-    if (fromZone != null && toZone != null) {
+	  //charles
+		if (fromZone != null && toZone != null && fromZone.getZoneName() != null && toZone.getZoneName() !=null 
+		  && !fromZone.getZoneName().isEmpty() && !toZone.getZoneName().isEmpty()) {
       log.debug("From ZONE" + fromZone.getZoneName() + "::::::::" + "Tozone" + toZone.getZoneName());
       log.debug("Service ID:::::" + s.getId());
       log.debug("Customer ID:::::" + shippingOrder.getCustomerId());
@@ -337,6 +339,75 @@ public class GenericCarrierAPI implements CarrierService {
         skidRateTobeSearched.setCustomerId(0L);
         //sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
         sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+        //charles 
+        //to check the other zones by city
+                List<Rating> ratingList = new ArrayList<Rating>();
+               
+                Service icLTLSkidServicSlave = shippingDAO.getServiceById(s.getId());
+                if (icLTLSkidServicSlave.getMasterServiceId() != null
+                    && icLTLSkidServicSlave.getMasterServiceId() > 0L) {
+                	if( !((icLTLSkidServicSlave.getId()).equals(icLTLSkidServicSlave.getMasterServiceId()))){
+               if (sr == null) {
+                	
+                  	 String fromCity = "";
+                      String toCity ="";
+                      Long fromZoneStructureId=0l;
+                      Long toZoneStructureId=0l;
+                      String fromCountry = "";
+                      String toCountry = "";
+                      String fromProvince = "";
+                      String toProvince = "";
+                      fromProvince = shippingOrder.getFromAddress().getProvinceCode();
+                      toProvince = shippingOrder.getToAddress().getProvinceCode();
+                      fromCity = shippingOrder.getFromAddress().getCity();
+                      toCity =  shippingOrder.getToAddress().getCity(); 
+                      fromZoneStructureId = s.getZoneStructureId(); 
+                      toZoneStructureId = s.getZoneStructureId();
+                      fromCountry = shippingOrder.getFromAddress().getCountryCode();
+                      toCountry = shippingOrder.getToAddress().getCountryCode();
+                      List<Zone> overAllfromZones = new ArrayList<Zone>();
+                      List<Zone> overAlltoZones = new ArrayList<Zone>();
+                      /*overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId);
+                      overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId);*/
+                      overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId,fromCountry,fromProvince);
+                      overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId,toCountry,toProvince);
+                      
+                      if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
+                       for(Zone fromZoneVar : overAllfromZones){
+                        for(Zone toZoneVar : overAlltoZones ){
+                    skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
+                        shippingOrder.getBusinessId(), s.getId(), fromZoneVar.getZoneName(),
+                        toZoneVar.getZoneName());
+                    skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
+                    sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if (sr == null) {
+                      skidRateTobeSearched.setCustomerId(0L);
+                      sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    }
+                    if (sr != null) {
+                        rate = ltlSkidRate(sr, s, shippingOrder);
+                        ratingList.add(rate);
+                      }
+                        }
+                       }
+                      }
+                }
+                }
+            	}
+                
+                if (sr != null) {
+                    rate = ltlSkidRate(sr, s, shippingOrder);
+                    ratingList.add(rate);
+                  }
+                if (ratingList != null && ratingList.size() > 0) {
+                    Collections.sort(ratingList, Rating.PriceComparator);
+                    ratingList.get(0).setServiceId(s.getId());
+                    ratingList.get(0).setCarrierId(s.getCarrierId());
+                    ratingList.get(0).setServiceName(s.getName());
+                    ratingList.get(0).setCarrierName(s.getCarrier().getName());
+                    return ratingList.get(0);
+                }
+                
         if (sr == null) {
           Service icLTLSkidService = shippingDAO.getServiceById(s.getId());
           if (icLTLSkidService.getMasterServiceId() != null
@@ -359,7 +430,7 @@ public class GenericCarrierAPI implements CarrierService {
                         if(removeServices.size()>0){
                         	masterServices.removeAll(removeServices);
                         }
-            List<Rating> ratingList = new ArrayList<Rating>();
+             ratingList = new ArrayList<Rating>();
 
             
             for (Service service : masterServices) {
@@ -625,7 +696,9 @@ public class GenericCarrierAPI implements CarrierService {
 	    Zone toZone = getZone(s.getZoneStructureId(), shippingOrder.getToAddress());
 	    List<com.meritconinc.shiplinx.model.Package> packages = shippingOrder.getPackages();
 	    Rating rate = null;
-	    if (fromZone != null && toZone != null) {
+	    if (fromZone != null && toZone != null && fromZone.getZoneName() != null && toZone.getZoneName() !=null 
+	    	&& !fromZone.getZoneName().isEmpty() && !toZone.getZoneName().isEmpty()) {
+	    		 
 	      try {
 	        log.debug("From ZONE" + fromZone.getZoneName() + "::::::::" + "Tozone"
 	            + toZone.getZoneName());

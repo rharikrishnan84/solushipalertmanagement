@@ -469,7 +469,7 @@
 									#postalCode# between from_postal_code and to_postal_code
 	</select>
 	
-	<select id="findZoneByCity" resultMap="zoneResultMap">
+	<select id="findZoneByCity" parameterClass = "map" resultMap="zoneResultMap">
 		select * from zones where 	zone_structure_id	= #zoneStructureId# and 
 									province_code		= #provinceCode# and
 									country_code		= #countryCode# and
@@ -603,6 +603,15 @@
 			country_code		= #Country# and 
 			province_code 		= #Province#
 	</select>
-	
+
+		<select id="getLtlPoundRateByRange1" resultMap="ltlPoundRateResultMap" parameterClass="com.meritconinc.shiplinx.model.LtlPoundRate">
+		select * from  ltl_pound_rate where business_id	= #businessId# 		and
+										 customer_id	= #customerId# 		and
+										 service_id		= #serviceId#   	and
+										 from_zone 		= #fromZone#		and
+										 to_zone 		= #toZone#			and										 
+										 #rangeFrom# between range_from and range_to
+										
+	</select>	
 	
 </sqlMap>

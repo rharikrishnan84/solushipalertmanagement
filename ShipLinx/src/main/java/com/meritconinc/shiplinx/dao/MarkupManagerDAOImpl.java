@@ -267,8 +267,14 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
     if (totalWeight != null)
       poundRateTobeSearched.setRangeFrom(totalWeight.intValue()); // Setting it in RangeFrom
                                                                   // property to compare in ranges
-    List<LtlPoundRate> lprList = (List) getSqlMapClientTemplate().queryForList(
-        "getLtlPoundRateByRange", poundRateTobeSearched);
+    List<LtlPoundRate> lprList;                                                             // property to compare in ranges
+        if(poundRateTobeSearched.getServiceId()!=0){ 
+        lprList = (List) getSqlMapClientTemplate().queryForList( "getLtlPoundRateByRange", poundRateTobeSearched);
+            }
+            else{
+                lprList = (List) getSqlMapClientTemplate().queryForList(
+                        "getLtlPoundRateByRange1", poundRateTobeSearched);
+            }
     if (lprList != null && lprList.size() > 0)
       return lprList.get(0);
     return null;
@@ -291,7 +297,7 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
     if (zoneStructureId != null && address != null) {
       Map<String, Object> paramObj = new HashMap<String, Object>(5);
       paramObj.put("zoneStructureId", zoneStructureId);
-      paramObj.put("postalCode", address.getPostalCode());
+      //paramObj.put("postalCode", address.getPostalCode());
       paramObj.put("provinceCode", address.getProvinceCode());
       paramObj.put("countryCode", address.getCountryCode());
       paramObj.put("cityName", address.getCity());

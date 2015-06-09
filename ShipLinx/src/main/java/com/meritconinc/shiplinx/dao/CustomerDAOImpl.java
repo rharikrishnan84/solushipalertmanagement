@@ -135,6 +135,7 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
                                 user.setNationLevel(false); 
                                 user.setBranchLevel(false);
                                 user.setDivitionLevel(false);
+                                user.setSummaryLabel(false);
                                 paramObj.put("partnerLevel", user.isPartnerLevel());
                                 paramObj.put("nationLevel", user.isNationLevel());
                                 paramObj.put("businessLevel",user.isBusinessLevel());
@@ -145,6 +146,7 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
                                 paramObj.put("fpaEnabled", user.isFpaEnabled());
                                paramObj.put("chbEnabled", user.isChbEnabled());
                                 paramObj.put("fwdEnabled", user.isFwdEnabled());
+                                paramObj.put("summaryLabel",user.isSummaryLabel());
     getSqlMapClientTemplate().insert("createUser", paramObj);
     getSqlMapClientTemplate().insert("insertRole", paramObj);
 

@@ -333,6 +333,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     		  if(service.getMasterCarrierId().equals(carrier.getId())){
     			  serviceList.add(service);
     		  }
+    		      		  else if(service.getCarrierId().equals(carrier.getId())){
+    			      			      			  serviceList.add(service);
+    			      			      		  }
     	  }
     	  //servicesToApply
     	  if(serviceList.size()>0){
@@ -667,6 +670,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
      flagRate = markupManagerService.isCustomerMarkupByDisabled(UserUtil.getMmrUser().getCustomerId());
     if(!flagRate)                       // restricting rates for    
      ratingList.clear();                // direct new customer
+    List<Rating> rateL = new ArrayList<Rating>();
+    List<Long> serviceIds = new ArrayList<Long>();
+ 
+    for(Rating rating : ratingList){
+  	  if(!serviceIds.contains(rating.getServiceId())){
+  	  serviceIds.add(rating.getServiceId());
+  	  rateL.add(rating);
+  	  } 
+    }
+    ratingList = new ArrayList<Rating>();
+    ratingList.addAll(rateL);
     return ratingList;
   }
 
@@ -3075,7 +3089,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         }
 
         Markup markup = markupManagerService.getMarkupObj(order);
+        if(service.getId().equals(service.getMasterServiceId())){
         markup.setServiceId(service.getMasterServiceId());
+        }
+        else{
+	        markup.setServiceId(serviceId);
+	        }
         markup = markupManagerService.getUniqueMarkup(markup);
         if (markup != null) {
           ratingList.get(i).setMarkupFlat(markup.getMarkupFlat());
@@ -4208,7 +4227,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		      parameters.put("carrier_name", order.getCarrierName());
 		      parameters.put("service_name", order.getService().getName());
 		      parameters.put("ship_to_company", order.getToAddress().getAbbreviationName());
-		      parameters.put("tracking_number", order.getPackages().get(0).getTrackingNumber());
+		     // parameters.put("tracking_number", order.getPackages().get(0).getTrackingNumber());
 		      parameters.put("Package", order.getPackages());
 		      /*parameters.put("reference2",order.getReferenceOneName());
 		      parameters.put("reference3",order.getReferenceTwoName());
@@ -4345,6 +4364,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		
 		          tempCarrierServiceListForFilter.add(carrierServicesList.get(i));
 		        }
+		      //for direct carrier setup
+			if (customerCarrier.getCarrierId() != ShiplinxConstants.CARRIER_GENERIC) {
+				for (CustomerCarrier cc : customerCarriers) {
+					if (markupResult
+							&& cc.getCarrierId().equals(
+									carrierServicesList.get(i).getCarrierId())) {
+						tempCarrierServiceListForFilter.add(carrierServicesList
+								.get(i));
+					}
+				}
+			}
 		      }
 		      if(carrierServicesList.size()<1){
 		      	       		if(customerCarriers != null && customerCarriers.size()>0){
