@@ -5,7 +5,17 @@
 <head>
 <sx:head/>
     <title><s:text name="user.form.title"/></title> 
-	</head> 
+        <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jscolor.js"></script>
+    
+	</head>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />
+	
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/ipad.css" media="screen and (min-width:768px) and (max-width:1024px)"/>
+	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/smartphone.css" media="screen and (min-width:320px) and (max-width:767px)"/>
+
+<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
+  
 
 <body> 
 
@@ -30,7 +40,7 @@
 var count=0;
 var default_address_id_from =0;
 var default_address_id_to =0;
-
+var htcount=0;
 window.onload = function() {
 
     	var e = document.getElementById("idRoles");
@@ -52,7 +62,7 @@ window.onload = function() {
 	
 	function resetform(){
 			
-			document.userform.action = "adduser.action";
+		    document.userform.action = "new.business.action";
 	 		document.userform.submit();
 	}		
 	
@@ -377,6 +387,164 @@ window.onload = function() {
 
 		}
 	 */
+	 
+	 
+	 function AddToAjax(){
+		 		 var emailType=document.getElementById("businessemails").value;
+		 		 var htmlcont=document.getElementById("htmlContent").value;
+		 		 var locale=document.getElementById("locale").value;
+		 		 
+		 	      
+		         if(document.getElementById("be"+emailType)){
+		 	    	  var element = document.getElementById("be"+emailType);
+		 	 	     element.parentNode.removeChild(element);
+		 	      }
+		 	      
+		 	htcount+=1;
+		 		var res = htmlcont.slice(0,60); 
+		 	   	
+		 		    ajax_Carrier=ajaxFunction();
+		 			ajax_Carrier.onreadystatechange=function()
+		 		  	{   
+		 		  		 if(ajax_Carrier.readyState==4)
+		 					{
+		 				 	   reponse=ajax_Carrier.responseText;
+		 				 	  reponse = reponse.replace(/(\r\n|\n|\r)/gm,"");
+		 			 	 
+		 				 	  if(reponse === "@r"){
+		 				 		 alert("Email Type Already Added");
+		 				 		$("#alertBox").css("left", "528px");
+		 				 	  }else{
+		 				 		  
+		 				 		
+		 				 			$("#rowBusiness").append(reponse);	  
+		 						    }
+		 				 	   }
+		 				 	    
+		 				   	var div = $();
+		 				    var dd=emailType+"a";
+		 				    
+		 				    if(document.getElementById(dd)){
+		 				    	  var element = document.getElementById(dd);
+		 				 	     element.parentNode.removeChild(element);
+		 				      }
+		 				    
+		 				   	var h="<input type=\"hidden\" id='"+dd+"'  name=\"htmlContents\"  value='"+htmlcont+"'\">";
+		 				    
+		 				   	
+		 				    $("#"+emailType+"d").append(h);
+		 				    
+		 				    window.scrollTo(0, document.body.scrollHeight);
+		 					
+		 		  		
+		 		 
+		 		 	 };
+		 		 //	 htmld="selav"+htmlcont;
+		 		 if(count==2){
+		 			url="add.emailcont.action?emailType="+emailType+"&locale="+locale+"&htcount="+htcount+"&htmlCont="+res+"&update1=true";
+		 		 }else if(count==1) {
+		 			 url="add.emailcont.action?emailType="+emailType+"&locale="+locale+"&htcount="+htcount+"&htmlCont="+res;
+		 		 }
+		 		   
+		 			 ajax_Carrier.open("GET",url,true);
+		 			ajax_Carrier.send(this);    
+		 			
+		 }  
+		 
+		 	 
+		 	 
+		 function showhtml(html){
+		 var xh=document.getElementById(html).value;
+		 top.consoleRef=window.open('','Email Content','width=750,height=850');
+		 top.consoleRef.document.write(xh)
+		 top.consoleRef.document.close()
+		 
+		 }	
+		 
+		 
+		 function deleteBusEmailRow(){
+		 	
+		 	 
+		 		var editUserId = document.getElementsByName("addBusEmailChk");
+		 		var i1,txt1 = 0;
+		 	   for (i1=0;i1<editUserId.length;i1++){
+		 		if (editUserId[i1].checked){
+		 		 txt1 += 1;      
+		 		}
+		 	   }
+		 	   if(txt1 < 1){
+		 		alert('Please select at least one');
+		 	   }
+		 	    else if(txt1 > 1){
+		 		alert('Please check atmost one');
+		 	   }
+		 	   else{
+		 		var i,txt;
+		 		for (i=0;i<editUserId.length;i++){
+		 			if (editUserId[i].checked){
+		 				txt = editUserId[i].value ;					
+		 			}
+		 		}
+		 		 //document.getElementById("be"+txt).innerHTML="";
+		 		   var element = document.getElementById(txt+"a");
+		 	     element.parentNode.removeChild(element);
+		 	     
+		 		 ajax_Carrier1=ajaxFunction();
+		 		 ajax_Carrier1.onreadystatechange=function()
+		 		  	{   	
+		 		  		 if(ajax_Carrier1.readyState==4)
+		 					{
+		 		  			 var element = document.getElementById("be"+txt);
+		 		  			 element.parentNode.removeChild(element);
+		 					}
+		 		  		
+		 		 
+		 		 	 };
+		 		 	 
+		 			url1="add.emailcont.action?delete1=true&deleteid="+txt;
+		 			
+		 			 ajax_Carrier1.open("GET",url1,true);
+		 			ajax_Carrier1.send(this);   
+		 	
+		 		 
+		 		}
+		 	
+		 }
+		 function updateEmailRow(){
+		  
+		 	  var editUserId = document.getElementsByName("addBusEmailChk");
+		 	var i1,txt1 = 0;
+		    for (i1=0;i1<editUserId.length;i1++){
+		 	if (editUserId[i1].checked){
+		 	 txt1 += 1;      
+		 	}
+		    }
+		    if(txt1 < 1){
+		 	alert('Please select at least one');
+		    }
+		     else if(txt1 > 1){
+		 	alert('Please check atmost one');
+		    }
+		    else{
+		 	var i,txt;
+		 	for (i=0;i<editUserId.length;i++){
+		 		if (editUserId[i].checked){
+		 			txt = editUserId[i].value ;					
+		 		}
+		 	}
+		 	  // alert(txt);
+		 	var eid=document.getElementById(txt+"e").value;
+		 	var htmlc=document.getElementById(txt+"a").value;
+		 	var locale=document.getElementById(txt+"l").value;
+		 	document.getElementById("businessemails").value=eid;
+		 	document.getElementById("htmlContent").value=htmlc;
+		 	document.getElementById("locale").value=locale;
+		 	document.getElementById("emailCont").style.display = "block";
+		 	 window.scrollTo(0, document.body.scrollHeight);
+		 }
+		 }
+		 	 
+	 
 </script> 
 
 <div id="messages">
@@ -387,6 +555,9 @@ window.onload = function() {
 <div class="content">
 <div class="content_body">
 <s:form action="createUser" name="userform" style="margin-bottom:0px"  enctype="multipart/form-data">
+<input type="hidden" name="htmlCont" id="htmlC"> 
+  <input type="hidden" name="locale" id="locale1"> 
+  <input type="hidden" name="emailType" id="emailType1"> 
 	<s:if test="#session.edit == 'true'">
     	<s:hidden name="method" value="update"/>
     	
@@ -760,11 +931,286 @@ window.onload = function() {
 									
 								</div>
 								
-							</div>	 --%>					
+							</div>	 --%>	
+							<div class="content_table">
+							<div class="content_header">
+								<div class="cont_hdr_title"><mmr:message messageId="label.buisness.theme"/></div>
+							</div>
+							<div class="cont_data_body">
+							
+								<div class="rows">
+									<%-- <div class="fields">
+										<label><mmr:message messageId="label.business.grid.header.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">	
+										<s:textfield  id="gridHeaderColor" key="business.cssVO.gridHeaderColor" name="business.cssVO.gridHeaderColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+										<s:textfield  id="gridHeaderColor" key="business.cssVO.gridHeaderColor" name="business.cssVO.gridHeaderColor" cssClass="color {hash:true}" />
+										</s:else>
+										
+									</div>
+									</div> --%>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.menu.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">	
+										<s:textfield id="menuColor" key="business.cssVO.menuColor" name="business.cssVO.menuColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>	
+										<s:else>
+										<s:textfield id="menuColor" key="business.cssVO.menuColor" name="business.cssVO.menuColor" cssClass="color {hash:true}"  />
+										</s:else>
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.menu.color.hover"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="menuHoverColor" key="business.cssVO.menuHoverColor" name="business.cssVO.menuHoverColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>	
+										<s:else>
+											<s:textfield id="menuHoverColor" key="business.cssVO.menuHoverColor" name="business.cssVO.menuHoverColor" cssClass="color {hash:true}" />
+										</s:else>
+									</div>
+									</div>
+									
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.button.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="buttonColor" key="business.cssVO.buttonColor" name="business.cssVO.buttonColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>	
+										<s:else>
+											<s:textfield id="buttonColor" key="business.cssVO.buttonColor" name="business.cssVO.buttonColor" cssClass="color {hash:true}" />
+										</s:else>
+								</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.header.bar.first.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="firstColor" key="business.cssVO.barFirstColor" name="business.cssVO.barFirstColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>
+										<s:else>
+											<s:textfield id="firstColor" key="business.cssVO.barFirstColor" name="business.cssVO.barFirstColor" cssClass="color {hash:true}" />
+										</s:else>
+											
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.header.bar.second.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="secondColor" key="business.cssVO.barSecondColor" name="business.cssVO.barSecondColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="secondColor" key="business.cssVO.barSecondColor" name="business.cssVO.barSecondColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.footer.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="secondColor" key="business.cssVO.footerColor" name="business.cssVO.footerColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="footerColor" key="business.cssVO.footerColor" name="business.cssVO.footerColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									<!-- vivek -->
+								    <div class="fields">
+										<label><mmr:message messageId="label.business.footer.menu.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="footerFontColor" key="business.cssVO.footerFontColor" name="business.cssVO.footerFontColor" cssClass="color {hash:true}" value="ffffff" />
+										</s:if>
+										<s:else>
+												<s:textfield id="footerFontColor" key="business.cssVO.footerFontColor" name="business.cssVO.footerFontColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+								
+									  <div class="fields">
+										<label><mmr:message messageId="label.business.arrowColor"/></label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="arrowColor" key="business.cssVO.arrowColor" name="business.cssVO.arrowColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="arrowColor" key="business.cssVO.arrowColor" name="business.cssVO.arrowColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									<!-- vivek -->
+										<div class="fields" >
+									
+										<label><mmr:message messageId="label.business.upload.logo"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.logoImage"/>
+								
+								</div>
+									
+												
+					</div>
+						<div class="fields" >
+										<label><mmr:message messageId="label.business.back.logo"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.backImg"/>
+								
+									</div>
+									
+									</div>
+									<%-- <div class="fields" >
+									
+										<label><mmr:message messageId="label.business.upload.favIcon"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.favIcon"/>
+							
+								</div> --%>
+				</div>
+										
+				</div>
+						</div>				
+					</div>
+					<div class="content_table">
+						<div class="form-container" style="background-color: #FFF;" id="userbustable">
+							<div id="srchusr_results">
+								<div id="srchusr_res">
+									<span><mmr:message messageId="" />Business Email Contents</span>
+								</div>
+
+								 <div class="form_buttons" id="sales_user_bck">
+							
+							 
+							 <a href="#" onclick="  deleteBusEmailRow();"><mmr:message messageId="btn.delete"/></a>
+					
+							 
+							 <a href="#" onclick="  updateEmailRow();"><mmr:message messageId="btn.edit"/>Edit</a>
+							
+									 
+					</div>
+							</div>
+
+							<div id="accnt_bottom_table" style="background-color: #FFF;">
+								<table cellpadding="0" cellspacing="0" border="0px" class="display" id="bdmtable"
+									style="float: left; background-color: #FFF; width: 100%; height: auto;">
+									<thead>
+										<tr height="25px">
+											<th><input id="check_all" type="checkbox" name="addBusEmailChk" /></th>
+											
+											<th style="text-align: left; padding-left: 10px;">Email Type </th>
+											<th style="text-align: left; padding-left: 10px;">Html Content</th>
+											<th style="text-align: left; padding-left: 10px;">Locale</th>
+										</tr>
+									</thead>
+								
+									<tbody id="rowBusiness">
+										<s:set var="index" value="0" />
+								<s:iterator value="#session.businessEmailList" status="status">
+	 
+	<tr id="be<s:property value="%{businessEmailId}"/>">
+				<td class="odd1" width="2%"><input class="dataTable-checkbox"
+					type="checkbox" name="addBusEmailChk"
+					value="<s:property value='%{businessEmailId}'/>" /> <s:hidden
+						value="%{businessEmailId}" id="index_%{businessEmailId}" /></td>
+				
+				<td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				<s:property value="%{emailType}"/>
+				<input type="hidden" value="<s:property value='%{businessEmailId}'/>" name="businessEmailIds"  id="<s:property value='%{businessEmailId}'/>e"/>
+				</label>
+				<%-- <input type="hidden" value="<s:property value='%{parentBus.id}'/>" name="parentBusIds" id=""/> --%>
+				</td>
+				
+				 	<td title="Click to view...">
+				 	<div id="<s:property value="businessEmailId"/>d" style="width:100px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis" onmouseover="document.getElementById('<s:property value="businessEmailId"/>m').style.display = 'block';"><span  onclick="showhtml('<s:property value="businessEmailId"/>a')" ><s:property value="htmlContent"/>....</span></div>
+				 <input type="hidden"  id="<s:property value="businessEmailId"/>a"  value="<s:property value='%{htmlContent}'/>" name="htmlContents" id="htmlContents1"/>
+				 	</td>
+				 <td class="tablerow3" align="center" style="width: 250px;">
+				<label>
+				
+				<s:property value="%{locale}"/>
+				<input type="hidden" value="<s:property value='%{locale}'/>" name="locales"  id="<s:property value='%{businessEmailId}'/>l"/>
+				</label>
+			<%-- 	<input type="hidden" value="<s:property value='%{nationBus.id}'/>" name="nationBusIds" id=""/> --%>
+			</td>
+			 
+				 
+			</tr>
+			 
+		</s:iterator>
+	
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div id="emailCont">
+							<div class="content_header">
+								<div class="cont_hdr_title"><mmr:message messageId="label.buisness.email.html"/></div>
+								<div class="form_buttons" id="sales_user_bck">
+							 
+							 <a href="#" onclick="  AddToAjax();"><mmr:message messageId="btn.add"/></a>
+						 
+							 
+						</div>
+							</div>
+						
+						<div class="form-container" style="background-color: #FFF;" >
+						 <div class="cont_data_body">
+							
+								<div class="rows">
+									<div class="fieldsl">
+									<label style="width:200px !important;"> <mmr:message messageId="label.buisness.email.type"/> </label>
+										<div class="controls"><span>:</span>
+										           
+										 <s:select id="businessemails"  list="business.cssVO.businessEmailList" listKey="businessEmailId" listValue="emailType" headerKey="-1" headerValue="Select" name="business.cssVO.businessEmail.emailType" ></s:select>
+									</div></div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.email.html.cont"/> </label>
+										<div class="controls"><span>:</span>
+										 
+										<s:textarea cssStyle="width: 150px; height: 60px;" name="business.cssVO.businessEmail.htmlContent" id="htmlContent"/>
+										 
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label><mmr:message messageId="label.user.selectlocale"/></label>
+										<div class="controls"><span>:</span><s:select name="business.cssVO.businessEmail.locale" id="locale" headerKey="-1"  headerValue="--Select Locale--" listKey="locale" listValue="description" list="#session.localeList" ></s:select></div>
+									</div>
+							    	<div class="fieldsl" >
+										<%-- <label><mmr:message messageId="label.business.back.logo"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.backImg"/>
+								 --%>
+									</div>
+									
+									<%-- <div class="fields" >
+										<label><mmr:message messageId="label.business.email.header"/>            </label>
+								<div class="controls"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</span><s:file cssStyle="width: 95px" name="business.cssVO.emailHeader"/>
+							
+									</div>
+								</div>
+								 --%>
+						</div>
 						</div>
 						
+					</div>
+						</div>
 						
-						
+							<s:if test="#session.editBusiness == 'true'">
+							<script type="text/javascript">
+						 
+							document.getElementById("emailCont").style.display = "block";
+							var i=0;
+							</script>
+							</s:if>
+				
+					</div>
+					
 		</s:form> 
 	</div>
 </div>	

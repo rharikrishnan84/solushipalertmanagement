@@ -5,7 +5,8 @@ import java.util.List;
 
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.UserBusiness;
-
+import com.meritconinc.shiplinx.model.BusinessEmail;
+import com.meritconinc.shiplinx.model.CSSVO;
 public interface BusinessDAO{
 	
 	public boolean isBusinessRegistered(String username);
@@ -41,5 +42,16 @@ public interface BusinessDAO{
 														String username);
 												public void adduserBusiness(UserBusiness ub);
 												public void deleteUserBusiness(Long userBusId);
-			 
+												
+												
+												public void addCSSDetailsForBusiness(CSSVO cssVO);
+												
+										public void updateCSSDetailsForBusiness(CSSVO cssVO);
+										public CSSVO getCSSDetailsForBusiness(Long businessId);
+										public List<BusinessEmail> getBusinessEmails(long businessId);
+										public BusinessEmail getBusinessEmailById(long busEmailId);
+										public void addBusinessEmail(BusinessEmail bme);
+										public void deleteBusinessEmailByBMId(long businessEmailId);
+										public void updateBusinessEmail(BusinessEmail be3);
+ 
 }

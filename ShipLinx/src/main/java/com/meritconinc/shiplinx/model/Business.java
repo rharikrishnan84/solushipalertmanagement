@@ -87,6 +87,17 @@ public class Business {
 	     private boolean nationLevel;
   		private boolean branchLevel;
 	private int defaultHoldTerms;
+	private CSSVO cssVO;
+	
+		public CSSVO getCssVO() {
+			return cssVO;
+		}
+	
+		public void setCssVO(CSSVO cssVO) {
+			this.cssVO = cssVO;
+		}
+	
+	
 	public String getLtlEmail() {
 		return ltlEmail;
 	}

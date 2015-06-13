@@ -73,7 +73,7 @@ import java.util.Iterator;
 import com.meritconinc.mmr.dao.BusinessFilterDAO;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.shiplinx.service.ShippingService;
-
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 
 public class InvoiceManagerImpl implements InvoiceManager {
@@ -1823,7 +1823,12 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	    List<String> email = new ArrayList<String>();
 	    String locale = user.getLocale();
 	    String subject = MessageUtil.getMessage("message.send.invoice.notification.subject", locale);
-	    String body = MessageUtil.getMessage(user.getBusiness().getInvoiceNotificationBody(), locale);
+	    /*String body = MessageUtil.getMessage(user.getBusiness().getInvoiceNotificationBody(), locale);*/
+	    	    
+	    	    String body=BusinessFilterUtil.getEmailBody(user.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_INVOICE_NOTIFY);
+	    	    if(body==null || body.length()==0){
+	    	    	 body = MessageUtil.getMessage(user.getBusiness().getInvoiceNotificationBody(), locale);
+	    	    }
 	    boolean flag = true;
 	    boolean flagInvoiceMail;
 	    boolean flageMail;

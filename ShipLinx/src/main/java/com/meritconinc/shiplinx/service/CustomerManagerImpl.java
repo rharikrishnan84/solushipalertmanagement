@@ -576,9 +576,13 @@ public class CustomerManagerImpl implements CustomerManager {
 			subject = new String(subject.replaceAll("%BUSINESSNAME", user
 					.getBusiness().getName()));
 
-			String body = MessageUtil.getMessage(user.getBusiness()
-					.getCustomerNotificationBody(), locale);
-
+		/*	String body = MessageUtil.getMessage(user.getBusiness()
+					.getCustomerNotificationBody(), locale);*/
+			String body=BusinessFilterUtil.getEmailBody(customer.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_CUS_NOTIFY);
+						if (body == null || body.length() == 0) {
+							body = MessageUtil.getMessage(user.getBusiness()
+									.getCustomerNotificationBody(), locale);
+						}
 			if (body == null || body.length() == 0) {
 				log.error("Cannot find template to send customer notification for business "
 						+ user.getBusiness().getName());
@@ -702,13 +706,30 @@ public class CustomerManagerImpl implements CustomerManager {
 			
 			String body = null;
 						
-						if(customer.getUser() != null){
+						/*if(customer.getUser() != null){
 							 body = MessageUtil.getMessage("message.send.addcustomersalesrep.notification.body");
 						}else{
 						body = MessageUtil.getMessage(business
 								.getAddCustomerNotificationBody());
-						}
+						}*/
 
+			body=BusinessFilterUtil.getEmailBody(business.getId(), ShiplinxConstants.MSGID_EMAIL_NEW_CUSTOMER);
+			  
+					   if (body == null || body.length() == 0) {
+						   if(customer.getUser() != null){
+									 body = MessageUtil.getMessage("message.send.addcustomersalesrep.notification.body");
+								}else{
+								body = MessageUtil.getMessage(business
+										.getAddCustomerNotificationBody());
+								}
+							}
+						
+							if (body == null || body.length() == 0) {
+								log.error("Cannot find template to send customer notification for business "
+										+ business.getName());
+								return false;
+							}
+						
 			if (body == null || body.length() == 0) {
 				log.error("Cannot find template to send customer notification for business "
 						+ business.getName());
@@ -906,7 +927,14 @@ public class CustomerManagerImpl implements CustomerManager {
 							String locale = user.getLocale();
 							String subject = MessageUtil.getMessage(user.getBusiness()
 									.getAddCustomerNotificationSubject());
-							 String body = MessageUtil.getMessage("message.send.salesrep.addcustomer.notification.body", locale);
+							 /*String body = MessageUtil.getMessage("message.send.salesrep.addcustomer.notification.body", locale);*/
+ 														
+														String  body=BusinessFilterUtil.getEmailBody(customer.getBusinessId(),ShiplinxConstants.MSGID_EMAIL_SALESREP_NEWCUS);
+							
+														if (body == null || body.length() == 0) {
+														   body = MessageUtil.getMessage("message.send.salesrep.addcustomer.notification.body", locale);
+														}
+							
 							if (body == null || body.length() == 0) {
 								log.error("Cannot find template to send customer notification for business "
 										+ user.getBusiness().getName());

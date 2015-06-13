@@ -190,7 +190,7 @@ height: auto;}
 #srchusr_results,#rate_results,#results,#srchinv_results,#srchaddrss_results{ background:url("../images/icbackground.png");
 	border-top:1px solid #c4c2c2; border-left:1px solid #c4c2c2; border-right:1px solid #c4c2c2;
 }
-#srchusr_res span,#results span { width:auto; height:auto; float:left; color:maroon;font-size: 14px;font-weight: bold; padding:20px 0px 5px 60px;}
+#srchusr_res span,#results span { width:auto; height:auto; float:left; color:#990000 ;font-size: 14px;font-weight: bold; padding:20px 0px 5px 60px;}
 #srchusr_results,#results,#srchinv_results,#srchaddrss_results { height:57px;}
 
 

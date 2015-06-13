@@ -236,9 +236,12 @@
 	             </td>
 	             <s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				 <td width="2%">
-		            <s:a href="logInAs.action?username=%{username}"> 
+		           <%--  <s:a href="logInAs.action?username=%{username}"> 
 					<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0">
-					</s:a>
+					</s:a> --%>
+					<a href="logInAs.action?username=%{username}" class="arrowPackage"> 
+		          >>
+					</a>
 	   			</td>
 	   			</s:if>
 			   <td><span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td><td ><s:property value="email"/></td>
@@ -252,9 +255,12 @@
 	   			</td>
 	   			<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 				 <td width="2%">
-		            <s:a href="logInAs.action?username=%{username}"> 
+		         <%--    <s:a href="logInAs.action?username=%{username}"> 
 					<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0">
-					</s:a>
+					</s:a> --%>
+					 <a href="logInAs.action?username=%{username}" class="arrowPackage"> 
+		          >>
+ 					</a> 
 	   			</td>
 	   			</s:if>
 				<td style="text-align: left;"><span title="<s:property value="username"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="username"/></div></td>

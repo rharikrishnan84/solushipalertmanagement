@@ -41,9 +41,11 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.octo.captcha.service.CaptchaServiceException;
 import com.opensymphony.xwork2.ActionContext;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
-
-
-public class LogonAction extends BaseAction implements ServletRequestAware {
+import java.io.IOException;
+import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.struts2.interceptor.ServletResponseAware;
+public class LogonAction extends BaseAction implements ServletRequestAware ,ServletResponseAware{
 	private static final long serialVersionUID	= 5062007;
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -52,7 +54,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 	private final String LOGON_SUCCESSFUL 	= "SUCCESS";
 
 	private HttpServletRequest request;    
-	
+	private HttpServletResponse response;
 	private String nextAction;
 	
 	private Long userCustomerId; 
@@ -247,7 +249,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 	 * @throws Exception
 	 */
 	public String viewLogon() throws Exception {
-		
+		String businessId=request.getParameter("BusinessId");
 		String code = (String)request.getParameter("sales");		
 		logger.info("Sales code: " + code);
 		getSession().put(ShiplinxConstants.USER_CODE,
@@ -385,6 +387,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 		Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
 		Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
 		Long logInBusId=null;
+		ActionContext.getContext().getSession().remove("cssText" );
 		if(UserUtil.getMmrUser()!=null){
 			 logInBusId=UserUtil.getMmrUser().getBusinessId();
 		}
@@ -819,6 +822,138 @@ public class LogonAction extends BaseAction implements ServletRequestAware {
 	public void setUserCustomerId(Long userCustomerId) {
 		this.userCustomerId = userCustomerId;
 	}
-
+	public synchronized String getImage(){
+				try{
+				 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+				   Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+				   if(UserUtil.getMmrUser()!=null){
+					   if(!UserUtil.getMmrUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+						   return loadImgForOtherUser();
+					   }
+				   }
+				   if(UserUtil.getMmrUser()==null){
+					   businessId=1L;
+				   }
+				   Business business=businessDAO.getBusiessById(businessId);
+				   if(business!=null && business.isNationLevel()){
+					   business=businessDAO.getBusiessById(business.getParentBusinessId());
+					   
+				   }else if( business!=null && business.isBranchLevel() && business.getPartnerId()!=0){
+		
+					   business=businessDAO.getBusiessById(business.getPartnerId());
+					   
+				   }else if(business.isPartnerLevel() && business.getCssVO()==null){
+					   business=businessDAO.getBusiessById(business.getParentBusinessId());
+				   }
+				   
+				   
+				 
+				   
+				   Business defBus=businessDAO.getBusiessById(1L);
+				   if(request!=null && response!=null){
+				   	     String img=request.getParameter("id");
+				   	  byte b[]=null;
+				   	      if(img!=null && img.equals("logoImg")){
+				   	    	  if(business.getCssVO()!=null && business.getCssVO().getLogoImgByte()!=null){
+				   	    		  b=business.getCssVO().getLogoImgByte();
+				   	    	  }else{
+				   	    		  b=defBus.getCssVO().getLogoImgByte();
+				   	    	  }
+				   	      }else if(img!=null && img.equals("back")){
+				   	    	 if(business.getCssVO()!=null && business.getCssVO().getBackGroudImgByte()!=null){
+			   	    		  b=business.getCssVO().getBackGroudImgByte();
+				   	    	  }else{
+				   	    		  b=defBus.getCssVO().getBackGroudImgByte();
+				   	    	  }
+				   	      }
+			   		response.setContentType("image/jpeg");
+				   		response.setContentLength(b.length);
+				   		
+				   		try {
+				   			
+				   			OutputStream out=response.getOutputStream();
+				   			response.reset(); 
+				   			out.write(b);
+				   			out.close();
+				   		} catch (IOException e) {
+				   			e.printStackTrace();
+				   		
+				   	    }
+				   }
+				   		return "success";
+				}catch(Exception e){
+					
+				}
+				return "success";
+				     }
+			   public   byte[] logo=null;
+			   public   byte[] backG=null;
+			   private String loadImgForOtherUser() {
+				// TODO Auto-generated method stub
+				   
+				   Long businessId=UserUtil.getMmrUser().getBusinessId();
+				   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+				   Business business=businessDAO.getBusiessById(businessId);
+				   Business defBus=businessDAO.getBusiessById(1L);
+				   if(business!=null && business.isNationLevel()){
+					   business=businessDAO.getBusiessById(business.getParentBusinessId());
+					   
+				   }else if( business!=null && business.isBranchLevel() && business.getPartnerId()!=0){
+		
+					   business=businessDAO.getBusiessById(business.getPartnerId());
+					   
+				   }else if(business.isPartnerLevel() && business.getCssVO()==null){
+				   business=businessDAO.getBusiessById(business.getParentBusinessId());
+				   }
+		
+			 	     String img=request.getParameter("id");
+			 	      if(img!=null && img.equals("logoImg")){
+			 	    	  if(logo==null){
+				 	    	  if(business.getCssVO()!=null && business.getCssVO().getLogoImgByte()!=null){
+				 	    		 logo=business.getCssVO().getLogoImgByte();
+				 	    	  }else{
+				 	    		 logo=defBus.getCssVO().getLogoImgByte();
+				 	    	  }
+			 	    	  }
+			 	    	  loadImg(logo);
+			 	      }else if(img!=null && img.equals("back")){
+			 	    	  if(backG==null){
+				 	    	  if(business.getCssVO()!=null && business.getCssVO().getBackGroudImgByte()!=null){
+				 	    		backG=business.getCssVO().getBackGroudImgByte();
+				 	    	  }else{
+				 	    		 backG=defBus.getCssVO().getBackGroudImgByte();
+				 	    	  }
+			 	    	  }
+			 	    	 loadImg(backG);
+			 	      }
+			 	
+			 
+			 		return "success";
+			}
+		
+			private void loadImg(byte[] logo2) {
+				// TODO Auto-generated method stub
+				if(logo2!=null){
+				    response.setContentType("image/jpeg");
+					response.setContentLength(logo2.length);
+					
+					try {
+						
+						OutputStream out=response.getOutputStream();
+						response.reset(); 
+						out.write(logo2);
+						out.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					
+				    }
+				}
+			}
+		    @Override
+			public void setServletResponse(HttpServletResponse arg0) {
+				// TODO Auto-generated method stub
+				this.response=arg0;
+			}
+		 
 		
 }

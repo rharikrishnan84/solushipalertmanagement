@@ -237,7 +237,7 @@ height: auto;}
 	border-top:1px solid #c4c2c2; border-left:1px solid #c4c2c2; border-right:1px solid #c4c2c2;
 }
 
-#srchusr_res span,#results span { width:auto; height:auto; float:left; color:maroon;font-size: 14px;font-weight: bold; padding:20px 0px 5px 60px;}
+#srchusr_res span,#results span { width:auto; height:auto; float:left; color:#990000;font-size: 14px;font-weight: bold; padding:20px 0px 5px 60px;}
 #srchusr_results,#results,#srchinv_results,#srchaddrss_results { height:57px;}
 
 	
@@ -852,3 +852,24 @@ code span {
 .ac_results ul{ padding:5px 0px 0px 0px; margin:0px; list-style-type:none;}
 .ac_results ul li{ font-size:12px; color:#000; padding:1px 0px 0px 5px;}
 .ac_results ul li:hover{ background-color:#3399ff; color:#FFF; cursor:default;}
+.menu_button{
+	color: #ffffff; 
+ background: #990000;
+}
+.package1{
+ width:100px;font-size:12px; float:right; height:auto; color:#FFF;  background-color:#990000; text-decoration:none; padding:3px 0px; text-align:center;
+}
+.package2{
+  width:100px; float:right; height:auto; color:#FFF;  background-color:#990000;font-size:12px; text-decoration:none; padding:3px 0px; text-align:center;
+}
+.package3{
+ font-size:12px;font-size:bold;color:#990000;margin-left:4px;
+}
+.invoice1{
+ padding:3px 10px; position:relative; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;
+}
+.arrowPackage{
+	 color: #900;
+    text-decoration: none;
+    font-weight: 900;
+}

@@ -494,15 +494,15 @@ function loadTrackingURL(url){
 </table>	
 
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
-	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href=" javascript: download_files('csv');"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
- 	<a href="javascript: download_files('xl');"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
- 	<a href="javascript: download_files('xml');"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
+	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href=" javascript: download_files('csv');" class="arrowPackage"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
+ 	<a href="javascript: download_files('xl');" class="arrowPackage"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
+ 	<a href="javascript: download_files('xml');" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
  	<s:if test="%{#request.shippingOrder.carrierId == 80}" >
- 	&nbsp;<a href="javascript:midlandEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
+ 	&nbsp;<a href="javascript:midlandEOD();" class="arrowPackage"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; Midland EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
  	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
- 	&nbsp;<a href="javascript:manifestEOD();"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
+ 	&nbsp;<a href="javascript:manifestEOD();" class="arrowPackage"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
  	</s:if>
 </div>
 

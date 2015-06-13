@@ -7,6 +7,10 @@
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/ipad.css" media="screen and (min-width:768px) and (max-width:1024px)"/>
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/smartphone.css" media="screen and (min-width:320px) and (max-width:767px)"/>
+<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:100px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+ </div>
 	<!--<style type="text/css">
 		#srchusr_result_tbl table {
 			margin-left: 0;
@@ -72,7 +76,8 @@
 			
 		}
 		}
-		
+			 $('#loader').css('display','block');
+			 $('#loaderImg').css('display','block');
 		document.generateInvoiceForm.action = "invoice.create.action?InvoiceIdList="+stored_value;
 		 document.generateInvoiceForm.submit();
 		}
@@ -104,6 +109,8 @@
 			 document.generateInvoiceForm.action = "invoice.autogen.action?InvoiceIdList1="+stored_value;
 			// document.generateInvoiceForm.action = "invoice.autogen.action";
 			 document.generateInvoiceForm.submit();
+			 $('#loader').css('display','block');
+			 $('#loaderImg').css('display','block');
 		}
 		}
 		}

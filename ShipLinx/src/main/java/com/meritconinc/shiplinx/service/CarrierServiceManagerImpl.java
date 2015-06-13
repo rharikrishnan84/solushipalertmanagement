@@ -75,6 +75,11 @@ import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.BusinessEmail;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
+
+
+
 
 public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnable {
   private static final Logger log = LogManager.getLogger(CarrierServiceManagerImpl.class);
@@ -815,7 +820,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
       String subject = MessageUtil.getMessage("label.subject.pickup.notification");
 
-      String body = MessageUtil.getMessage("mail.pickup.notification.body");
+      String body=BusinessFilterUtil.getEmailBody(pickup.getBusinessId(),ShiplinxConstants.MSGID_EMAIL_SHIP_PICKUP);
+            if (body == null || body.length() == 0) {
+          	  body = MessageUtil.getMessage("mail.pickup.notification.body");
+            }      
 
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send pickup notification");

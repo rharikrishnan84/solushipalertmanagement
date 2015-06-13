@@ -42,7 +42,8 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.ExceptionHolder;
-
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 /**
  * @author brinzf2
  *
@@ -50,7 +51,7 @@ import com.opensymphony.xwork2.interceptor.ExceptionHolder;
 public class MmrInterceptor extends MmrBaseInterceptor {
 	private static final long serialVersionUID	= 10092007;
 	private static final Logger log = Logger.getLogger(MmrInterceptor.class);
-
+	private String cssText;
 	/**
 	 * default constructor
 	 *
@@ -141,10 +142,42 @@ public class MmrInterceptor extends MmrBaseInterceptor {
         }
         			
 		log.debug("< intercept");
+		loadCSS(user);
         return result;        
 	}
 
-	
+	/**
+	 * load the css of the user's Business
+	 * @param user
+	 */
+	private void loadCSS(User us) {
+				// TODO Auto-generated method stub
+				
+				  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+				  Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+				  if(businessId==null){
+					  businessId=us.getBusinessId();
+				  } 
+				  
+				   Business business=businessDAO.getBusiessById(businessId);
+				   if(business!=null && business.isNationLevel()){
+					   business=businessDAO.getBusiessById(business.getParentBusinessId());
+					   
+				   }else if( business!=null && business.isBranchLevel() && business.getPartnerId()!=0){
+
+					   business=businessDAO.getBusiessById(business.getPartnerId());
+					   
+				   }else if(business.isPartnerLevel() && business.getCssVO()==null){
+					   business=businessDAO.getBusiessById(business.getParentBusinessId());
+				   }
+				   if(business!=null && business.getCssVO()!=null){
+							 setCssText(business.getCssVO().getCssText());
+							 System.out.println(getCssText());
+							 if(getCssText()!=null){
+								 ActionContext.getContext().getSession().put("cssText",getCssText());
+							 }
+				   } 
+			}
 	/**
 	 * Generates the menu 
 	 * 
@@ -455,4 +488,11 @@ public class MmrInterceptor extends MmrBaseInterceptor {
 			((BaseAction) invocation.getAction()).freezeReloadActionURL();
 
 	}
+	       public String getCssText() {
+				return cssText;
+			}
+		
+			public void setCssText(String cssText) {
+				this.cssText = cssText;
+			}
 }

@@ -406,8 +406,8 @@
              <tr>
 				   <td style="width:30px; text-align:center;">
 		          <input  id="" class="dataTable-checkbox" type="checkbox" name="searchMenu" value="<s:property value="id"/>"/>  </td>
-		          	<td><a href="set.branch.action?branchParam=${id}""> 
-				<img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0"></a></td>
+		          	<td><a href="set.branch.action?branchParam=${id}" class="arrowPackage"> >>
+				<%-- <img src="<s:url value="/mmr/images/red_arrow.gif" includeContext="true" />" alt="Log In As" title="Log In As" border="0"> --%></a></td>
 	   			<%-- </td>
 					  <td style="text-align: left;"<span title="<s:property value="customer.name"/>"></span><div style="width:170px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customer.name"/></div>
 	   			 </td> --%>

@@ -319,11 +319,10 @@
 </table>
 </div>
 <div class="exportlinks"> 
-	<mmr:message messageId="label.export.to"/>: &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="javascript:invoiceBreakDownFile('csv');"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.csv"/> </span>&nbsp;&nbsp;|</a>&nbsp;
- <a href="javascript:invoiceBreakDownFile('xl');"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.excel"/> </span>&nbsp;&nbsp; |</a>&nbsp;
- <a href="javascript:invoiceBreakDownFile('xml');"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.xml"/> </span>&nbsp;&nbsp;|</a>
-
+		<mmr:message messageId="label.export.to"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="javascript:invoiceBreakDownFile('csv');" class="arrowPackage"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.csv"/> </span>&nbsp;&nbsp;|</a>&nbsp;
+ <a href="javascript:invoiceBreakDownFile('xl');"class="arrowPackage"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.excel"/> </span>&nbsp;&nbsp; |</a>&nbsp;
+ <a href="javascript:invoiceBreakDownFile('xml');" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; <mmr:message messageId="label.xml"/> </span>&nbsp;&nbsp;|</a>
 </div>
 <div id="srchinv_res_tbl_end_commission"></div>
 </div>

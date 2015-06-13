@@ -27,6 +27,7 @@
   $('#wrapper_new').css('min-height',wndo);
   });
    </script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jscolor.js"></script>
 <script type="text/javascript">
 
 
@@ -162,7 +163,8 @@ window.onload = function() {
 </div>
 <div class="content">
 <div class="content_body">
-<s:form action="createUser" name="userform" style="margin-bottom	:0px">
+<s:form action="createUser" name="userform" style="margin-bottom	:0px"  enctype="multipart/form-data">
+
 <s:if test="#session.editBusiness == 'true'">	
   <s:hidden name="addressid" value="%{business.address.addressId}" />
   <s:hidden name="businessid" value="%{business.id}" />
@@ -469,8 +471,158 @@ window.onload = function() {
 								</div>
 							</div> 
 							</s:if>
-		</s:form> 
-	</div>
+		 <div class="content_table">
+							<div class="content_header">
+								<div class="cont_hdr_title"><mmr:message messageId="label.buisness.theme"/></div>
+							</div>
+							<div class="cont_data_body">
+							
+								<div class="rows">
+									<%-- <div class="fields">
+										<label><mmr:message messageId="label.business.grid.header.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">	
+									<s:textfield  id="gridHeaderColor" key="business.cssVO.gridHeaderColor" name="business.cssVO.gridHeaderColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+										<s:textfield  id="gridHeaderColor" key="business.cssVO.gridHeaderColor" name="business.cssVO.gridHeaderColor" cssClass="color {hash:true}" />
+										</s:else>
+										
+									</div>
+									</div> --%>
+									
+									<div class="fields">
+									<label><mmr:message messageId="label.business.menu.color"/> </label>
+									<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">	
+										<s:textfield id="menuColor" key="business.cssVO.menuColor" name="business.cssVO.menuColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>	
+										<s:else>
+										<s:textfield id="menuColor" key="business.cssVO.menuColor" name="business.cssVO.menuColor" cssClass="color {hash:true}"  />
+										</s:else>
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.menu.color.hover"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="menuHoverColor" key="business.cssVO.menuHoverColor" name="business.cssVO.menuHoverColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>	
+										<s:else>
+											<s:textfield id="menuHoverColor" key="business.cssVO.menuHoverColor" name="business.cssVO.menuHoverColor" cssClass="color {hash:true}" />
+										</s:else>
+									</div>
+								</div>
+									
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.button.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="buttonColor" key="business.cssVO.buttonColor" name="business.cssVO.buttonColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>	
+									<s:else>
+											<s:textfield id="buttonColor" key="business.cssVO.buttonColor" name="business.cssVO.buttonColor" cssClass="color {hash:true}" />
+										</s:else>
+								</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.header.bar.first.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="firstColor" key="business.cssVO.barFirstColor" name="business.cssVO.barFirstColor" cssClass="color {hash:true}" value="990000" />
+										</s:if>
+										<s:else>
+											<s:textfield id="firstColor" key="business.cssVO.barFirstColor" name="business.cssVO.barFirstColor" cssClass="color {hash:true}" />
+										</s:else>
+											
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.header.bar.second.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="secondColor" key="business.cssVO.barSecondColor" name="business.cssVO.barSecondColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="secondColor" key="business.cssVO.barSecondColor" name="business.cssVO.barSecondColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.footer.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="secondColor" key="business.cssVO.footerColor" name="business.cssVO.footerColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="footerColor" key="business.cssVO.footerColor" name="business.cssVO.footerColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									<!-- vivek -->
+								    <div class="fields">
+										<label><mmr:message messageId="label.business.footer.menu.color"/> </label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="footerFontColor" key="business.cssVO.footerFontColor" name="business.cssVO.footerFontColor" cssClass="color {hash:true}" value="ffffff" />
+										</s:if>
+										<s:else>
+												<s:textfield id="footerFontColor" key="business.cssVO.footerFontColor" name="business.cssVO.footerFontColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+								
+									  <div class="fields">
+										<label><mmr:message messageId="label.business.arrowColor"/></label>
+										<div class="controls"><span>:</span>
+										<s:if test="#session.editBusiness != 'true'">
+										<s:textfield id="arrowColor" key="business.cssVO.arrowColor" name="business.cssVO.arrowColor" cssClass="color {hash:true}" value="000000" />
+										</s:if>
+										<s:else>
+												<s:textfield id="arrowColor" key="business.cssVO.arrowColor" name="business.cssVO.arrowColor" cssClass="color {hash:true}" />
+										</s:else>	
+									</div>
+									</div>
+									<!-- vivek -->
+									<div class="fields" >
+								
+									<label><mmr:message messageId="label.business.upload.logo"/></label>
+									<div class="controls"><span>:</span>
+									<s:file cssStyle="width: 95px" name="business.cssVO.logoImage"/>
+									
+								
+									</div>
+									
+												
+					</div>
+						<div class="fields" >
+										<label><mmr:message messageId="label.business.back.logo"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.backImg"/>
+								
+									</div>
+									
+									</div>	
+									<div class="fields" >
+									
+										<label><mmr:message messageId="label.business.upload.favIcon"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.favIcon"/>
+								
+								</div>
+									
+												
+					</div>
+				</div>
+				</div>
+				</div>
+						
+				
+	</s:form> 
+ </div>
 </div>	
 
 <div class="content_body">

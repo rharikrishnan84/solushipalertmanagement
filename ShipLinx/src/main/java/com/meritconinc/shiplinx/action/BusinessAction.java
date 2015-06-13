@@ -43,14 +43,30 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import it.businesslogic.ireport.undo.ITransformation;
+import java.awt.image.BufferedImage;
+import java.util.HashSet;
+import java.util.Iterator; 
+import java.util.Set;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
+import org.apache.struts2.interceptor.ServletResponseAware;
+import com.meritconinc.mmr.dao.MessageDAO;
+import com.meritconinc.shiplinx.model.BusinessEmail;
+import com.meritconinc.shiplinx.model.BusinessFilter;
+import com.meritconinc.shiplinx.model.CSSVO;
+import com.meritconinc.shiplinx.model.UserBusiness;
+import com.soluship.businessfilter.util.CSSClass;
+import com.soluship.businessfilter.util.CSSFileGenerator;
 
- 
 
-public class BusinessAction extends BaseAction implements Preparable,ServletRequestAware{
+public class BusinessAction extends BaseAction implements Preparable,ServletRequestAware,ServletResponseAware{
 
 	private static final Logger log = LogManager.getLogger(BusinessAction.class);
 	
 	private HttpServletRequest request;
+	private HttpServletResponse response;
 	
 	private BusinessDAO businessDAO;
 	
@@ -86,6 +102,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	private List<Country> allCountryList;
 	
 	private UserBusiness userBusiness;
+	private List<BusinessEmail> businessEmailList;
 	
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
@@ -185,12 +202,47 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	public String newBusiness(){
 		try{
 			log.debug(" CHECK METHOD IN newBusiness " );
+			loadEmailSettings(1L);
+			getSession().remove("emailRList");
+			getSession().remove("redudant");
 			loadNewBussinessDepencies();
 		}catch(Exception e){
 			log.error("Error in new business" +e.getMessage());
 		}
 		return SUCCESS;
 	}
+	
+	/**
+	 * to load the default Value of 
+	 * CSSVO for new businesss
+	 * @param businessId
+	 */
+	@SuppressWarnings("unchecked")
+		private void loadEmailSettings(long businessId) {
+			// TODO Auto-generated method stub
+		 
+				business=new Business();
+				business.setCssVO(new CSSVO());
+				business.getCssVO().setEmailPickup(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_SHIP_PICKUP));
+				business.getCssVO().setEmailCusNotify(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_CUS_NOTIFY));
+				business.getCssVO().setEmailShipConfim(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_SHIP_NOTIFY));
+				business.getCssVO().setEmailShipCancel(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_SHIP_CANCEL_NOTIFY));
+				business.getCssVO().setEmailNewCustomer(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_NEW_CUSTOMER));
+				business.getCssVO().setEmailRateNotify(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_SHIP_RATE));
+				business.getCssVO().setEmailInvoiceNotify(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_INVOICE_NOTIFY));
+				business.getCssVO().setEmailSalesRepNewCust(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_SALESREP_NEWCUS));
+				business.getCssVO().setEmailWareHouse(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_WAREHOUSE_ORDER));
+				business.getCssVO().setEmailForgotpwd(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_FORGOT_PWD));
+				business.getCssVO().setBusinessEmailList(businessDAO.getBusinessEmails(businessId));
+				getSession().put("businessEmailList",new ArrayList<BusinessEmail>());
+				getSession().put("localeList", MessageUtil.getLocales());
+			 
+			
+			
+			
+		}
+	
+	
 	
 	private void loadNewBussinessDepencies() {
 		// TODO Auto-generated method stub
@@ -209,7 +261,147 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 		//setPartnerList(businessFilterDAO.getAllPartnerList());
 		
 		getSession().put("defualLoaders",defaultLoaders);
+	}
+    
+	
+	/**
+	 * This is ajax action method
+	 * to add Dynamic Email contents on 
+	 * Add Business UI
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public String ajaxAddEmailBusiness(){
+		Long businessId=(Long)getSession().get("editBusinessId");
+		String update=request.getParameter("update1");
+		if(update==null){
+			
+			String delete=request.getParameter("delete1");
+			if(delete==null){
+			
+				List<Long>  emaillist1=new ArrayList<Long>();
+				
+				long busEmailId=Long.parseLong(request.getParameter("emailType"));
+				String htmlcontString=request.getParameter("htmlCont");
+				String locale=request.getParameter("locale");
+		        setBusinessEmailList(new ArrayList<BusinessEmail>());
+		        BusinessEmail bem=new BusinessEmail();
+		        bem.setHtmlContent(htmlcontString);
+		        bem.setLocale(locale);
+		        bem.setHtmlContent(htmlcontString);
+		        bem.setEmailType(businessDAO.getBusinessEmailById(busEmailId).getEmailType());
+		        bem.setBusinessEmailId(busEmailId);
+				getBusinessEmailList().add(bem);
+				emaillist1.add(busEmailId);	 
+				getSession().put("redudant","false");
+				//return SUCCESS;
+				if(getSession().get("emailRList")==null){
+					getSession().put("emailRList",emaillist1);	
+				
+			}else{
+					
+					List<Long> emaillist=(List<Long>) getSession().get("emailRList");
+					emaillist.addAll(emaillist1);
+					if(emaillist!=null && emaillist.size()>0){
+						Set<Long> set = new HashSet<Long>(emaillist);
+						if(set.size() < emaillist.size()){
+					    /* There are duplicates */
+							getSession().put("redudant","true");
+							getSession().put("emailRList",emaillist1);
+							return SUCCESS;
+						}else{
+							getSession().put("emailRList",emaillist1);
+							getSession().put("redudant","false");
+							 
+						}
+							
+					}
+				}
+			
+			}else if(delete.equals("true")){
+				long deleteid=Long.parseLong(request.getParameter("deleteid"));
+				List<Long> emaillist=(List<Long>) getSession().get("emailRList");
+				if(emaillist!=null && emaillist.size()>0){
+					emaillist.remove(deleteid);
+				}
+				getSession().put("emailRList",emaillist);
+				
+			}
+		}else if(update.equals("true") && businessId!=null){
+
+			String delete=request.getParameter("delete1");
+			if(delete==null){
+			
+				List<Long>  emaillist1=new ArrayList<Long>();
+				emaillist1=(List<Long>)getSession().get("emailRList");
+				long busEmailId=Long.parseLong(request.getParameter("emailType"));
+				String htmlcontString=request.getParameter("htmlCont");
+				
+				String locale=request.getParameter("locale");
+		        setBusinessEmailList(businessDAO.getBusinessEmails(businessId));
+		        setBusinessEmailList(removeListWithBusEmailId(getBusinessEmailList(),busEmailId));
+		        List<BusinessEmail> updatedBelist=new ArrayList<BusinessEmail>();
+		        emaillist1=BusinessFilterUtil.getvalidatedBusIds(emaillist1);
+		        if(emaillist1!=null && emaillist1.size()>0){
+			        for(Long beid:emaillist1 ){
+			        
+			        	Iterator<BusinessEmail> itrb=getBusinessEmailList().iterator();
+			        	while(itrb.hasNext()){
+			        		BusinessEmail bb=itrb.next();
+			        		if(bb.getBusinessEmailId()==beid){
+			        		    itrb.remove();
+			        		}
+			        		
+			        	}
+			        }
+		        }
+		        setBusinessEmailList(updatedBelist);
+		        BusinessEmail bem=new BusinessEmail();
+		        bem.setHtmlContent(htmlcontString);
+		        bem.setLocale(locale);
+		        bem.setHtmlContent(htmlcontString);
+		        bem.setEmailType(businessDAO.getBusinessEmailById(busEmailId).getEmailType());
+		        bem.setBusinessEmailId(busEmailId);
+				getBusinessEmailList().add(bem);
+				emaillist1.add(busEmailId);	 
+				getSession().put("redudant","false");
+				//return SUCCESS;
+				if(getSession().get("emailRList")==null){
+					getSession().put("emailRList",emaillist1);	
+					
+				}
+			}
+		}
+		return SUCCESS;
+	}
+	
+ 
+
+	
+
+	/**
+	 * remove Duplicate List while adding Business Email in 
+	 * new business creation
+	 * @param businessEmailList2
+	 * @param busEmailId
+	 * @return
+	 */
+private List<BusinessEmail> removeListWithBusEmailId(
+			List<BusinessEmail> businessEmailList2, long busEmailId) {
+		// TODO Auto-generated method stub
 		
+		if(businessEmailList2!=null && businessEmailList2.size()>0){
+		
+			Iterator<BusinessEmail> itb=businessEmailList2.iterator();
+			while(itb.hasNext()){
+				BusinessEmail bem=itb.next();
+				if(bem.getBusinessEmailId()==busEmailId){
+					itb.remove();
+				}
+			}
+		  return businessEmailList2;
+		}
+		return new ArrayList<BusinessEmail>();
 	}
 
 	@Override
@@ -257,6 +449,13 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 				business.setAddressId(Long.valueOf(paramAddressId));
 				business.setUsAddressId(Long.valueOf(paramAddressId));
 				business.setDefaultNetTerms(15);
+				String staus=updateCSS();
+								
+								if(staus.equals("fail")){
+									
+									return "fail";
+								}
+								updateEmailconf(business.getId());
 				businessDAO.updateBusiness(business);
 				//inserting the business menu
 				List<MenuItemVO> menuItems = menuItemDAO.getMenuByBusiness(paramBusinessId);
@@ -312,13 +511,22 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 				    			
 				    		
 				    	 loadNewBussinessDepencies();
+				    	 loadEmailSettings(1L);
+				    	 getSession().remove("emailRList");
+				    	 getSession().remove("redudant");
 				    	 return "fail";
 				     }else{
 				        business.setDefaultNetTerms(15);
 		    			long addressId = addressDAO.add(business.getAddress());
 						business.setAddressId(addressId);
 						business.setUsAddressId(addressId);
+						String cssText=getCssTextForBusiness(business.getCssVO());
+						//business.setCssText(cssText);
 						long businessId = businessDAO.addBusiness(business);
+						//customized css to new business
+						addCSS(cssText,businessId);
+						//customized email contents to business
+						addEmailContents(businessId);
 						User user = setuserDetails(business.getName(), businessId);
 				       	userDAO.create(user, "");
 					 	    BusinessFilterDAO businessFilterDAO = (BusinessFilterDAO) MmrBeanLocator.getInstance().findBean("businessFilterDAO");
@@ -335,6 +543,10 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 							business.setPartnerLevel(true);
 							business.setParentBusinessId(businessId);
 							long partnerBusienssId=businessDAO.addParterLevelBusienss(business);
+							//customized css to new business
+							addCSS(cssText,partnerBusienssId);
+							//customized email contents to business
+							 addEmailContents(partnerBusienssId);
 				    	    User userPatner = setuserDetails(business.getName(), partnerBusienssId);
 				    	    userPatner.setUsername(business.getName());
 				    	    userPatner.setBusinessLevel(false);
@@ -408,9 +620,11 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 					    
 					    getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getSysadminLevelCustomers());
 						businessList = businessDAO.getAllBusiness();
+						addHelpMenuDirecotry();
 						getSession().remove("editBusiness");
 					    getSession().put("saveBus", "success");
-						
+					    getSession().remove("emailRList");
+					    getSession().remove("redudant");
 					    return SUCCESS;
 						
 				
@@ -428,6 +642,438 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 		}
 		
 	}
+	
+	
+	/**
+	  * vivek help menu changes for new business
+	  */
+	 void addHelpMenuDirecotry(){
+	  /*String staticpath=business.getReportHelpPath();*/
+	  businessList = businessDAO.getAllBusiness();
+	  String staticpath=null;
+	  if(staticpath==null){
+	   staticpath=ShiplinxConstants.BUSINESS_HELP_DIR;
+	   
+	  }
+	  File f=new File(staticpath);
+	  if(!f.isDirectory()){
+	   f.mkdir();
+	  }
+	  Business bus=BusinessFilterUtil.getSuperParentBusiness(business.getId());
+	  if(bus!=null)
+	  {
+	   long busId=bus.getId();
+	  String path=staticpath+"help"+"_"+busId;
+	  System.out.println(path+"    path is ");
+	  File file = new File(path);
+	  /*if (!file.exists()) {*/
+	   if (file.mkdir()) {
+	    System.out.println("Directory is created!");
+	   } else {
+	    System.out.println("Failed to create directory!");
+	   }
+	  }
+	 /* }*/
+	 }
+	
+	/**
+	 * update the Email Configuration of the
+	 * business
+	 * @param businessID
+	 */
+	@SuppressWarnings("unchecked")
+		private void updateEmailconf(long businessID ) {
+			// TODO Auto-generated method stub
+			try{
+			List<BusinessEmail> oldBmList=(List<BusinessEmail>)getSession().get("businessEmailList");
+			List<BusinessEmail> newBmList=new ArrayList<BusinessEmail>();
+			
+			MessageDAO messageDAO=(MessageDAO)MmrBeanLocator.getInstance().findBean("messageDAOTarget");
+			String[] emailCIds=request.getParameterValues("businessEmailIds");
+			String[] htmlConts=request.getParameterValues("htmlContents");
+			String[] locales=request.getParameterValues("locales");
+			
+			
+			if(emailCIds!=null && htmlConts!=null && locales!=null){
+				
+				for(int i=0;i<emailCIds.length;i++){
+	
+					Long emailCId=Long.parseLong(emailCIds[i]);
+					String htmlCont=htmlConts[i];
+					String locale=locales[i];
+					
+					if(emailCId!=null && htmlCont!=null && locale!=null){
+	
+						BusinessEmail bme=businessDAO.getBusinessEmailById(emailCId);
+						
+						if(bme!=null){
+							
+							BusinessEmail newBe=new BusinessEmail();
+							newBe.setBusinessEmailId(emailCId);
+							newBe.setBusinessId(businessID);
+							newBe.setHtmlContent(htmlCont);
+							newBe.setLocale(locale);
+							newBe.setEmailType(bme.getEmailType());
+							if(bme.getBusinessId()==1){
+								newBe.setMsgId(bme.getMsgId()+businessID);
+							}else{
+								newBe.setMsgId(bme.getMsgId());
+						}
+						/*businessDAO.addBusinessEmail(newBe);
+							messageDAO.saveResource(newBe.getMsgId(), newBe.getHtmlContent(),newBe.getLocale());
+							*/
+							newBmList.add(newBe);
+							
+				}
+						
+					}
+					
+				}
+				
+			}
+			
+			List<BusinessEmail> oldBackup=new ArrayList<BusinessEmail>();
+			oldBackup.addAll(oldBmList);
+			List<BusinessEmail> newBackup=new ArrayList<BusinessEmail>();
+			newBackup.addAll(newBmList);
+			oldBmList.removeAll(newBmList);
+			newBackup.removeAll(oldBackup);
+			newBmList.removeAll(newBackup);
+	        //to add new business_email
+			if(oldBmList!=null && oldBmList.size()>0){
+				for(BusinessEmail be1:oldBmList){
+					if(be1.getBusinessId()!=1)
+					businessDAO.deleteBusinessEmailByBMId(be1.getBusinessEmailId());
+				}
+			}
+			//to add new business_email
+			if(newBackup!=null && newBackup.size()>0){
+				for(BusinessEmail be2:newBackup){
+					BusinessEmail bme=businessDAO.getBusinessEmailById(be2.getBusinessEmailId());
+					if(bme!=null){
+						
+						BusinessEmail newBe=new BusinessEmail();
+						newBe.setBusinessId(businessID);
+						newBe.setHtmlContent(be2.getHtmlContent());
+						newBe.setLocale(be2.getLocale());
+						newBe.setEmailType(bme.getEmailType());
+						newBe.setMsgId(bme.getMsgId()+businessID);
+						businessDAO.addBusinessEmail(newBe);
+						messageDAO.saveResource(newBe.getMsgId(), newBe.getHtmlContent(),newBe.getLocale());
+					}
+				}
+			}
+			
+			//to update old
+			if(newBmList!=null && newBmList.size()>0){
+				for(BusinessEmail be3:newBmList){
+					businessDAO.updateBusinessEmail(be3);
+					
+				}
+			}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			
+		}
+
+	
+	/**
+	 * add new Email configuration of Business
+	 * @param businessID
+	 */
+		private void addEmailContents(long businessID) {
+			// TODO Auto-generated method stub
+			MessageDAO messageDAO=(MessageDAO)MmrBeanLocator.getInstance().findBean("messageDAOTarget");
+			String[] emailCIds=request.getParameterValues("businessEmailIds");
+			String[] htmlConts=request.getParameterValues("htmlContents");
+			String[] locales=request.getParameterValues("locales");
+			
+			
+		if(emailCIds!=null && htmlConts!=null && locales!=null){
+				
+				for(int i=0;i<emailCIds.length;i++){
+	
+					Long emailCId=Long.parseLong(emailCIds[i]);
+					String htmlCont=htmlConts[i];
+					String locale=locales[i];
+					
+					if(emailCId!=null && htmlCont!=null && locale!=null){
+	
+						BusinessEmail bme=businessDAO.getBusinessEmailById(emailCId);
+						if(bme!=null){
+							
+							BusinessEmail newBe=new BusinessEmail();
+							newBe.setBusinessId(businessID);
+							newBe.setHtmlContent(htmlCont);
+							newBe.setLocale(locale);
+							newBe.setEmailType(bme.getEmailType());
+							newBe.setMsgId(bme.getMsgId()+businessID);
+							businessDAO.addBusinessEmail(newBe);
+							String iscont=messageDAO.getMessage(newBe.getMsgId(), UserUtil.getMmrUser().getLocale());
+							if(iscont==null && iscont.length()==0){
+							messageDAO.saveResource(newBe.getMsgId(), newBe.getHtmlContent(),newBe.getLocale());
+							}else{
+								messageDAO.updateResource(newBe.getMsgId(),newBe.getHtmlContent(),newBe.getLocale());
+							}
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			
+	
+			
+		}
+	
+		
+		
+		/**
+		 * add Customized CSS Text for New Business from 
+		 * the defualt CSS Text from Default Business 1L(IC)
+		 * @param cssText
+		 * @param businessId
+		 */
+		public void addCSS(String cssText, long businessId) {
+	
+			// Adding css details for business -start
+			if (business.getCssVO() != null && cssText != null && businessId != 0) {
+				CSSVO cssVo = business.getCssVO();
+				cssVo.setCssText(cssText);
+				String fileName = cssVo.getLogoImage();
+				if (getByteImg(fileName) != null) {
+					System.out.println(fileName + "\n"
+							+ (getByteImg(fileName)).length);
+					cssVo.setLogoImgByte(getByteImg(fileName));
+				}
+				fileName = cssVo.getBackImg();
+				if (getByteImg(fileName) != null) {
+					System.out.println(fileName + "\n"
+							+ (getByteImg(fileName)).length);
+					cssVo.setBackGroudImgByte((getByteImg(fileName)));
+				}
+				fileName = cssVo.getEmailHeader();
+				if (getByteImg(fileName) != null) {
+					System.out.println(fileName + "\n"
+							+ (getByteImg(fileName)).length);
+					cssVo.setEmailHeaderByte((getByteImg(fileName)));
+				}
+				
+				
+				if (cssVo != null) {
+					cssVo.setBusinessId(businessId);
+					businessDAO.addCSSDetailsForBusiness(cssVo);
+				}
+				// Adding css details for business -end
+			}
+		}
+
+		/**
+		 * Update Customized CSS Text for New Business  
+		 * @param cssText
+		 * @param businessId
+		 */
+		public String updateCSS() {
+			// Updating the css details for business - start
+		Long	businessId1=(Long)getSession().get("editBusinessId");
+		businessId=businessId1.toString();
+		CSSVO cssVo = businessDAO.getCSSDetailsForBusiness(businessId1);
+			if (cssVo  != null) {
+				try {
+					  cssVo = business.getCssVO();
+					String cssText=getCssTextForBusiness(cssVo);
+					String fileName = cssVo.getLogoImage();
+					if (fileName != null) {
+						File file = new File(fileName);
+						BufferedImage bi = ImageIO.read(file);
+						int width = bi.getWidth();
+						int height = bi.getHeight();
+	
+						if ( (width >= 180 && width <=186)  && height == 60) {
+							byte b[] = getByteImg(fileName);
+							cssVo.setLogoImgByte(b);
+						} else {
+							editBusiness();
+							addActionError("Logo Image Width and Height should be 186 and 60");
+							return "fail";
+						}
+	
+					}
+				
+					fileName=cssVo.getBackImg();
+					if (fileName != null) {
+						File file = new File(fileName);
+						BufferedImage bi = ImageIO.read(file);
+						int width = bi.getWidth();
+						int height = bi.getHeight();
+	
+						if (width == 974 && height == 57) {
+							byte b[] = getByteImg(fileName);
+							cssVo.setBackGroudImgByte(b);
+						} else {
+	                       editBusiness();
+	                       addActionError("Backgroud Image Width and Height should be 974 and 57");
+							return "fail";
+						}
+	
+					}
+					
+					if (cssVo != null && business.getId() != 0) {
+						cssVo.setCssText(cssText);
+						cssVo.setBusinessId(Long.valueOf(business.getId()));
+						businessDAO.updateCSSDetailsForBusiness(cssVo);
+					}
+					
+				} catch (Exception e) {
+	                e.printStackTrace();
+					return "fail";
+				}
+				// Updating the css details for business - end
+			}else{
+				//Add new css for old business
+				try {
+					  cssVo = business.getCssVO();
+					String cssText=getCssTextForBusiness(cssVo);
+					String fileName = cssVo.getLogoImage();
+					if (fileName != null) {
+						File file = new File(fileName);
+						BufferedImage bi = ImageIO.read(file);
+						int width = bi.getWidth();
+						int height = bi.getHeight();
+	
+						if ( (width >= 180 && width <=186)  && height == 60) {
+							byte b[] = getByteImg(fileName);
+							cssVo.setLogoImgByte(b);
+						} else {
+							editBusiness();
+							addActionError("Logo Image Width and Height should be 186 and 60");
+							return "fail";
+						}
+	
+					}
+					
+					fileName=cssVo.getBackImg();
+					if (fileName != null) {
+						File file = new File(fileName);
+						BufferedImage bi = ImageIO.read(file);
+						int width = bi.getWidth();
+						int height = bi.getHeight();
+	
+						if (width == 974 && height == 57) {
+							byte b[] = getByteImg(fileName);
+							cssVo.setBackGroudImgByte(b);
+						} else {
+	                     editBusiness();
+	                     addActionError("Backgroud Image Width and Height should be 974 and 57");
+							return "fail";
+						}
+	
+					}
+					
+					if (cssVo != null && business.getId() != 0) {
+						cssVo.setCssText(cssText);
+						cssVo.setBusinessId(Long.valueOf(business.getId()));
+						 addCSS(cssVo.getCssText(),cssVo.getBusinessId());
+					}
+					
+				} catch (Exception e) {
+	              e.printStackTrace();
+					return "fail";
+				}
+			}
+			return "success";
+		}
+	
+		private byte[] getByteImg(String fileName) {
+			// TODO Auto-generated method stub
+	
+			if (fileName != null) {
+	
+				try {
+					File file = new File(fileName);
+					BufferedImage bi = ImageIO.read(file);
+					if (bi != null) {
+						InputStream is = new FileInputStream(file);
+						byte b[] = new byte[(int) file.length()];
+						is.read(b);
+					return b;
+				}
+				} catch (Exception e) {
+					return null;
+				}
+			}
+			return null;
+		}
+	
+		/**
+		 * Get CSSText as a String from Default Busienss 1L
+		 * Stored in db 
+		 * @param cssVO
+		 * @return
+		 */
+		@SuppressWarnings({ "deprecation", "unused" })
+		private String getCssTextForBusiness(CSSVO cssVO) {
+			// TODO Auto-generated method stub
+			String content = "";
+			List<CSSClass> cssClassList = null;
+			CSSFileGenerator css = new CSSFileGenerator();
+			// get defaul css loads from business 1 IC.
+			CSSVO cs = businessDAO.getCSSDetailsForBusiness(1L);
+			if (cs != null) {
+	
+				cssVO.setCssText(cs.getCssText());
+				cssClassList = css.getCSSList(new File(""), cssVO);
+			content += css.getCSSText(cssClassList);
+				if (content != null) {
+					return content;
+				}
+			} else { // If css is not available in the db it will get it from
+						// labtop.css
+				File f = new File(
+						request.getRealPath("/webcontent/mmr/styles/labtop.css"));
+				File f1 = new File(
+						request.getRealPath("/webcontent/mmr/styles/demo_table.css"));
+				/* List<File> CSSFileList = BusinessFilterUtil.getCSSFileList(f); */
+				List<File> CSSFileList = new ArrayList<File>();
+				if (f1 != null && f != null) {
+					CSSFileList.add(f1);
+					CSSFileList.add(f);
+				}
+	
+				for (File cssFile : CSSFileList) {
+					CSSVO cssVo = business.getCssVO();
+					// CSSFileGenerator css = new CSSFileGenerator();
+					/*
+					 * CSSVO cs=businessDAO.getCSSDetailsForBusiness(1L);
+					 */
+					cssClassList = css.getCSSList(cssFile, cssVo);
+					content += css.getCSSText(cssClassList);
+				}
+				return content;
+			}
+			return content;
+		}
+	
+		/**
+		 * add css for business
+		 * @param businessId2
+		 */
+		private void addCssForBusiness(long businessId2) {
+			// TODO Auto-generated method stub
+	
+			// BusinessFilterUtil.addCSSForBusiness(businessId2);
+			List<File> CSSFileList = BusinessFilterUtil.getCSSFileList(new File(
+					"/home/soluship/WebContent/mmr/styles/"));
+			for (File cssFile : CSSFileList) {
+				CSSVO cssVo = business.getCssVO();
+				CSSFileGenerator css = new CSSFileGenerator();
+				css.GenerateCSS(cssFile, businessId2, cssVo);
+			}
+		}
+		 
 	
 	private boolean validateBusinessName() {
 		// TODO Auto-generated method stub
@@ -468,6 +1114,8 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	private boolean validateBusiness() {
 		// TODO Auto-generated method stub
 		int i=0;
+	     Long  partnerId=(Long)getSession().get(Constants.PARTNER_ID_SESSION);
+
       if(businessDAO.getBusinessByName(business.getName())!=null){
     	   addActionError("Business Name Already Exist");
 			i++;
@@ -522,6 +1170,79 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			 addActionError(getText("Country is Required"));
 			 i++;
 		 } 
+		 if(partnerId==null){
+		 if (business.getCssVO() != null
+				 				&& business.getCssVO().getLogoImage() != null) {
+				 			String fileName = business.getCssVO().getLogoImage();
+				 
+				 			if (fileName != null) {
+				 				try {
+				 					File file = new File(fileName);
+				 					BufferedImage bi = ImageIO.read(file);
+				 					int width = bi.getWidth();
+				 					int height = bi.getHeight();
+				 					if (!((width == 186 || width == 181) && height == 60)) {
+				 						addActionError(getText("Logo Image Resolustion is 186X60 pixels"));
+				 						i++;
+				 					}
+				 				} catch (Exception e) {
+				 					addActionError(getText("Error in the Image File"));
+				 					i++;
+				 				}
+				 
+				 			}
+				 		} else {
+				 			addActionError(getText("Please Upload Logo Image Image "));
+				 		}
+				 
+				 		if (business.getCssVO() != null
+				 				&& business.getCssVO().getBackImg() != null) {
+				 			String fileName = business.getCssVO().getBackImg();
+				 
+				 			if (fileName != null) {
+				 				try {
+				 					File file = new File(fileName);
+				 					BufferedImage bi = ImageIO.read(file);
+				 					int width = bi.getWidth();
+				 					int height = bi.getHeight();
+				 					if (!(width == 974 && height == 57)) {
+				 						addActionError(getText("BackGround Image Resolustion is 974X57 pixels"));
+				 						i++;
+				 					}
+				 				} catch (Exception e) {
+				 					addActionError(getText("Error in the Image File"));
+				 					i++;
+				 				}
+				 
+				 			}
+				 		} else {
+				 			addActionError(getText("Please Upload BackGround Image "));
+				 		}
+		 }
+				 		/*if (business.getCssVO() != null
+				 			&& business.getCssVO().getEmailHeader() != null) {
+				 			String fileName = business.getCssVO().getEmailHeader();
+				 
+				 			if (fileName != null) {
+				 				try {
+				 					File file = new File(fileName);
+				 					BufferedImage bi = ImageIO.read(file);
+				 					int width = bi.getWidth();
+				 					int height = bi.getHeight();
+				 					if (!(width == 550 && height == 75)) {
+				 						addActionError(getText("Email Header Image Resolustion is 550X75 pixels"));
+				 						i++;
+				 					}
+				 				} catch (Exception e) {
+				 					addActionError(getText("Error in the Image File"));
+				 					i++;
+				 				}
+				 
+				 			}
+				 		} else {
+				 			addActionError(getText("Please Upload Email Header Image "));
+				 		}*/
+				 		
 /*	     if(business.getPartnerId()==-1){
 	    	 addActionError(getText("Select partner"));
 			 i++;
@@ -673,6 +1394,8 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 						 // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus, business);
 						    long partnerBusinessId=businessDAO.addParterLevelBusienss(business);
+						    String cssText=getCssTextForBusiness(business.getCssVO());
+						     addCSS(cssText, partnerBusinessId);
 						    if(partnerBusinessId>0){
 						    	List<Long> busids=new ArrayList<Long>();
 						    	busids.add(partnerBusinessId);
@@ -717,6 +1440,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 				business.setAddressId(Long.valueOf(paramAddressId));
 				business.setUsAddressId(Long.valueOf(paramAddressId));
 				business.setDefaultNetTerms(15);
+				updateCSS();
 				businessDAO.updateBusiness(business);
 				//inserting the business menu
 				List<MenuItemVO> menuItems = menuItemDAO.getMenuByBusiness(paramBusinessId);
@@ -1211,13 +1935,28 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public String editBusiness(){
 		log.debug(" CHECK METHOD IN editBusiness" );
 		System.out.println(businessId);
 		try{
 			long selectedBusinessId = Long.parseLong(businessId);
+			getSession().put("editBusinessId",selectedBusinessId);
 			business = businessDAO.getBusiessById(selectedBusinessId);
+			CSSVO cssVo = businessDAO.getCSSDetailsForBusiness(selectedBusinessId);
+									if(cssVo != null){
+									business.setCssVO(cssVo);
+									}else{
+										business.setCssVO(new CSSVO());
+										business.getCssVO().setMenuColor("#000000");
+										business.getCssVO().setBarSecondColor("#000000");
+										business.getCssVO().setFooterColor("#000000");
+										business.getCssVO().setMenuHoverColor("#990000");
+										business.getCssVO().setBarFirstColor("#990000");
+										business.getCssVO().setButtonColor("#990000");
+										
+									}
 			Address address = addressDAO.findAddressById(String.valueOf(business.getAddressId()));
 			business.setAddress(address);
 			menuVo = menuItemDAO.getAllMenu();
@@ -1230,6 +1969,28 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			}
 			getSession().put("CountryList", MessageUtil.getCountriesList());
 			getSession().put("editBusiness","true");
+			if(business.getCssVO()!=null){
+							business.getCssVO().setBusinessEmailList(businessDAO.getBusinessEmails(1L));
+							}else{
+								business.setCssVO(new CSSVO());
+								business.getCssVO().setBusinessEmailList(businessDAO.getBusinessEmails(1L));
+							}
+							getSession().put("businessEmailList",businessDAO.getBusinessEmails(selectedBusinessId));
+							if(getSession().get("businessEmailList")!=null){
+								List<Long> busEIds=new ArrayList<Long>();
+							for(BusinessEmail bb:(List<BusinessEmail>)getSession().get("businessEmailList")){
+							busEIds.add(bb.getBusinessEmailId());	
+							}
+							getSession().put("emailRList", busEIds);
+							}
+							
+							business.getCssVO().setBusinessEmailList(setBusSychedBusEmail(businessDAO.getBusinessEmails(selectedBusinessId),business.getCssVO().getBusinessEmailList()));
+							if(!(business.getCssVO().getBusinessEmailList()!=null &&business.getCssVO().getBusinessEmailList().size()>0)){
+								business.getCssVO().setBusinessEmailList(businessDAO.getBusinessEmails(1L));
+							}
+							getSession().put("localeList", MessageUtil.getLocales());
+							//getSession().remove("emailRList");
+							getSession().remove("redudant");
 			return SUCCESS;
 			
 		}catch(Exception e){
@@ -1237,7 +1998,37 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			return INPUT;
 		}
 	}
-	 
+	
+	
+	/**
+	 *  
+	 * @param newBusinessEmails
+	 * @param defBusinessEmails
+	 * @return
+	 */
+	private List<BusinessEmail> setBusSychedBusEmail(
+						List<BusinessEmail> newBusinessEmails,
+						List<BusinessEmail> defBusinessEmails) {
+					// TODO Auto-generated method stub
+					if(newBusinessEmails!=null && defBusinessEmails!=null && newBusinessEmails.size()>0 && defBusinessEmails.size()>0){
+						
+						
+						for(BusinessEmail defb:defBusinessEmails){
+							
+							for(BusinessEmail newIb:newBusinessEmails){
+								
+									if(newIb.getEmailType().equals(defb.getEmailType())){
+											defb.setBusinessEmailId(newIb.getBusinessEmailId());
+										}
+									
+								
+							}
+						}
+						
+						return defBusinessEmails;
+					}
+					return new ArrayList<BusinessEmail>();
+				}
 	
 	public String viewBusiness(){
 		log.debug(" CHECK METHOD IN view business" );
@@ -1522,6 +2313,21 @@ public UserBusiness getUserBusiness() {
    public void setUserBusiness(UserBusiness userBusiness) {
        this.userBusiness = userBusiness;
    }
+
+@Override
+   public void setServletResponse(HttpServletResponse arg0) {
+   	// TODO Auto-generated method stub
+   	this.response=arg0;
+   }
+
+public List<BusinessEmail> getBusinessEmailList() {
+	return businessEmailList;
+}
+
+public void setBusinessEmailList(List<BusinessEmail> businessEmailList) {
+	this.businessEmailList = businessEmailList;
+}
+    
 	
 	
 }

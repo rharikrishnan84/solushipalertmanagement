@@ -70,6 +70,37 @@
 	    <result property="username" column="username"/>
 	</resultMap>
 	
+	
+	<resultMap class="com.meritconinc.shiplinx.model.CSSVO" id="cssVoBusinessMap">
+	    <result property="businessId" column="business_id"/>
+	    <result property="gridHeaderColor" column="grid_header_color"/>
+	    <result property="menuColor" column="menu_color"/>
+	    <result property="menuHoverColor" column="menu_hover_color"/>
+	    <result property="buttonColor" column="button_color"/>
+	    <result property="barFirstColor" column="bar_first_color"/>
+	    <result property="barSecondColor" column="bar_second_color"/>
+	    <result property="footerColor" column="footer_color"/>
+	     <result property="cssText" column="css_text"/>
+		 <result property="logoImgByte"   jdbcType="BLOB"  column="logo_img"/>
+		 <result property="backGroudImgByte"  jdbcType="BLOB"  column="back_ground_img"/>
+		 <result property="favIconByte"  jdbcType="BLOB"  column="fav_icon"/>
+		 <result property="emailHeaderByte"  jdbcType="BLOB"  column="email_header"/>
+		 	 <!--selva start css  -->
+		 		  <result property="footerFontColor"  jdbcType="BLOB"  column="footer_font_color"/>
+		 		  <result property="arrowColor" column="arrow_color"/>
+		 <!-- selva end css  -->
+	</resultMap>
+
+
+<resultMap class="com.meritconinc.shiplinx.model.BusinessEmail" id="businessEmailMap">
+	    <result property="businessEmailId" column="business_email_id"/>
+	    <result property="emailType" column="email_type"/>
+	    <result property="locale" column="locale"/>
+	    <result property="msgId" column="msg_id"/>
+	    <result property="businessId" column="business_id"/>
+</resultMap>	
+	
+	
 	<select id="isBusinessRegistered" resultClass="int">
 			select count(1) as count from business where name = #name#
 	</select>
@@ -214,5 +245,57 @@ from pins where business_id=#oldBusinessId#
   <update id="deleteUserBusiness">
       delete from user_business where user_business_id=#userBusId#
   </update>
+  
+  
+  
+  
+   <insert id="addBusinessEmailCont"  parameterClass="com.meritconinc.shiplinx.model.BusinessEmail">
+        
+        INSERT INTO  `business_email` ( `email_type`, `locale`, `msg_id`,
+		`business_id`) VALUES (#emailType#,#locale#,#msgId#,#businessId#);
+        
+    </insert>
+ <insert id="addCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
+    insert into business_loader (business_id,menu_color,menu_hover_color,button_color,bar_first_color,bar_second_color,footer_color,css_text,logo_img,back_ground_img,fav_icon,footer_font_color,arrow_color) 
+    values(#businessId#,#menuColor#,#menuHoverColor#,#buttonColor#,#barFirstColor#,#barSecondColor#,#footerColor#,#cssText#,#logoImgByte#,#backGroudImgByte#,#favIconByte#,#footerFontColor#,#arrowColor#)
+  </insert>
+  
+  <update id="updateCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
+	update business_loader set grid_header_color=#gridHeaderColor#,menu_color=#menuColor#,
+	menu_hover_color=#menuHoverColor#,button_color=#buttonColor#,
+	bar_first_color=#barFirstColor#,bar_second_color=#barSecondColor#,
+	footer_color=#footerColor#,footer_font_color=#footerFontColor#,arrow_color=#arrowColor#,
+	css_text=#cssText#
+	<dynamic>
+	<isNotNull prepend=","  property="logoImgByte">
+	   logo_img=#logoImgByte#
+	</isNotNull>
+	<isNotNull property="backGroudImgByte" prepend="," >
+	     back_ground_img=#backGroudImgByte#
+	</isNotNull>
+	</dynamic>
+    where business_id=#businessId#
+  </update>
+ 
+   <select id="getCSSDetailsForBusiness" resultMap="cssVoBusinessMap"> 
+     select * from business_loader where business_id=#businessId#
+  </select>
+  
+   <select id="getBusinessEmails" resultMap="businessEmailMap">
+       select * from business_email where business_id=#businessId#
+   </select>
+   <select id="getBusinessEmailById" resultMap="businessEmailMap">
+       select * from business_email where business_email_id=#busEmailId#
+   </select>
+   <update id="deleteBusinessEmailByBMId">
+       delete from business_email where business_email_id=#businessEmailId#
+   </update>
+   <update id="updateBusinessEmail" parameterClass="com.meritconinc.shiplinx.model.BusinessEmail">
+       UPDATE  `business_email` SET `locale` = #locale# WHERE `business_email_id` = #businessEmailId#
+   </update>
+   <update id="updateEmailResources">
+       update resourcebundle set msg_content=#htmlContent# where msg_id=#msgId#    
+   </update>  
+ 
   <!--end of business filter  -->
 </sqlMap>

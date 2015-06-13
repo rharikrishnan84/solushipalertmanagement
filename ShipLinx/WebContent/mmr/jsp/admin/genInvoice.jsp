@@ -32,7 +32,12 @@ background-position: 145px 4px; background-size:8px 8px; }
 		  });
 </SCRIPT>
 
-<body> 
+<body>
+<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+	</div>
+  
 
 <div id="messages">
 <jsp:include page="../common/action_messages.jsp"/>

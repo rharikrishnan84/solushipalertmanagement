@@ -1,4 +1,13 @@
 package com.soluship.businessfilter.util;
+ 
+
+/**
+  * It is the Static class for
+  * all the business filter related 
+  * methods
+  * @author SELVA
+  */
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +45,19 @@ import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.BusinessDefaultLoaderDaoImpl;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import org.apache.axis2.databinding.types.soapencoding.Array;
+import javax.imageio.ImageIO;
+import com.meritconinc.mmr.dao.MessageDAO;
+import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.shiplinx.model.BusinessEmail;
+
+
+
+
+
+
 
 public class BusinessFilterUtil implements Runnable {
 	
@@ -704,7 +726,7 @@ public static List<Business> getBusinessListByBusinessId(Long businessId){
 public static long setBusinessIdbyUserLevel() {
 	// TODO Auto-generated method stub
 	
-	
+	if(UserUtil.getMmrUser()!=null){
 	 Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
      Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
      Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
@@ -786,8 +808,13 @@ public static long setBusinessIdbyUserLevel() {
  				 
  		return branchId;
  				 
- 	   }else {
+ 	  }else if(UserUtil.getMmrUser()!=null) {
  		   return UserUtil.getMmrUser().getBusinessId();
+ 	 }else{
+ 				   return 1L;
+ 	   }
+	}else{
+		 		   return 1L;
  	   }
 }
 
@@ -1022,5 +1049,88 @@ public static void reloadUser(String adminUser){
  }
 
 
+/**
+ * Get the List CSS files of
+ * given File directory
+ * @param dir
+ * @return
+ */
+public static List<File> getCSSFileList(File dir) {
+		List<File> fileList = new ArrayList<File>();
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					getCSSFileList(file);
+				} else {
+					if (getExtention(file).equalsIgnoreCase("css")
+							&& (file.getName().equalsIgnoreCase(
+									ShiplinxConstants.LAPTOP_CSS) || file
+									.getName().equalsIgnoreCase(
+											ShiplinxConstants.DEMO_TABLE_CSS))) {
+						fileList.add(file);
+					}
+				}
+			}
+		}
 
+		return fileList;
+
+	}
+
+   /**
+    * Get the File Extention of thee file
+    * @param f
+    * @return
+    */
+	public static String getExtention(File f) {
+		String name = f.getName();
+		int dot = name.lastIndexOf('.');
+		String base = (dot == -1) ? name : name.substring(0, dot);
+		String extension = (dot == -1) ? "" : name.substring(dot + 1);
+		return extension;
+	}
+	
+	
+	/**
+	 * static method get the Business email body of 
+	 * of businesss using its msgid
+	 * @param businessId
+	 * @param msgidEmail
+	 * @return
+	 */
+	public static String getEmailBody(long businessId,
+			String msgidEmail ) {
+		// TODO Auto-generated method stub
+		MessageDAO messageDAO=(MessageDAO)MmrBeanLocator.getInstance().findBean("messageDAOTarget");
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		String locale=null;
+	      List<BusinessEmail> businessEmail=businessDAO.getBusinessEmails(businessId);
+	      BusinessEmail busEmail=null;
+	      if(businessEmail!=null && businessEmail.size()>0){
+	       for(BusinessEmail be:businessEmail){
+	    	   if(be.getEmailType().equalsIgnoreCase(msgidEmail)){
+	    		   busEmail=be;
+	    		  locale=be.getLocale();
+	    	   }
+	       }
+	      }
+	     
+	      
+	      if(locale==null){
+	    	  locale=MessageUtil.getLocale();
+	      }
+	      String body =null;
+	      if(busEmail!=null){
+	    	  //body=MessageUtil.getMessage(busEmail.getMsgId(),UserUtil.getMmrUser().getLocale());
+	    	body=  messageDAO.getMessage(busEmail.getMsgId(),locale);
+	    	
+	      }else{
+	      return null;
+	      }
+	      
+		return body;
+	}
+ 
+    
 }

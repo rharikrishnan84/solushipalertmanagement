@@ -2595,7 +2595,7 @@ font-weight: bold!important;
    font-family: Arial;
 	font-size: 12px;
 	font-weight: bold;
-	color: black;
+	color: #000000;
 	background-color: #EAECEE;
 	width: 178px;
 	height: 20px;
@@ -2607,7 +2607,7 @@ font-weight: bold!important;
    font-family: Arial;
 	font-size: 12px;
 	font-weight: bold;
-	color: black;
+	color: #000000;
 	background-color: #EAECEE;
 	width: 178px;
 	height: 20px;
@@ -7819,7 +7819,7 @@ margin-bottom: 10px;
 	font-weight:700;
 	}
 	.company{
-		background-color: maroon !important;
+		background-color: #990000 !important;
 		color: #ffffff;
 		height:33px;
 		
@@ -7827,7 +7827,7 @@ margin-bottom: 10px;
 	
 	
 	.company a{
-		background-color: maroon;
+		background-color: #990000;
 		color: #ffffff;
 	}
 	
@@ -8161,7 +8161,7 @@ margin-top: 10px;
 	font-weight:700;
 	}
 	.company{
-		background-color: maroon !important;
+		background-color: #990000  !important;
 		color: #ffffff;
 		height:33px;
 		
@@ -8169,7 +8169,7 @@ margin-top: 10px;
 	
 	
 	.company a{
-		background-color: maroon;
+		background-color: #990000;
 		color: #ffffff;
 	}
 	

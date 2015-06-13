@@ -240,7 +240,7 @@ F
 							<div class="content_table">
 								<div class="cont_data_body borderLeftRight">
 									<div class="logo_mini"><div id="pckg_results" style="">
-										<span style="font-size:12px;font-size:bold;color:#990000;margin-left:40px"><mmr:message messageId="label.package.packagedetails"/>:</span>	
+										<span class="package3"><mmr:message messageId="label.package.packagedetails"/>:</span>	
 									</div>
 									
 									<div class="domention">
@@ -442,12 +442,12 @@ F
 								</td>	
 								<s:if test="%{#counterIndex.index == 0}">
 								<td>
-									<a href="javascript:void(0)" style=" width:100px; float:right; height:auto; color:#FFF;  background-color:#990000;font-size:12px; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')"  /> <mmr:message messageId="label.package.allsame"/>  </a>
+									<a href="javascript:void(0)" class="package2" onClick="allTheSame2('35')"  /> <mmr:message messageId="label.package.allsame"/>  </a>
 								</td>	
 								</s:if>								
 								<s:else>
 								<td>
-								<a href="javascript:void(0)" onClick="sameAsAbove2('<s:property value="%{#counterIndex.index}"/>')" style=" width:100px;font-size:12px; float:right; height:auto; color:#FFF;  background-color:#990000; text-decoration:none; padding:3px 0px; text-align:center;" onClick="allTheSame2('35')" /><mmr:message messageId="label.package.allabove"/>
+								<a href="javascript:void(0)" class="package1" onClick="sameAsAbove2('<s:property value="%{#counterIndex.index}"/>')"  onClick="allTheSame2('35')" /><mmr:message messageId="label.package.allabove"/>
 								<s:param name="view" value="<s:property value='%{#counterIndex.index}'/>"  />
 								</a> 
 								</td>

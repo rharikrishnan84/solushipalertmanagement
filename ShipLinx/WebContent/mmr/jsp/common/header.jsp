@@ -63,6 +63,11 @@
 			//End : Sumanth Kulkarni 07 Oct 2011
 	
 		</script>
+		<%if(session.getAttribute("cssText")!=null){ %>
+		<style type="text/css">
+			<%=session.getAttribute("cssText")%>
+		</style>
+	   <%} %>
 			<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.js"></script>
  <!-- remove 3rd level boreder -->   
  <script>
@@ -216,7 +221,17 @@ function removeCustomAlert() {
 		<div class="header-top">
 			<div class="top_header_inner">
 				<div class="header_logo_body">
-					<div class="logo"><img src="<%=request.getContextPath()%>/mmr/images/logo.png"></div>
+					<%-- <div class="logo"><img src="<%=request.getContextPath()%>/mmr/images/logo.png"></div> --%>
+					<div class="logo">
+					<s:if test="#session.logoImg =='false'">
+					<img src="<%=request.getContextPath()%>/mmr/images/logo.png">
+					</s:if>
+					<s:else>
+				 <%--   <img src="<%=session.getAttribute("logoImg") %>>"> --%>
+		    	<%-- 	 <img   src='<jsp:include page="../welcome/img.jsp"></jsp:include>'> --%>
+			     <img  src="/ShipLinx/ImageAction.action?id=logoImg">
+					</s:else>
+					</div>
 					<div class="top_navi">
 						<ul>
 							<li><a href=""><mmr:message messageId="menu.contactus"/></a></li>
@@ -238,8 +253,8 @@ function removeCustomAlert() {
 			status="top_lvl_mnu_itr">
 		<s:if test="%{#session.HighLightMenu == name}">
 					<li>
-							<a
-						href="<%=request.getContextPath()%>/highLightMenu.action?value=<s:property value='url' />&menu=<s:property value='name' />"style="color: #ffffff; background: #990000;">
+							<a  class="menu_button"
+						href="<%=request.getContextPath()%>/highLightMenu.action?value=<s:property value='url' />&menu=<s:property value='name' />" >
 							&nbsp;&nbsp;<s:property value="name" /> </a></li>
 				
 				</s:if>

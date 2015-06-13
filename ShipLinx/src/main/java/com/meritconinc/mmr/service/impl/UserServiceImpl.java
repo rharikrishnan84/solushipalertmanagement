@@ -25,6 +25,8 @@ import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.WebUtil;
 import com.meritconinc.mmr.utilities.mail.MailHelper;
 import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class UserServiceImpl implements UserService {
 
@@ -319,7 +321,13 @@ public class UserServiceImpl implements UserService {
     String subject = MessageUtil.getMessage("message.forgot.password.subject", locale);
     subject = new String(subject.replaceAll("%BUSINESSNAME", user.getBusiness().getName()));
 
-    String body = MessageUtil.getMessage("message.forgot.password.body", locale);
+    /*String body = MessageUtil.getMessage("message.forgot.password.body", locale);
+        */
+        String  body=BusinessFilterUtil.getEmailBody(user.getBusinessId(),ShiplinxConstants.MSGID_EMAIL_FORGOT_PWD);
+        
+        if(body==null || body.length()==0){
+        	 body = MessageUtil.getMessage("message.forgot.password.body", locale);
+       }
 
     body = new String(body.replaceAll("%BUSINESSNAME", user.getBusiness().getName()));
     body = new String(body.replaceAll("%LOGINURL", user.getBusiness().getLogoutURL()));

@@ -95,7 +95,9 @@
 
 	<package name="publicArea" namespace="/" extends="mmr-default">
 		<default-interceptor-ref name="basicStack-mmr" />
-
+ 		<action name="ImageAction" method="getImage" class="logonAction">
+            <result name="success"> </result>
+        </action>
 		<action name="logon.*" method="{1}" class="logonAction">
 			<result name="input">/mmr/jsp/welcome/login.jsp</result>
 			<result name="login" type="redirect">
@@ -1337,7 +1339,11 @@
         <action name="new.business" method="newBusiness" class="businessAction">
        		<result type="tiles" name="success">addBusiness</result>
        </action>
-        
+         <action name="add.emailcont" method="ajaxAddEmailBusiness" class="businessAction">
+             <result  name="success">
+             /mmr/jsp/admin/ajax_bus_email.jsp
+            </result>
+        </action>
         <action name="save.business" method="saveBusiness" class="businessAction">
           <interceptor-ref name="fileUpload">
 				<param name="maximumSize">2097152</param>

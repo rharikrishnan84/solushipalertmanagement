@@ -168,7 +168,7 @@ jConfirm('You want to delete the charge?', 'Yes', 'No', function(confirmationMes
 						</s:else>
 						<td class="ordrdtl_title_val" width="20%" style="right: 11px;">
 						   <s:a href="#" onclick="return confirm('%{id}')"
-						   cssStyle="padding:3px 10px; position:relative; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;">
+						   class="invoice1">
 						   <mmr:message messageId="btn.delete"/> </s:a>
 						</td>
      					<td>

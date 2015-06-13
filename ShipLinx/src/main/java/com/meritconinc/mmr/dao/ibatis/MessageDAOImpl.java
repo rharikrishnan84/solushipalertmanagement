@@ -110,4 +110,19 @@ public LocaleVO getLocaleByMsgId(String msgId) {
 }
 }
 
+
+@SuppressWarnings("unchecked")
+@Override
+public void updateResource(String msgId, String htmlContent, String locale) {
+	// TODO Auto-generated method stub
+	@SuppressWarnings("rawtypes")
+	Map map = new HashMap();
+   map.put("msgId", msgId);
+    map.put("locale", UserUtil.getMmrUser().getLocale());
+    map.put("msgCont",htmlContent);
+    getSqlMapClientTemplate().update("updateResource",map);
+    
+}
+
+
 }

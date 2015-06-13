@@ -100,5 +100,7 @@
 	<select id="getResourceByMsgId" resultMap="resultLocaleDetail" cacheModel="message" parameterClass="map">
 	SELECT msg_id AS localeText, msg_content AS description,locale AS locale FROM resourcebundle where msg_id = #msgId# and locale=#locale#;
 	</select>
-
+	<update id="updateResource">
+        update resourcebundle set msg_conent=#msgCont# ,locale=#locale# where msg_id=#msgId#
+    </update>
 </sqlMap>

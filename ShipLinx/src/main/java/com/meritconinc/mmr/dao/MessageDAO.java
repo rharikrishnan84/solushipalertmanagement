@@ -30,4 +30,5 @@ public String getPath(String url);
 public void saveResource(String msgId,String msgContent,String locale);
 
 public LocaleVO getLocaleByMsgId(String msgId);
+public void updateResource(String msgId, String htmlContent, String locale);
 }

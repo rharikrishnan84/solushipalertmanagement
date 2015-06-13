@@ -67,7 +67,10 @@
 					  }
 					  if (txt < 1) {
 					   alert('Please select at least one');
+					   
 					  } else {
+						  $('#loader').css('display','block');
+						  $('#loaderImg').css('display','block');  
 					   var i1, shipmentid, value_checked, stored_value = "";
 					   for (i1 = 0; i1 < uploadMarkupId.length; i1++) {
 					    if (uploadMarkupId[i1].checked) {
@@ -313,6 +316,8 @@
 						if((paymentstatus==10)||(paymentstatus==20)){
 							
 							window.location.href="invoice.cancel.action?invoiceId="+invoiceId;
+							$('#loader').css('display','block');
+							$('#loaderImg').css('display','block');
 						}
 						else{
 							alert("you dont have permission to delete");

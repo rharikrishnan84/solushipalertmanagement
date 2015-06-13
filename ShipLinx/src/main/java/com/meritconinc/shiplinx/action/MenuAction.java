@@ -1,8 +1,12 @@
 package com.meritconinc.shiplinx.action;
 
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,9 +22,12 @@ import com.meritconinc.mmr.model.common.LocaleVO;
 import com.meritconinc.mmr.model.common.PropertyVO;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.opensymphony.xwork2.Preparable;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.meritconinc.mmr.dao.MessageDAO;
 import com.meritconinc.mmr.dao.RolesDAO;
 import com.meritconinc.mmr.model.common.MenuItemVO;
@@ -432,6 +439,34 @@ public class MenuAction extends BaseAction implements Preparable,ServletRequestA
 		String language = locale.getLocaleText();
 		 String string="";
 
+		   FileInputStream fis = null;
+		         BufferedReader reader = null;
+		    long bid=BusinessFilterUtil.setBusinessIdbyUserLevel();
+		    Business bus=BusinessFilterUtil.getSuperParentBusiness(bid);
+		 /*long bid=UserUtil.getMmrUser().getBusinessId();*/
+		    long bid1=0;
+		    if(bus!=null)
+		    {
+		      bid1=bus.getId();
+		    }
+		   String dirName="help_"+bid1;
+		       /* String reportPath = "/home/soluship/solushipfiles"+"/helpMenu/"+dirName;*/
+		   String reportPath = ShiplinxConstants.BUSINESS_HELP_DIR+dirName;
+		       String fileName = null;
+		       File directory = new File(reportPath);
+		   if (directory.isDirectory()) {
+		   
+		    File file = new File(reportPath);
+		    
+		    if (file.canRead()) {
+		     for (File temp : file.listFiles()) {
+		      if (temp.getName().toLowerCase()
+		          .endsWith(".html")) {
+		       fileName = temp.getAbsoluteFile().toString();
+		      }
+		     }
+		    }
+		          }
 	        //reading   
 	        try{
 
@@ -442,7 +477,11 @@ public class MenuAction extends BaseAction implements Preparable,ServletRequestA
 	       	 PropertyVO propertyVO = propertyDAO.getPath(language); 
 	       		            url = propertyVO.getDbValue();
 	       		            String file = url+"/"+method+".html";
-	       		            inputStream = new FileInputStream(file);
+	       		            if(fileName!=null){
+	       		            inputStream = new FileInputStream(fileName);
+	       		            }else{
+	       		             inputStream = new FileInputStream(file);
+	       		            }
 	        }       
 	        catch (Exception e){
 	            System.out.println(e.toString());

@@ -14,9 +14,12 @@ import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Invoice;
 import com.meritconinc.shiplinx.model.UserBusiness;
-import java.util.Date;
-import com.meritconinc.shiplinx.utils.FormattingUtil;
 
+import java.util.Date;
+
+import com.meritconinc.shiplinx.utils.FormattingUtil;
+import com.meritconinc.shiplinx.model.BusinessEmail;
+import com.meritconinc.shiplinx.model.CSSVO;
 
 public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessDAO{
 	private static final Logger log = LogManager.getLogger(BusinessDAOImpl.class);
@@ -41,7 +44,14 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 	}
 
 	public Business getBusiessById(long businessId){
-		return (Business)getSqlMapClientTemplate().queryForObject("getBusinessesById", businessId);		
+		Business b=(Business)getSqlMapClientTemplate().queryForObject("getBusinessesById", businessId);
+						if(b!=null){
+							CSSVO css=(CSSVO)getSqlMapClientTemplate().queryForObject("getCSSDetailsForBusiness",businessId);
+							if(css!=null){
+								b.setCssVO(css);
+							}
+					}
+						return b;	
 	}
 
 	public Business getBusinessByName(String name){
@@ -243,27 +253,104 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 					 return (Business)getSqlMapClientTemplate().queryForObject("getSuperParentBusiness",businessId);
 				}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<UserBusiness> getUserBusinessListByUser(String username) {
+		// TODO Auto-generated method stub
+		return (List<UserBusiness>) getSqlMapClientTemplate().queryForList(
+				"getUserBusinessListByUser", username);
+	}
 
-				@Override
-								public List<UserBusiness> getUserBusinessListByUser(
-										String username) {
-									// TODO Auto-generated method stub
-									return (List<UserBusiness>) getSqlMapClientTemplate().queryForList("getUserBusinessListByUser",username);
-								}
-				
-				
-								@Override
-								public void adduserBusiness(UserBusiness ub) {
-									// TODO Auto-generated method stub
-									getSqlMapClientTemplate().insert("adduserBusiness",ub);
-								}
-				
-				
-								@Override
-								public void deleteUserBusiness(Long userBusId) {
-									// TODO Auto-generated method stub
-									getSqlMapClientTemplate().update("deleteUserBusiness",userBusId);
-								}
-				
+	@Override
+	public void adduserBusiness(UserBusiness ub) {
+		// TODO Auto-generated method stub
+		getSqlMapClientTemplate().insert("adduserBusiness", ub);
+	}
 
+	@Override
+	public void deleteUserBusiness(Long userBusId) {
+		// TODO Auto-generated method stub
+		getSqlMapClientTemplate().update("deleteUserBusiness", userBusId);
+	}
+
+	@Override
+	public void addCSSDetailsForBusiness(CSSVO cssVO) {
+
+		getSqlMapClientTemplate().insert("addCSSDetailsForBusiness", cssVO);
+	}
+
+	@Override
+	public void updateCSSDetailsForBusiness(CSSVO cssVO) {
+		getSqlMapClientTemplate().update("updateCSSDetailsForBusiness", cssVO);
+	}
+
+	@Override
+	public CSSVO getCSSDetailsForBusiness(Long businessId) {
+		return (CSSVO) getSqlMapClientTemplate().queryForObject(
+				"getCSSDetailsForBusiness", businessId);
+
+	}
+
+	@Override
+	public List<BusinessEmail> getBusinessEmails(long businessId) {
+		// TODO Auto-generated method stub
+		@SuppressWarnings("unchecked")
+		List<BusinessEmail> businessEmails = (List<BusinessEmail>) getSqlMapClientTemplate()
+				.queryForList("getBusinessEmails", businessId);
+
+		if (businessEmails != null && businessEmails.size() > 0) {
+			for (BusinessEmail bm : businessEmails) {
+				if (bm != null)
+					bm.setHtmlContent(getHtmlContByBusinessEmail(bm));
+			}
+		}
+		return businessEmails;
+	}
+
+	@Override
+	public BusinessEmail getBusinessEmailById(long busEmailId) {
+		// TODO Auto-generated method stub
+		BusinessEmail bem = (BusinessEmail) getSqlMapClientTemplate()
+				.queryForObject("getBusinessEmailById", busEmailId);
+		if (bem != null) {
+			bem.setHtmlContent(getHtmlContByBusinessEmail(bem));
+		}
+		return bem;
+	}
+
+	private String getHtmlContByBusinessEmail(BusinessEmail bem) {
+		// TODO Auto-generated method stub
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("locale", bem.getLocale());
+		paramObj.put("messageId", bem.getMsgId());
+		String html = (String) getSqlMapClientTemplate().queryForObject(
+				"getMessage", paramObj);
+		return html;
+	}
+
+	@Override
+	public void addBusinessEmail(BusinessEmail bme) {
+		// TODO Auto-generated method stub
+		getSqlMapClientTemplate().insert("addBusinessEmailCont", bme);
+	}
+
+	@Override
+	public void deleteBusinessEmailByBMId(long businessEmailId) {
+		// TODO Auto-generated method stub
+		getSqlMapClientTemplate().update("deleteBusinessEmailByBMId",
+				businessEmailId);
+	}
+
+	@Override
+	public void updateBusinessEmail(BusinessEmail be3) {
+		// TODO Auto-generated method stub
+
+		getSqlMapClientTemplate().update("updateBusinessEmail", be3);
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("locale", be3.getLocale());
+		paramObj.put("messageId", be3.getMsgId());
+		paramObj.put("msgCont", be3.getHtmlContent());
+		getSqlMapClientTemplate().update("updateEmailResources", be3);
+
+	}
 }

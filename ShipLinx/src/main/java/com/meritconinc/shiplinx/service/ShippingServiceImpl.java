@@ -66,6 +66,10 @@ import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
+
+
+
 
 public class ShippingServiceImpl implements ShippingService {
 
@@ -942,7 +946,14 @@ public class ShippingServiceImpl implements ShippingService {
       String subject = MessageUtil.getMessage("message.send.rates.notification.subject", locale);
       subject = new String(subject.replaceAll("%CUSTOMERNAME", customer.getName()));
 
-      String body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
+      /*   String body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
+         */
+            String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_SHIP_RATE);
+            
+      
+            if (body == null || body.length() == 0) {
+          	    body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
+            }
 
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send rates notification for business "
@@ -1175,7 +1186,12 @@ public class ShippingServiceImpl implements ShippingService {
     	      	  subject = MessageUtil.getMessage("label.subject.shipment.notification");
     	        }
 
-      String body = MessageUtil.getMessage("mail.shipment.notification.body");
+    	        /* String body = MessageUtil.getMessage("mail.shipment.notification.body");*/
+    	              String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_SHIP_NOTIFY);
+    	             
+    	             if (body == null || body.length() == 0) {
+    	            	body = MessageUtil.getMessage("mail.shipment.notification.body");
+    	              }
 
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send rates notification for business "
@@ -1484,7 +1500,13 @@ public class ShippingServiceImpl implements ShippingService {
       String subject = MessageUtil.getMessage("label.created.warehouse.order.subject", locale);
       subject = new String(subject.replaceAll("%CUSTOMERNAME", so.getCustomer().getName()));
 
-      String body = MessageUtil.getMessage(user.getBusiness().getOrderNotificationBody(), locale);
+      /*String body = MessageUtil.getMessage(user.getBusiness().getOrderNotificationBody(), locale);
+            */
+            String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(),ShiplinxConstants.MSGID_EMAIL_WAREHOUSE_ORDER);
+            
+            if (body == null || body.length() == 0) {
+          	   body = MessageUtil.getMessage(user.getBusiness().getOrderNotificationBody(), locale); 
+              }
 
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send order creation notification for customer "
@@ -1815,8 +1837,13 @@ public class ShippingServiceImpl implements ShippingService {
       String subject = MessageUtil.getMessage("message.send.rates.notification.subject", locale);
       subject = new String(subject.replaceAll("%CUSTOMERNAME", customer.getName()));
 
-      String body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
-
+      /*String body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);*/
+      String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_SHIP_RATE);
+      
+      
+            if (body == null || body.length() == 0) {
+          	  body  = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
+            }
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send rates notification for business "
             + user.getBusiness().getName());
@@ -2030,8 +2057,12 @@ public class ShippingServiceImpl implements ShippingService {
 
       String subject = MessageUtil.getMessage("label.subject.cancel.shipment.notification");
 
-      String body = MessageUtil.getMessage("mail.cancel.shipment.notification.body");
-
+      /*String body = MessageUtil.getMessage("mail.cancel.shipment.notification.body");
+*/
+             String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(),ShiplinxConstants.MSGID_EMAIL_SHIP_CANCEL_NOTIFY);
+             if (body == null || body.length() == 0) {
+          	     body = MessageUtil.getMessage("mail.cancel.shipment.notification.body");
+               } 
       if (body == null || body.length() == 0) {
         log.error("Cannot find template to send rates notification for business "
             + business.getName());
