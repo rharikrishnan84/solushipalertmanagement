@@ -77,6 +77,22 @@ function showOrHideException()
 </s:else>
 </s:if>
 <s:else>
+<s:if test="%{#session.actionError != null}">
+<div class="content">	
+<div class="content_body" >	
+	<div class="content_table" id="contenttbl" style="background-color:#FFF;width:960px !important;">
+		<div id="errorMsgContainer">
+				<s:actionerror cssClass="actionErrorStyle" cssStyle="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;"/>
+				<s:fielderror cssClass="fieldErrorStyle" />
+				<ul class="actionErrorStyle" style="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;">
+				<li><s:property value="%{#session.actionError}"/></li></ul>
+				<%request.getSession().removeAttribute("actionError");%>
+		</div>
+	</div>
+</div>
+</div>
+</s:if>
+<s:else>
 <div class="content" >	
 <div class="content_body" >	
 	<div class="content_table" id="contenttbl"  style="background-color:#FFF;">
@@ -86,4 +102,5 @@ function showOrHideException()
 	</div>
 </div>
 </div>	
+</s:else>
 </s:else>

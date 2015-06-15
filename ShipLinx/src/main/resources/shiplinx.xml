@@ -90,14 +90,22 @@
 			<result type="tiles" name="daoException">dao.error</result>
 		</global-results>
 	</package>
-	
+	<package name="image" namespace="/admin" extends="struts-default">
+    <result-types>
+		<result-type name="imageResult"
+			class="com.meritconinc.mmr.action.security.CustomImageBytesResult" />
+	</result-types>
+	<action name="ImageAction" 
+		class="com.meritconinc.mmr.action.security.ImageAction">
+		<result name="success" type="imageResult">
+		</result>
+	</action>   
+ </package>
 
 
 	<package name="publicArea" namespace="/" extends="mmr-default">
 		<default-interceptor-ref name="basicStack-mmr" />
- 		<action name="ImageAction" method="getImage" class="logonAction">
-            <result name="success"> </result>
-        </action>
+ 		
 		<action name="logon.*" method="{1}" class="logonAction">
 			<result name="input">/mmr/jsp/welcome/login.jsp</result>
 			<result name="login" type="redirect">

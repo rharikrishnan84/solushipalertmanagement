@@ -229,7 +229,7 @@ function removeCustomAlert() {
 					<s:else>
 				 <%--   <img src="<%=session.getAttribute("logoImg") %>>"> --%>
 		    	<%-- 	 <img   src='<jsp:include page="../welcome/img.jsp"></jsp:include>'> --%>
-			     <img  src="/ShipLinx/ImageAction.action?id=logoImg">
+			     <img src="<s:url action='ImageAction?id=logoImg' />" />
 					</s:else>
 					</div>
 					<div class="top_navi">

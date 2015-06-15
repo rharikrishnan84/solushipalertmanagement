@@ -172,7 +172,6 @@ public class MmrInterceptor extends MmrBaseInterceptor {
 				   }
 				   if(business!=null && business.getCssVO()!=null){
 							 setCssText(business.getCssVO().getCssText());
-							 System.out.println(getCssText());
 							 if(getCssText()!=null){
 								 ActionContext.getContext().getSession().put("cssText",getCssText());
 							 }

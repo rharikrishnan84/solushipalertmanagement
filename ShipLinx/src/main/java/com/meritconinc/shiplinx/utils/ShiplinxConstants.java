@@ -186,7 +186,10 @@ public class ShiplinxConstants {
 
 	public static final String CHARGE_NAME_ADDITIONAL_HANDLING = "Additional Handling";
 	
-	private static String instanceName = null;	
+	private static String instanceName = null;
+
+
+	public static String BUSINESS_HELP_DIR="/home/soluship/solushipfiles"+"/helpMenu/";	
 	
 	// Entity Types for Logging Events
 	public static final int ENTITY_TYPE_ORDER_VALUE = 10;
@@ -460,5 +463,18 @@ public class ShiplinxConstants {
 	 	 					 public static final String COUNTRY_US="US";
 	 	 					 public static final String COUNTRY_MX="MX";
 	 	 					 public static final String COUNTRY_CN="CN";
+	 	 					 
+	    public static final String LAPTOP_CSS = "laptop.css";
+		public static final String DEMO_TABLE_CSS = "demo_table.css";
+		public static final String MSGID_EMAIL_SHIP_PICKUP="Pick Up Notification";
+		public static final String MSGID_EMAIL_CUS_NOTIFY="Customer Notification";
+		public static final String MSGID_EMAIL_SHIP_NOTIFY="Shipment Notification";
+		public static final String MSGID_EMAIL_SHIP_CANCEL_NOTIFY="Shipment Cancel Notification";
+		public static final String MSGID_EMAIL_NEW_CUSTOMER="New Customer Notification";
+		public static final String MSGID_EMAIL_SHIP_RATE="Shipping Rate Notification";
+		public static final String MSGID_EMAIL_INVOICE_NOTIFY="Invoice Notification";
+		public static final String MSGID_EMAIL_SALESREP_NEWCUS="Sales User's New Customer";
+		public static final String MSGID_EMAIL_WAREHOUSE_ORDER="Ware House Order Creation";
+		public static final String MSGID_EMAIL_FORGOT_PWD="Forgot Password";
 }
 	

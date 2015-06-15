@@ -3223,7 +3223,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					if(shippingService.sendShipmentNotificationMail(shippingOrder,UserUtil.getMmrUser().getBusiness()))
 						addActionMessage(MessageUtil.getMessage("shipment.notification.mail.success"));
 					else
-						addActionError(MessageUtil.getMessage("shipment.notification.mail.failure"));
+						ActionContext.getContext().getSession().put("actionError", MessageUtil.getMessage("shipment.notification.mail.failure"));
+						//addActionError(MessageUtil.getMessage("shipment.notification.mail.failure"));
 				}
 				addressService.setSendNotification(shippingOrder.getFromAddress().getAddressId());
 				addressService.setSendNotification(shippingOrder.getToAddress().getAddressId());
