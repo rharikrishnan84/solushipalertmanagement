@@ -572,7 +572,7 @@ public String getSalesRep() {
 	  		    /// New Code
 	  		 for(Invoice invoiceResult : invoices){
 	  			 
-	  			List<Charge> chargesList =  invoiceManager.getChargeExchangeRateByInvoiceId(invoiceResult.getInvoiceId());
+	  		/*	List<Charge> chargesList =  invoiceManager.getChargeExchangeRateByInvoiceId(invoiceResult.getInvoiceId());
 			      if(chargesList==null || chargesList.size()==0){
 			    	   continue;
 			      }
@@ -580,7 +580,7 @@ public String getSalesRep() {
 			    	 // invoiceResult.setInvoiceAmount(invoiceResult.getInvoiceAmount() * chargesList.get(0).getExchangerate().doubleValue() );
 			    	  //invoiceResult.setInvoiceCost(invoiceResult.getInvoiceCost() * chargesList.get(0).getExchangerate().doubleValue());
 			    	  //invoiceResult.setInvoiceTax(invoiceResult.getInvoiceTax() * chargesList.get(0).getExchangerate().doubleValue());
-			      }
+			      }*/
 	  			 //Invoice invoiceObj = invoiceManager.getInvoiceById(invoiceResult.getInvoiceId());
 				    shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 				    CurrencySymbol currencySymbol = new CurrencySymbol();
