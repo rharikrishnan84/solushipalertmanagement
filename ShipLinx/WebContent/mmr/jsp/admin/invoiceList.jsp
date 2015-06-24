@@ -134,6 +134,9 @@
 				}
 				
 				window.location.href="download.csv.invoice.action?invoiceId="+invoiceId;
+				$('#loader').css('display','block');
+				$('#loaderImg').css('display','block');
+				setTimeout(function(){location.reload();}, 15000);
 			}
 			
 			
@@ -167,6 +170,9 @@
 				}
 				
 				window.location.href="print.invoice.action?invoiceId="+invoiceId;
+				$('#loader').css('display','block');
+				$('#loaderImg').css('display','block');
+				setTimeout(function(){location.reload();}, 15000);
 			}
 			
 			

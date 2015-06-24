@@ -156,6 +156,15 @@ function removeCustomAlert() {
 			   var url="<%=request.getContextPath()%>/helpMenu.action";
 			   window.open(url,'','width=842,height=540,left=100,top=100,scrollbars=1');
 			  }
+		
+		function contactFile() {
+						   var url="<%=request.getContextPath()%>/contactMenu.action";
+						   window.open(url,'','width=842,height=540,left=100,top=100,scrollbars=1');
+						  }
+					function feedbackFile() {
+						   var url="<%=request.getContextPath()%>/feedbackMenu.action";
+						   window.open(url,'','width=842,height=540,left=100,top=100,scrollbars=1');
+						  }
 	 
 	  function supportURL(){   
 		  var supportURL=document.getElementById("supportURL").value;		 
@@ -234,10 +243,12 @@ function removeCustomAlert() {
 					</div>
 					<div class="top_navi">
 						<ul>
-							<li><a href=""><mmr:message messageId="menu.contactus"/></a></li>
+							<%-- <li><a href=""><mmr:message messageId="menu.contactus"/></a></li>
 							<li><a href=""><mmr:message messageId="menu.websitefeedback"/></a></li>
-							<li><a href=""><mmr:message messageId="menu.francais"/></a></li>
+							<li><a href=""><mmr:message messageId="menu.francais"/></a></li> --%>
 							<li><a href="javascript:helpFile();"><mmr:message messageId="menu.help"/></a></li>
+							<li><a href="javascript:contactFile();"><mmr:message messageId="menu.contactus"/></a></li>
+							<li><a href="javascript:feedbackFile();"><mmr:message messageId="menu.websitefeedback"/></a></li>
 							<li id="logout"><a href="<%=request.getContextPath()%>/logout.action"><mmr:message messageId="menu.logout"/></a></li>
 						</ul>
 						

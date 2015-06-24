@@ -89,6 +89,9 @@ public class Business {
 	private int defaultHoldTerms;
 	private CSSVO cssVO;
 	
+	private String contactPath;
+	private String feedbackPath;
+	
 		public CSSVO getCssVO() {
 			return cssVO;
 		}
@@ -472,6 +475,22 @@ public class Business {
 					}
 				public void setBranchLevel(boolean branchLevel) {
 						this.branchLevel = branchLevel;
+				}
+
+				public String getContactPath() {
+					return contactPath;
+				}
+
+				public void setContactPath(String contactPath) {
+					this.contactPath = contactPath;
+				}
+
+				public String getFeedbackPath() {
+					return feedbackPath;
+				}
+
+				public void setFeedbackPath(String feedbackPath) {
+					this.feedbackPath = feedbackPath;
 				}
 						
 			

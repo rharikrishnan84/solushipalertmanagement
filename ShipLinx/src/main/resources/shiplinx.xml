@@ -217,6 +217,20 @@
     			 <param name="inputName">inputStream</param>
 			</result>
 		</action>
+		
+		<action name="contactMenu" method="contact" class="menuAction">
+			            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+		</action>
+		
+		<action name="feedbackMenu" method="feedback" class="menuAction">
+			            <result name="success" type="stream">
+           	     <param name="contentType">text/html</param>
+    			 <param name="inputName">inputStream</param>
+			</result>
+		</action>
         
 		<action name="access.denied" class="com.meritconinc.mmr.action.common.GenericAction">
 			<result name="success" type="tiles">access.denied</result>
@@ -239,9 +253,9 @@
         
       
         
-         <action name="distribution.list" method="distributionList" class="AddressbookAction">
+         <!-- <action name="distribution.list" method="distributionList" class="AddressbookAction">
 			<result type="tiles">search.distributionList</result>
-         </action>
+         </action> -->
          <action name="upload.distribution.init" method="uploadInit" class="AddressbookAction">
 			<result type="tiles">upload.distributionList</result>
          </action>
@@ -305,9 +319,9 @@
 			<result type="tiles" name="input">address</result>		
             <result type="redirectAction" name="success">addressbook.list.req</result>
         </action>
-        <action name="new.address" class="AddressbookAction">
+        <!-- <action name="new.address" class="AddressbookAction">
             <result type="tiles" name="success">address</result>
-        </action>
+        </action> -->
         
         <action name="delete.address" method="delete" class="AddressbookAction">
             <result type="redirectAction" name="success">addressbook.list.req</result>
@@ -407,8 +421,8 @@
 			</result>
         </action>
         
-        <action name="search.address" method="searchAddress" class="AddressbookAction">
-           <!--  <result name="success">/mmr/jsp/admin/addressList.jsp</result>--> 
+        <!-- <action name="search.address" method="searchAddress" class="AddressbookAction">
+            <result name="success">/mmr/jsp/admin/addressList.jsp</result> 
            	<result type="tiles" name="success">search.addressbook</result>
         </action>
          <action name="addressbook.list.req" method="list" class="AddressbookAction">
@@ -423,7 +437,7 @@
         <action name="uploadaddressbook" method="upload" class="AddressbookAction">
             <result type="tiles" name="success">upload.address</result>
             <result type="tiles" name="input">upload.address</result>
-        </action>
+        </action> -->
         
 		<!-- 
 		<action name="viewChangePswd" method="viewChangePswd" class="userAdminAction">
@@ -1356,7 +1370,7 @@
           <interceptor-ref name="fileUpload">
 				<param name="maximumSize">2097152</param>
 				<param name="allowedTypes">
-					image/png,image/gif,image/jpeg,image/pjpeg
+					image/png,image/gif,image/jpeg,image/pjpeg,image/x-icon
 				</param>
 			</interceptor-ref>
 			<interceptor-ref name="defaultStack"></interceptor-ref>
@@ -2016,6 +2030,33 @@
        		<action name="viewBranch" method="viewBranch" class="businessFilterAction">
             <result type="tiles" name="success">view.branch</result>
        	</action>
+       	
+       	<action name="new.address" class="AddressbookAction">
+            <result type="tiles" name="success">address</result>
+        </action>
+        
+        <action name="search.address" method="searchAddress" class="AddressbookAction">
+            <result name="success">/mmr/jsp/admin/addressList.jsp</result> 
+           	<result type="tiles" name="success">search.addressbook</result>
+        </action>
+         <action name="addressbook.list.req" method="list" class="AddressbookAction">
+			<result type="tiles">search.addressbook</result>
+         </action>
+        <action name="search.address2" method="search" class="AddressbookAction">
+			 <result type="tiles" name="success">search.addressbook</result>
+         </action>
+         <action name="upload.addressbook" method="upload" class="AddressbookAction">
+            <result type="tiles" name="success">upload.address</result>
+        </action>        
+        <action name="uploadaddressbook" method="upload" class="AddressbookAction">
+            <result type="tiles" name="success">upload.address</result>
+            <result type="tiles" name="input">upload.address</result>
+        </action>
+       	
+       	
+       	<action name="distribution.list" method="distributionList" class="AddressbookAction">
+			<result type="tiles">search.distributionList</result>
+         </action>
        	<!-- END  -->
       	
       	

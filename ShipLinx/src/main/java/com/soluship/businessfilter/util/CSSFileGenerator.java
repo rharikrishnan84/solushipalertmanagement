@@ -277,8 +277,132 @@ public class CSSFileGenerator {
 					}
 			 }
 			 
+			 if(css.getSelector()!=null && css.getSelector().contains(".navi4 ul li") ||
+					 					 css.getSelector().contains(".navi4 ul li")){
+					 				 if(css.getPropertyMap().get("background-color")!=null
+					 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#000000")||
+					 								 css.getPropertyMap().get("background-color").equalsIgnoreCase("#000") )){
+					 						css.getPropertyMap().put("background-color", cssVo.getBarSecondColor());
+					 						
+					 					}
+					 			 }
 			 
-			 
+			//vijay code
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".package1")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }	
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".package2")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }	
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".package3")){
+			 				 if(css.getPropertyMap().get("color")!=null
+			 						 && (css.getPropertyMap().get("color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".back_shipment_list")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".cancel_shipment")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".saveCharge")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".deleteCharge")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains(".addCharge")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains("#confirmCancelBtn")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 if(css.getSelector()!=null && css.getSelector().contains("#confirmBtn")){
+			 				 if(css.getPropertyMap().get("background-color")!=null
+			 						 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000")|| 
+			 						 css.getPropertyMap().get("background-color").equalsIgnoreCase("#990000"))){
+			 						css.getPropertyMap().put("background-color", cssVo.getButtonColor());
+			 						
+			 					}
+			 			 }
+			 			 
+			 			 //selva popup
+			 			 
+			 			if(css.getSelector()!=null && css.getSelector().contains("#alertBox")){
+			 								 			 				 if(css.getPropertyMap().get("border")!=null
+			 								 		 						){  
+			 								 			 						css.getPropertyMap().put("border", "2px solid "+cssVo.getButtonColor());
+			 								 			 						
+			 								 			 					}
+			 								 			 			 }
+			 								 			 			 if(css.getSelector()!=null && css.getSelector().contains("#confirmBox")){
+			 								 			 				 if(css.getPropertyMap().get("border")!=null
+			 								 		 						){  
+			 								 			 						css.getPropertyMap().put("border", "2px solid "+cssVo.getButtonColor());
+			 								 			 						
+			 								 			 					}
+			 								 			 			 }
+			 								 			 			 if(css.getSelector()!=null && css.getSelector().contains("#alertBox2")){
+			 								 			 				 if(css.getPropertyMap().get("border")!=null
+			 								 		 						){  
+			 								 			 						css.getPropertyMap().put("border", "2px solid "+cssVo.getButtonColor());
+			 								 			 						
+			 								 			 					}
+			 								 			 			 }
+
+			 			 
 		}
 		System.out.println("\nAfter Updation--------\n" );
 		print(cssClassList);
@@ -312,7 +436,7 @@ public class CSSFileGenerator {
 				 String key = (String) iterator.next();
 				 String value = (String)css.getPropertyMap().get(key);
 				 
-				 System.out.println("Key: "+ key+", Value: "+ value);
+				/* System.out.println("Key: "+ key+", Value: "+ value);*/
 				  
 				  }
 			 }

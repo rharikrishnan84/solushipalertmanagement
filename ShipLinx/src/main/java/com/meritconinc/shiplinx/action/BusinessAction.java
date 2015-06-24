@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.image4j.codec.ico.ICODecoder;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -43,15 +45,20 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+
 import it.businesslogic.ireport.undo.ITransformation;
+
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Iterator; 
 import java.util.Set;
+
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.struts2.interceptor.ServletResponseAware;
+
 import com.meritconinc.mmr.dao.MessageDAO;
 import com.meritconinc.shiplinx.model.BusinessEmail;
 import com.meritconinc.shiplinx.model.BusinessFilter;
@@ -621,6 +628,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 					    getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getSysadminLevelCustomers());
 						businessList = businessDAO.getAllBusiness();
 						addHelpMenuDirecotry();
+						addContactDictionary();
+						addFeedbackDictionary();
 						getSession().remove("editBusiness");
 					    getSession().put("saveBus", "success");
 					    getSession().remove("emailRList");
@@ -636,6 +645,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				menuVo = menuItemDAO.getAllMenu();
 				addActionError(getText("business.save.error"));
 				getSession().put("editBusiness","false");
+				e.printStackTrace();
 				return INPUT;
 			}
 			
@@ -675,6 +685,84 @@ private List<BusinessEmail> removeListWithBusEmailId(
 	  }
 	 /* }*/
 	 }
+	 
+	 void addFeedbackDictionary(){
+		 		  /*String staticpath=business.getReportHelpPath();*/
+		 		  businessList = businessDAO.getAllBusiness();
+		 		  boolean flag = true;
+		 		  String staticpath=null;
+		 		  staticpath = business.getFeedbackPath();
+		 		  if(staticpath==null){
+		 			  staticpath=ShiplinxConstants.BUSINESS_HELP_DIR;
+		 		  }else{
+		 			  //String contact1 = staticpath+"/contact_"+bus
+		 			  flag = false;
+		 		  }
+		 		  File f=new File(staticpath);
+		 		  if(!f.isDirectory()){
+		 		   f.mkdir();
+		 		  }
+		 		  Business bus=BusinessFilterUtil.getSuperParentBusiness(business.getId());
+		 		  if(bus!=null)
+		 		  {
+		 		   long busId=bus.getId();
+		 		   String feedback = null;
+		 		   if(flag){
+		 			   feedback=staticpath+"feedback"+"_"+busId;
+		 		   }else{
+		 			   feedback=staticpath+"/feedback"+"_"+busId; 
+		 		   }
+		 		  
+		 		  System.out.println(feedback+"    feedback is ");
+		 		  File file = new File(feedback);
+		 		  /*if (!file.exists()) {*/
+		 		   if (file.mkdir()) {
+		 		    System.out.println("Directory is created!");
+		 		   } else {
+		 		    System.out.println("Failed to create directory!");
+		 		   }
+		 		  }
+		 		 /* }*/
+		 		 }
+		 	 
+		 	 void addContactDictionary(){
+		 		  /*String staticpath=business.getReportHelpPath();*/
+		 		  businessList = businessDAO.getAllBusiness();
+		 		  boolean flag = true;
+		 		  String staticpath=null;
+		 		  staticpath = business.getContactPath();
+		 		  if(staticpath==null){
+		 			  staticpath=ShiplinxConstants.BUSINESS_HELP_DIR;
+		 		  }else{
+		 			  //String contact1 = staticpath+"/contact_"+bus
+		 			  flag = false;
+		 		  }
+		 		  File f=new File(staticpath);
+		 		  if(!f.isDirectory()){
+		 		   f.mkdir();
+		 		  }
+		 		  Business bus=BusinessFilterUtil.getSuperParentBusiness(business.getId());
+		 		  if(bus!=null)
+		 		  {
+		 		   long busId=bus.getId();
+		 		   String contact = null;
+		 		   if(flag){
+		 			   contact=staticpath+"contact"+"_"+busId;
+		 		   }else{
+		 			   contact=staticpath+"/contact"+"_"+busId; 
+		 		   }
+		 		  
+		 		  System.out.println(contact+"    contact is ");
+		 		  File file = new File(contact);
+		 		  /*if (!file.exists()) {*/
+		 		   if (file.mkdir()) {
+		 		    System.out.println("Directory is created!");
+		 		   } else {
+		 		    System.out.println("Failed to create directory!");
+		 		   }
+		 		  }
+		 		 /* }*/
+		 		 }
 	
 	/**
 	 * update the Email Configuration of the
@@ -862,6 +950,22 @@ private List<BusinessEmail> removeListWithBusEmailId(
 					cssVo.setEmailHeaderByte((getByteImg(fileName)));
 				}
 				
+				/*fileName = cssVo.getFavIcon().getAbsolutePath();
+								if (getByteImg(fileName) != null) {
+									System.out.println(fileName + "\n"
+											+ (getByteImg(fileName)).length);
+									cssVo.setFavIconByte((getByteImg(fileName)));
+								}*/
+				
+				if(cssVo.getFavIcon() != null){
+									fileName = cssVo.getFavIcon().getAbsolutePath();
+									if (getByteImg1(fileName, cssVo.getFavIcon()) != null) {
+										System.out.println(fileName + "\n"
+												+ (getByteImg1(fileName, cssVo.getFavIcon())).length);
+										cssVo.setFavIconByte((getByteImg1(fileName, cssVo.getFavIcon())));
+									}
+									}
+				
 				
 				if (cssVo != null) {
 					cssVo.setBusinessId(businessId);
@@ -921,6 +1025,42 @@ private List<BusinessEmail> removeListWithBusEmailId(
 	
 					}
 					
+					/*fileName=cssVo.getFavIcon();
+															if (fileName != null) {
+																File file = new File(fileName);
+																BufferedImage bi = ImageIO.read(file);
+																int width = bi.getWidth();
+																int height = bi.getHeight();
+											
+																if (width == 16 && height == 16) {
+																	byte b[] = getByteImg(fileName);
+																	cssVo.setFavIconByte(b);
+																} else {
+											                       editBusiness();
+											                       addActionError("FavIcon Width and Height should be 16 and 16");
+										 							return "fail";
+										 						}
+															}*/
+					if(cssVo.getFavIcon() != null){
+					fileName=cssVo.getFavIcon().getAbsolutePath();
+															if (fileName != null) {
+																File file = new File(fileName);
+																List<BufferedImage> image = ICODecoder.read(cssVo.getFavIcon());
+																BufferedImage bi = image.get(0);
+																int width = bi.getWidth();
+															int height = bi.getHeight();
+											
+																if (width == 16 && height == 16) {
+																	byte b[] = getByteImg1(fileName, cssVo.getFavIcon());
+																	cssVo.setFavIconByte(b);
+																} else {
+											                       editBusiness();
+											                       addActionError("FavIcon Width and Height should be 16 and 16");
+																	return "fail";
+																}
+											
+															}
+					}
 					if (cssVo != null && business.getId() != 0) {
 						cssVo.setCssText(cssText);
 						cssVo.setBusinessId(Long.valueOf(business.getId()));
@@ -973,6 +1113,42 @@ private List<BusinessEmail> removeListWithBusEmailId(
 	
 					}
 					
+					/*fileName=cssVo.getFavIcon();
+															if (fileName != null) {
+																File file = new File(fileName);
+																BufferedImage bi = ImageIO.read(file);
+																int width = bi.getWidth();
+																int height = bi.getHeight();
+											
+																if (width == 16 && height == 16) {
+																	byte b[] = getByteImg(fileName);
+																	cssVo.setFavIconByte(b);
+																} else {
+											                       editBusiness();
+											                       addActionError("FavIcon Width and Height should be 16 and 16");
+										 							return "fail";
+										 						}
+															}*/
+					if(cssVo.getFavIcon() != null){
+					fileName=cssVo.getFavIcon().getAbsolutePath();
+															if (fileName != null) {
+																File file = new File(fileName);
+																List<BufferedImage> image = ICODecoder.read(cssVo.getFavIcon());
+																BufferedImage bi = image.get(0);
+																int width = bi.getWidth();
+																int height = bi.getHeight();
+											
+																if (width == 16 && height == 16) {
+																	byte b[] = getByteImg1(fileName, cssVo.getFavIcon());
+																	cssVo.setFavIconByte(b);
+																} else {
+											                       editBusiness();
+											                       addActionError("Backgroud Image Width and Height should be 16 and 16");
+																	return "fail";
+																}
+											
+															}
+					}
 					if (cssVo != null && business.getId() != 0) {
 						cssVo.setCssText(cssText);
 						cssVo.setBusinessId(Long.valueOf(business.getId()));
@@ -995,6 +1171,28 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				try {
 					File file = new File(fileName);
 					BufferedImage bi = ImageIO.read(file);
+					if (bi != null) {
+						InputStream is = new FileInputStream(file);
+						byte b[] = new byte[(int) file.length()];
+						is.read(b);
+					return b;
+				}
+				} catch (Exception e) {
+					return null;
+				}
+			}
+			return null;
+		}
+		
+		private byte[] getByteImg1(String fileName, File favIcon) {
+			// TODO Auto-generated method stub
+	
+			if (fileName != null) {
+	
+				try {
+					File file = new File(fileName);
+					List<BufferedImage> image = ICODecoder.read(favIcon);
+					BufferedImage bi = image.get(0);
 					if (bi != null) {
 						InputStream is = new FileInputStream(file);
 						byte b[] = new byte[(int) file.length()];
@@ -1218,7 +1416,33 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				 		} else {
 				 			addActionError(getText("Please Upload BackGround Image "));
 				 		}
-		 }
+				 		
+				 		if (business.getCssVO() != null
+					 				&& business.getCssVO().getFavIcon() != null) {
+					 			String fileName = business.getCssVO().getFavIcon().getAbsolutePath();
+					 
+					 			if (fileName != null) {
+					 				try {
+					 					File file = new File(fileName);
+					 					List<BufferedImage> image = ICODecoder.read(business.getCssVO().getFavIcon());
+					 					BufferedImage bi = ImageIO.read(file);
+					 					int width = bi.getWidth();
+					 					int height = bi.getHeight();
+					 					if (!(width == 16 && height == 16)) {
+					 						addActionError(getText("FavIcon Resolustion is 16x16 pixels"));
+					 						i++;
+					 					}
+					 				} catch (Exception e) {
+					 					addActionError(getText("Error in the Image File"));
+					 					i++;
+					 				}
+					 
+					 			}
+					 		} else {
+					 			addActionError(getText("Please Upload FavIcon "));
+		 								 		}
+ }
+		 
 				 		/*if (business.getCssVO() != null
 				 			&& business.getCssVO().getEmailHeader() != null) {
 				 			String fileName = business.getCssVO().getEmailHeader();

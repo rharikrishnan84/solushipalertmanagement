@@ -170,7 +170,13 @@ public class ImageAction extends ActionSupport  implements ServletRequestAware{
 		   	    		  b=defBus.getCssVO().getBackGroudImgByte();
 		   	    	  }
 		   	      }
-		   		 
+		   	   else if(img!=null && img.equals("favIcon")){
+		   					   	    	 if(business.getCssVO()!=null && business.getCssVO().getFavIconByte()!=null){
+		   					   	    		  b=business.getCssVO().getFavIconByte();
+		   					   	    	  }else{
+		   					   	    		  b=defBus.getCssVO().getFavIconByte();
+		   					   	    	  }
+		   					   	      }
 		   	      return b;
 		   }
 		}catch(Exception e){
@@ -180,6 +186,7 @@ public class ImageAction extends ActionSupport  implements ServletRequestAware{
 		     }
 	   public   byte[] logo=null;
 	   public   byte[] backG=null;
+	   public	byte[] fav=null;
 	   private byte[] loadImgForOtherUser() {
 		// TODO Auto-generated method stub
 		   
@@ -219,6 +226,16 @@ public class ImageAction extends ActionSupport  implements ServletRequestAware{
 		 	    	  }
 	 	    	  }
 	 	    	  return backG;
+	 	     }else if(img!=null && img.equals("favIcon")){
+	 	    		 	    		 	    	  if(fav==null){
+	 	    		 	    			 	    	  if(business.getCssVO()!=null && business.getCssVO().getFavIconByte()!=null){
+	 	    		 	    			 	    		 fav=business.getCssVO().getFavIconByte();
+	 	    		 	    			 	    	  }else{
+	 	    		 	    	
+	 	    		 	    			 	    		 fav=defBus.getCssVO().getFavIconByte();
+	 	    		 	    			 	    	  }
+	 	    		 	    		 	    	  }
+	 	    		 	    		 	    	  return fav;
 	 	      }
 	 	
 	 

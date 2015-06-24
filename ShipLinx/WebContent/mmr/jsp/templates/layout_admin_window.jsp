@@ -24,8 +24,22 @@
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Pragma"        content="no-cache">
 <meta http-equiv="Expires"       content="-1">
-<link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon"/>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/skins/aqua/theme.css">
+<%-- <link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon"/>
+ --%>
+ <s:if test="%{#session.ROLE.contains('sysadmin')}">									
+<link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon"/> 
+ </s:if>
+ <s:else>
+<!--  <link rel="icon" href="/ShipLinx/admin/ImageAction.action?id=favIcon" type="image/x-icon">
+ --> 
+ 
+<%--   <link rel="icon" type="image/x-icon" href="<s:url value='ImageAction.action?id=favIcon' includeContext="true"/>" /> 
+ --%>
+   <link rel="icon" href="<s:url value='ImageAction.action?id=favIcon' includeContext="true"/>" /> 
+ 
+  </s:else>
+ 
+ <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/skins/aqua/theme.css">
 <script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar-setup.js" type="text/javascript"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/lang/calendar-en.js"></script>

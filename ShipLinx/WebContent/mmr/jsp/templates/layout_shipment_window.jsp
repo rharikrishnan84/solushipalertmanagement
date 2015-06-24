@@ -12,7 +12,17 @@
 <html>
 
 <head>
-<link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon.ico"/>
+<%-- <link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon.ico"/> --%>
+
+<s:if test="%{#session.ROLE.contains('sysadmin')}">									
+<link rel="icon" href="<%=request.getContextPath()%>/mmr/images/menu/favicon.ico" type="image/x-icon"/> 
+ </s:if>
+ <s:else>
+<!--  <link rel="icon" href="/ShipLinx/admin/ImageAction.action?id=favIcon" type="image/x-icon">
+ --> 
+ 
+  <link rel="icon" type="image/x-icon" href="<s:url value='ImageAction.action?id=favIcon' includeContext="true"/>" /> 
+ </s:else>
 	<link rel="stylesheet" type="text/css"	href="<s:url value='%{#session.cssToLoad}' includeContext="true"/>" /> 
 	<script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar.js" type="text/javascript"></script>
 	<script src="<%=request.getContextPath()%>/mmr/scripts/jsCalendar/calendar-setup.js" type="text/javascript"></script>

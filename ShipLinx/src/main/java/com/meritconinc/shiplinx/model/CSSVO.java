@@ -1,5 +1,6 @@
 package com.meritconinc.shiplinx.model;
 
+import java.io.File;
 import java.util.List;
 
 import com.meritconinc.mmr.model.common.LocaleVO;
@@ -58,6 +59,34 @@ public class CSSVO {
 	private String backImg;
 	private String backImgFileName;
 	private String footerFontColor;
+/*	private String favIcon;
+*/	
+	
+	private File  favIcon;
+	private String  favIconFileName;
+	private String  favIconContentType;
+	private String footer1;
+	private String footer2;
+	
+	public String getFooter1() {
+				return footer1;
+		}
+		
+		
+			public void setFooter1(String footer1) {
+				this.footer1 = footer1;
+			}
+		
+		
+			public String getFooter2() {
+				return footer2;
+			}
+		
+		
+			public void setFooter2(String footer2) {
+				this.footer2 = footer2;
+			}
+
 	
 	public String getFooterFontColor() {
 			return footerFontColor;
@@ -333,6 +362,38 @@ public class CSSVO {
 
 	public void setLocales(List<LocaleVO> locales) {
 		this.locales = locales;
+	}
+
+
+	
+
+	public String getFavIconFileName() {
+		return favIconFileName;
+	}
+
+
+	public void setFavIconFileName(String favIconFileName) {
+		this.favIconFileName = favIconFileName;
+	}
+
+
+	public File getFavIcon() {
+		return favIcon;
+	}
+
+
+	public void setFavIcon(File favIcon) {
+		this.favIcon = favIcon;
+	}
+
+
+	public String getFavIconContentType() {
+		return favIconContentType;
+	}
+
+
+	public void setFavIconContentType(String favIconContentType) {
+		this.favIconContentType = favIconContentType;
 	}
 
 	 

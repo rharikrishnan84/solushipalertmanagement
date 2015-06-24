@@ -284,11 +284,13 @@ function loadTrackingURL(url){
 		.form_buttons{ float:right;}
 		
 	</style>
+	
+	
 <div class="content_body" >	
 	<div class="content_table" style="background-color:#fff;margin-top:1px">
 	<div id="srchusr_res"><span><mmr:message messageId="label.track.header.listshipment"/></span></div>
-	<div id="rates_result_tbl">
-		<div id="rate_results" >
+	<div id="rates_result_tbl" >
+		<div id="rate_results">
 			<div class="form_buttons">
 			<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>

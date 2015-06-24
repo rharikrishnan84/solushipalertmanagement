@@ -332,30 +332,36 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 										</div>
 										</s:if>
 										<div class="fields">
+										
+										
 											<label><mmr:message messageId="label.search.OrderBy" /></label>
-											<div class="controls"><span>:</span>
+											<div ><span>:&nbsp;&nbsp;</span>
 														<s:select  
 														name="shippingOrder.order" headerKey="1"
-														list="{'Asc','Desc'}" cssStyle="width:65px;"/>
-														<s:select 
+														list="{'Asc','Desc'}" cssStyle="width:60px;" cssClass="text_01_combo_small"/>
+															<s:select 
 														name="shippingOrder.orderBy" headerKey="1"
-														list="{'Order #','Shipment Date'}" cssStyle="width:68px; margin-right:5px;"/>
+														list="{'Order #','Shipment Date'}" cssStyle="width:85px; margin-right:5px;" cssClass="text_01_combo_small"/>
+													
+														
 														
 											
 												
 											</div>
+											
 										</div>
-										<div class="fields">
+									
+											
+									 	<div class="fields">
 											<label style="width:180px !important;"><mmr:message messageId="label.include.cancelled.shipments"/></label>
 											<div class="controls" style="width:35px !important; "><span>:</span>
 												<s:checkbox id="cancelled" cssStyle="width:20px; margin:5px 0px 0px 0px; float:right;" key="shippingOrder.showCancelledShipments"
 												name="shippingOrder.showCancelledShipments" />
 											</div>
-										</div>	
+										</div>	 
 									</div>	
 								</div>
-							</div>
-						</div>
+							</div>					</div>
 					
 		
 		<div id="formResult">

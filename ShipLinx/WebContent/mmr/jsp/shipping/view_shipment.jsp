@@ -556,24 +556,63 @@ var product_id=0;
 	
 	</SCRIPT>
 					<script>
+					function getStyle()
+										{
+											var bothColor;
+											<% String buttonColor=(String)request.getSession().getAttribute("buttonColor");
+											String barSecondColor=(String)request.getSession().getAttribute("barSecondColor");
+											
+											if(buttonColor==null)
+											{
+												buttonColor="#990000";
+											}
+										
+											if(barSecondColor==null)
+											{
+												barSecondColor="#000000";
+											}
+											
+											%>
+											bothColor=document.getElementById("buttonColor").value+","+document.getElementById("barSecondColor").value;
+											return bothColor;
+										}
 						$(document).ready(function(){
 							<%
 														 String isLTL=(String)request.getAttribute("isLTL");
 														 %>
+														 
+														 var colorCode=getStyle();
+														 var colorCodeSplit=colorCode.split(",");
+														 var buttonColor=colorCodeSplit[0];
+														 var barSecondColor=colorCodeSplit[1];
+														 
+														 $('#cancel_shipment').css('background-color',buttonColor);
+												           $('#back_shipment_list').css('background-color',buttonColor);
+												          $('.deleteCharge').css('background-color',buttonColor); 
+												          $('.saveCharge').css('background-color',buttonColor);
+												          $('.addCharge').css('background-color',buttonColor);
+												          $('.form_buttons a').css('background-color',buttonColor);
+								
+														 
 														var isLTL = <%=isLTL%>;
 														if(isLTL == "1"){
 															$('#box3').css('display','block');
 									   						$('#box1,#box2').css('display','none');
-									   						$('#box3').css('background-color','#990000');
-									   						$('.navi4 ul li:last-child').css('background-color','#990000');
+									   						/* $('#box3').css('background-color','#990000');
+									   						$('.navi4 ul li:last-child').css('background-color','#990000'); */
+									   						$('#box3').css('background-color',buttonColor);
+									   						$('.navi4 ul li:last-child').css('background-color',buttonColor);
 														}
 														else{
-							$('.navi4 ul li:first-child').css('background-color','#990000');
+							/* $('.navi4 ul li:first-child').css('background-color','#990000'); */
+							$('.navi4 ul li:first-child').css('background-color',buttonColor);
 							$('#box2,#box3').css('display','none');
 														}
 							$('.navi4 ul li').click(function(){
-								$(this).css('background-color','#990000');
-								$(this).siblings().css('background-color','#000000');
+								/* $(this).css('background-color','#990000');
+								$(this).siblings().css('background-color','#000000'); */
+								$(this).css('background-color',buttonColor);
+								$(this).siblings().css('background-color',barSecondColor);
 								var indexval = $(this).index();
 								if(indexval == 0){
 									$('#box1').css('display','block');
@@ -597,7 +636,7 @@ var product_id=0;
 								$('#box1').css('display','block');
 								$('#box2,#box3').css('display','none');
 							});
-							
+													
 						});
 					</script>
 					<script type="text/javascript">
@@ -771,6 +810,23 @@ function deletecharge(action){
   wndo -=46;
   $('#wrapper_new').css('min-height',wndo);
   });
+	
+	/* $(document).ready(function(){
+		 
+        var colorCode=getStyle();
+        var colorCodeSplit=colorCode.split(",");
+        var buttonColor=colorCodeSplit[0];
+        var barSecondColor=colorCodeSplit[1];
+      
+      
+           $('#cancel_shipment').css('background-color',buttonColor);
+           $('#back_shipment_list').css('background-color',buttonColor);
+          $('.deleteCharge').css('background-color',buttonColor); 
+          $('.saveCharge').css('background-color',buttonColor);
+          $('.addCharge').css('background-color',buttonColor);
+          $('.form_buttons a').css('background-color',buttonColor);
+});
+	 */
 	</script>
 	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
   <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
@@ -799,8 +855,14 @@ function deletecharge(action){
 				
 				
 							</style>	
+							
+							<input type="hidden" id="buttonColor" value=<%= buttonColor %> />	
+							<input type="hidden" id="barSecondColor" value=<%= barSecondColor %> />
+							
 <div id="messages"><jsp:include
 	page="../common/action_messages.jsp" /></div>
+	
+	
 
 <div class="form-container"><s:form id="viewform"
 	action="update.charge.shipment.action" name="viewform">
@@ -817,9 +879,10 @@ function deletecharge(action){
         <li><mmr:message messageId="menu.statusupdate"/></li>
 							</ul>
 							<s:if test="%{selectedOrder.statusId!=40}">
-								<a id="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a>
+								 <a id="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a> 
+								<%-- <a class="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a> --%>
 							</s:if>
-							<a id="back_shipment_list" href="javascript:backtoListShipment()"><mmr:message messageId="btn.back" /> </a>
+							<!-- <a class="back_shipment_list" href="javascript:backtoListShipment()"> --><a id="back_shipment_list" href="javascript:backtoListShipment()"><mmr:message messageId="btn.back" /> </a>
 						</div>
 						</div>
 						<div class="content_table" id="box1" > 
@@ -1517,11 +1580,12 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											<s:if test="%{selectedOrder.actualCharges.size ==0}">
 										<td class="ordrdtl_title_val">
 												<span style="width:110px; float:left;">
-												<s:a onclick="return confirm('Do you really want to delete the selected charge?')"  cssStyle="padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
-												
+<%-- 												<s:a onclick="return confirm('Do you really want to delete the selected charge?')"  cssStyle="padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
+ --%>												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
+ 
 													<mmr:message messageId="btn.delete"/> 
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
-												</s:a>
+												</a>
 												</span>
 										</td>													
 											</s:if>		
@@ -1580,7 +1644,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<s:if test="%{selectedOrder.quotedCharges.size()>0 && status != 30 && ( #session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.quotedCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
 									<td align="left" colspan="6" class="ordrdtl_title_val" style="padding:10px 3px;">
-										<a href="javascript: updateQuotedCharge()" style="padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;">
+										<!-- <a href="javascript: updateQuotedCharge()" style="padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;"> -->
+											<a href="javascript: updateQuotedCharge()" class="saveCharge">
 											<mmr:message messageId="btn.savecharge"/>  
 										<!--<img border="0" src="<s:url value="/mmr/images/update_charge_btn.png" includeContext="true" />"	>-->
 										
@@ -1683,7 +1748,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</td>
 									<td class="ordrdtl_title_val">
 									<span style="width:100px; float:left;">
-										<a href="javascript: addQuotedCharge()" style="padding:3px 10px; background-color:#990000; width:auto; color:#FFF;font-weight:bold; FONT-SIZE:12PX; text-decoration:none; float:left;">
+										<!-- <a href="javascript: addQuotedCharge()" style="padding:3px 10px; background-color:#990000; width:auto; color:#FFF;font-weight:bold; FONT-SIZE:12PX; text-decoration:none; float:left;"> -->
+											<a href="javascript: addQuotedCharge()" class="addCharge">
 											<mmr:message messageId="btn.add"/> 
 										<!--<img border="0" src="<s:url value="/mmr/images/add_product.png" includeContext="true" />-->
 										
@@ -1850,11 +1916,16 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 
 											<td>
 												<span style="width:110px; float:left;">
-												<s:a onclick="return confirm('Do you really want to delete the selected charge?')" cssStyle="background-color:#990000; color:#FFF; padding:3px 10px;font-weight:bold; width:auto;  text-align:center; float:left; font-size:12px; text-decoration:none;"href="delete.actual.charge.shipment.action?method=deletetCharge&id=%{id}">
+												<%-- <s:a onclick="return confirm('Do you really want to delete the selected charge?')" cssStyle="background-color:#990000; color:#FFF; padding:3px 10px;font-weight:bold; width:auto;  text-align:center; float:left; font-size:12px; text-decoration:none;"href="delete.actual.charge.shipment.action?method=deletetCharge&id=%{id}">
 													<mmr:message messageId="btn.delete"/> 
 													
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
-												</s:a>
+												</s:a> --%>
+												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
+												<mmr:message messageId="btn.delete"/> 
+													
+													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
+												</a>
 												</span>
 											</td>
 										</s:if>
@@ -1935,9 +2006,14 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
                            <table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px;">
                            <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
-									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><a
+									<td align="left" colspan="7" class="ordrdtl_title_val" style="padding:10px 5px;"><!-- <a
 										href="javascript: updateActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; text-decoration:none; padding:3px 10px;">
-										<mmr:message messageId="btn.savecharge"/> 
+										
+										
+ -->									
+                            <a href="javascript: updateActualCharge()" class='addCharge'>
+                            
+                        	<mmr:message messageId="btn.savecharge"/> 
 										
 										<!--<img border="0"
 										src="<s:url value="/mmr/images/update_charge_btn.png" includeContext="true" />"
@@ -2030,7 +2106,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									</td>
 									<td align="left" colspan="2">
 									<span style="width:75px; float:left;">
-									<a href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;">	
+									<!-- <a href="javascript: addActualCharge()" style="background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;"> -->	
+										<a href="javascript: addActualCharge()" class="addCharge">
 										<mmr:message messageId="btn.add"/>
 										<!--<img border="0"
 										src="<s:url value="/mmr/images/add_product.png" includeContext="true" />"

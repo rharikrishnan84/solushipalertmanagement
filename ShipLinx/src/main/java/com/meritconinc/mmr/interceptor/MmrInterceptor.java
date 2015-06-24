@@ -174,6 +174,16 @@ public class MmrInterceptor extends MmrBaseInterceptor {
 							 setCssText(business.getCssVO().getCssText());
 							 if(getCssText()!=null){
 								 ActionContext.getContext().getSession().put("cssText",getCssText());
+								 ActionContext.getContext().getSession().put("buttonColor",business.getCssVO().getButtonColor());
+								 ActionContext.getContext().getSession().put("barSecondColor",business.getCssVO().getBarSecondColor());
+								 /*ActionContext.getContext().getSession().put("footer_1", business.getCssVO().getFooter1());
+								  ActionContext.getContext().getSession().put("footer_2", business.getCssVO().getFooter2());*/
+							 }
+							 if(business.getCssVO().getFooter1() != null && !business.getCssVO().getFooter1().isEmpty()){
+								 ActionContext.getContext().getSession().put("footer_1", business.getCssVO().getFooter1());
+							 }
+							 if(business.getCssVO().getFooter2() != null && !business.getCssVO().getFooter2().isEmpty()){
+								 ActionContext.getContext().getSession().put("footer_2", business.getCssVO().getFooter2());
 							 }
 				   } 
 			}

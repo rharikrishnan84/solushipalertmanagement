@@ -388,6 +388,10 @@ public class LogonAction extends BaseAction implements ServletRequestAware ,Serv
 		Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
 		Long logInBusId=null;
 		ActionContext.getContext().getSession().remove("cssText" );
+		getSession().remove("footer_1");
+		getSession().remove("footer_2");
+		getSession().remove("barSecondColor");
+		getSession().remove("buttonColor");
 		if(UserUtil.getMmrUser()!=null){
 			 logInBusId=UserUtil.getMmrUser().getBusinessId();
 		}

@@ -3572,5 +3572,67 @@ ADD COLUMN `footer_font_color` VARCHAR(45) NOT NULL AFTER `email_header`;
 
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.arrowColor', 'Arrow Color', 'en_CA', 1);
 
+#css changes
+
+ 
+insert into action(action, menu_id, highlight, description, 
+reload_safe) values('contactMenu', 108,1,'contact', 1)
+
+insert into action(action, menu_id, highlight, description, 
+reload_safe) values('feedbackMenu', 108,1,'contact', 1)
+
+
+insert into role_action(role, action_id) values('admin', 1076);
+
+insert into role_action(role, action_id) values('busadmin', 1076);
+
+insert into role_action(role, action_id) values('sysadmin', 1076);
+
+insert into role_action(role, action_id) values('admin', 1078);
+
+insert into role_action(role, action_id) values('busadmin', 1078);
+
+insert into role_action(role, action_id) values('sysadmin', 1078);
+
+
+
+alter table business add contact_path varchar(120);
+alter table business add feedback_path varchar(120);
+
+insert into resourcebundle(msg_id, msg_content, locale, is_fmk)
+values('label.business.contactpath', 'Contact Path', 'en_CA', 1)
+
+insert into resourcebundle(msg_id, msg_content, locale, is_fmk)
+values('label.business.feedbackpath', 'Feedback Path', 'en_CA', 1)
+
+
+
+UPDATE `menu` SET `url`='/admin/new.address.action' WHERE `id`='242';
+
+
+UPDATE `menu` SET `url`='/admin/upload.addressbook.action?method=new' WHERE `id`='403';
+
+
+UPDATE `menu` SET `url`='/admin/distribution.list.action' WHERE `id`='251';
+
+
+
+
+UPDATE `menu` SET `url`='/admin/addressbook.list.req.action' WHERE `id`='65';
+UPDATE `menu` SET `url`='/admin/addressbook.list.req.action' WHERE `id`='203';
+UPDATE `menu` SET `url`='/admin/addressbook.list.req.action' WHERE `id`='231';
+UPDATE `menu` SET `url`='/admin/addressbook.list.req.action' WHERE `id`='241';
+
+
+alter table business_loader add footer1 varchar(120);
+alter table business_loader add footer2 varchar(120);
+
+insert into resourcebundle(msg_id, msg_content, locale, is_fmk)
+values('label.business.footer1', 'Footer1', 'en_CA', 1);
+
+insert into resourcebundle(msg_id, msg_content, locale, is_fmk)
+values('label.business.footer2', 'Footer2', 'en_CA', 1);
+
 INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.upload.favIcon', 'Upload FavIcon', 'en_CA', 1);
 --------------------------------------END of LIVE SERVER COMMIT---------------------------------------
+

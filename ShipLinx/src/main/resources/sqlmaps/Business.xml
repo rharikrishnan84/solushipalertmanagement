@@ -59,6 +59,8 @@
 			<result property="partnerLevel" column="isPartner"/>
 			<result property="nationLevel"  column="isNation" /> 
 			<result property="branchLevel" column="isBranch"/>
+			<result property="contactPath" column="contact_path"/>
+			<result property="feedbackPath" column="feedback_path"/>
 	</resultMap>
 	
 	<resultMap class="com.meritconinc.shiplinx.model.UserBusiness" id="userBusinessMap">
@@ -89,6 +91,8 @@
 		 		  <result property="footerFontColor"  jdbcType="BLOB"  column="footer_font_color"/>
 		 		  <result property="arrowColor" column="arrow_color"/>
 		 <!-- selva end css  -->
+		 <result property="footer1" column="footer1"/>
+		<result property="footer2" column="footer2"/>
 	</resultMap>
 
 
@@ -106,8 +110,8 @@
 	</select>
 	
 	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-			   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port) 
-			  values              (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#)
+			   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port,contact_path,feedback_path) 
+			  values              (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#, #contactPath#, #feedbackPath#)
 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -159,6 +163,14 @@
 		header_key = #headerKey#,
 		US_address_id = #usAddressId#,
 		active = #active#
+		<dynamic>
+		<isNotNull prepend=","  property="contactPath">
+	    contact_path=#contactPath#
+	   </isNotNull>
+	   <isNotNull property="feedbackPath" prepend="," >
+	     feedback_path=#feedbackPath#
+	  </isNotNull>
+	  </dynamic>
 	where business_id = #id#
 	</update>
 	
@@ -256,8 +268,8 @@ from pins where business_id=#oldBusinessId#
         
     </insert>
  <insert id="addCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
-    insert into business_loader (business_id,menu_color,menu_hover_color,button_color,bar_first_color,bar_second_color,footer_color,css_text,logo_img,back_ground_img,fav_icon,footer_font_color,arrow_color) 
-    values(#businessId#,#menuColor#,#menuHoverColor#,#buttonColor#,#barFirstColor#,#barSecondColor#,#footerColor#,#cssText#,#logoImgByte#,#backGroudImgByte#,#favIconByte#,#footerFontColor#,#arrowColor#)
+    insert into business_loader (business_id,menu_color,menu_hover_color,button_color,bar_first_color,bar_second_color,footer_color,css_text,logo_img,back_ground_img,fav_icon,footer_font_color,arrow_color,footer1,footer2) 
+    values(#businessId#,#menuColor#,#menuHoverColor#,#buttonColor#,#barFirstColor#,#barSecondColor#,#footerColor#,#cssText#,#logoImgByte#,#backGroudImgByte#,#favIconByte#,#footerFontColor#,#arrowColor#,#footer1#,#footer2#)
   </insert>
   
   <update id="updateCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
@@ -272,6 +284,15 @@ from pins where business_id=#oldBusinessId#
 	</isNotNull>
 	<isNotNull property="backGroudImgByte" prepend="," >
 	     back_ground_img=#backGroudImgByte#
+	</isNotNull>
+	<isNotNull property="favIcon" prepend="," >
+	     fav_icon=#favIconByte#
+	</isNotNull>
+	<isNotNull prepend=","  property="footer1">
+	   footer1=#footer1#
+	</isNotNull>
+	<isNotNull property="footer2" prepend="," >
+	     footer2=#footer2#
 	</isNotNull>
 	</dynamic>
     where business_id=#businessId#

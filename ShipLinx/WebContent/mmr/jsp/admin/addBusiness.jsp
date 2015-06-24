@@ -60,6 +60,40 @@ window.onload = function() {
 	 			document.userform.submit();
 	}
 	
+	function ValidateFileUpload() {
+				        var fuData = document.getElementById('fav');
+				        var FileUploadPath = fuData.value;
+		
+				//To check if user upload any file
+				        if (FileUploadPath == '') {
+				            alert("Please upload an image");
+		
+				        } else {
+				            var Extension = FileUploadPath.substring(
+				                    FileUploadPath.lastIndexOf('.') + 1).toLowerCase();
+		
+				//The file uploaded is an image
+		
+				if (Extension == "ico") {
+		
+				// To Display
+				                if (fuData.files && fuData.files[0]) {
+				                    var reader = new FileReader();
+		
+				                    
+		
+				                    reader.readAsDataURL(fuData.files[0]);
+				                }
+		
+			            } 
+		
+				//The file upload is NOT an image
+				else {
+				                alert("Upload only file type of ico. ");
+		
+				            }
+				        }
+				    }
 	function resetform(){
 			
 		    document.userform.action = "new.business.action";
@@ -662,6 +696,15 @@ window.onload = function() {
 										<label><mmr:message messageId="label.business.smtpPort"/> </label>
 										<div  class="controls"><span>:</span><s:textfield  key="business.smtpPort" name="business.smtpPort" /></div>
 									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.contactpath"/></label>
+										<div  class="controls"><span>:</span><s:textfield  key="business.contactPath" name="business.contactPath" /></div>
+									</div>
+									<div class="fields">
+										<label><mmr:message messageId="label.business.feedbackpath"/></label>
+										<div  class="controls"><span>:</span><s:textfield  key="business.feedbackPath" name="business.feedbackPath" /></div>
+									</div>
 								</div>
 								<!-- <div class="rows" >
 									<p id="rules" style="color: #000066; font-size: 12px; font-weight: bold;"></p>
@@ -1049,6 +1092,16 @@ window.onload = function() {
 										</s:else>	
 									</div>
 									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.footer1"/></label>
+										<div  class="controls"><span>:</span><s:textfield  key="business.cssVO.footer1" name="business.cssVO.footer1" /></div>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.business.footer2"/></label>
+										<div  class="controls"><span>:</span><s:textfield  key="business.cssVO.footer2" name="business.cssVO.footer2" /></div>
+									</div>
 									<!-- vivek -->
 										<div class="fields" >
 									
@@ -1066,6 +1119,15 @@ window.onload = function() {
 									</div>
 									
 									</div>
+									
+									<div class="fields" >
+									
+										<label><mmr:message messageId="label.business.upload.favIcon"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.favIcon" id="fav"/>
+								
+								</div>
+								
+					
 									<%-- <div class="fields" >
 									
 										<label><mmr:message messageId="label.business.upload.favIcon"/></label>
@@ -1077,6 +1139,7 @@ window.onload = function() {
 				</div>
 						</div>				
 					</div>
+					
 					<div class="content_table">
 						<div class="form-container" style="background-color: #FFF;" id="userbustable">
 							<div id="srchusr_results">

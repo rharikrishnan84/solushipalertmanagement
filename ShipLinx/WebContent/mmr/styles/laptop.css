@@ -11,7 +11,7 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .top_navi                              { height:auto; /*width:453px;*/ width:569px; float:right; margin:40px 23px 0px 236px;}
 .top_navi ul                          { list-style-type:none; font-size:10px; text-align:right;}
 .top_navi ul li                        { display:inline;}
-.top_navi ul li:nth-child(1),.top_navi ul li:nth-child(2),.top_navi ul li:nth-child(3),.top_navi ul li:nth-child(4){ border-right:1px solid #999;}
+.top_navi ul li:nth-child(1),.top_navi ul li:nth-child(2),.top_navi ul li:nth-child(3){ border-right:1px solid #999;}
 .top_navi ul li a                     { text-decoration:none; color:#555555; padding:0px 8px;}
 .live_chat                            { height:auto; width:116px; float:left; margin-top:27px;}
 .header_logo_body		{ width:100%; height:auto; float:left;}
@@ -736,8 +736,35 @@ cursor:pointer;
 	background-image:url(tp.png); /* required by MSIE to prevent actions on lower z-index elements */
 }
 
-#alertBox,#confirmBox ,#alertBox2{
+#confirmBox{
 	position:relative;
+	width:auto;
+	padding:0px 40px;
+	height:auto;
+	margin-top:150px;
+	border:2px solid #990000;
+	background-color:#fff;
+	background-repeat:no-repeat;
+	background-position:20px 30px;
+	text-align:center;
+	border-radius:5px;
+}
+#alertBox{
+position:relative;
+	width:auto;
+	padding:0px 40px;
+	height:auto;
+	margin-top:150px;
+	border:2px solid #990000;
+	background-color:#fff;
+	background-repeat:no-repeat;
+	background-position:20px 30px;
+	text-align:center;
+	border-radius:5px;
+}
+#alertBox2{
+
+position:relative;
 	width:auto;
 	padding:0px 40px;
 	height:auto;
@@ -872,4 +899,33 @@ code span {
 	 color: #900;
     text-decoration: none;
     font-weight: 900;
+}
+
+.saveCharge{
+	padding:3px 10px; color:#FFF; background-color:#990000;font-weight:bold; font-size:12px; text-decoration:none; margin:3px 0px;
+}
+.srchshipmnt_text_04{color:#fff; font-size:12px;padding-left:5px;}
+				#cancel_shipment,#back_shipment_list{ 
+				 float:right;
+				 text-decoration:none;
+				 background-color:#990000;
+				 font-size:12px;
+				 color:#FFF;
+				 font-weight:bold;
+				 padding:5px 10px;
+				 text-transform:uppercase;
+				}
+				#back_shipment_list{ margin-right:1px;}
+				
+				
+				
+				
+				.fields .controls input[type="text"], .fields .controls input[type="password"],.fields .controls select{
+					width:146px !important;
+}
+.deleteCharge{
+	padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;
+}
+.addCharge{
+    background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;
 }

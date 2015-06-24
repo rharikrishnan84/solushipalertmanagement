@@ -489,6 +489,138 @@ public class MenuAction extends BaseAction implements Preparable,ServletRequestA
 		return SUCCESS;
 		
 	}
+	
+	public String  contact() {
+				log.debug("--------Contact----MenuAction-----");
+				System.out.println("Test Contact Method");
+				String user = UserUtil.getMmrUser().getUsername();
+				String highLightMenu = getSession().get("HighLightMenu").toString();
+				LocaleVO locale = menuItemDAO.getLanguageByUserName(user);
+				String language = locale.getLocaleText();
+				 String string="";
+		
+				   FileInputStream fis = null;
+				         BufferedReader reader = null;
+				    long bid=BusinessFilterUtil.setBusinessIdbyUserLevel();
+				    Business bus=BusinessFilterUtil.getSuperParentBusiness(bid);
+				 /*long bid=UserUtil.getMmrUser().getBusinessId();*/
+				    long bid1=0;
+				    if(bus!=null)
+				    {
+				      bid1=bus.getId();
+				    }
+				   String dirName="contact_"+bid1;
+				   Business busi = businessDAO.getBusiessById(bid1);
+				   String reportPath = busi.getContactPath();
+				   if(reportPath == null){
+					   reportPath = ShiplinxConstants.BUSINESS_HELP_DIR+dirName;
+				   }else{
+					   String dirName1 = "/"+"contact_"+bid1;
+					   reportPath = reportPath+dirName1;
+				   }
+				       String fileName = null;
+				       File directory = new File(reportPath);
+				   if (directory.isDirectory()) {
+				   
+				    File file = new File(reportPath);
+				    
+				    if (file.canRead()) {
+				     for (File temp : file.listFiles()) {
+				      if (temp.getName().toLowerCase()
+				          .endsWith(".html")) {
+				       fileName = temp.getAbsoluteFile().toString();
+				      }
+				     }
+				    }
+				          }
+			        //reading   
+			        try{
+		
+			        	String path = request.getHeader("Referer");
+			        	 String index[]=path.split("/");
+			        	 String method =index[index.length-1].substring(0,index[index.length-1].lastIndexOf("."));
+			       	    url = method+"."+language;
+			       	 PropertyVO propertyVO = propertyDAO.getPath(language); 
+			       		            url = propertyVO.getDbValue();
+			       		            String file = url+"/"+method+".html";
+			       		            if(fileName!=null){
+			       		            inputStream = new FileInputStream(fileName);
+			       		            }else{
+			       		             inputStream = new FileInputStream(file);
+			       		            }
+			        }       
+			        catch (Exception e){
+			            System.out.println(e.toString());
+			        }
+				return SUCCESS;
+				
+			}
+			
+			public String  feedback() {
+				log.debug("--------feedback----MenuAction-----");
+				System.out.println("Test feedback Method");
+				String user = UserUtil.getMmrUser().getUsername();
+				String highLightMenu = getSession().get("HighLightMenu").toString();
+				LocaleVO locale = menuItemDAO.getLanguageByUserName(user);
+				String language = locale.getLocaleText();
+				 String string="";
+		
+				   FileInputStream fis = null;
+				         BufferedReader reader = null;
+				    long bid=BusinessFilterUtil.setBusinessIdbyUserLevel();
+				    Business bus=BusinessFilterUtil.getSuperParentBusiness(bid);
+				 /*long bid=UserUtil.getMmrUser().getBusinessId();*/
+				    long bid1=0;
+				    if(bus!=null)
+				    {
+				      bid1=bus.getId();
+				    }
+				   String dirName="feedback"+bid1;
+				   Business busi = businessDAO.getBusiessById(bid1);
+				   String reportPath = busi.getFeedbackPath();
+				   if(reportPath == null){
+					   reportPath = ShiplinxConstants.BUSINESS_HELP_DIR+dirName;
+				   }else{
+					   String dirName1 = "/"+"feedback_"+bid1;
+					   reportPath = reportPath+dirName1;
+				   }
+				       String fileName = null;
+				       File directory = new File(reportPath);
+				   if (directory.isDirectory()) {
+				   
+				    File file = new File(reportPath);
+				    
+				    if (file.canRead()) {
+				     for (File temp : file.listFiles()) {
+				      if (temp.getName().toLowerCase()
+				          .endsWith(".html")) {
+				       fileName = temp.getAbsoluteFile().toString();
+				      }
+				     }
+				    }
+				          }
+			        //reading   
+			        try{
+		
+			        	String path = request.getHeader("Referer");
+			        	 String index[]=path.split("/");
+			        	 String method =index[index.length-1].substring(0,index[index.length-1].lastIndexOf("."));
+			       	    url = method+"."+language;
+			       	 PropertyVO propertyVO = propertyDAO.getPath(language); 
+			       		            url = propertyVO.getDbValue();
+			       		            String file = url+"/"+method+".html";
+			       		            if(fileName!=null){
+			       		            inputStream = new FileInputStream(fileName);
+			       		            }else{
+			       		             inputStream = new FileInputStream(file);
+			       		            }
+			        }       
+			        catch (Exception e){
+			            System.out.println(e.toString());
+			        }
+				return SUCCESS;
+				
+			}
 
 	public MenusDAO getMenuItemDAO() {
 		return menuItemDAO;
