@@ -597,7 +597,7 @@ var product_id=0;
 														var isLTL = <%=isLTL%>;
 														if(isLTL == "1"){
 															$('#box3').css('display','block');
-									   					\	$('#box1,#box2').css('display','none');
+									   					    $('#box1,#box2').css('display','none');
 									   						/* $('#box3').css('background-color','#990000');
 									   						$('.navi4 ul li:last-child').css('background-color','#990000'); */
 									   						$('#box3').css('background-color',buttonColor);

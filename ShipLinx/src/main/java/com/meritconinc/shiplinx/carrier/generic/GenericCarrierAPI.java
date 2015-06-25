@@ -1018,6 +1018,12 @@ public class GenericCarrierAPI implements CarrierService {
   public void generateShippingLabel(OutputStream outputStream, ShippingOrder order) {
     Customer customer = customerDAO.getCustomerInfoByCustomerId(order.getCustomerId(),
         order.getBusinessId());
+    
+    //setting the carrier name of those from charges
+    
+    if(order.getCharges().get(0).getCarrierName() != null && !order.getCharges().get(0).getCarrierName().isEmpty()){
+    	    	order.setCarrierName(order.getCharges().get(0).getCarrierName());
+    }
 
     try {
       InputStream stream = this
