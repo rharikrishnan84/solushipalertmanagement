@@ -597,7 +597,7 @@ var product_id=0;
 														var isLTL = <%=isLTL%>;
 														if(isLTL == "1"){
 															$('#box3').css('display','block');
-									   						$('#box1,#box2').css('display','none');
+									   					\	$('#box1,#box2').css('display','none');
 									   						/* $('#box3').css('background-color','#990000');
 									   						$('.navi4 ul li:last-child').css('background-color','#990000'); */
 									   						$('#box3').css('background-color',buttonColor);
@@ -1581,7 +1581,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										<td class="ordrdtl_title_val">
 												<span style="width:110px; float:left;">
 <%-- 												<s:a onclick="return confirm('Do you really want to delete the selected charge?')"  cssStyle="padding:3px 10px; background-color:#990000; color:#FFF; text-decoration:none; font-size:12px; font-weight:bold;" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
- --%>												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
+ --%>												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=<s:property value="id" />">
  
 													<mmr:message messageId="btn.delete"/> 
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
@@ -1921,7 +1921,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 													
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
 												</s:a> --%>
-												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=%{id}">
+												<a class="deleteCharge" onclick="return confirm('Do you really want to delete the selected charge?')" href="delete.quoted.charge.shipment.action?method=deletetCharge&id=<s:property value="id" />">
 												<mmr:message messageId="btn.delete"/> 
 													
 													<!--<img src="<s:url value="/mmr/images/delete.gif" includeContext="true" />" alt="Delete Charge" border="0"> -->
