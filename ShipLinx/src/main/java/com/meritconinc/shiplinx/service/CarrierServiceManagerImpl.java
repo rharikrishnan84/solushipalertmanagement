@@ -3234,11 +3234,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             if (groupLtlSkidRate.size() > 1 && ratingList.get(i).getBillWeight() <= 500
                 && order.getQuantity().intValue() == 1) {
               Collections.sort(groupLtlSkidRate, LtlSkidRate.LtlSkidFlatRateComparator);
-              for (LtlSkidRate chepestFlatRate : groupLtlSkidRate) {
+            /*  for (LtlSkidRate chepestFlatRate : groupLtlSkidRate) {
                 if (chepestFlatRate.getRateFlatWeight() == 0) {
                   groupLtlSkidRate.remove(chepestFlatRate);
                 }
-              }
+              }*/
+              Iterator<LtlSkidRate> ite = groupLtlSkidRate.iterator();
+                      	  while(ite.hasNext()) {
+                      		 LtlSkidRate chepestFlatRate = ite.next();		  
+                      		 if(chepestFlatRate.getRateFlatWeight() == 0)
+                      			 ite.remove();	  
+                      		 }
             } else if (groupLtlSkidRate.size() > 1 && ratingList.get(i).getBillWeight() > 500) {
               // Collections.sort(groupLtlSkidRate, LtlSkidRate.LtlSkidRateComparator);
               rateCompare(order.getQuantity().intValue(), groupLtlSkidRate);

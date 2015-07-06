@@ -572,10 +572,10 @@
 	<insert id="addLtlPoundratebyBusiness" parameterClass="map">
 	INSERT INTO ltl_pound_rate(business_id,customer_id,service_id,account_num,from_zone,to_zone,equipment
 						   ,currency,fsc_percent,minimum,range_from,range_to,rate,ttm1,ttm2,effective_date
-						    , expiry_date,p1,p2,p3,dim_factor,freight_class) 
+						    , expiry_date,p1,p2,p3,dim_factor,freight_class,carrier_id) 
 			(select #newBusinessId#,0,service_id,account_num,from_zone,to_zone,equipment
 						   ,currency,fsc_percent,minimum,range_from,range_to,rate,ttm1,ttm2,effective_date
-						    , expiry_date,p1,p2,p3,dim_factor,freight_class from ltl_pound_rate where business_id=#defaultBusinessId#)
+						    , expiry_date,p1,p2,p3,dim_factor,freight_class,carrier_id from ltl_pound_rate where business_id=#defaultBusinessId#)
 	
 	</insert>
 
@@ -586,13 +586,13 @@
 							,rate_skid_10,rate_skid_11,rate_skid_12,rate_skid_13,rate_skid_14,rate_skid_15
 							,rate_skid_16,rate_skid_17,rate_skid_18,rate_skid_19,rate_skid_20,rate_skid_21
 							,rate_skid_22,rate_skid_23,rate_skid_24,rate_skid_25,rate_skid_26,ttm1,ttm2,effective_date
-							,expiry_date,p1,p2,p3) (select 5,0,service_id,account_num,from_zone,to_zone,equipment
+							,expiry_date,p1,p2,p3,carrier_id) (select #newBusinessId#,0,service_id,account_num,from_zone,to_zone,equipment
 							,currency,fsc_percent,less_500lb_flat,rate_skid_1,rate_skid_2,rate_skid_3
 						,rate_skid_4,rate_skid_5,rate_skid_6,rate_skid_7,rate_skid_8,rate_skid_9
 							,rate_skid_10,rate_skid_11,rate_skid_12,rate_skid_13,rate_skid_14,rate_skid_15
 							,rate_skid_16,rate_skid_17,rate_skid_18,rate_skid_19,rate_skid_20,rate_skid_21
 							,rate_skid_22,rate_skid_23,rate_skid_24,rate_skid_25,rate_skid_26,ttm1,ttm2,effective_date
-							,expiry_date,p1,p2,p3 from ltl_skid_rate where business_id=1)
+							,expiry_date,p1,p2,p3,carrier_id from ltl_skid_rate where business_id=#defaultBusinessId#)
 
 	</insert>
 	

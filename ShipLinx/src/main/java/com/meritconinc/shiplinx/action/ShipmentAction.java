@@ -4701,6 +4701,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		if(fromAddress!=null)
 			pickup.setAddress(fromAddress);
 		//setting the destination country
+		getSession().put("CountryList", MessageUtil.getCountriesList());
 		pickup.setDestinationCountryCode(UserUtil.getMmrUser().getBusiness().getAddress().getCountryCode());
 		//setting current date to pickup date as default.
 		int month = Calendar.getInstance().get(Calendar.MONTH);
@@ -6650,12 +6651,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			  			 customerId = String.valueOf(UserUtil.getMmrUser().getCustomerId());
 			  		  }
 		  List<Address> customer = addressService.findaddressbyid(Long.valueOf(customerId));
-		  for(Address add: customer){
-			  String withoutQuotesCustomer = add.getAbbreviationName().replace("\"", "");
-			  String address = add.getAddress1();
-			  			  		  customerSearchResults.put(withoutQuotesCustomer+",  "+address, add.getAddressId());
-		
-	}
+		if (customer != null && customer.size() > 0) {
+			for (Address add : customer) {
+
+				if (add != null && add.getAddress1() != null
+						&& add.getAbbreviationName() != null) {
+					String withoutQuotesCustomer = add.getAbbreviationName()
+							.replace("\"", "");
+					String address = add.getAddress1();
+					customerSearchResults.put(withoutQuotesCustomer + ",  "
+							+ address, add.getAddressId());
+
+				}
+			}
+		}
 		  getSession().put("usersList", customerSearchResults);
 		  }
 	

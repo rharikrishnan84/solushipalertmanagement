@@ -35,6 +35,8 @@ public class ManifestCreator implements Job {
 				   eodManifestCreator.generateEManifestFile();
 				   logger.info("Successfully job Executed but Flag is false");
 
+				    }else{
+				    	logger.info("Job not executed");
 				    }
 				   }
 			}

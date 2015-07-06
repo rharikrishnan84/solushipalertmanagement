@@ -1015,7 +1015,7 @@ var count=parseInt(prevQuantity);
 									<div class="rows">
 										<div class="fields">
 											<label><mmr:message messageId="label.pickup.readytime"/></label>
-											<div class="controls"><span>:</span>
+											<div class="controlspickup"><span>:</span>
 												<s:select value="%{shippingOrder.pickup.readyHour}" name="shippingOrder.pickup.readyHour" list="{'00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'}" cssStyle="width: 46px; " class="text_01" ></s:select>
 												<s:select value="%{shippingOrder.pickup.readyMin}" name="shippingOrder.pickup.readyMin" list="{'00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'}" cssStyle="width: 46px;" class="text_01" ></s:select>
 											</div>
@@ -1023,7 +1023,7 @@ var count=parseInt(prevQuantity);
 										
 										<div class="fields">
 											<label><mmr:message messageId="label.pickup.closetime"/></label>
-											<div class="controls"><span>:</span>
+											<div class="controlspickup"><span>:</span>
 														<s:select value="%{shippingOrder.pickup.closeHour}" name="shippingOrder.pickup.closeHour" list="{'00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'}" cssStyle="width: 46px; " class="text_01" ></s:select>
 
 												<s:select value="%{shippingOrder.pickup.closeMin}" name="shippingOrder.pickup.closeMin" list="{'00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'}" cssStyle="width: 46px;" class="text_01" ></s:select>

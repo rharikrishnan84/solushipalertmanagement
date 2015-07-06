@@ -315,13 +315,13 @@
         </action>
          -->
          
-         <action name="createAddress" method="save" class="AddressbookAction">
+         <!-- <action name="createAddress" method="save" class="AddressbookAction">
 			<result type="tiles" name="input">address</result>		
             <result type="redirectAction" name="success">addressbook.list.req</result>
         </action>
-        <!-- <action name="new.address" class="AddressbookAction">
+        <action name="new.address" class="AddressbookAction">
             <result type="tiles" name="success">address</result>
-        </action> -->
+        </action>
         
         <action name="delete.address" method="delete" class="AddressbookAction">
             <result type="redirectAction" name="success">addressbook.list.req</result>
@@ -329,7 +329,7 @@
          
         <action name="edit.address" method="edit" class="AddressbookAction">
             <result type="tiles" name="success">address</result>
-        </action>
+        </action> -->
         
         <!-- 
         <action name="new.customer" method="init" class="CustomerManagerAction">
@@ -2053,6 +2053,21 @@
             <result type="tiles" name="input">upload.address</result>
         </action>
        	
+       	<action name="createAddress" method="save" class="AddressbookAction">
+			<result type="tiles" name="input">address</result>		
+            <result type="redirectAction" name="success">addressbook.list.req</result>
+        </action>
+        <action name="new.address" class="AddressbookAction">
+            <result type="tiles" name="success">address</result>
+        </action>
+        
+        <action name="delete.address" method="delete" class="AddressbookAction">
+            <result type="redirectAction" name="success">addressbook.list.req</result>
+        </action>
+         
+        <action name="edit.address" method="edit" class="AddressbookAction">
+            <result type="tiles" name="success">address</result>
+        </action>
        	
        	<action name="distribution.list" method="distributionList" class="AddressbookAction">
 			<result type="tiles">search.distributionList</result>

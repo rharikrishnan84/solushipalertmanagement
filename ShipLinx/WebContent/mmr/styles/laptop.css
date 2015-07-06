@@ -929,3 +929,6 @@ code span {
 .addCharge{
     background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;
 }
+
+ .fields .controlspickup select			{ height:24px; width:46px; }
+  .fields .controlspickup span { padding-top:3px; padding-right:10px; float:left;}

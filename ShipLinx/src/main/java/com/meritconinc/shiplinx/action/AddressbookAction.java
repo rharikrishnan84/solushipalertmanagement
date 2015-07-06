@@ -20,7 +20,10 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.service.UserService;
 import com.meritconinc.mmr.utilities.MessageUtil;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.carrier.purolator.stub.ServiceAvailabilityWebServiceClient;
 import com.meritconinc.shiplinx.exception.ShiplinxException;
@@ -31,6 +34,7 @@ import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.Province;
 import com.meritconinc.shiplinx.service.AddressManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
+import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.Preparable;
 
  
@@ -199,22 +203,31 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 	
 	public String delete(){
 		Long address_ret;
+		boolean delete = false;
 		String id=request.getParameter("addressid");
 		/*addressService.delete(id);
 		addActionMessage(getText("address.info.delete.successfully"));*/
+		 UserService userService=(UserService)MmrBeanLocator.getInstance().findBean("userService");
 		long address_id=Long.parseLong(id);
-				
-		address_ret=addressService.findAddressId(address_id);
-		if(address_ret==0){
-			try{
-				addressService.delete(id);
-				addActionMessage(getText("address.info.delete.successfully"));
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-				
-		}else{
-				addActionMessage(getText("address.info.update.unsuccessfully"));
+		
+		String admin=(String)getSession().get(ShiplinxConstants.ADMIN_USER);	
+		if(admin!=null){
+			User user=userService.findUserByUsername(admin);
+		    if(user !=null && user.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+		    	address_ret=addressService.findAddressId(address_id);
+				if(address_ret==0){
+					try{
+						addressService.delete(id);
+						addActionMessage(getText("address.info.delete.successfully"));
+						delete = true;
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+		    }
+		}
+		if(!delete){
+			addActionMessage(getText("address.info.update.unsuccessfully"));
 		}
 		return SUCCESS;
 	}

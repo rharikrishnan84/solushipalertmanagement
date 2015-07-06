@@ -924,7 +924,7 @@ Canada]]></text>
 				<textElement textAlignment="Center">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getTotalWeight()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getTotalActualWeight()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="staticText-89" x="301" y="13" width="60" height="11"/>

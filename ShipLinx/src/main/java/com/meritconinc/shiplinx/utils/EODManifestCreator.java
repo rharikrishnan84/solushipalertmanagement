@@ -73,6 +73,7 @@ public class EODManifestCreator implements BinaryExportView {
   public void generateEManifestFile() {
 	Thread.currentThread().dumpStack();
     List<ShippingOrder> shippingOrder = shippingDAO.getShippingOrderByCurrentShipDate();
+    logger.debug("Totatl Shipments :"+shippingOrder.size());
     FTPClient client = new FTPClient();
     FileInputStream txtFileInputStream = null;
     FileInputStream trgFileInputStream = null;
