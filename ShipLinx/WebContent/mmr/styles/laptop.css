@@ -35,7 +35,9 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .navi_shadow			{ width:100%; float:left; height:28px; background-image:url('../images/shadow.png'); background-repeat:no-repeat;
 	background-size:1024px 34px;
  }
-
+ 
+ .fields .controlspickup select			{ height:24px; width:46px; }
+ .fields .controlspickup span { padding-top:3px; padding-right:10px; float:left;}
  
 .wrapper_btm_inner		{ height: auto; width:1024px; margin:0px auto;  }
 .wrapper_body			{ height: auto; width:100%; float:left; background-color:#E7E7E7;  }
@@ -265,7 +267,9 @@ height: auto;}
 .paginate_disabled_next{ margin-left:10px;}
 #messages{ float:left; padding:0px; margin:0px; height:auto; width:100%;}
 
-.logo_mini    { height:40px; float:left; width:100%; overflow:hidden;background-image: url(../images/panelResults_top_shipping.png);
+/* .logo_mini    { height:40px; float:left; width:100%; overflow:hidden;background-image: url('ImageAction.action?id=packageImage');
+background-repeat: no-repeat;} */
+ .logo_mini    { height:40px; float:left; width:100%; overflow:hidden;background-image: url(../images/panelResults_top_shipping.png);
 background-repeat: no-repeat;}
 
 .fieldsvvl					{ width:635px; margin-left:5px; float:left; padding:3px 0px; height:25px;}
@@ -929,6 +933,3 @@ code span {
 .addCharge{
     background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;
 }
-
- .fields .controlspickup select			{ height:24px; width:46px; }
-  .fields .controlspickup span { padding-top:3px; padding-right:10px; float:left;}

@@ -82,6 +82,18 @@ public interface MarkupManagerDAO {
         
         public void insertLtlSkidRateByBusiness(long newBusinessId,long defaultBusinessId);
         
-        public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province);
-    
+	public List<Zone> getOverallZones(String City, Long ZoneStructureId,
+			String Country, String Province);
+
+	public boolean getEshipCarriersbyCustomerId(String carrierScac,
+			Long customerId);
+
+	public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(
+			long carrierId, long chargeGroupId);
+
+	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+			long carrierId, String chargeCode, long customerId);
+
+	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(
+			Markup markup);
 }

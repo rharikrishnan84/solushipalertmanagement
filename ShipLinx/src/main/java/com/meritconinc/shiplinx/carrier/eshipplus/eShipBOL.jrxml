@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eShipBOL" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="480"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="originAddress" class="java.lang.String"/>
+	<parameter name="destinationAddress" class="java.lang.String"/>
+	<parameter name="orderNumber" class="java.lang.String"/>
+	<parameter name="originContactName" class="java.lang.String"/>
+	<parameter name="originPhone" class="java.lang.String"/>
+	<parameter name="originFax" class="java.lang.String"/>
+	<parameter name="destinationContactName" class="java.lang.String"/>
+	<parameter name="destinationPhone" class="java.lang.String"/>
+	<parameter name="destinationFax" class="java.lang.String"/>
+	<parameter name="shipperRef" class="java.lang.String"/>
+	<parameter name="PONumber" class="java.lang.String"/>
+	<parameter name="originTerminal" class="java.lang.String"/>
+	<parameter name="originTerminalPhone" class="java.lang.String"/>
+	<parameter name="originTerminalFax" class="java.lang.String"/>
+	<parameter name="destinationTerminal" class="java.lang.String"/>
+	<parameter name="destinationTerminalPhone" class="java.lang.String"/>
+	<parameter name="destinationTerminalFax" class="java.lang.String"/>
+	<parameter name="pickupInstructions" class="java.lang.String"/>
+	<parameter name="deliveryInstructions" class="java.lang.String"/>
+	<parameter name="carrierRoute" class="java.lang.String"/>
+	<parameter name="shipmentDate" class="java.lang.String"/>
+	<parameter name="pickupBetweenFrom" class="java.lang.String"/>
+	<parameter name="pickupBetweenTo" class="java.lang.String"/>
+	<parameter name="accessorials" class="java.lang.String"/>
+	<parameter name="totalWeight" class="java.lang.Double"/>
+	<parameter name="createdBy" class="java.lang.String"/>
+	<parameter name="bolNumber" class="java.lang.String"/>
+	<parameter name="imageRealPath" class="java.lang.String"/>
+	<parameter name="criticalNotes" class="java.lang.String"/>
+	<parameter name="hazarousName" class="java.lang.String"/>
+	<parameter name="hazardousPhone" class="java.lang.String"/>
+	<parameter name="hazardousMobile" class="java.lang.String"/>
+	<parameter name="hazardousEmail" class="java.lang.String"/>
+	<field name="packageType" class="java.lang.String"/>
+	<field name="packageQuantity" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="weight" class="java.math.BigDecimal"/>
+	<field name="freightClass" class="java.lang.String"/>
+	<field name="length" class="java.math.BigDecimal"/>
+	<field name="width" class="java.math.BigDecimal"/>
+	<field name="height" class="java.math.BigDecimal"/>
+	<title>
+		<band height="4" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="386" splitType="Stretch">
+			<staticText>
+				<reportElement x="387" y="27" width="165" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INTEGRATED CARRIERS
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="50" width="346" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[STRAIGHT BILL OF LADING_SHORT FORM-ORIGINAL-Not Negotiable]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="63" width="545" height="45"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Arial" size="5" isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[RECEIVED, subject to the classifications and tariffs in effect on the date of the issue of this Bill of Lading. The property described below, in apparent good order, except as noted (contents and condition of contents of packages unknown), marked, consigned, and destined as indicated below, which said carrier (the word carrier being understood throughout this contract as meaning any person or corporation in possession of the property under the contract) agrees to carry to its usual place of delivery at said destination, if on its route, otherwise to deliver to another carrier on the route to said destination. It is mutually agreed, as to each carrier of all or any of said property over all or any portion of said route to destination, and as to each party at time interested in all or any of said property, that every service to be performed hereunder shall be subject to all terms and conditions of the Uniform Domestic Straight Bill of lading set forth (1) in Uniform Freight Classification in effect on the data hereof, if this is a rail or a rail-water shipment, or (2) in the applicable motor carrier classification or tariff if this is a motor carrier shipment. Shipper hereby certifies that he is familiar with all the terms and conditions of the said bill of lading, including those on the back thereof, set forth in the classification or tariff which governs the transportation of this shipment, and the said terms and conditions are hereby agreed to by the shipper and accepted for himself and his assigns. ]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="105" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="109" width="100" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ORIGIN:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="250" y="110" width="72" height="20"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DESTINATION:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="174" width="76" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Contact Name: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="93" y="174" width="36" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Phone: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="163" y="174" width="24" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Fax:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="246" y="174" width="76" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Contact Name: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="174" width="24" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Fax:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="342" y="174" width="36" height="16"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Phone: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="403" y="108" width="151" height="62"/>
+				<textElement>
+					<font fontName="Arial" size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[      Subject to Section 7 of Conditions of applicable bill of
+lading, if this shipment is to be delivered to the consignee
+without recourse on the consignor, the consignor shall sign
+the following statement.
+      The carrier shall not make delivery of this shipment
+without payment of freight and all other lawful charges.
+                                                                                                                                                                        (SIGNATURE OF CONSIGNOR)
+                                                                                                                                                                   3RD PARTY PREPAID]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="114" height="50"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{imageRealPath}+"/ic- logistics plus.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="387" y="47" width="81" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Number : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="210" width="100" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shipper's Reference #: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="246" y="210" width="100" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PO Number #:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="225" width="47" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="225" width="67" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal Phone: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="178" y="225" width="51" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal Fax:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="342" y="225" width="67" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal Phone: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="436" y="225" width="51" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal Fax:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="246" y="225" width="47" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Terminal: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="250" width="109" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pickup Instructions:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="246" y="250" width="131" height="15"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Instructions:
+]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="266" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="3" y="269" width="78" height="16"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CARRIER/ROUTE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="280" width="78" height="15"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SHIPMENT DATE:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="304" width="70" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ACCESSORIALS: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="293" width="140" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Available for pickup between]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="174" y="293" width="22" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[and]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="24" y="125" width="136" height="45"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originAddress}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="263" y="125" width="131" height="45"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationAddress}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="190" width="80" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originContactName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="92" y="190" width="68" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originPhone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="164" y="190" width="68" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originFax}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="247" y="190" width="77" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationContactName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="342" y="191" width="71" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationPhone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="429" y="191" width="85" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationFax}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="114" y="210" width="100" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{shipperRef}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="354" y="211" width="100" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{PONumber}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5" y="238" width="69" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originTerminal}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="97" y="238" width="69" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originTerminalPhone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="171" y="238" width="69" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{originTerminalFax}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="246" y="238" width="76" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationTerminal}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="342" y="239" width="76" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationTerminalPhone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="239" width="76" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{destinationTerminalFax}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="110" y="252" width="134" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{pickupInstructions}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="377" y="251" width="161" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{deliveryInstructions}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="81" y="269" width="144" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{carrierRoute}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="81" y="280" width="133" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{shipmentDate}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="143" y="293" width="25" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{pickupBetweenFrom}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="205" y="294" width="88" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{pickupBetweenTo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="74" y="304" width="258" height="22" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{accessorials}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="332" y="270" width="200" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bill Freight Charge(s) To:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="338" y="284" width="208" height="36"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Logistics Plus
+PO Box 183850
+Shelby Township, MI 48318]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="472" y="47" width="62" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{orderNumber}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="329" width="555" height="1">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="341" width="264" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{hazarousName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="352" width="264" height="12">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{hazardousPhone}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="363" width="264" height="12">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{hazardousMobile}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="58" y="374" width="264" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{hazardousEmail}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="331" width="193" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hazardous Material Info:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="343" width="51" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[     Name:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="353" width="50" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[     Phone:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="363" width="48" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} !=null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[     Mobile:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="374" width="48" height="11">
+					<printWhenExpression><![CDATA[$P{hazarousName} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[     Email:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="387" y="1" width="92" height="16"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BOL NUMBER:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="479" y="1" width="53" height="16"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{bolNumber}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="21" width="554" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="3" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement x="553" y="3" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement x="124" y="4" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement x="387" y="3" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement x="467" y="3" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement x="0" y="2" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="22" y="4" width="78" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[QUANTITY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="2" width="275" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[DESCRIPTION AND IDENTIFICATION OF ARTICLES ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="387" y="2" width="80" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[WEIGHT (lb) ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="468" y="2" width="85" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[CLASS/RATE
+]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<staticText>
+				<reportElement x="63" y="0" width="9" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[(S)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="86" y="0" width="30" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ STC #:
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="62" y="12" width="13" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="12" width="15" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[In.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="25" y="12" width="12" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[X]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="63" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{packageType}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="73" y="0" width="14" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{packageQuantity}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="125" y="2" width="262" height="11" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="2" width="64" height="13" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{weight}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="471" y="1" width="81" height="13" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{freightClass}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="2" y="12" width="20" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{length}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="37" y="12" width="23" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{width}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="76" y="12" width="22" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{height}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="28" width="554" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="115" y="15" width="40" height="13"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NMFC #:]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="160" splitType="Stretch">
+			<staticText>
+				<reportElement x="363" y="3" width="27" height="15"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="17" width="173" height="15"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[General Notes:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="250" y="18" width="72" height="15"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Critical Notes:
+]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="38" width="554" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="1" y="44" width="119" height="14"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Original Bill of Lading created by:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="61" width="306" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Received in Apparent good Order (Except as Noted) The Goods Described Herein.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="79" width="544" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[# pieces _____________ Driver___________________________ Division_________________________________ Date_____________
+]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="1" y="99" width="553" height="14"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="101" width="126" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SHIPPER CERTIFICATION
+]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="1" y="113" width="553" height="34"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="114" width="548" height="34"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[This is to certify that the above named materials are properly classified, described, packaged, marked, and labeled and are in proper condition
+for transportation according to the applicable regulations of the DOT.
+Per______________________________ Date________________
+]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="408" y="5" width="40" height="13"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$P{totalWeight}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="125" y="45" width="100" height="13"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{createdBy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="325" y="19" width="213" height="15"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{criticalNotes}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="125" splitType="Stretch">
+			<staticText>
+				<reportElement x="17" y="30" width="112" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PLACE PRO LABEL HERE
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="61" width="556" height="19"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Any additional accessorial not requested on the original BOL must be authorized prior to service by Integrated Carriers @ 877-603-0103 or saveltl@integratedcarriers.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="80" width="551" height="24"/>
+				<textElement>
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[If you have any questions or if requested pick up cannot be made for any reason, please call Integrated Carriers at 877-603-0103.
+
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="11" y="105" width="296" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA["*** Soluship TMS 4.0.23.5 - "+new Date()+"***"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

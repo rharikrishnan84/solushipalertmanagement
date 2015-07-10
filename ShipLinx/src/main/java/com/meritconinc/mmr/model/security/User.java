@@ -931,4 +931,13 @@ public boolean isSummaryLabel() {
 public void setSummaryLabel(boolean summaryLabel) {
 	this.summaryLabel = summaryLabel;
 }
+private boolean autoFreightClass;
+
+public boolean isAutoFreightClass() {
+		return autoFreightClass;
+	}
+
+	public void setAutoFreightClass(boolean autoFreightClass) {
+		this.autoFreightClass = autoFreightClass;
+	}
 }

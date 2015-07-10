@@ -284,141 +284,180 @@ var count=parseInt(prevQuantity);
 		document.userform.action = "shipment.stageThree.action?method=" + method;
 	 	document.userform.submit();
 	} 	 
-	function getRates()
-	{
+	
+	function formUpdateCheckList() {
+		var fromAddressId = document.getElementById("fromAddressId").value;
+		document.userform.action = "shipment.updateCheckList.action?AddressId="+ fromAddressId;
+		document.userform.submit();
+	}
+	function toUpdateCheckList() {
+		var toAddressId = document.getElementById("toAddressId").value;
+		document.userform.action = "shipment.updateCheckList.action?AddressId="+ toAddressId;
+		document.userform.submit();
+	}
+	function getRates() {
 		/* var myParam = location.search.split('customsinvoice=')[1];
 				if(myParam=="true"){
 				document.userform.action = "shipment.stageThree.action?customs="+myParam;
-	 	document.userform.submit();
+		document.userform.submit();
 				}else{
 							document.userform.action = "shipment.stageThree.action?customs="+myParam;
 						 	document.userform.submit();
 						} */
-						var myParam = location.search.split('customsinvoice=')[1];
-		     			var carrier = document.getElementById("firstBoxCarrier").value;
-		     			var emailNotify = "false";
-		     						var emailNotify2 = "false";
-		     					     			if( document.getElementsByName("shippingOrder.fromAddress.sendNotification")[0].checked){ 
-		     					     				emailNotify = "true";
-		     					     			}
-		     					     			if( document.getElementsByName("shippingOrder.toAddress.sendNotification")[0].checked){
-		     					     				emailNotify2 = "true";
-		     					     			}
-						if(carrier != -1){
-								if(myParam=="true"){
-									var wait = false;
-									jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
-										if(confirmationMessage==true){
-											wait = true;
-											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
-											document.userform.submit();
-											$('#loader').css('display','block');
-											$('#loaderImg').css('display','block');
-										}else{
-											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
-											document.userform.submit();
-											$('#loader').css('display','block');
-											$('#loaderImg').css('display','block');
-										}
-									});
-									}else{
-										jConfirm('You want to create customs invoice for this shipping order?', 'Yes', 'No', function(confirmationMessage) {
-											if(confirmationMessage==true){
-												wait = true;
-												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=true"+"&emailNotify="+emailNotify+"&emailNotify2"+emailNotify2;	
-												document.userform.submit();
-												$('#loader').css('display','block');
-												$('#loaderImg').css('display','block');
-											}else{
-												document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
-												document.userform.submit();
-												$('#loader').css('display','block');
-												$('#loaderImg').css('display','block');
-											}
-										});
-						
-									}
-										}
-										else{
-											document.userform.action = "shipment.stageThree.action?customs="+myParam+"&getrates=false"+"&emailNotify="+emailNotify+"&emailNotify2="+emailNotify2;
-									 	document.userform.submit();
-									 	$('#loader').css('display','block');
-										$('#loaderImg').css('display','block');
-									}
-				}	
-	function quickShip()
-	{   
-	    var toZip=document.getElementById("toPostalCode").value;
-	    var fromZip=document.getElementById("fromPostalCode").value
-	    if(toZip !=null && fromZip!=null ){
-	    var carrierId = document.getElementById("firstBoxCarrier").value;
-		var serviceId = document.getElementById("secondBox").value;
-		var quick = document.getElementById("qkship_fastest").checked;
-		if(carrierId==10 && serviceId>0){
-	    var key="1";	
-	    document.userform.action = "shipment.stageThree.action?key="+key+"&getrates=false1";
-	 	document.userform.submit();
-		}else if(carrierId!= 10){
-			alert("Quick Ship Only for Generic Carrier");
-		}else{
-		   alert("Please select Carrier and Service");
+		var myParam = location.search.split('customsinvoice=')[1];
+		var carrier = document.getElementById("firstBoxCarrier").value;
+		var emailNotify = "false";
+		var emailNotify2 = "false";
+		if (document
+				.getElementsByName("shippingOrder.fromAddress.sendNotification")[0].checked) {
+			emailNotify = "true";
 		}
-		}else{
-	    	alert("Please Fill all mandatory fields");
-	    }
-		 	
-} 	 
-	function updateShipment()
-	{
+		if (document
+				.getElementsByName("shippingOrder.toAddress.sendNotification")[0].checked) {
+			emailNotify2 = "true";
+		}
+		if (carrier != -1) {
+			if (myParam == "true") {
+				var wait = false;
+				jConfirm(
+						'You want to create customs invoice for this shipping order?',
+						'Yes',
+						'No',
+						function(confirmationMessage) {
+							if (confirmationMessage == true) {
+								wait = true;
+								document.userform.action = "shipment.stageThree.action?customs="
+										+ myParam
+										+ "&getrates=true"
+										+ "&emailNotify="
+										+ emailNotify
+										+ "&emailNotify2=" + emailNotify2;
+								document.userform.submit();
+								$('#loader').css('display', 'block');
+								$('#loaderImg').css('display', 'block');
+							} else {
+								document.userform.action = "shipment.stageThree.action?customs="
+										+ myParam
+										+ "&getrates=false"
+										+ "&emailNotify="
+										+ emailNotify
+										+ "&emailNotify2=" + emailNotify2;
+								document.userform.submit();
+								$('#loader').css('display', 'block');
+								$('#loaderImg').css('display', 'block');
+							}
+						});
+			} else {
+				jConfirm(
+						'You want to create customs invoice for this shipping order?',
+						'Yes',
+						'No',
+						function(confirmationMessage) {
+							if (confirmationMessage == true) {
+								wait = true;
+								document.userform.action = "shipment.stageThree.action?customs="
+										+ myParam
+										+ "&getrates=true"
+										+ "&emailNotify="
+										+ emailNotify
+										+ "&emailNotify2" + emailNotify2;
+								document.userform.submit();
+								$('#loader').css('display', 'block');
+								$('#loaderImg').css('display', 'block');
+							} else {
+								document.userform.action = "shipment.stageThree.action?customs="
+										+ myParam
+										+ "&getrates=false"
+										+ "&emailNotify="
+										+ emailNotify
+										+ "&emailNotify2=" + emailNotify2;
+								document.userform.submit();
+								$('#loader').css('display', 'block');
+								$('#loaderImg').css('display', 'block');
+							}
+						});
+
+			}
+		} else {
+			document.userform.action = "shipment.stageThree.action?customs="
+					+ myParam + "&getrates=false" + "&emailNotify="
+					+ emailNotify + "&emailNotify2=" + emailNotify2;
+			document.userform.submit();
+			$('#loader').css('display', 'block');
+			$('#loaderImg').css('display', 'block');
+		}
+	}
+	function quickShip() {
+		var toZip = document.getElementById("toPostalCode").value;
+		var fromZip = document.getElementById("fromPostalCode").value
+		if (toZip != null && fromZip != null) {
+			var carrierId = document.getElementById("firstBoxCarrier").value;
+			var serviceId = document.getElementById("secondBox").value;
+			var quick = document.getElementById("qkship_fastest").checked;
+			if (carrierId == 10 && serviceId > 0) {
+				var key = "1";
+				document.userform.action = "shipment.stageThree.action?key="
+						+ key + "&getrates=false1";
+				document.userform.submit();
+			} else if (carrierId != 10) {
+				alert("Quick Ship Only for Generic Carrier");
+			} else {
+				alert("Please select Carrier and Service");
+			}
+		} else {
+			alert("Please Fill all mandatory fields");
+		}
+
+	}
+	function updateShipment() {
 		var custid = document.getElementsByName("shippingOrder.customerId")[0].value;
-		var webcustid = document.getElementsByName("shippingOrder.webCustomerId")[0].value;
-//		alert('WebCustID:' + webcustid);
-		
-//		if (webcustid == 'shippingOrder.webCustomerId' || webcustid == 'undefined') {
-//			document.getElementsByName("shippingOrder.webCustomerId")[0].value = custid;
-//			alert('shippingOrder.webCustomerId:' + document.getElementsByName("shippingOrder.webCustomerId")[0].value);
-//		}
-		
+		var webcustid = document
+				.getElementsByName("shippingOrder.webCustomerId")[0].value;
+		//		alert('WebCustID:' + webcustid);
+
+		//		if (webcustid == 'shippingOrder.webCustomerId' || webcustid == 'undefined') {
+		//			document.getElementsByName("shippingOrder.webCustomerId")[0].value = custid;
+		//			alert('shippingOrder.webCustomerId:' + document.getElementsByName("shippingOrder.webCustomerId")[0].value);
+		//		}
+
 		if (custid != webcustid) {
-			if(confirm("Are you sure, you want to change customer from " + custid + " to " + webcustid + " ?")) {
+			if (confirm("Are you sure, you want to change customer from "
+					+ custid + " to " + webcustid + " ?")) {
 				document.userform.action = "shipment.update.action";
-			 	document.userform.submit();
+				document.userform.submit();
 			}
 		} else {
 			document.userform.action = "shipment.update.action";
-		 	document.userform.submit();
+			document.userform.submit();
 		}
-	}	
-	function saveCurrentShipment()
-	{
+	}
+	function saveCurrentShipment() {
 		document.userform.action = "save.current.shipment.action";
-	 	document.userform.submit();
-	}	
-	function setCustomer()
-	{
+		document.userform.submit();
+	}
+	function setCustomer() {alert("hi");
 		var autoCompleter = dojo.widget.byId("customerSelected");
 		var value = autoCompleter.getSelectedKey();
-//		autoCompleter.setSelectedKey("4134");
-//		alert(value);	
-		document.userform.action = "shipment.setcustomer.action?customerId=" + value;
-	 	document.userform.submit();
+		//		autoCompleter.setSelectedKey("4134");
+		//		alert(value);	
+		document.userform.action = "shipment.setcustomer.action?customerId="
+				+ value;
+		document.userform.submit();
 
-	} 
-	
-	function showPackage(id)
-	{
-		var tabContainer = dojo.widget.byId("accordion");
-     	tabContainer.selectTab(id);		
 	}
-	
-		function showAddToEdit()
-		{
+
+	function showPackage(id) {
+		var tabContainer = dojo.widget.byId("accordion");
+		tabContainer.selectTab(id);
+	}
+
+	function showAddToEdit() {
 		//alert("Inside showAddToEdit()");	
 		var anchorto = getElementsByClassName("edit_shipto");
 		var shipto = document.getElementById("div_ship_to");
 		var lblto = document.getElementById("labelto");
 		//alert(anchorto[0].innerHTML);
-		if(anchorto[0].innerHTML != '<img src="<%=request.getContextPath()%>/mmr/images/hide.png">')
+		if (anchorto[0].innerHTML != '<img src="<%=request.getContextPath()%>/mmr/images/hide.png">')
 		{
 			shipto.style.display = 'block';
 			//lblto.style.display = 'none';

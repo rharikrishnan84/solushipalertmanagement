@@ -68,6 +68,13 @@ public class CSSVO {
 	private String footer1;
 	private String footer2;
 	
+	//vivek
+		private String errorMsg;
+		private String packageImage;
+		private byte[] packageImageByte;
+		private String packageImageFileName;
+	 	
+	
 	public String getFooter1() {
 				return footer1;
 		}
@@ -397,6 +404,43 @@ public class CSSVO {
 	}
 
 	 
-	
+	public String getErrorMsg() {
+				return errorMsg;
+			}
+		
+		
+			public void setErrorMsg(String errorMsg) {
+				this.errorMsg = errorMsg;
+			}
+		
+		
+			public String getPackageImage() {
+				return packageImage;
+			}
+		
+		
+			public void setPackageImage(String packageImage) {
+				this.packageImage = packageImage;
+			}
+		
+		
+			public byte[] getPackageImageByte() {
+				return packageImageByte;
+			}
+		
+		
+			public void setPackageImageByte(byte[] packageImageByte) {
+				this.packageImageByte = packageImageByte;
+			}
+				
+			public String getPackageImageFileName() {
+				return packageImageFileName;
+			}
+		
+		
+			public void setPackageImageFileName(String packageImageFileName) {
+				this.packageImageFileName = packageImageFileName;
+			}
+		
 
 }

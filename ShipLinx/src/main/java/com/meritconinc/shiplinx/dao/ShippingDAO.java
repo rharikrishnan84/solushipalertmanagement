@@ -25,6 +25,11 @@ import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingLabel;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
+import com.meritconinc.shiplinx.model.AccessorialServices;
+import com.meritconinc.shiplinx.model.AddressCheckList;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
+import com.meritconinc.shiplinx.model.EshipplusPackage;
+
 public interface ShippingDAO {
 
   public List<String> findPackageTypeByName(String name);
@@ -232,6 +237,38 @@ public interface ShippingDAO {
     public List<ShippingOrder> getUnbilledShipmentsBySinglebus(Long busid, long l,
     		String branch);
 
+    public List<ShippingOrder> getEshipPlusActiveShipments();
+
+	public List<AccessorialServices> getAllAccessorialServices(long typeNot);
+
+	public List<AddressCheckList> getAddressCheckListByAddressId(Long addressId);
+
+	public void addNewAddressCheckList(AddressCheckList fromAddressCheckList);
+
+	public void updateAddressCheckList(AddressCheckList addressCheckList);
+
+	public AccessorialServices getAccessorialServiceByServiceGroupCode(
+			String serviceCode, long typeNot);
+
+	public AccessorialServices getAccessorialServiceByServiceCode(
+			String serviceCode);
+
+	public List<EshipplusCarrierFilter> getEshipPlusCarrierByCustomerId(
+			Long customerId);
+
+	public void updateEshipCarrierFilter(EshipplusCarrierFilter eshipCC,
+			String sCustomerId);
+
+	public void updateUserFreightClassMode(int i, Long customerId);
+
+	public List<EshipplusPackage> getEshipplusPackagesList();
+
+	public void updateEshipLabel(long orderId, byte[] outputLabel);
+
+	public Long getLatestOrderId();
+
 	public ChargeGroup getChargeDetailsByProvince(String province);
-  
-  }
+
+	public int checkAccessorial(String chargeCode);
+
+}

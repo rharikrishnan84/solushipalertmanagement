@@ -318,12 +318,12 @@
          <!-- <action name="createAddress" method="save" class="AddressbookAction">
 			<result type="tiles" name="input">address</result>		
             <result type="redirectAction" name="success">addressbook.list.req</result>
-        </action>
-        <action name="new.address" class="AddressbookAction">
+        </action> -->
+        <!-- <action name="new.address" class="AddressbookAction">
             <result type="tiles" name="success">address</result>
-        </action>
+        </action> -->
         
-        <action name="delete.address" method="delete" class="AddressbookAction">
+        <!-- <action name="delete.address" method="delete" class="AddressbookAction">
             <result type="redirectAction" name="success">addressbook.list.req</result>
         </action>
          
@@ -2057,9 +2057,9 @@
 			<result type="tiles" name="input">address</result>		
             <result type="redirectAction" name="success">addressbook.list.req</result>
         </action>
-        <action name="new.address" class="AddressbookAction">
+       <!--  <action name="new.address" class="AddressbookAction">
             <result type="tiles" name="success">address</result>
-        </action>
+        </action> -->
         
         <action name="delete.address" method="delete" class="AddressbookAction">
             <result type="redirectAction" name="success">addressbook.list.req</result>
@@ -2074,7 +2074,27 @@
          </action>
        	<!-- END  -->
       	
+      	<!-- Logistics plus action  -->
+		<action name="menu.listTopMenu" method="loadMenuLevel" class="menuAction">
+            <result name="success">/mmr/jsp/admin/loadTopMenu.jsp</result>
+            <result name="firstlevel">/mmr/jsp/admin/loadBothMenu.jsp</result>
+            <result name="emptylevel">/mmr/jsp/admin/loadEmptyLevel.jsp</result>
+        </action>      	
       	
+      	<action name="searchEshipPlusMarkup" method="searchEshipPlusMarkup" class="markupManagerAction">
+		   <result type="tiles" name="success">markup</result>
+		   <result type="tiles" name="input">markup</result>
+		 </action>
+		 
+		 <action name="shipment.updateCheckList" method="updateAddressCheckList" class="shipmentAction">
+            <result type="tiles" name="success">new.shipment</result>
+        </action> 
+        
+        <action name="shipment.autoFreightClassCheck" method="autoFreightClassCheck" class="shipmentAction">
+            <result  name="success">/mmr/jsp/admin/autoFreightClassCheck.jsp</result>
+        </action>
+       	<!-- Logistics plus action END  -->
+
 </package>
 
 </struts>

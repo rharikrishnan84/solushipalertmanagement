@@ -69,6 +69,7 @@ public interface UserDAO {
   public LocaleVO getDisplayTextByLocale(String locale);
   
   public void insertRole(String username,String role);
-    
-    List<User> getAllUsers();
+   
+  List<User> getAllUsers();
+  int insertAutoFreightClassInfo(User user, java.sql.Timestamp timestamp,String orderId, Boolean autoFreightClass);
 }

@@ -55,6 +55,21 @@ display:none;
 			});
 		} );
 
+		
+		$(document).ready(function() {
+						$('#sample2').dataTable(); 
+						
+						$("#check_all1").click(function(){
+							var temp=$(".dataTable-checkbox1").attr("checked");
+							if(temp == null){
+						    $(".dataTable-checkbox1").attr("checked","checked");
+						}
+						else{
+							$(".dataTable-checkbox1").removeAttr("checked");
+			
+							}
+						});
+					} );
 		function ontimevalidate(val,perc,rowType,index){
 			var evenPercId = "evenPercId"+index;
 							            var evenFlatId = "evenFlatId"+index;
@@ -299,17 +314,32 @@ display:none;
 	});
 </script>
 <SCRIPT language="JavaScript">
-	function searchMarkup()
+	/* function searchMarkup()
 	{
 	 document.searchform.action = "searchMarkup.action";
 	 document.searchform.submit();
-	}
+	} */
+	
+	function searchMarkup(customerId)
+	 {
+	  var carrierId = document.getElementById('firstBox');
+	  var cc=carrierId.value;
+	  if(carrierId != null && carrierId.value == 6){
+	   document.searchform.action = "searchEshipPlusMarkup.action?carrierId="+carrierId.value+"&customerId="+customerId;
+	   document.searchform.submit();
+	  }else{
+	    document.searchform.action = "searchMarkup.action";
+	    document.searchform.submit();
+	  }
+	  document.searchform.action = "searchEshipPlusMarkup.action?carrierId="+carrierId.value+"&customerId="+customerId;
+	  document.searchform.submit();
+	 }
 	function addMarkup()
 	{
 	 document.searchform.action = "addMarkup.action";
 	 document.searchform.submit();
 	}	
-	function saveMarkupList()
+	/* function saveMarkupList()
 	{
 		var savemarkup=document.getElementsByName("markupCheckBox");
 					var i1,txt1 = 0;
@@ -335,7 +365,71 @@ display:none;
 				     	document.searchform.submit();
 					}
 	}
-	function defaultmarkup(customerId)
+	
+ */
+ 
+ function saveMarkupList()
+ {
+  
+  var carrierIdStr = document.getElementById('firstBox');
+    var carrierId;
+    if(carrierIdStr!=null){
+        carrierId=carrierIdStr.value; 
+    }
+    var savemarkupCarrier=document.getElementsByName("carrierCheckBox");
+    var txt2=0;
+    if(savemarkupCarrier!=null && carrierId!=null && carrierId==6){
+     for (i1=0;i1<savemarkupCarrier.length;i1++){
+      if (savemarkupCarrier[i1].checked){
+        txt2 += 1;      
+      }
+     }
+    }
+  var savemarkup=document.getElementsByName("markupCheckBox");
+     var i1,txt1 = 0;
+          for (i1=0;i1<savemarkup.length;i1++){
+        if (savemarkup[i1].checked){
+        txt1 += 1;      
+        }
+          }
+          if(txt1 < 1 && txt2 <1 )
+        alert('Please select at least one');  
+          else{
+         var i,selectedItem="",percentage="",flat="",disabledflag="",variable="";
+          for(i=0;i<savemarkup.length;i++){
+           if(savemarkup[i].checked){
+            selectedItem=selectedItem+savemarkup[i].value+",";
+            percentage=percentage+document.getElementsByName("markupPercentage")[i].value+",";
+            flat=flat+document.getElementsByName("markupFlat")[i].value+",";
+            disabledflag=disabledflag+document.getElementsByName("disabledFlag")[i].value+",";     
+            variable=variable+document.getElementsByName("variable")[i].value+",";
+           }   
+                     }
+                     
+            if(carrierId==6){
+              
+              
+              if(savemarkupCarrier!=null){
+               if(txt2>0){
+                var i=0,carrierSelectedItem="",carrierName="",carrierInactive="",indexTemp;
+                for(i=0;i<savemarkupCarrier.length;i++){
+                 if(savemarkupCarrier[i].checked){
+                  carrierSelectedItem=carrierSelectedItem+savemarkupCarrier[i].value+",";
+               //   carrierName=carrierName+document.getElementById("eshipCarrier_"+savemarkupCarrier[i].value).innerText+",";
+               carrierName=carrierName+jQuery("#eshipCarrier_"+savemarkupCarrier[i].value).text()+",";
+
+                  carrierInactive=carrierInactive+document.getElementsByName("carrierDisabledFlag")[i].value+",";
+                 }
+               }
+                carrierName=carrierName.replace("&", "~");
+               }
+              }   
+      }
+      document.searchform.action = "saveMarkupList.action?selectedItem="+selectedItem+"&percentage="+percentage+"&flat="+flat+"&disabledFlag="+disabledflag+"&variable="+variable+"&carrierId="+carrierId+"&carrierName="+carrierName+"&carrierInactive="+carrierInactive;
+          document.searchform.submit();
+     }
+ }
+ function defaultmarkup(customerId)
 	{
  	 document.searchform.action = "defaultmarkup.action?customerId="+customerId;
 	 document.searchform.submit();
@@ -404,7 +498,7 @@ display:none;
 
 		});
 		
-			
+		
 	</script>
 <script>
 	$(window).load(function() {
@@ -415,7 +509,17 @@ display:none;
 	});
 </script>
 
-	
+	<script>
+ $(document).ready(function(){
+
+  $('#eshipCarrierFilter').click(function(){
+   
+   $('#eshipcarrierList').toggle();
+  });
+ });
+</script>
+
+
 
 
 
@@ -435,7 +539,7 @@ display:none;
           <a href="javascript: addMarkup()"><mmr:message messageId="btn.addnew"/></a>
           <a href="javascript: defaultmarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.btn.reset"/></a>
 		 
-          <a href="javascript: searchMarkup()"><mmr:message messageId="label.search.btn.search"/></a> 
+          <a href="javascript: searchMarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.search.btn.search"/></a> 
          </div>
         </div>
         <div class="cont_data_body">
@@ -569,7 +673,37 @@ display:none;
 					</div>
 				</div>
 				
+<s:if test="markup.carrierId==6 && #session.eshipCarrierFound.contains('true')">
+	<div class="content_header">
+		<div class="cont_hdrtitle_L" style="margin-left:200px;">Eship Carriers Filter.</div>
+			<div class="form_buttons"><a href="javascript:return false;"  id="eshipCarrierFilter">ESHIP CARRIERS</a></div>
+	</div>
+	</s:if>
+	<div class="rows" id="eshipcarrierList" style="display:none;">
+		<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample2" style="float:left;  background-color:#FFF; width:100%; height:auto;">
+	    <thead>
+				<tr height="25px">
+				<th ><input id="check_all1" type="checkbox" /></th>
+				<th>CARRIER NAME</th>
+					<th>INACTIVE</th>
+				</tr>
+			</thead>	
+		<tbody>
+			<s:set var="index1" value="0" />
+	 			<s:iterator id="carrierTable" value="eshipCarrierList" status="rowstatus">
+					<tr height="25px">
+					
+						<input type="hidden" id="eshipCarrierId" name="eshipCarrierId" value="<s:property value='eshipCarrierId'/>" />
+						<!-- <td ><input id="check_box" type="checkbox" +name="check_box"/></td> -->
+					<td><input class="dataTable-checkbox1" type="checkbox" id="checkboxDatatableBodyId" name="carrierCheckBox" value="<s:property value='#rowstatus.index'/>"/></td>
+						<td id="eshipCarrier_<s:property value="#rowstatus.index" />"><s:property value="eshipCarrierName" /></td>
+						<td><s:select value="disabledFlag"  id="evenInactiveId%{index1}"  name="carrierDisabledFlag" headerKey="1" list="{'true','false'}"   cssClass="text_01_combo_small disabled%{serviceId}" cssStyle="width: 60px"/></td>
+				</tr>
+		</s:iterator>
+			</tbody>
 
+	</table>	
+	</div>
 <div id="accnt_bottom_table"  style="background-color:#FFF;" >
 	<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" style="float:left;  background-color:#FFF; width:100%; height:auto;">
     <thead>

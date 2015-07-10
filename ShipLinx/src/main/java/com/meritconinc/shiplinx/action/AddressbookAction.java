@@ -207,27 +207,27 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 		String id=request.getParameter("addressid");
 		/*addressService.delete(id);
 		addActionMessage(getText("address.info.delete.successfully"));*/
-		 UserService userService=(UserService)MmrBeanLocator.getInstance().findBean("userService");
+		UserService userService=(UserService)MmrBeanLocator.getInstance().findBean("userService");
 		long address_id=Long.parseLong(id);
-		
+				
 		String admin=(String)getSession().get(ShiplinxConstants.ADMIN_USER);	
-		if(admin!=null){
-			User user=userService.findUserByUsername(admin);
-		    if(user !=null && user.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
-		    	address_ret=addressService.findAddressId(address_id);
-				if(address_ret==0){
-					try{
-						addressService.delete(id);
-						addActionMessage(getText("address.info.delete.successfully"));
-						delete = true;
-					}catch(Exception e){
-						e.printStackTrace();
-					}
+				if(admin!=null){
+					User user=userService.findUserByUsername(admin);
+				    if(user !=null && user.getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_SYSADMIN)){
+				    	address_ret=addressService.findAddressId(address_id);
+						if(address_ret==0){
+							try{
+								addressService.delete(id);
+								addActionMessage(getText("address.info.delete.successfully"));
+								delete = true;
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}
+				    }
 				}
-		    }
-		}
-		if(!delete){
-			addActionMessage(getText("address.info.update.unsuccessfully"));
+				if(!delete){
+					addActionMessage(getText("address.info.update.unsuccessfully"));
 		}
 		return SUCCESS;
 	}

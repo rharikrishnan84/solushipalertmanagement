@@ -301,18 +301,27 @@ public class InvoiceManagerImpl implements InvoiceManager {
                     	          	}
                     	                    CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id,
                     	              c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
-                    
+						if (carrier_id == ShiplinxConstants.CARRIER_ESHIPPLUS && ccc == null) {
+							ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id, null, c.getChargeCodeLevel2(),chargeGroupId);
+						}
+
                               /*CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodes(carrier_id,
                         c.getChargeCode(), c.getChargeCodeLevel2());*/
                     	                    
           log.info(c.getChargeCode() + " " + c.getChargeCodeLevel2());
           if (ccc != null && !ccc.isTax()) {
-            double cost = FormattingUtil.add(i.getInvoiceCost(), currencyConversionFromId(c.getCostcurrency(), o.getCurrency(), c.getCost())).doubleValue();
-            i.setInvoiceCost(FormattingUtil.roundFigureRates(cost, 2));
-            double amount = (FormattingUtil.add(i.getInvoiceAmount(), c.getCharge())).doubleValue();
-            i.setInvoiceAmount(FormattingUtil.roundFigureRates(amount, 2));
-            taxableAmount = (FormattingUtil.add(taxableAmount, c.getCharge().doubleValue()))
-                .doubleValue();
+        	  double cost = FormattingUtil.add(i.getInvoiceCost(), currencyConversionFromId(c.getCostcurrency(), o.getCurrency(), c.getCost())).doubleValue();
+   	          	         i.setInvoiceCost(FormattingUtil.roundFigureRates(cost, 2));
+        	          	 double amount = (FormattingUtil.add(i.getInvoiceAmount(), c.getCharge())).doubleValue();
+        	          	 i.setInvoiceAmount(FormattingUtil.roundFigureRates(amount, 2));
+        	          	 if(ccc.getIsTaxable().equals("Yes")){
+        	          	          /* double cost = FormattingUtil.add(i.getInvoiceCost(), currencyConversionFromId(c.getCostcurrency(), o.getCurrency(), c.getCost())).doubleValue();
+        	          	          i.setInvoiceCost(FormattingUtil.roundFigureRates(cost, 2));
+        	          	          double amount = (FormattingUtil.add(i.getInvoiceAmount(), c.getCharge())).doubleValue();
+        	          	          i.setInvoiceAmount(FormattingUtil.roundFigureRates(amount, 2));*/
+        	          	          	                 taxableAmount = (FormattingUtil.add(taxableAmount, c.getCharge().doubleValue()))
+        	          	          	                     .doubleValue();}
+        	          	 
           } else {
             applicableTaxes.add(ccc);
             double cost = FormattingUtil.add(i.getInvoiceTaxCost(), c.getCost()).doubleValue();
@@ -329,6 +338,7 @@ public class InvoiceManagerImpl implements InvoiceManager {
         	              c.getChargeCode(), c.getChargeCodeLevel2());*/
         	        	
         	        	Charge charge = shippingDAO.getChargeById(c.getId());
+        	        	Long carrier_id=((c.getCarrierId()!=null && c.getCarrierId()>0)?c.getCarrierId():o.getCarrierId());
         	        	            if(charge!=null){
         	        	            	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
         	        	            	int chargeGroupId= 0;
@@ -337,13 +347,16 @@ public class InvoiceManagerImpl implements InvoiceManager {
         	        	            	}
         	        	          CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(c.getCarrierId(),
         	        	          c.getChargeCode(), c.getChargeCodeLevel2(), chargeGroupId);
+        	        	          if(carrier_id==ShiplinxConstants.CARRIER_ESHIPPLUS && ccc==null) {
+        	        	        	    ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id, null, c.getChargeCodeLevel2(), chargeGroupId);
+        	        	        	 }
         	boolean taxFlag=true;
           if (ccc != null && ccc.isTax()) {
         	  double tax = 0;
         	          	  if(taxableAmount >0 && ccc.getTaxRate() >0){
         	                tax = taxableAmount * ccc.getTaxRate() / 100;
         	          	  }else{
-        	          		tax =  ccc.getTaxRate(); 
+        	          		tax =  c.getCharge(); 
         	          	  }
            c.setCharge(FormattingUtil.roundFigureRates(tax, 2));
              totalTax = (FormattingUtil.add(i.getInvoiceTax(), c.getCharge())).doubleValue();

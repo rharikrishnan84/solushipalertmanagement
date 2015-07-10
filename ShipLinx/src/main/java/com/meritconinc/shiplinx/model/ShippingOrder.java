@@ -2072,4 +2072,154 @@ public void setBusinessIds(List<Long> businessIds) {
 	this.businessIds = businessIds;
 }
 
+//For eshipplus
+	private AddressCheckList fromAddressCheckList;
+	private AddressCheckList toAddressCheckList;
+	private Boolean tempControl=false;
+	private String temperature;
+// for Logistic plus to carry original carrier details
+	private String carrierKeyLP;
+	private String carrierNameLP;
+	private String carrierScacLP;
+	private String RealContextPath;
+	private String defaultPickupTimeBetween;
+	private String mode;
+ 
+	private Boolean commercialBusiness=false;
+	private Boolean fromDockLevel=false;
+	private Boolean toDockLevel=false;
+	private Boolean fromPalletJack=false;
+	private Boolean toPalletJack=false;
+	private long fromFloorNo;
+	private long toFloorNo;
+	private Boolean priorToPickup=false;
+	private Boolean priorToDeliver=false;
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getDefaultPickupTimeBetween() {
+		return defaultPickupTimeBetween;
+	}
+
+	public void setDefaultPickupTimeBetween(String defaultPickupTimeBetween) {
+		this.defaultPickupTimeBetween = defaultPickupTimeBetween;
+	}
+
+	public Boolean getTempControl() {
+		return tempControl;
+	}
+
+	public void setTempControl(Boolean tempControl) {
+		this.tempControl = tempControl;
+	}
+
+	public String getTemperature() {
+		return temperature;
+	}
+
+	public void setTemperature(String temperature) {
+		this.temperature = temperature;
+	}
+
+	public Boolean getPriorToPickup() {
+	return priorToPickup;
+	}
+
+	public void setPriorToPickup(Boolean priorToPickup) {
+		this.priorToPickup = priorToPickup;
+	}
+
+	public AddressCheckList getFromAddressCheckList() {
+		return fromAddressCheckList;
+	}
+
+	public void setFromAddressCheckList(AddressCheckList fromAddressCheckList) {
+		this.fromAddressCheckList = fromAddressCheckList;
+	}
+
+	public AddressCheckList getToAddressCheckList() {
+		return toAddressCheckList;
+	}
+
+	public void setToAddressCheckList(AddressCheckList toAddressCheckList) {
+		this.toAddressCheckList = toAddressCheckList;
+	}
+
+	public Boolean getPriorToDeliver() {
+		return priorToDeliver;
+	}
+
+	public void setPriorToDeliver(Boolean priorToDeliver) {
+		this.priorToDeliver = priorToDeliver;
+	}
+
+	public Boolean getCommercialBusiness() {
+		return commercialBusiness;
+   }
+
+	public void setCommercialBusiness(Boolean commercialBusiness) {
+		this.commercialBusiness = commercialBusiness;
+	}
+
+	public Boolean getFromDockLevel() {
+		return fromDockLevel;
+	}
+
+	public void setFromDockLevel(Boolean fromDockLevel) {
+		this.fromDockLevel = fromDockLevel;
+	}
+
+    public Boolean getToDockLevel() {
+		return toDockLevel;
+	}
+
+	public void setToDockLevel(Boolean toDockLevel) {
+		this.toDockLevel = toDockLevel;
+	}
+
+	public Boolean getFromPalletJack() {
+		return fromPalletJack;
+	}
+
+	public void setFromPalletJack(Boolean fromPalletJack) {
+		this.fromPalletJack = fromPalletJack;
+	}
+
+	public Boolean getToPalletJack() {
+		return toPalletJack;
+	}
+
+	public void setToPalletJack(Boolean toPalletJack) {
+		this.toPalletJack = toPalletJack;
+	}
+	public long getFromFloorNo() {
+		return fromFloorNo;
+	}
+
+	public void setFromFloorNo(long fromFloorNo) {
+		this.fromFloorNo = fromFloorNo;
+	}
+	public long getToFloorNo() {
+		return toFloorNo;
+	}
+
+	public void setToFloorNo(long toFloorNo) {
+		this.toFloorNo = toFloorNo;
+	}
+
+	public String getRealContextPath() {
+		return RealContextPath;
+	}
+
+	public void setRealContextPath(String realContextPath) {
+		RealContextPath = realContextPath;
+	}
+
+
 }

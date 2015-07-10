@@ -401,6 +401,16 @@ public class CSSFileGenerator {
 			 								 			 						
 			 								 			 					}
 			 								 			 			 }
+			 								 			 			 
+			 								 			 		//vivek search
+			 								 			 			if(css.getSelector()!=null && css.getSelector().contains(".search_body")){
+			 								 			 			  if(css.getPropertyMap().get("background-color")!=null
+			 								 			 				 && (css.getPropertyMap().get("background-color").equalsIgnoreCase("#000")|| 
+			 								 			 					 css.getPropertyMap().get("background-color").equalsIgnoreCase("#000000"))){
+			 								 			 						css.getPropertyMap().put("background-color", cssVo.getMenuColor());
+			 								 			 					 					}
+			 								 			 			 			 }
+
 
 			 			 
 		}

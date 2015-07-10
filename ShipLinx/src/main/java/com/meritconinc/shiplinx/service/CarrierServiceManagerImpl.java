@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -27,7 +28,9 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+
 import com.meritconinc.mmr.model.security.User;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -77,10 +80,6 @@ import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.BusinessEmail;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
-
-
-
-
 public class CarrierServiceManagerImpl implements CarrierServiceManager, Runnable {
   private static final Logger log = LogManager.getLogger(CarrierServiceManagerImpl.class);
   private List<CarrierService> carrierServices; // configure the list in
@@ -338,9 +337,13 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     		  if(service.getMasterCarrierId().equals(carrier.getId())){
     			  serviceList.add(service);
     		  }
-    		      		  else if(service.getCarrierId().equals(carrier.getId())){
-    			      			      			  serviceList.add(service);
-    			      			      		  }
+    		  else if(service.getCarrierId().equals(carrier.getId())){
+	      			  serviceList.add(service);
+	      		  }
+    		  else if(service.getCarrierId()==ShiplinxConstants.CARRIER_ESHIPPLUS){
+    			      			  serviceList.add(service);
+    			      		  }
+    		      		
     	  }
     	  //servicesToApply
     	  if(serviceList.size()>0){
@@ -1080,7 +1083,53 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     order.setService(getService(order.getServiceId()));
     order.setStatusId(new Long(ShiplinxConstants.STATUS_DISPATCHED));
     // order.getCharges().addAll(rate.getCharges());
-    order.setCharges(rate.getCharges());
+		List<Charge> charges = rate.getCharges();
+		List<Charge> tempCharge = new ArrayList<Charge>();
+		for (Charge charge : charges) {
+
+			CarrierChargeCode chargeGroupCode;
+			if (rate.getCarrierId() == ShiplinxConstants.CARRIER_ESHIPPLUS) {
+				chargeGroupCode = this.shippingService
+						.getChargeByCarrierAndCodes(rate.getCarrierId(), null,
+								charge.getChargeCodeLevel2());
+			} else {
+				chargeGroupCode = this.shippingService
+						.getChargeByCarrierAndCodes(rate.getCarrierId(),
+								charge.getChargeCode(),
+								charge.getChargeCodeLevel2());
+			}
+
+			if (chargeGroupCode == null) {
+
+				chargeGroupCode = this.shippingService
+						.getChargeByChargeGroupId(rate.getCarrierId(),
+								charge.getChargeGroupId());
+			}
+			double chargeValue = 0.0;
+			double cost = 0.0;
+			if (chargeGroupCode != null) {
+				chargeValue = chargeGroupCode.getCharge();
+				cost = chargeGroupCode.getCost();
+			}
+
+			if (chargeValue == 0.0) {
+
+				charge.setCharge(charge.getCharge());
+			} else {
+				charge.setCharge(chargeValue);
+			}
+			if (cost == 0.0) {
+				charge.setCost(charge.getCost());
+
+			} else {
+				charge.setCost(cost);
+			}
+			tempCharge.add(charge);
+		}
+
+		order.setCharges(tempCharge);
+		// order.setCharges(rate.getCharges());
+         
     order.setFuelPercent((float) rate.getFuel_perc());
 
     order.setEdiVerified(false);
@@ -2063,7 +2112,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         // log.info("Looking up charge for carrier/code/code2: " +
         // rate.getCarrierId() + " / " + c.getChargeCode() + " / " +
         // c.getChargeCodeLevel2());
-        CarrierChargeCode chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+        /* CarrierChargeCode chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
             rate.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());
         // this should really return only 1 row
       ///Written By Mohan
@@ -2072,7 +2121,20 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         	chargeGroupCode = this.shippingService.getChargeByChargeGroupId(
                     rate.getCarrierId(), c.getChargeGroupId());
         }
-        
+        */
+        CarrierChargeCode chargeGroupCode;
+                              if(rate.getCarrierId() == ShiplinxConstants.CARRIER_ESHIPPLUS ){
+                                 chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+                                    rate.getCarrierId(), null, c.getChargeCodeLevel2());
+                        	 if(chargeGroupCode == null && c.getChargeCode()!= null && c.getChargeCode().equalsIgnoreCase(ShiplinxConstants.FUEL_SURCHARGE)){
+                                	 chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+                                             rate.getCarrierId(), c.getChargeCode(), null);
+                                 }
+                                }else{
+                                	chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+                                			                                    rate.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());
+                                			                        }
+                 
         ///End
         if (chargeGroupCode != null
             && (chargeGroupCode.getGroupCode()
@@ -2125,8 +2187,13 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
               c.setCharge(c.getCost());
           }
         }
-        if (chargeGroupCode != null)
-          c.setDisplayOrder(chargeGroupCode.getDisplayOrder());
+        double charge=0.0;
+        double cost=0.0;
+        if (chargeGroupCode != null){
+					c.setDisplayOrder(chargeGroupCode.getDisplayOrder());
+					charge = chargeGroupCode.getCharge();
+					cost = chargeGroupCode.getCost();
+                          }
         else {
           log.error("Could not set display order for this charge!");
           c.setDisplayOrder(Integer.MAX_VALUE); // this shouldn't
@@ -2135,14 +2202,49 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           // value to high
           // number
         }
-        c.setCharge(FormattingUtil.roundFigureRates(c.getCharge(), 2));
-        c.setCost(FormattingUtil.roundFigureRates(c.getCost(), 2));
-        if (c.getTariffRate() != null)
+        /*  c.setCharge(FormattingUtil.roundFigureRates(c.getCharge(), 2));
+                        +        c.setCost(FormattingUtil.roundFigureRates(c.getCost(), 2));*/
+                                
+                                if(charge==0.0){
+                               	 c.setCharge(FormattingUtil.roundFigureRates(c.getCharge(), 2));
+                                 }else{
+                                	 c.setCharge(FormattingUtil.roundFigureRates(charge, 2));
+                                 }
+                                 if(cost==0.0){
+                               	 c.setCost(FormattingUtil.roundFigureRates(c.getCost(), 2));
+                                 }else{
+                        
+                                	 c.setCost(FormattingUtil.roundFigureRates(cost, 2));
+                                 }
+                              
+                        
+                              /*  if (c.getTariffRate() != null)
           c.setTariffRate(FormattingUtil.roundFigureRates(c.getTariffRate(), 2));
         rate.setTotal(FormattingUtil.add(rate.getTotal(), c.getCharge().doubleValue())
             .doubleValue());
         rate.setTotalCost(FormattingUtil.add(rate.getTotalCost(), c.getCost().doubleValue())
-            .doubleValue());
+            .doubleValue());*/
+                         if (c.getTariffRate() != null)
+                        	              c.setTariffRate(FormattingUtil.roundFigureRates(c.getTariffRate(), 2));
+                        	           
+                         if(charge==0.0){
+                        	 rate.setTotal(FormattingUtil.add(rate.getTotal(), c.getCharge().doubleValue())
+                        	                .doubleValue());
+                        	            }
+                         else{
+                        	    rate.setTotal(FormattingUtil.add(rate.getTotal(),charge)
+                        	            	            .doubleValue());
+                        	  }
+                        
+                         if(cost==0.0){
+                        	    rate.setTotalCost(FormattingUtil.add(rate.getTotalCost(), c.getCost().doubleValue())
+                        	                .doubleValue());
+                        	            }
+                         else{
+                        	   rate.setTotalCost(FormattingUtil.add(rate.getTotalCost(), cost)
+                        	            	            .doubleValue());
+                        	 }
+
         if (chargeGroupCode != null) {
           c.setChargeId(chargeGroupCode.getId());
           if (c.getName() == null || c.getName().length() == 0)
@@ -2727,7 +2829,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     }
 
     try {
-
+    	Map<String, String> serviceError = new HashMap<String, String>();
       if (order != null && ratingList != null) {
         if (order.getFromAddress().isResidential() == true
             || order.getToAddress().isResidential() == true || order.isTradeShowPickup() == true
@@ -2738,7 +2840,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             || order.getHoldForPickupRequired() == true || order.getCODValue() > 0.0
             || order.getInsuredAmount() > 0.0) {
           for (int i = 0; i < ratingList.size(); i++) {
-            if (ratingList.get(i).getTotal() <= 0.0) {
+        	  if (ratingList.get(i).getTotal() <= 0.0) {
+        		  Boolean flag=checkServiceErrorExistance(ratingList.get(i),serviceError);
+        		  if(flag){
               String subject = MessageUtil.getMessage("error.additional.zero.charge",
                   MessageUtil.getLocale());
               String serviceName = "";
@@ -2755,8 +2859,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
               errorLogObj = new CarrierErrorMessage(subject);
               errorMessages.add(new CarrierErrorMessage(subject));
-            }
-
+              log.debug("Additional services request quote error added for ");
+              log.debug("service name: "+ratingList.get(i).getServiceName()+"& id: "+ratingList.get(i).getServiceId());
+              serviceError.put(serviceName,carrierName);
+        		  }
+        		  }
           }
 
         }
@@ -3234,17 +3341,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             if (groupLtlSkidRate.size() > 1 && ratingList.get(i).getBillWeight() <= 500
                 && order.getQuantity().intValue() == 1) {
               Collections.sort(groupLtlSkidRate, LtlSkidRate.LtlSkidFlatRateComparator);
-            /*  for (LtlSkidRate chepestFlatRate : groupLtlSkidRate) {
+             /* for (LtlSkidRate chepestFlatRate : groupLtlSkidRate) {
                 if (chepestFlatRate.getRateFlatWeight() == 0) {
                   groupLtlSkidRate.remove(chepestFlatRate);
                 }
               }*/
-              Iterator<LtlSkidRate> ite = groupLtlSkidRate.iterator();
-                      	  while(ite.hasNext()) {
-                      		 LtlSkidRate chepestFlatRate = ite.next();		  
-                      		 if(chepestFlatRate.getRateFlatWeight() == 0)
-                      			 ite.remove();	  
-                      		 }
+        	  Iterator<LtlSkidRate> ite = groupLtlSkidRate.iterator();
+        	          	  while(ite.hasNext()) {
+        	          		 LtlSkidRate chepestFlatRate = ite.next();		  
+        	          		 if(chepestFlatRate.getRateFlatWeight() == 0)
+        	          			 ite.remove();	  
+        	          		 }
             } else if (groupLtlSkidRate.size() > 1 && ratingList.get(i).getBillWeight() > 500) {
               // Collections.sort(groupLtlSkidRate, LtlSkidRate.LtlSkidRateComparator);
               rateCompare(order.getQuantity().intValue(), groupLtlSkidRate);
@@ -3670,8 +3777,14 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                 	   if(totalCostPer>totalCostFlat){
                 		for(Charge cha:ratingList.get(i).getCharges()){
                		
-               		  cha.setCharge(cha.getCost()+cha.getCost()*ratingList.get(i).getMarkupPercentage()/100);
-               	     }
+                			if(cha.getChargeCodeLevel2() != null && !(cha.getChargeCodeLevel2().isEmpty())){
+                					                				int k=shippingService.checkAccessorial(cha.getChargeCodeLevel2());
+                					                				if(k==0)
+                					                           		  cha.setCharge(cha.getCost()+cha.getCost()*ratingList.get(i).getMarkupPercentage()/100);
+                					                			}else{
+                					                				cha.setCharge(cha.getCost()+cha.getCost()*ratingList.get(i).getMarkupPercentage()/100);
+                					                			}
+                					                		}
                 		   ratingList.get(i).setTotal(totalCostPer);
                 	   }else{
                 		
@@ -4811,9 +4924,30 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 			this.cur = cur;
 		}
 		
-		@Override
-				public Carrier getCarrierBycarrierId(Long carrierId) {
-					// TODO Auto-generated method stub
-					return this.carrierServiceDAO.getCarrierBycarrierId(carrierId);
-				}
+	@Override
+	public Carrier getCarrierBycarrierId(Long carrierId) {
+		// TODO Auto-generated method stub
+		return this.carrierServiceDAO.getCarrierBycarrierId(carrierId);
+	}
+	
+	/*This method is for handling service error repetition(Additional service request quote) 
+	if true then this is new service error,it should be added.
+	if true then this is existing service error,it should be omitted.*/
+	public Boolean checkServiceErrorExistance(Rating rating, Map serviceError){
+		String key;
+		String value;
+		Iterator it = serviceError.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry)it.next();
+			key = pair.getKey().toString();
+			if(key.equals(rating.getServiceName())){
+			value=pair.getValue().toString();
+			  if(value.equals(rating.getCarrierName())){
+				  return false;
+				   }
+			}
+		    }
+		return true;
+		
+	}
 }

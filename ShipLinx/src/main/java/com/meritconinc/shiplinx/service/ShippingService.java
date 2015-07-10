@@ -27,6 +27,11 @@ import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 
+import com.meritconinc.shiplinx.model.AccessorialServices;
+import com.meritconinc.shiplinx.model.AddressCheckList;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
+import com.meritconinc.shiplinx.model.EshipplusPackage;
+
 public interface ShippingService {
 
   public List<String> findPackageTypeByName(String name);
@@ -216,4 +221,35 @@ public Long insertFutureReference(FutureReference fc);
 public void insertFuturePackages(FutureReferencePackages futureRefPack);
 
 public ChargeGroup getChargeDetailsByProvince(String province);
+
+//For eshipplus
+
+	public List<AccessorialServices> getAllAccessorialServices(long typeNot);
+
+	public List<AddressCheckList> getAddressCheckListByAddressId(Long addressId);
+
+	public void addNewAddressCheckList(AddressCheckList fromAddressCheckList);
+
+	public void updateAddressCheckList(AddressCheckList fromAddressCheckList);
+
+	public AccessorialServices getAccessorialServiceByServiceGroupCode(
+			String description, long typeNot);
+
+	public AccessorialServices getAccessorialServiceByServiceCode(
+			String description);
+
+	public List<EshipplusCarrierFilter> getEshipPlusCarrierByCustomerId(
+			Long customerId);
+
+	public void updateEshipCarrierFilter(EshipplusCarrierFilter eshipCC,
+			String sCustomerId);
+
+	public void updateUserFreightClassMode(int i, Long customerId);
+
+	public List<EshipplusPackage> getEshipplusPackagesList();
+
+	public Long getLatestOrderId();
+
+	public int checkAccessorial(String chargeCode);
+
 }

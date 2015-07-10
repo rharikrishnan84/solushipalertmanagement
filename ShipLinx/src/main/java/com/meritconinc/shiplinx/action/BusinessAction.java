@@ -965,7 +965,12 @@ private List<BusinessEmail> removeListWithBusEmailId(
 										cssVo.setFavIconByte((getByteImg1(fileName, cssVo.getFavIcon())));
 									}
 									}
-				
+				fileName = cssVo.getPackageImage();
+								if (getByteImg(fileName) != null) {
+									System.out.println(fileName + "\n"
+											+ (getByteImg(fileName)).length);
+									cssVo.setPackageImageByte(getByteImg(fileName));
+								}
 				
 				if (cssVo != null) {
 					cssVo.setBusinessId(businessId);
@@ -1024,6 +1029,25 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						}
 	
 					}
+					
+					fileName=cssVo.getPackageImage();
+										if (fileName != null) {
+											File file = new File(fileName);
+											BufferedImage bi = ImageIO.read(file);
+											int width = bi.getWidth();
+											int height = bi.getHeight();
+						
+											if (width == 1100 && height == 45) {
+												byte b[] = getByteImg(fileName);
+											
+												cssVo.setPackageImageByte(b);
+											} else {
+						                       editBusiness();
+						                       addActionError("Package Image Width and Height should be 1100 and 45");
+					 							return "fail";
+					 						}
+										}
+
 					
 					/*fileName=cssVo.getFavIcon();
 															if (fileName != null) {
@@ -1112,6 +1136,25 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						}
 	
 					}
+					
+					fileName=cssVo.getPackageImage();
+										if (fileName != null) {
+											File file = new File(fileName);
+											BufferedImage bi = ImageIO.read(file);
+											int width = bi.getWidth();
+											int height = bi.getHeight();
+						
+											if (width == 1100 && height == 45) {
+												byte b[] = getByteImg(fileName);
+											
+												cssVo.setPackageImageByte(b);
+											} else {
+						                       editBusiness();
+						                       addActionError("Package Image Width and Height should be 1100 and 45");
+					 							return "fail";
+					 						}
+										}
+
 					
 					/*fileName=cssVo.getFavIcon();
 															if (fileName != null) {
@@ -1425,7 +1468,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 					 				try {
 					 					File file = new File(fileName);
 					 					List<BufferedImage> image = ICODecoder.read(business.getCssVO().getFavIcon());
-					 					BufferedImage bi = image.get(0);
+					 					BufferedImage bi = ImageIO.read(file);
 					 					int width = bi.getWidth();
 					 					int height = bi.getHeight();
 					 					if (!(width == 16 && height == 16)) {
@@ -1433,7 +1476,6 @@ private List<BusinessEmail> removeListWithBusEmailId(
 					 						i++;
 					 					}
 					 				} catch (Exception e) {
-					 					e.printStackTrace();
 					 					addActionError(getText("Error in the Image File"));
 					 					i++;
 					 				}

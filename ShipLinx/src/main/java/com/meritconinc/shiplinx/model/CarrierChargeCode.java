@@ -20,6 +20,10 @@ public class CarrierChargeCode implements Serializable {
 	private int displayOrder;
 	private String carrierName;
 	
+	private String isTaxable;
+	private double charge;
+	private double cost;
+	
 	private Double carrierCharge;
 	private Double carrierCost;
 	
@@ -187,7 +191,21 @@ public class CarrierChargeCode implements Serializable {
 		this.isTaxable = isTaxable;
 	}
 
-	private String isTaxable;
+	public double getCharge() {
+		return charge;
+	}
+
+	public void setCharge(double charge) {
+		this.charge = charge;
+	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
 
 	
 }

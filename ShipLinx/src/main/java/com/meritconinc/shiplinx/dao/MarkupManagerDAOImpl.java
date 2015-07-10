@@ -15,6 +15,7 @@ import com.meritconinc.shiplinx.model.LtlSkidRate;
 import com.meritconinc.shiplinx.model.Markup;
 import com.meritconinc.shiplinx.model.Zone;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
 public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements MarkupManagerDAO {
 
   public List<Markup> getMarkupListForCustomer(Markup markup) {
@@ -524,6 +525,78 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 					    }
 					    return null;
 					}
-	
-	
+
+	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+			long carrierId, String chargeCode, long customerId) {
+
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("carrierId", carrierId);
+		paramObj.put("chargeCode", chargeCode);
+		paramObj.put("customerId", customerId);
+		List<CarrierChargeCode> groupLtlPoundRate = (List) getSqlMapClientTemplate()
+				.queryForList("getChargesByChargeCodeAndCarrier", paramObj);
+		if (groupLtlPoundRate != null) {
+			return groupLtlPoundRate;
+		}
+		return null;
+	}
+
+	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(
+			Markup markup) {
+		// TODO Auto-generated method stub
+		if (markup != null) {
+			// Map<String, Object> paramObj = new HashMap<String, Object>(5);
+			// paramObj.put("customerId", markup.getCustomerId());
+			// paramObj.put("businessId",
+			// UserUtil.getMmrUser().getBusinessId());
+			// if (markup.getFromCountryCode() != null)
+			// paramObj.put("fromCountryCode", markup.getFromCountryCode());
+			// if (markup.getToCountryCode() != null)
+			// paramObj.put("toCountryCode", markup.getToCountryCode());
+			// if (markup.getServiceId() != null)
+			// paramObj.put("serviceId", markup.getServiceId());
+
+			return getSqlMapClientTemplate().queryForList(
+					"findMarkupListForUniqueMarkupUsingCostRange", markup);
+		}
+		return null;
+	}
+
+	public boolean getEshipCarriersbyCustomerId(String carrierScac,
+			Long customerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("customerId", customerId);
+		paramObj.put("carrierScac", carrierScac);
+		try {
+			List<EshipplusCarrierFilter> eShipCustomerCarrier = (List<EshipplusCarrierFilter>) getSqlMapClientTemplate()
+					.queryForList("getEshipCarriersbyCustomerIdandScac",
+							paramObj);
+			if (eShipCustomerCarrier.size() > 0) {
+				for (EshipplusCarrierFilter EshipCustomerCarrier : eShipCustomerCarrier) {
+					if (eShipCustomerCarrier.get(0).getDisabled() == 1) {
+						return false;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return true;
+	}
+
+	public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(
+			long carrierId, long chargeGroupId) {
+
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("carrierId", carrierId);
+		paramObj.put("chargeGroupId", chargeGroupId);
+		List<CarrierChargeCode> groupLtlPoundRate = (List) getSqlMapClientTemplate()
+				.queryForList("getChargesByCarrierIdAndGroupCode", paramObj);
+		if (groupLtlPoundRate != null) {
+			return groupLtlPoundRate;
+		}
+		return null;
+	}
+
 }

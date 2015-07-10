@@ -93,6 +93,8 @@
 		 <!-- selva end css  -->
 		 <result property="footer1" column="footer1"/>
 		<result property="footer2" column="footer2"/>
+		<result property="errorMsg" column="error_msg"/>
+		<result property="packageImageByte" jdbcType="BLOB" column="package_image"/>
 	</resultMap>
 
 
@@ -268,15 +270,15 @@ from pins where business_id=#oldBusinessId#
         
     </insert>
  <insert id="addCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
-    insert into business_loader (business_id,menu_color,menu_hover_color,button_color,bar_first_color,bar_second_color,footer_color,css_text,logo_img,back_ground_img,fav_icon,footer_font_color,arrow_color,footer1,footer2) 
-    values(#businessId#,#menuColor#,#menuHoverColor#,#buttonColor#,#barFirstColor#,#barSecondColor#,#footerColor#,#cssText#,#logoImgByte#,#backGroudImgByte#,#favIconByte#,#footerFontColor#,#arrowColor#,#footer1#,#footer2#)
+    insert into business_loader (business_id,menu_color,menu_hover_color,button_color,bar_first_color,bar_second_color,footer_color,css_text,logo_img,back_ground_img,fav_icon,footer_font_color,arrow_color,footer1,footer2,error_msg,package_image) 
+    values(#businessId#,#menuColor#,#menuHoverColor#,#buttonColor#,#barFirstColor#,#barSecondColor#,#footerColor#,#cssText#,#logoImgByte#,#backGroudImgByte#,#favIconByte#,#footerFontColor#,#arrowColor#,#footer1#,#footer2#,#errorMsg#,#packageImageByte#)
   </insert>
   
   <update id="updateCSSDetailsForBusiness" parameterClass="com.meritconinc.shiplinx.model.CSSVO">
 	update business_loader set grid_header_color=#gridHeaderColor#,menu_color=#menuColor#,
 	menu_hover_color=#menuHoverColor#,button_color=#buttonColor#,
 	bar_first_color=#barFirstColor#,bar_second_color=#barSecondColor#,
-	footer_color=#footerColor#,footer_font_color=#footerFontColor#,arrow_color=#arrowColor#,
+	footer_color=#footerColor#,footer_font_color=#footerFontColor#,arrow_color=#arrowColor#,error_msg=#errorMsg#,
 	css_text=#cssText#
 	<dynamic>
 	<isNotNull prepend=","  property="logoImgByte">
@@ -293,6 +295,9 @@ from pins where business_id=#oldBusinessId#
 	</isNotNull>
 	<isNotNull property="footer2" prepend="," >
 	     footer2=#footer2#
+	</isNotNull>
+	<isNotNull prepend=","  property="packageImageByte">
+	   package_image=#packageImageByte#
 	</isNotNull>
 	</dynamic>
     where business_id=#businessId#

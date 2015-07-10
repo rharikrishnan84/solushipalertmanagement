@@ -68,8 +68,10 @@ import com.opensymphony.xwork2.ActionContext;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
 
-
-
+import com.meritconinc.shiplinx.model.AccessorialServices;
+import com.meritconinc.shiplinx.model.AddressCheckList;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
+import com.meritconinc.shiplinx.model.EshipplusPackage;
 
 public class ShippingServiceImpl implements ShippingService {
 
@@ -2268,9 +2270,64 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 		return this.shippingDAO.getOrdersByAddressId(fromAddressId);
 	}
 	
+	// For eshipplus
+	public List<AccessorialServices> getAllAccessorialServices(long typeNot) {
+		return this.shippingDAO.getAllAccessorialServices(typeNot);
+	}
+
+	public List<AddressCheckList> getAddressCheckListByAddressId(Long addressId) {
+		return this.shippingDAO.getAddressCheckListByAddressId(addressId);
+	}
+
+	public void addNewAddressCheckList(AddressCheckList AddressCheckList) {
+		this.shippingDAO.addNewAddressCheckList(AddressCheckList);
+	}
+
+	public void updateAddressCheckList(AddressCheckList AddressCheckList) {
+		this.shippingDAO.updateAddressCheckList(AddressCheckList);
+	}
+
+	public AccessorialServices getAccessorialServiceByServiceGroupCode(
+			String ServiceGroupCode, long typeNot) {
+		return this.shippingDAO.getAccessorialServiceByServiceGroupCode(
+				ServiceGroupCode, typeNot);
+	}
+
+	public AccessorialServices getAccessorialServiceByServiceCode(
+			String ServiceGroupCode) {
+		return this.shippingDAO
+				.getAccessorialServiceByServiceCode(ServiceGroupCode);
+	}
+
+	public List<EshipplusCarrierFilter> getEshipPlusCarrierByCustomerId(
+			Long customerId) {
+		return this.shippingDAO.getEshipPlusCarrierByCustomerId(customerId);
+	}
+
+	public void updateEshipCarrierFilter(EshipplusCarrierFilter eshipCC,
+			String sCustomerId) {
+		this.shippingDAO.updateEshipCarrierFilter(eshipCC, sCustomerId);
+	}
+
+	public void updateUserFreightClassMode(int i, Long customerId) {
+		this.shippingDAO.updateUserFreightClassMode(i, customerId);
+	}
+
+	public List<EshipplusPackage> getEshipplusPackagesList() {
+		return this.shippingDAO.getEshipplusPackagesList();
+	}
+
+	public Long getLatestOrderId() {
+		return this.shippingDAO.getLatestOrderId();
+	}
+
 	@Override
 	public ChargeGroup getChargeDetailsByProvince(String province) {
-		// TODO Auto-generated method stub
 		return this.shippingDAO.getChargeDetailsByProvince(province);
 	}
+
+	public int checkAccessorial(String chargeCode) {
+		return this.shippingDAO.checkAccessorial(chargeCode);
+	}
+
 }

@@ -476,5 +476,79 @@ public class ShiplinxConstants {
 		public static final String MSGID_EMAIL_SALESREP_NEWCUS="Sales User's New Customer";
 		public static final String MSGID_EMAIL_WAREHOUSE_ORDER="Ware House Order Creation";
 		public static final String MSGID_EMAIL_FORGOT_PWD="Forgot Password";
-}
+	// For eshipplus
+	public static final String DEFAULT_ESHIP_SERVICE = "IC Class";
+	public static final long DEFAULT_ESHIP_SERVICE_ID = 200000;
+	public static final int CARRIER_ESHIPPLUS = 6;
+	public static final long CARRIER_LOGISTICSPLUS = 2000;
+	public static final String CARRIER_ESHIPPLUS_STRING = "Integrated Carriers";
+	public static final long GROUP_ACCESSORIAL_CHARGE = 2;
+
+	// Freight Class
+	public static final Double MINIMUM_FREIGHT_CLASS_ESHIPPLUS = 50d;
+	public static final Double CUBIC_INCHES_TO_FEET = 1728d;
+
+	// Accessorial Charges Eshipplus
+	public static final String TEMP_CONTROL_CHARGE_CODE = "IC10012_0";
+	public static final String TEMP_CONTROL_CHARGE_CODE_LEVEL_2 = "PTS";
+
+	public static final String DANGEROUS_GOODS_CHARGE_CODE = "IC10015_0";
+	public static final String DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2 = "HAZ";
+
+	public static final String PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE = "IC10008_1";
+	public static final String PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE_LEVEL_2 = "PJACKP";
+	public static final String PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE = "IC10008_2";
+	public static final String PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE_LEVEL_2 = "PJACKD";
+
+	public static final String POWER_TAILGATE_PICKUP_CHARGE_CODE = "IC10009_1";
+	public static final String POWER_TAILGATE_PICKUP_CHARGE_CODE_LEVEL_2 = "LGP";
+
+	public static final String POWER_TAILGATE_DELIVERY_CHARGE_CODE = "IC10009_2";
+	public static final String POWER_TAILGATE_DELIVERY_CHARGE_CODE_LEVEL_2 = "LGD";
+
+	public static final String NON_COMMERCIAL_PICKUP_CHARGE_CODE = "IC10005_1";
+	public static final String NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2 = "LAP";
+
+	public static final String NON_COMMERCIAL_DELIVERY_CHARGE_CODE = "IC10005_2";
+	public static final String NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2 = "LAD";
+
+	public static final String INSIDE_PICKUP_CHARGE_CODE = "IC10007_1";
+	public static final String INSIDE_PICKUP_CHARGE_CODE_LEVEL_2 = "INP";
+
+	public static final String INSIDE_DELIVERY_CHARGE_CODE = "IC10007_2";
+	public static final String INSIDE_DELIVERY_CHARGE_CODE_LEVEL_2 = "IND";
+
+	public static final String HOLD_FOR_DELIVERY_CHARGE_CODE = "IC10010_2";
+	public static final String HOLD_FOR_DELIVERY_CHARGE_CODE_LEVEL_2 = "SELFSTOD";
+
+	public static final String HOLD_FOR_PICKUP_CHARGE_CODE = "IC10010_1";
+	public static final String HOLD_FOR_PICKUP_CHARGE_CODE_LEVEL_2 = "SELFSTOP";
+
+	public static final String TAIL_GATE_PICKUP_CHARGE_CODE = "IC10009_1";
+	public static final String TAIL_GATE_PICKUP_CHARGE_CODE_LEVEL_2 = "LGP";
+
+	public static final String TAIL_GATE_DELIVERY_CHARGE_CODE = "IC10009_2";
+	public static final String TAIL_GATE_DELIVERY_CHARGE_CODE_LEVEL_2 = "LGD";
+	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_CHARGE_CODE = "IC10013_0";
+	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_CHARGE_CODE_LEVEL_2 = "DNT";
+
+	public static final String RESIDENTIAL_DELIVERY_CHARGE_CODE = "IC10015_2";
+	public static final String RESIDENTIAL_DELIVERY_CHARGE_CODE_LEVEL_2 = "RESD";
+
+	public static final String RESIDENTIAL_PICKUP_CHARGE_CODE = "IC10015_1";
+	public static final String RESIDENTIAL_PICKUP_CHARGE_CODE_LEVEL_2 = "RESP";
+
+	// AutoFrieghtClassCheck
+
+	public static final String AUTO_FRIEGHT_UPDATE_0 = "update0";
+	public static final String AUTO_FRIEGHT_UPDATE_1 = "update1";
+	public static final String AUTO_FRIEGHT_INSERT = "insert";
+	public static final String AUTO_FRIEGHT_CHECK = "check";
+	public static final int AUTO_FRIEGHT_UPDATE_0_INT = 0;
+	public static final int AUTO_FRIEGHT_UPDATE_1_INT = 1;
+
+
+	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_CODE = "IC10013_0";
+	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_LEVEL_2 = "DNT";
 	
+}

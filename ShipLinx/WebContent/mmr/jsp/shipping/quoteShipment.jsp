@@ -638,13 +638,47 @@
 												<s:textfield id="shippingOrder.dutiableAmount" name="shippingOrder.dutiableAmount"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{#session.shippingOrder.dutiableAmount}"/>
 											</div>
 										</div>
-										<div class="fieldsl">
+									<%-- <div class="fieldsl">
+										<label><mmr:message messageId="label.shippingOrder.additionalServices.holdForPickupRequired"/></label>
+										<div class="controls"><span>:</span>
+											<s:checkbox name="shippingOrder.holdForPickupRequired" value="%{#session.shippingOrder.holdForPickupRequired}" />
+										</div> --%>
+										
+										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.holdForPickupRequired"/></label>
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.holdForPickupRequired" value="%{#session.shippingOrder.holdForPickupRequired}" />
 											</div>
-										</div>												
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shippingOrder.satDelivery"/></label>
+											<div class="controls"><span>:</span>
+												<s:checkbox name="shippingOrder.satDelivery"  value="shippingOrder.satDelivery"/>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shippingOrder.docsOnly"/></label>
+											<div class="controls"><span>:</span>
+												<s:checkbox name="shippingOrder.docsOnly"  value="shippingOrder.docsOnly"/>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shippingOrder.tempControl"/></label>
+											<div class="controls"><span>:</span>
+												<s:checkbox name="shippingOrder.tempControl"  value="shippingOrder.tempControl"/>
+											</div>
+										</div>
+										<div class="fields">
+										<label><mmr:message messageId="label.shippingOrder.temperature"/></label>
+										<div class="controls"><span>:</span>
+												<s:textfield id="shippingOrder.temperature" name="shippingOrder.temperature"  cssClass="text_02_tf_small" theme="simple" size="3" value="%{shippingOrder.temperature}"/>
+											</div>
+										</div>
+										
 										<div id="hide_this_one_quote" style="display:none">
+										<div class="content_header">
+											<div class="cont_hdr_title"><mmr:message messageId="label.shippingOrder.additionalServices"/>:</div>
+										</div>
 										<div class="fields" id="hide_this_one_quote">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.tradeShowPickup"/></label>
 											<div class="controls"><span>:</span>
@@ -663,6 +697,12 @@
 												<s:checkbox name="shippingOrder.insidePickup"  value="shippingOrder.insidePickup"/>
 											</div>
 										</div>
+										<%-- <div class="fields" id="hide_this_one_quote">
+											<label><mmr:message messageId="label.viewship.insideDelivery"/></label>
+											<div class="controls"><span>:</span>
+												<s:checkbox name="shippingOrder.insideDelivery"  value="shippingOrder.insideDelivery"/>
+											</div>
+										</div> --%>
 										<div class="fields" id="hide_this_two_quote">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.appointmentPickup"/></label>
 											<div class="controls"><span>:</span>
@@ -681,10 +721,283 @@
 												<s:checkbox name="shippingOrder.fromTailgate"  value="shippingOrder.fromTailgate"/>
 											</div>
 										</div>
-										<div class="fieldsl" id="hide_this_two_quote">
+										<div class="fields" id="hide_this_one_quote">
 											<label><mmr:message messageId="label.shippingOrder.additionalServices.toTailgate"/></label>
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.toTailgate" value="%{#session.shippingOrder.toTailgate}" />
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.viewship.fromPalletJack"/></label>
+											<div class="controls"><span>:</span>
+												<s:if test='%{shippingOrder.fromAddressCheckList.palletJack == 1 || shippingOrder.fromAddressCheckList.description == "IC10008_1"}'>
+												<s:checkbox name="shippingOrder.fromPalletJack" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.fromPalletJack" value="false"/>
+											</s:else>											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.viewship.toPalletJack"/></label>
+											<div class="controls"><span>:</span>
+												<s:if test='%{shippingOrder.toAddressCheckList.palletJack == 1 || shippingOrder.toAddressCheckList.description == "IC10008_2"}'>
+												<s:checkbox name="shippingOrder.toPalletJack" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.toPalletJack" value="false"/>
+											</s:else>											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.viewship.fromDockLevel"/></label>
+											<div class="controls"><span>:</span>
+												<s:if test='%{shippingOrder.fromAddressCheckList.dockLevel == 1}'>
+												<s:checkbox name="shippingOrder.fromDockLevel" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.fromDockLevel" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.viewship.toDockLevel"/></label>
+											<div class="controls"><span>:</span>
+												<s:if test='%{shippingOrder.toAddressCheckList.dockLevel == 1}'>
+												<s:checkbox name="shippingOrder.toDockLevel" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.toDockLevel" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.worshipPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10001_1"}'>
+												<s:checkbox name="shippingOrder.worshipPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.worshipPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.worshipDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10001_2"}'>
+												<s:checkbox name="shippingOrder.worshipDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.worshipDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.utilityPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10002_1"}'>
+												<s:checkbox name="shippingOrder.utilityPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.utilityPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.utilityDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10002_2"}'>
+												<s:checkbox name="shippingOrder.utilityDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.utilityDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.governmentPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10003_1"}'>
+												<s:checkbox name="shippingOrder.governmentPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.governmentPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.governmentDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10003_2"}'>
+												<s:checkbox name="shippingOrder.governmentDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.governmentDelivery" value="false"/>
+											</s:else>
+											</div>
+									</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.mineSitePickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10004_1"}'>
+												<s:checkbox name="shippingOrder.mineSitePickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.mineSitePickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.mineSiteDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10004_2"}'>
+												<s:checkbox name="shippingOrder.mineSiteDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.mineSiteDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.limitedAccessPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10005_1"}'>
+												<s:checkbox name="shippingOrder.limitedAccessPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.limitedAccessPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.limitedAccessDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10005_2"}'>
+												<s:checkbox name="shippingOrder.limitedAccessDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.limitedAccessDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.schoolPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10006_1"}'>
+												<s:checkbox name="shippingOrder.schoolPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.schoolPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.schoolDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10006_2"}'>
+												<s:checkbox name="shippingOrder.schoolDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.schoolDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.insideStreetPickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10007_1"}'>
+												<s:checkbox name="shippingOrder.insideStreetPickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.insideStreetPickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.insideStreetDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10007_2"}'>
+												<s:checkbox name="shippingOrder.insideStreetDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.insideStreetDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<%-- <div class="fields">
+											
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10009_1"}'>
+												<s:checkbox name="shippingOrder.liftGatePickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.liftGatePickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.liftGateDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10009_2"}'>
+												<s:checkbox name="shippingOrder.liftGateDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.liftGateDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div> --%>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.selfStoragePickup"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10010_1"}'>
+												<s:checkbox name="shippingOrder.selfStoragePickup" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.selfStoragePickup" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.selfStorageDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.toAddressCheckList.description == "IC10010_2"}'>
+												<s:checkbox name="shippingOrder.selfStorageDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.selfStorageDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.hazardousDelivery"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10011_0" || shippingOrder.toAddressCheckList.description == "IC10011_0"}'>
+												<s:checkbox name="shippingOrder.hazardousDelivery" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.hazardousDelivery" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.protectFreeze"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10012_0" || shippingOrder.toAddressCheckList.description == "IC10012_0"}'>
+												<s:checkbox name="shippingOrder.protectFreeze" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.protectFreeze" value="false"/>
+											</s:else>
+											</div>
+										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.shipping_order.destinationNotify"/></label>
+											<div class="controls"><span>:</span>
+											<s:if test='%{shippingOrder.fromAddressCheckList.description == "IC10013_0" || shippingOrder.toAddressCheckList.description == "IC10013_0"}'>
+												<s:checkbox name="shippingOrder.destinationNotify" value="true"/>
+											</s:if>
+											<s:else>
+												<s:checkbox name="shippingOrder.destinationNotify" value="false"/>
+											</s:else>
 											</div>
 										</div>
 										</div>

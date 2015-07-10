@@ -465,7 +465,8 @@
 						<ref bean="dhlService"/>
 						<ref bean="loomisService"/>
 						<ref bean="purolatorService"/>		
-						<ref bean="midlandService"/>			
+						<ref bean="midlandService"/>
+						<ref bean="eShipPlus"/>				
 					</list>
 				</property>   
 				<property name="carrierServiceDAO" ref="carrierServiceDAO"/>
@@ -678,5 +679,12 @@
 	</bean>	
 	<bean id="warehouseManagerDAO" scope="prototype" class="com.meritconinc.shiplinx.dao.WarehouseManagerDAOImpl">
 		<property name="sqlMapClient" ref="sqlMapClient"/>
-	</bean>		
+	</bean>
+	
+	<bean id="eShipPlus" scope="prototype" class="com.meritconinc.shiplinx.carrier.eshipplus.eshipplusservice.EShipPlusAPI">
+		<property name="shippingDAO" ref="shippingDAO" />
+		<property name="shippingService" ref="shippingService" />
+		<property name="carrierServiceDAO" ref="carrierServiceDAO" />
+		<property name="customerService" ref="customerService" />
+	</bean>
 </beans>

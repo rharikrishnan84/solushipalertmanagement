@@ -1135,6 +1135,20 @@ window.onload = function() {
 							
 								</div> --%>
 				</div>
+				<div class="fields">
+										<label><mmr:message messageId="label.upload.actionError.ForBusiness"/></label>
+									<div  class="controls"><span>:</span><s:textfield  key="business.cssVO.errorMsg" name="business.cssVO.errorMsg" /></div>
+									</div>
+									
+									<div class="fields" >
+									
+										<label><mmr:message messageId="label.upload.packageImage"/></label>
+									<div class="controls"><span>:</span><s:file cssStyle="width: 95px" name="business.cssVO.packageImage"/>
+								
+								</div>
+									
+												
+					</div>
 										
 				</div>
 						</div>				

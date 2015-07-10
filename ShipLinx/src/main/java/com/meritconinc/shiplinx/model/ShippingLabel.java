@@ -23,6 +23,8 @@ public class ShippingLabel {
 	private String formId;
 	private String labelType;
 	private byte[] codLabel;
+	private byte[] originalLabel;
+	private boolean labelUpdated;
 
 	public Long getId() {
 		return id;
@@ -145,6 +147,22 @@ public class ShippingLabel {
 	}
 	public void setCodLabel(byte[] codLabel) {
 		this.codLabel = codLabel;
+	}
+	
+	public byte[] getOriginalLabel() {
+		return originalLabel;
+	}
+
+	public void setOriginalLabel(byte[] originalLabel) {
+		this.originalLabel = originalLabel;
+	}
+
+	public boolean isLabelUpdated() {
+		return labelUpdated;
+	}
+
+	public void setLabelUpdated(boolean labelUpdated) {
+		this.labelUpdated = labelUpdated;
 	}
 	
 	

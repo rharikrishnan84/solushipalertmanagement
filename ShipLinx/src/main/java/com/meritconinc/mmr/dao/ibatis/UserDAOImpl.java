@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.sql.Timestamp;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.LogManager;
@@ -745,4 +746,21 @@ public List<User> getAllUsers() {
 	// TODO Auto-generated method stub
 	return (List<User>)getSqlMapClientTemplate().queryForList("getAllUsers");
 }
+
+@Override
+public int insertAutoFreightClassInfo(User user, Timestamp timestamp,String orderId,
+		Boolean autoFreightClass) {
+	try{
+	Map<String, Object> paramObj = new HashMap<String, Object>();
+    paramObj.put("username", user.getUsername());
+    paramObj.put("dateTime", new Date());
+    paramObj.put("autoFreightClass", autoFreightClass);
+    getSqlMapClientTemplate().insert("insertAutoFreightClassInfo", paramObj);
+	return 1;
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+	return 0;
+}
+ 
 }

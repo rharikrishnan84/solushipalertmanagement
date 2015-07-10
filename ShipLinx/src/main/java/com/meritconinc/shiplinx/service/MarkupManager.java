@@ -79,4 +79,8 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public List<Markup> getAllMarkupsForCustomer(Long customerId, long l);
   
   public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province);
+  public Markup getUniqueMarkupUsingCost(Markup markup);
+  public boolean getEshipCarriersbyCustomerId(String carrierScac,Long customerId);
+  public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(long carrierId, long chargeGroupId);
+  public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);
 }

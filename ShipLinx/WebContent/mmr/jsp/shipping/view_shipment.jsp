@@ -14,13 +14,12 @@
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/smartphone.css" media="screen and (min-width:320px) and (max-width:767px)"/>
 	<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
-
 </head>
 <body>
+
 <SCRIPT language="JavaScript">
 var def_wh_id=0;
 var product_id=0; 
-
 	window.onload = showAutoPrintLabel;
 
 	function showAutoPrintLabel()
@@ -250,7 +249,7 @@ var product_id=0;
 
 		}
 		function cancelShipment() {
-			var clientIP;
+			 var clientIP;
 							       // alert(ip);
 		    try
 		    {
@@ -267,7 +266,7 @@ var product_id=0;
 		    {
 		    	//alert(err+"error ocured in ");
 		    	clientIP="error";
-		    }
+		    } 
 		   	 document.viewform.action = "cancelShipment.action?ip="+clientIP; 
 			//document.viewform.action = "cancelShipment.action";
 			document.viewform.submit();
@@ -1289,9 +1288,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<s:if test="%{selectedOrder.statusId==50}"> 
 							<s:if test="%{#session.ROLE.contains('busadmin') || #session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin'))">
 							<div class="fields">
-										<label><s:a 
-									href="javascript: clearExceptionStatus()" 
-									cssStyle="text-decoration: none;"><mmr:message messageId="label.viewship.clearexception"/>
+										<label><s:a	href="javascript: clearExceptionStatus()" cssStyle="text-decoration: none;"><mmr:message messageId="label.viewship.clearexception"/>
 							</s:a></label>
 										<div class="controls">
 											<span>:</span>
@@ -1316,18 +1313,18 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									
 					</s:if>
 							</div>
-							<div class="fields">
+							<%-- <div class="fields">
 											<label><mmr:message messageId="label.viewship.link.to.shipid"/></label>
 										<div class="controls"><span>:</span>
 											<s:if test="%{selectedOrder.linkToOrder != null && selectedOrder.linkToOrder != 0}">
 										<s:property value="%{selectedOrder.linkToOrder}" />
 										</s:if>
 											</div>
-										</div>
+										</div> --%>
 								<div id="payment_rqd_end">&nbsp;</div>
 <s:if test='%{selectedOrder.tradeShowPickup == 1 || selectedOrder.tradeShowDelivery == 1 || selectedOrder.insidePickup == 1 ||
 			selectedOrder.insideDelivery == 1 || selectedOrder.appointmentPickup == 1 || selectedOrder.appointmentDelivery == 1 ||
-			selectedOrder.fromTailgate == 1 || selectedOrder.toTailgate == 1 || selectedOrder.satDelivery == 1 || selectedOrder.holdForPickupRequired == 1 || selectedOrder.CODValue > 0 || selectedOrder.insuranceValue > 0}'>
+			selectedOrder.fromTailgate == 1 || selectedOrder.toTailgate == 1 || selectedOrder.fromPalletJack == 1 || selectedOrder.toPalletJack == 1 || selectedOrder.satDelivery == 1 || selectedOrder.holdForPickupRequired == 1 || selectedOrder.CODValue > 0 || selectedOrder.insuranceValue > 0}'>
 			<div id="additional_service_detail_div_start"><mmr:message messageId="label.heading.additionalservice"/> :</div>
 			
 			
@@ -1342,11 +1339,36 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 					<div class="adddtl_title" ><mmr:message messageId="label.viewship.tradeshowdelivery"/> </div>
 					</s:if>
 					<s:if test='%{selectedOrder.insidePickup == 1}'>
+					<s:if test='%{selectedOrder.fromFloorNo == -1}'>
 					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidepickup"/> </div>
 					</s:if>
+					<s:else>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidepickup"/>_floor <s:property value="selectedOrder.fromFloorNo"/> </div>
+					</s:else>
+					</s:if>
 					 <s:if test='%{selectedOrder.insideDelivery == 1}'>
+					 <s:if test='%{selectedOrder.toFloorNo == -1}'>
 					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidedelivery"/> </div>
+					</s:if>
+					<s:else>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidedelivery"/>_floor <s:property value="selectedOrder.toFloorNo"/> </div>
+					</s:else>
 					</s:if> 
+					<s:if test='%{selectedOrder.fromPalletJack == 1}'>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.fromPalletJack"/></div>
+					</s:if>
+					<s:if test='%{selectedOrder.toPalletJack == 1}'>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.toPalletJack"/></div>
+					</s:if>
+					<s:if test='%{selectedOrder.fromDockLevel == 1}'>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.fromDockLevel"/></div>
+					</s:if>
+					<s:if test='%{selectedOrder.toDockLevel == 1}'>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.toDockLevel"/></div>
+					</s:if>
+				 <%-- <s:if test='%{selectedOrder.insideDelivery == 1}'>
+					<div class="adddtl_title" ><mmr:message messageId="label.viewship.insidedelivery"/> </div>
+					</s:if>  --%>
 				</div>
 				<div>
 					<s:if test='%{selectedOrder.appointmentPickup == 1}'>
@@ -1445,18 +1467,18 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td>&nbsp;</td>
 							</tr>
 							<tr>
-								<td valign="top"><s:iterator id="quotedCharges"
-									value="selectedOrder.quotedCharges" status="row">
+								<td valign="top"><s:iterator id="quotedCharges"	value="selectedOrder.quotedCharges" status="row">
 									<tr>
 										<!-- status=30=Billed -- >
 										<!-- Unbilled charges will only be displayed to Business Admin -->
 											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
-											<td class="ordrdtl_title_val">
-													<s:property value="carrierName" />
+											<td class="ordrdtl_title_val" nowrap>
+											<s:if test="%{selectedOrder.carrierId ==6}"><s:property value="%{selectedOrder.service.masterCarrier.name}" /></s:if>
+												<s:else><s:property value="carrierName" /></s:else>
 											</td>
 										</s:if>
 										<s:else>
-										    <td class="ordrdtl_title_val">
+										   <td class="ordrdtl_title_val" nowrap>
 													<s:property value="%{selectedOrder.service.masterCarrier.name}" />
 											</td>
 											
@@ -1825,13 +1847,17 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							<tr>
 								<td valign="top">
 						<s:set var="index" value="0" />		
-								<s:iterator id="actualCharges"
-									value="selectedOrder.actualCharges" status="row">
+								<s:iterator id="actualCharges"	value="selectedOrder.actualCharges" status="row">
 									<tr>
 										<!-- status=30=Billed -- >
 										<!-- Unbilled charges will only be displayed to Business Admin -->
-                                        <td class="ordrdtl_title_val">
-												<s:property value="carrierName" />
+                                        <td class="ordrdtl_title_val" nowrap>
+											<s:if test="%{selectedOrder.carrierId ==6}">
+												<s:property value="%{selectedOrder.service.masterCarrier.name}" />
+											</s:if>
+											<s:else>
+												 <s:property value="carrierName" />  
+											</s:else>
 										</td>
 										<!-- <td style="text-align: center" class="ordrdtl_title_val">
 												<s:property value="chargeCode" />

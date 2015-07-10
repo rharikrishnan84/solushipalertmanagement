@@ -66,6 +66,8 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.meritconinc.mmr.model.admin.UserSearchCriteria;
+import com.meritconinc.shiplinx.model.AddressCheckList;
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.UserDAO;
@@ -92,6 +94,7 @@ import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.BillingStatus;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.CCTransaction;
+import com.meritconinc.shiplinx.model.CSSVO;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
@@ -490,7 +493,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			List<PackageTypes> packagetypes;
 			long l_default_from_add = 0;
 			long l_default_to_add = 0;
-			
+			// Code for auto freight class update
+									UserSearchCriteria criteria = new UserSearchCriteria();
+												if (customerId != null) {
+													criteria.setCustomerId(Long.valueOf(customerId));
+													criteria.setBusinessId(getLoginUser().getBusinessId());
+												}
+												// List<User> users = userService.findUsers(criteria, 0, 0);
+												User user = UserUtil.getMmrUser();
+												Boolean autoFreightClass = user.isAutoFreightClass();
+												if (user != null && autoFreightClass != null) {
+													getSession().remove("autoFreightClass");
+													getSession().put("autoFreightClass", user.isAutoFreightClass());
+											}
 			//setting the role in req attribute to enable or disable address fields based on role.
 			if(getLoginUser().getUserRole().equalsIgnoreCase(ShiplinxConstants.ROLE_CUSTOMER_SHIPPER))
 				request.setAttribute("USERROLE", "shipper");
@@ -519,7 +534,33 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				addressbookFrom = order.getFromAddress();
 				addressbookTo = order.getToAddress();
 			}
-			
+			List<AddressCheckList> fromAddressCheckList = new ArrayList<AddressCheckList>();
+																		List<AddressCheckList> toAddressCheckList = new ArrayList<AddressCheckList>();
+																		
+																		//Check wheather the addressId is available if not get from addressbookFrom
+																		if(l_default_from_add >0){
+																			fromAddressCheckList = shippingService
+																				.getAddressCheckListByAddressId(l_default_from_add);
+																		}else if(addressbookFrom != null && addressbookFrom.getAddressId() > 0){
+																			fromAddressCheckList = shippingService
+																					.getAddressCheckListByAddressId(addressbookFrom.getAddressId());
+																		}
+																		
+																		//Check wheather the addressId is available if not get from addressbookFrom
+																		
+																		if(l_default_to_add >0){
+																			toAddressCheckList = shippingService
+																					.getAddressCheckListByAddressId(l_default_to_add);
+																		}else if(addressbookTo != null && addressbookTo.getAddressId() > 0){
+																			toAddressCheckList = shippingService
+																					.getAddressCheckListByAddressId(addressbookTo.getAddressId());
+																		}
+																		
+																		/*fromAddressCheckList = shippingService
+																				.getAddressCheckListByAddressId(l_default_from_add);
+																		toAddressCheckList = shippingService
+																				.getAddressCheckListByAddressId(l_default_to_add);*/
+						 			
 			if(addressbookFrom==null)
 				addressbookFrom = new Address();
 			if(addressbookTo==null)
@@ -530,7 +571,42 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			shippingOrder.setToAddress(addressbookTo);
 			shippingOrder.setFromAddress(addressbookFrom);
 			shippingOrder.setCustomerId(getLoginUser().getCustomerId());
-			
+			if (fromAddressCheckList.size() > 0) {
+																shippingOrder.setFromAddressCheckList(fromAddressCheckList
+																		.get(0));
+																shippingOrder.getFromAddressCheckList().setCheckListActivated(
+																		true);
+															}
+															if (toAddressCheckList.size() > 0) {
+																shippingOrder.setToAddressCheckList(toAddressCheckList.get(0));
+																shippingOrder.getToAddressCheckList().setCheckListActivated(
+																		true);
+															}
+															applyAddressCheckList(shippingOrder);
+														List<CarrierChargeCode> accessorialServices = new ArrayList<CarrierChargeCode>();
+														List<CarrierChargeCode> accessorialServicesFrom = new ArrayList<CarrierChargeCode>();
+															List<CarrierChargeCode> accessorialServicesTo = new ArrayList<CarrierChargeCode>();
+															markupManagerService = (MarkupManager) MmrBeanLocator.getInstance()
+																	.findBean("markupManagerService");
+															accessorialServices = markupManagerService
+																	.getChargesByCarrierIdAndGroupCode(
+																			ShiplinxConstants.CARRIER_ESHIPPLUS,
+																			ShiplinxConstants.GROUP_ACCESSORIAL_CHARGE);
+															for (CarrierChargeCode charge : accessorialServices) {
+																String typeFromCode = charge.getChargeCode().substring(
+																		charge.getChargeCode().length() - 1);
+																if (typeFromCode.equalsIgnoreCase("1")) {
+																	accessorialServicesFrom.add(charge);
+																} else if (typeFromCode.equalsIgnoreCase("2")) {
+																	accessorialServicesTo.add(charge);
+																} else {
+																	accessorialServicesFrom.add(charge);
+																	accessorialServicesTo.add(charge);
+																}
+															}
+															session.put("AccessorialServicesListFrom", accessorialServicesFrom);
+															session.put("AccessorialServicesListTo", accessorialServicesTo);
+				 			
 			getSession().put("SHIP_MODE", "SHIP");
 			this.populateCustomersList();
 			
@@ -732,9 +808,39 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        dangerousGoodsList = shippingService.getDangerousGoodsAll();
 	        getSession().put("DGList", dangerousGoodsList);
 	      }
-	      return SUCCESS;
-	    }
-	
+	   // -----------------Eshipplus admin mode address check list load
+	      	      	      	      	      		// error-------------
+	      	      	      	      	      		List<AddressCheckList> fromAddressCheckList = new ArrayList<AddressCheckList>();
+	      	      	      	      	      		List<AddressCheckList> toAddressCheckList = new ArrayList<AddressCheckList>();
+	      	      	      	      	      		// Accessorial services
+	      	      	      	      	      		// List------------------------------------------------
+	      	      	      	      	      		List<CarrierChargeCode> accessorialServices = new ArrayList<CarrierChargeCode>();
+	      	      	      	      	      		List<CarrierChargeCode> accessorialServicesFrom = new ArrayList<CarrierChargeCode>();
+	      	      	      	      	      		List<CarrierChargeCode> accessorialServicesTo = new ArrayList<CarrierChargeCode>();
+	      	      	      	      	      		markupManagerService = (MarkupManager) MmrBeanLocator.getInstance()
+	      	      	      	      	      				.findBean("markupManagerService");
+	      	      	      	      	      		accessorialServices = markupManagerService
+	      	      	      	      	      				.getChargesByCarrierIdAndGroupCode(
+	      	      	      	      	      						ShiplinxConstants.CARRIER_ESHIPPLUS,
+	      	      	      	      	      						ShiplinxConstants.GROUP_ACCESSORIAL_CHARGE);
+	      	      	      	      	      		for (CarrierChargeCode charge : accessorialServices) {
+	      	      	      	     	      			String typeFromCode = charge.getChargeCode().substring(
+	      	      	      	     	      					charge.getChargeCode().length() - 1);
+	      	      	      	      	      			if (typeFromCode.equalsIgnoreCase("1")) {
+	      	      	      	      	      				accessorialServicesFrom.add(charge);
+	      	      	      	      	      			} else if (typeFromCode.equalsIgnoreCase("2")) {
+	      	      	      	      	      		accessorialServicesTo.add(charge);
+	      	      	      	      	      			} else {
+	      	      	      	      	      				accessorialServicesFrom.add(charge);
+	      	      	      	            				accessorialServicesTo.add(charge);
+	      	      	      	      	      			}
+	      	      	      	      	      		}
+	      	      	      	      	      		session.put("AccessorialServicesListFrom", accessorialServicesFrom);
+	      	      	      	      	      		session.put("AccessorialServicesListTo", accessorialServicesTo);
+	      	      	      	      	      
+	      	      	      	      	      		// --------------------------------------------------------------------------------
+	      	      	      	      	      		return SUCCESS;
+	      	      	      	}
 	public String repeatOrder()
 	{
 		log.debug("Inside repeat of ShipmentAction");
@@ -1232,7 +1338,30 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		    List<Province> fromProvinces;
 		    Address addressbookFrom;
 		    Address addressbookTo;
-
+		    List<CarrierChargeCode> accessorialServices = new ArrayList<CarrierChargeCode>();
+		    		    		    		    		List<CarrierChargeCode> accessorialServicesFrom = new ArrayList<CarrierChargeCode>();
+		    		    		    		    		List<CarrierChargeCode> accessorialServicesTo = new ArrayList<CarrierChargeCode>();
+		    		    		    		    		markupManagerService = (MarkupManager) MmrBeanLocator.getInstance()
+		    		    		    		    				.findBean("markupManagerService");
+		    		    		    		    		accessorialServices = markupManagerService
+		    		    		    		    				.getChargesByCarrierIdAndGroupCode(
+		    		    		    		    						ShiplinxConstants.CARRIER_ESHIPPLUS,
+		    		    		    		    						ShiplinxConstants.GROUP_ACCESSORIAL_CHARGE);
+		    		    		    		    		for (CarrierChargeCode charge : accessorialServices) {
+		    		    		    		    			String typeFromCode = charge.getChargeCode().substring(
+		    		    		    		    					charge.getChargeCode().length() - 1);
+		    		    		    		    			if (typeFromCode.equalsIgnoreCase("1")) {
+		    		    		    		    				accessorialServicesFrom.add(charge);
+		    		    		    		    			} else if (typeFromCode.equalsIgnoreCase("2")) {
+		    		    		    		    				accessorialServicesTo.add(charge);
+		    		    		    		    			} else {
+		    		    		    		    				accessorialServicesFrom.add(charge);
+		    		    		    		    				accessorialServicesTo.add(charge);
+		    		    		    		    			}
+		    	    		    		    		}
+		    	    		    		    		session.put("AccessorialServicesListFrom", accessorialServicesFrom);
+		    	    		    		    	    		     session.put("AccessorialServicesListTo", accessorialServicesTo);
+		     		    
 		    if (shippingOrder.getId() == null || shippingOrder.getId() == 0) {
 
 		      /*
@@ -1245,12 +1374,38 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      addressbookFrom = addressService.findDefaultFromAddressForCustomer(Long.valueOf(customerId));
 		      addressbookTo = addressService.findDefaultToAddressForCustomer(Long.valueOf(customerId));
 		      shippingOrder.setToAddress(addressbookTo);
-		      shippingOrder.setFromAddress(addressbookFrom);
-		    } else {
+			shippingOrder.setFromAddress(addressbookFrom);
+			List<AddressCheckList> fromAddressCL = new ArrayList<AddressCheckList>();
+			List<AddressCheckList> toAddressCL = new ArrayList<AddressCheckList>();
+			if (addressbookFrom != null) {
+				fromAddressCL = shippingService
+						.getAddressCheckListByAddressId(addressbookFrom
+								.getAddressId());
+			}
+			if (addressbookTo != null) {
+				toAddressCL = shippingService
+						.getAddressCheckListByAddressId(addressbookTo
+								.getAddressId());
+			}
+			shippingOrder.setToAddress(addressbookTo);
+			shippingOrder.setFromAddress(addressbookFrom);
+			if (fromAddressCL.size() > 0) {
+				shippingOrder.setFromAddressCheckList(fromAddressCL.get(0));
+				shippingOrder.getFromAddressCheckList().setCheckListActivated(
+						true);
+			}
+			if (toAddressCL.size() > 0) {
+				shippingOrder.setToAddressCheckList(toAddressCL.get(0));
+				shippingOrder.getToAddressCheckList().setCheckListActivated(
+						true);
+			}
+
+		} else {
 		      addressbookFrom = shippingOrder.getFromAddress();
 		      addressbookTo = shippingOrder.getToAddress();
 
 		    }
+		    applyAddressCheckList(shippingOrder);
 
 		    if (addressbookFrom == null)
 		      addressbookFrom = new Address();
@@ -1322,6 +1477,22 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			    List<Province> fromProvinces;
 			    Address addressbookFrom;
 			    Address addressbookTo;
+			    List<AddressCheckList> updatedAddChkList = new ArrayList<AddressCheckList>();
+			    			    			    		updatedAddChkList = shippingService.getAddressCheckListByAddressId(Long
+			    			    			    				.valueOf(addressId));
+			    			    			    		if (updatedAddChkList.size() > 0) {
+			    			    			    			this.getShippingOrder().setToAddressCheckList(
+			    			    			    					updatedAddChkList.get(0));
+			    			    			    			this.getShippingOrder().getToAddressCheckList()
+			    			    			    					.setCheckListActivated(true);
+			    			    			    		} else {
+			    			    			    			AddressCheckList dummyAddChkList = new AddressCheckList();
+			    			    			    			dummyAddChkList.setDescription("");
+			    			    			    			this.getShippingOrder().setToAddressCheckList(dummyAddChkList);
+			    			    			    			this.getShippingOrder().getToAddressCheckList()
+			    			    			    					.setCheckListActivated(false);
+			    			    			    		}
+			     
 		     
 
 		      if (shippingOrder.getId() == null || shippingOrder.getId() == 0) {
@@ -2230,7 +2401,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	   /* if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 			shippingOrder.setCurrency("USD");
 		}*/
-	    shippingOrder.setMarkPercent(null);
+	    shippingOrder = applyAddressCheckList(shippingOrder);
+	    	    	    		if (shippingOrder.getFromAddress().getCountryCode().equals("US")
+	    	    	    				&& (shippingOrder.getToAddress().getCountryCode().equals("US"))) {
+	    	    	    			shippingOrder.setCurrency("USD");
+	    	    	    			shippingOrder.setMarkPercent(null);
+	    	    	    		}
+	    	    	    		shippingOrder.setBilledWeight(null);
 	    List<RecordList> pickuplist = pickupService.getPickupList();
 	    session.put("pickuplist", pickuplist);
 	    List<Package> packageList = shippingOrder.getPackages();
@@ -2418,11 +2595,38 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	          isTransitDaysZero = true;
 	        }
 	      }
-	      if (isTransitDaysZero) {
-	        String errorLog = new String(
+	      if (isTransitDaysZero) {/* String errorLog = new String(*/
+	    	  String errorMessage = null;
+	    	  Business bus=null;
+	    	  	    	  BusinessDAO businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+	    	  	    	  if(shippingOrder!=null)
+	    	  	    	  {
+	    	  	    	  bus=BusinessFilterUtil.getSuperParentBusiness(shippingOrder.getBusiness().getId());
+	    	  	    	  }
+	    	  	    	  if(bus!=null)
+	    	  	    	  {
+	    	  	    	  long busId=bus.getId();
+	    	  	    	  CSSVO cssVo = businessDAO.getCSSDetailsForBusiness(busId);
+	    	  	    	  if(cssVo!=null)
+	    	  	    	  {
+	    	  	    	  errorMessage=cssVo.getErrorMsg();
+	    	  	    	  System.out.println(cssVo.getErrorMsg());
+	    	  	    	  }
+	    	  	    	  }
+	    	  	    	  
+	    	  	    	  if(errorMessage!=null&&!errorMessage.isEmpty())
+	    	  	    	  {
+	    	  	    		  String errorLog = new String(errorMessage);
+	    	  	    		  this.addActionMessage(errorLog);
+
+	    	  	    	  }
+	    	  	    	  else
+	    	  	    	  {
+	    	  	        String errorLog = new String(        	
+	    	  	        	
 	            "For accurate transit times please contact solutions at 416-603-0103 press 1 or email to saveltl@integratedcarriers.com");
 	        this.addActionMessage(errorLog);
-	      }
+	    	  	    	  }}
 	      // Remove Requet Quote Link except IC services
 	      List<Rating> removeRatings = new ArrayList<Rating>();
 	      for (Rating ratings : ratingList) {
@@ -2437,8 +2641,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      //
 	      // Get the error messages returned from the carriers
 	      for (CarrierErrorMessage carrierErrorMessage : carrierServiceManager.getErrorMessages()) {
-	        addActionError(carrierErrorMessage.getMessage());
-	      }
+	    	   addActionError(carrierErrorMessage.getMessage());
+	       }
 	      // setting temp id for rate list
 	      int counter = 1;
 	      for (Rating r : ratingList) {
@@ -2737,6 +2941,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  }
 	    	  }
 	      }Collections.sort(ratingList, Rating.PriceComparator1);
+	      for(Rating r : ratingList){
+	    	  	    	  int costCurrencyId = r.getCharges().get(0).getCostcurrency();
+	    	  	    	  CurrencySymbol currencySymbol = shippingService.getCurrencyCodeById(costCurrencyId);
+	    	  	    	  r.setCostCurrencyCode(currencySymbol.getCurrencyCode());
+	    	  	      }
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	      for (CarrierErrorMessage carrierErrorMessage : carrierServiceManager.getErrorMessages()) {
@@ -2991,14 +3200,41 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	public String save(){
 		log.debug("-------------Save Shipment -------------");
 		ShippingOrder shippingOrder = getShippingOrder();
-		String pickupRequired=request.getParameter("pickupRequired");
-		  shippingOrder.getPickup().setPickupRequired(Boolean.parseBoolean(pickupRequired));
-		  String brokerName = request.getParameter("broker");
-		  if(brokerName!=null){
-		  shippingOrder.getCustomsInvoice().getBrokerAddress().setAbbreviationName(brokerName);
-		  }
-		  if (shippingOrder.isSaveFromAddress()){
-		      shippingOrder.getFromAddress().setCustomerId(shippingOrder.getCustomerId());
+		String pickupRequired = request.getParameter("pickupRequired");
+								shippingOrder.getPickup().setPickupRequired(
+										Boolean.parseBoolean(pickupRequired));
+								String autoFreightUpdate = request.getParameter("autoFreightUpdate");
+								// shippingService = (ShippingService)
+								// MmrBeanLocator.getInstance().findBean("ShippingService");
+								try {
+									if (autoFreightUpdate != null) {
+										if (autoFreightUpdate.equalsIgnoreCase("true")) {
+											User user = UserUtil.getMmrUser();
+											shippingService.updateUserFreightClassMode(1,
+													shippingOrder.getCustomerId());
+											InetAddress ipAddress = InetAddress.getLocalHost();
+											String logMsg = ipAddress.getHostAddress()
+													+ ": Auto Freight Class Activated by customer :"
+													+ user.getUsername();
+											logUpdateAction(shippingOrder.getCustomerId(), logMsg);
+											getSession().put("AutoFreightClass", "true");
+										}
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								shippingOrder.getPickup().setPickupRequired(
+										Boolean.parseBoolean(pickupRequired));
+								String realPath = request.getSession().getServletContext()
+										.getRealPath("/");
+								shippingOrder.setRealContextPath(realPath);
+								String brokerName = request.getParameter("broker");
+								if (brokerName != null) {
+									shippingOrder.getCustomsInvoice().getBrokerAddress()
+											.setAbbreviationName(brokerName);
+								}
+				 if (shippingOrder.isSaveFromAddress()){
+				     shippingOrder.getFromAddress().setCustomerId(shippingOrder.getCustomerId());
 		  }
 		  if (shippingOrder.isSaveToAddress()){
 		      shippingOrder.getToAddress().setCustomerId(shippingOrder.getCustomerId());
@@ -3108,7 +3344,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				        	if(r.getSlaveCarrierName()!=null){
 				        					        		r.getCharges().get(i).setCarrierId(r.getSlaveCarrierId());
 				        	    				        		r.getCharges().get(i).setCarrierName(r.getSlaveCarrierName());
-				        						           	}  	else  	{
+				        	}  	
+				        					        					        		else if(r.getCarrierId()==6){
+				        					        					        	              r.getCharges().get(i).setCarrierId(r.getCarrierId());
+				        					        					        					        						                r.getCharges().get(i).setCarrierName(r.getCarrierNameLP());
+				        					        					        								               }
+				        					        					        		else  	{
 				        						        		r.getCharges().get(i).setCarrierId(chargeCarrier.getId());
 				        						        		r.getCharges().get(i).setCarrierName(chargeCarrier.getName());
 				        						           	}
@@ -5474,8 +5715,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			        		  			            	if(charge!=null && charge.getChargeGroupId()>0){
 			        		  			            	ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
 			        		  			            	if(chargeGroup!=null && chargeGroup.isTax()){
-			        		  			            		c.setChargeCode("TAX");
-			        		  			            		c.setChargeGroupId((int)chargeGroup.getGroupId());
+			        		  			            		if(chargeGroup.getTaxRate()==0)
+			        		  			            			c.setChargeCode(charge.getChargeCode());
+
+			        		  			            		else
+			        		  			            			c.setChargeCode("TAX");
+			        		  			            			c.setChargeGroupId((int)chargeGroup.getGroupId());
 			        		  			            	}
 			        		  			            }
 			        		  			            	//}
@@ -6651,20 +6896,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			  			 customerId = String.valueOf(UserUtil.getMmrUser().getCustomerId());
 			  		  }
 		  List<Address> customer = addressService.findaddressbyid(Long.valueOf(customerId));
-		if (customer != null && customer.size() > 0) {
-			for (Address add : customer) {
-
-				if (add != null && add.getAddress1() != null
-						&& add.getAbbreviationName() != null) {
-					String withoutQuotesCustomer = add.getAbbreviationName()
-							.replace("\"", "");
-					String address = add.getAddress1();
-					customerSearchResults.put(withoutQuotesCustomer + ",  "
-							+ address, add.getAddressId());
-
-				}
-			}
-		}
+		  if (customer != null && customer.size() > 0) {
+			  			for (Address add : customer) {
+			  
+			  				if (add != null && add.getAddress1() != null
+			  						&& add.getAbbreviationName() != null) {
+			  					String withoutQuotesCustomer = add.getAbbreviationName()
+			  							.replace("\"", "");
+			  					String address = add.getAddress1();
+			  					customerSearchResults.put(withoutQuotesCustomer + ",  "
+			  							+ address, add.getAddressId());
+			  
+			  				}
+			  			}
+			  		}
 		  getSession().put("usersList", customerSearchResults);
 		  }
 	
@@ -8281,4 +8526,285 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						getSession().put("UOM", uom);
 					}	
 			/// ============== End =======================				
+					private long orderIdMain;
+																private Boolean trackTab;
+															
+																public Boolean getTrackTab() {
+																	return trackTab;
+																}
+														
+																public void setTrackTab(Boolean trackTab) {
+																	this.trackTab = trackTab;
+																}
+															
+																public long getOrderIdMain() {
+																	return orderIdMain;
+																}
+															
+																public void setOrderIdMain(long orderIdMain) {
+																	this.orderIdMain = orderIdMain;
+															}
+															
+									
+																public ShippingOrder applyAddressCheckList(ShippingOrder order) {
+																	  String descriptionChargeCode = "";
+																	  // From Address CheckList
+																	  try {
+																	   if (order.getFromAddressCheckList() != null
+																	     && order.getFromAddressCheckList().isCheckListActivated()) {
+																	    if (order.getFromAddressCheckList().getDescription() != null
+																	      && !order.getFromAddressCheckList().getDescription()
+																	        .equalsIgnoreCase("")) {
+																	     descriptionChargeCode = order.getFromAddressCheckList()
+																	       .getDescription();
+																	    }
+																	    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE)) {
+																	     order.setDangerousGoods(1);
+																	    }
+																	    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.TEMP_CONTROL_CHARGE_CODE)) {
+																	     order.setTempControl(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isCommercialBusiness()) {
+																	     order.setCommercialBusiness(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isPickupOrDeliver()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.DESTINATION_NOTIFY_OR_APPOINTMENT_CHARGE_CODE)) { // special
+																	                              // Instruction
+																	     order.setAppointmentPickup(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isPriorToPickup()) { // Special
+																	                   // Instruction
+																	     order.setPriorToPickup(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isDockLevel()) {
+																	     order.setFromDockLevel(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isPalletJack()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE)) {
+																	     order.setFromPalletJack(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isPowerTailgate()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE)) {
+																	     order.setFromTailgate(true);
+																	    }
+																	    if (order.getFromAddressCheckList().isInsidePickup()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE)) {
+																	     order.setInsidePickup(true);
+																	    }
+																	    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.RESIDENTIAL_PICKUP_CHARGE_CODE)) {
+																	     order.getFromAddress().setResidential(true);
+																	    }
+																	    order.setFromFloorNo(order.getFromAddressCheckList()
+																	      .getFloorNo());
+																	   }
+															
+																	   // To Address Check List
+																	   descriptionChargeCode = "";
+																	   if (order.getToAddressCheckList() != null
+																	     && order.getToAddressCheckList().isCheckListActivated()) {
+																	    if (order.getToAddressCheckList().getDescription() != null
+																	      && !order.getToAddressCheckList().getDescription()
+																	        .equalsIgnoreCase("")) {
+																	     descriptionChargeCode = order.getToAddressCheckList()
+																	       .getDescription();
+																	    }
+																	    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE)) {
+																	     order.setDangerousGoods(1);
+																	    }
+																	    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.TEMP_CONTROL_CHARGE_CODE)) {
+																	     order.setTempControl(true);
+																	    }
+																	    if (order.getToAddressCheckList().isCommercialBusiness()) {
+																	     order.setCommercialBusiness(true);
+																	    }
+																    if (order.getToAddressCheckList().isPickupOrDeliver()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.DESTINATION_NOTIFY_OR_APPOINTMENT_CHARGE_CODE)) { // special
+																	                              // Instruction
+																	     order.setAppointmentDelivery(true);
+																	    }
+																	    if (order.getToAddressCheckList().isPriorToPickup()) { // Special
+																	                  // Instruction
+																	     order.setPriorToDeliver(true);
+																	    }
+																	    if (order.getToAddressCheckList().isDockLevel()) {
+																	     order.setToDockLevel(true);
+																	    }
+																	    if (order.getToAddressCheckList().isPalletJack()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE)) {
+																	     order.setToPalletJack(true);
+																	    }
+																	    if (order.getToAddressCheckList().isPowerTailgate()
+																	      || descriptionChargeCode
+																	        .equalsIgnoreCase(ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE)) {
+																	     order.setToTailgate(true);
+																	    }
+																	    if (order.getToAddressCheckList().isInsidePickup()
+																	      || descriptionChargeCode
+																        .equalsIgnoreCase(ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE)) {
+																     order.setInsideDelivery(true);
+																    }
+																    if (descriptionChargeCode
+																	      .equalsIgnoreCase(ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE)) {
+																	     order.getToAddress().setResidential(true);
+																	    }
+																	    order.setToFloorNo(order.getToAddressCheckList().getFloorNo());
+																	   }
+																	   return order;
+																	  } catch (Exception e) {
+																	   e.printStackTrace();
+																	  }
+															
+																	  return null;
+																	 }
+																public String updateAddressCheckList() {
+																	ShippingOrder order = getShippingOrder();
+																	String addressIdString = request.getParameter("AddressId");
+																	List<AddressCheckList> AddressCheckList = new ArrayList<AddressCheckList>();
+																	List<AddressCheckList> updatedAddChkList = new ArrayList<AddressCheckList>();
+																	try {
+																		if (addressIdString != null) {
+																			long addressId = Long.parseLong(addressIdString);
+															
+																			AddressCheckList = shippingService
+																				.getAddressCheckListByAddressId(addressId);
+																			if (order.getFromAddress().getAddressId() == addressId) {
+																				order.getFromAddressCheckList().setAddressId(addressId);
+																				if (AddressCheckList.size() > 0) {
+																					shippingService.updateAddressCheckList(order
+																							.getFromAddressCheckList());
+																				} else {
+																					shippingService.addNewAddressCheckList(order
+																							.getFromAddressCheckList());
+																				}
+																				updatedAddChkList = shippingService
+																						.getAddressCheckListByAddressId(addressId);
+																				if (updatedAddChkList.size() > 0) {
+																					this.getShippingOrder().setFromAddressCheckList(
+																							updatedAddChkList.get(0));
+																					this.getShippingOrder().getFromAddressCheckList()
+																							.setCheckListActivated(true);
+																				}
+																			} else if (order.getToAddress().getAddressId() == addressId) {
+																				order.getToAddressCheckList().setAddressId(addressId);
+																				if (AddressCheckList.size() > 0) {
+																					shippingService.updateAddressCheckList(order
+																							.getToAddressCheckList());
+																				} else {
+																					shippingService.addNewAddressCheckList(order
+																							.getToAddressCheckList());
+																				}
+																				updatedAddChkList = shippingService
+																						.getAddressCheckListByAddressId(addressId);
+																				if (updatedAddChkList.size() > 0) {
+																					this.getShippingOrder().setToAddressCheckList(
+																							updatedAddChkList.get(0));
+																					this.getShippingOrder().getToAddressCheckList()
+																							.setCheckListActivated(true);
+																				}
+																			}
+																			// addActionMessage(getText("addressCheckList.update.successfully"));
+																			addActionMessage("Address check list updated successfully");
+															
+																		} else {
+																			log.debug("-------------------------Address Id is null---------------------");
+																			addActionError(getText("addressCheckList.update.error"));
+																		}
+																	} catch (Exception e) {
+																		e.printStackTrace();
+																	}
+																	try {
+																		/*User user = UserUtil.getMmrUser();
+																		addressList = addressService.findAddressesByCustomer(Long
+																				.valueOf(user.getCustomerId()));
+																		for (Address add : addressList) {
+																			customerSearchResults.put(add.getAbbreviationName(),
+																					add.getAddressId());
+																		}*/
+																	} catch (Exception e) {
+																		e.printStackTrace();
+																	}
+					//												applyAddressCheckList(order);
+					//												getSession().remove("shippingOrder");
+					//												getSession().remove("descFrom");
+					//												getSession().remove("descTo");
+					//												getSession().put("shippingOrder",order);
+					//												getSession().put("descFrom", order.getFromAddressCheckList().getDescription());
+					//												getSession().put("descTo", order.getToAddressCheckList().getDescription());
+																	return SUCCESS;
+															
+																}
+
+	public String autoFreightClassCheck() {
+		log.debug("-------------autoFreightClassCheck-------------");
+		ShippingOrder shippingOrder = getShippingOrder();
+		String autoFreightclass = request.getParameter("autoFreightClass");
+		User user = UserUtil.getMmrUser();
+		userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
+		String method = request.getParameter("method");
+		if (method != null) {
+			if (method.equals(ShiplinxConstants.AUTO_FRIEGHT_UPDATE_1)) {
+				try {
+					if (autoFreightclass != null
+							&& autoFreightclass.equalsIgnoreCase("true")) {
+						shippingService.updateUserFreightClassMode(ShiplinxConstants.AUTO_FRIEGHT_UPDATE_1_INT,
+								shippingOrder.getCustomerId());
+						InetAddress ipAddress = InetAddress.getLocalHost();
+						String logMsg = ipAddress.getHostAddress()+ ": Auto Freight Class Activated by customer :"
+								+ user.getUsername();
+						logUpdateAction(shippingOrder.getCustomerId(), logMsg);
+						log.debug("AUTO_FRIEGHT_UPDATE_1 is successfully done");
+					}
+				} catch (Exception e) {
+					log.error("ERROR IN AUTO_FRIEGHT_UPDATE_0");
+				}
+			}
+			if (method.equals(ShiplinxConstants.AUTO_FRIEGHT_UPDATE_0)) {
+				try {
+					if (autoFreightclass != null) {
+						shippingService.updateUserFreightClassMode(
+								ShiplinxConstants.AUTO_FRIEGHT_UPDATE_0_INT,
+								shippingOrder.getCustomerId());
+						InetAddress ipAddress = InetAddress.getLocalHost();
+						String logMsg = ipAddress.getHostAddress()
+								+ ": Auto Freight Class Not Activated by customer :"
+								+ user.getUsername();
+						logUpdateAction(shippingOrder.getCustomerId(), logMsg);
+						log.debug("AUTO_FRIEGHT_UPDATE_0 is successfully done");
+					}
+				} catch (Exception e) {
+					log.error("ERROR IN AUTO_FRIEGHT_UPDATE_0");
+				}
+			}
+		}
+		if (method != null
+				&& method.equals(ShiplinxConstants.AUTO_FRIEGHT_CHECK)) {
+			Boolean autoFreightClass = user.isAutoFreightClass();
+			getSession().put("autoFreightClass", autoFreightClass);
+			return "success";
+		}
+		if (method != null
+				&& method.equals(ShiplinxConstants.AUTO_FRIEGHT_INSERT)) {
+			Boolean autoFreightClass = user.isAutoFreightClass();
+			String orderId = null;
+			int i = userDAO.insertAutoFreightClassInfo(user, new Timestamp(
+					new Date().getTime()), orderId, autoFreightClass);
+			log.debug("AUTO_FRIEGHT_INSERT is successfully done");
+			return "success";
+		}
+		return "success";
+	}
+
+	// / ============== End =======================
+
 }

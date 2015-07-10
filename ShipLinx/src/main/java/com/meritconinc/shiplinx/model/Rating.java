@@ -81,7 +81,126 @@ public class Rating implements Serializable {
   private Double totalChargeLocalCurrency;
   private Double totalCostLocalCurrency;
   private String localCurrencySymbol;
+  private String carrierKeyLP;
+  	private String carrierNameLP;
+   
+  	private String carrierScacLP;
   
+  	private double accessorialChargeLP;
+  
+  	private long mileageLP;
+  
+  	private long mileageSourceKey;
+  
+  	private String serviceMode;
+  
+  	private long serviceCharge;
+  
+  	private long LpSlaveCarrierId;
+  
+  	private String LpSlaveCarrierName;
+  
+  	private long LpSlaveServiceId;
+  	private String LpSlaveServiceName;
+  
+  	private String chargeCurrencyCode;
+  	private String costCurrencyCode;
+  	
+  	public long getServiceCharge() {
+  		return serviceCharge;
+  	}
+  
+  	public void setServiceCharge(long serviceCharge) {
+  		this.serviceCharge = serviceCharge;
+  	}
+  
+  	public String getServiceMode() {
+  		return serviceMode;
+  	}
+  
+  	public void setServiceMode(String serviceMode) {
+  		this.serviceMode = serviceMode;
+  	}
+  
+  	public long getMileageLP() {
+  		return mileageLP;
+  	}
+  
+  	public void setMileageLP(long mileageLP) {
+  		this.mileageLP = mileageLP;
+  	}
+  
+     public long getMileageSourceKey() {
+  		return mileageSourceKey;
+  	}
+  
+  	public void setMileageSourceKey(long mileageSourceKey) {
+  		this.mileageSourceKey = mileageSourceKey;
+  	}
+  
+     public double getAccessorialChargeLP() {
+  		return accessorialChargeLP;
+  	}
+  
+  	public void setAccessorialChargeLP(double accessorialChargeLP) {
+  		this.accessorialChargeLP = accessorialChargeLP;
+  	}
+  
+  	public long getLpSlaveCarrierId() {
+  		return LpSlaveCarrierId;
+  	}
+  
+  	public void setLpSlaveCarrierId(long lpSlaveCarrierId) {
+  		LpSlaveCarrierId = lpSlaveCarrierId;
+  	}
+  
+  	public String getLpSlaveCarrierName() {
+  		return LpSlaveCarrierName;
+  	}
+  
+  	public void setLpSlaveCarrierName(String lpSlaveCarrierName) {
+  		LpSlaveCarrierName = lpSlaveCarrierName;
+  	}
+  
+  	public long getLpSlaveServiceId() {
+  		return LpSlaveServiceId;
+  	}
+  
+  	public void setLpSlaveServiceId(long lpSlaveServiceId) {
+  		LpSlaveServiceId = lpSlaveServiceId;
+  	}
+  
+  	public String getLpSlaveServiceName() {
+  		return LpSlaveServiceName;
+  	}
+  
+  	public void setLpSlaveServiceName(String lpSlaveServiceName) {
+  		LpSlaveServiceName = lpSlaveServiceName;
+  	}
+  
+  	public String getCarrierKeyLP() {
+  		return carrierKeyLP;
+  	}
+  
+  	public void setCarrierKeyLP(String carrierKeyLP) {
+  		this.carrierKeyLP = carrierKeyLP;
+  	}
+  
+  	public String getCarrierNameLP() {
+  		return carrierNameLP;
+  	}
+  
+  	public void setCarrierNameLP(String carrierNameLP) {
+  		this.carrierNameLP = carrierNameLP;
+  	}
+  
+  	public String getCarrierScacLP() {
+  		return carrierScacLP;
+  	}
+  
+  	public void setCarrierScacLP(String carrierScacLP) {
+  	this.carrierScacLP = carrierScacLP;
+  	}
   
   public Double getTotalChargeLocalCurrency() {
 	  return totalChargeLocalCurrency;
@@ -577,4 +696,19 @@ public void setAccountCountry(String accountCountry) {
 	this.accountCountry = accountCountry;
 }
 
+public String getChargeCurrencyCode() {
+	return chargeCurrencyCode;
+}
+
+public void setChargeCurrencyCode(String chargeCurrencyCode) {
+	this.chargeCurrencyCode = chargeCurrencyCode;
+}
+
+public String getCostCurrencyCode() {
+	return costCurrencyCode;
+}
+
+public void setCostCurrencyCode(String costCurrencyCode) {
+	this.costCurrencyCode = costCurrencyCode;
+}
 }

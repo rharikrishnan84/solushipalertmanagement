@@ -79,6 +79,9 @@
         <result property="fpaEnabled" column="fpa_enabled"/>
         <result property="ltlEnabled" column="ltl_enabled"/>
         <result property="summaryLabel"	column="summary_label"/>
+        <!--Auto frieght class check  -->
+           <result property="autoFreightClass" column="auto_freight_class"/>
+        
 	</resultMap>
 	
 		<resultMap id="userResultUnit" class="com.meritconinc.mmr.model.security.User">
@@ -467,4 +470,10 @@
        <select id="getAllUsers" resultMap="userResult">
         select * from user  where customer_id=0        
     </select>
+    <insert id = "insertAutoFreightClassInfo">
+    <selectKey keyProperty="orderId"  resultClass="String">
+     select max(order_id)+1 from shipping_order
+  	</selectKey>
+		insert into user_eshipplus_info(username,date_time,order_id,auto_freight_class) values (#username#,#dateTime#,#orderId#,#autoFreightClass#)
+	</insert>
 </sqlMap>

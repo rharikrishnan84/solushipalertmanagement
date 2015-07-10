@@ -49,6 +49,10 @@ import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.shiplinx.model.Business;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import com.meritconinc.shiplinx.model.AccessorialServices;
+import com.meritconinc.shiplinx.model.AddressCheckList;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
+import com.meritconinc.shiplinx.model.EshipplusPackage;
 public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingDAO {
   private static final Logger log = LogManager.getLogger(ShippingDAOImpl.class);
 
@@ -1558,13 +1562,139 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 												 													return cc;
 												 												}
 
-												
-												
-												
-												
-												
-												
-												
-												
-												
+	public List<ShippingOrder> getEshipPlusActiveShipments() {
+		ShippingOrder so = new ShippingOrder();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		Date date = new Date();
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("searchdate", dateFormat.format(date));
+		paramObj.put("carrierId", ShiplinxConstants.CARRIER_ESHIPPLUS);
+		paramObj.put("statusCanceled", ShiplinxConstants.STATUS_CANCELLED);
+		List<ShippingOrder> list = getSqlMapClientTemplate().queryForList(
+				"findEShipPlusShipments", paramObj);
+		return list;
+	}
+
+	public List<AccessorialServices> getAllAccessorialServices(long typeNot) {
+
+		AccessorialServices accessorialServiceList = new AccessorialServices();
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("typeNot", typeNot);
+		return (List<AccessorialServices>) getSqlMapClientTemplate()
+				.queryForList("getAllAccessorialServices", paramObj);
+
+	}
+
+	public List<AddressCheckList> getAddressCheckListByAddressId(Long addressId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("addressId", addressId);
+		return (List<AddressCheckList>) getSqlMapClientTemplate().queryForList(
+				"getAddressCheckListByAddressId", paramObj);
+	}
+
+	public void addNewAddressCheckList(AddressCheckList addressCheckList) {
+		getSqlMapClientTemplate().insert("addNewAddressCheckList",
+				addressCheckList);
+
+	}
+
+	public void updateAddressCheckList(AddressCheckList addressCheckList) {
+		getSqlMapClientTemplate().update("updateAddressCheckList",
+				addressCheckList);
+	}
+
+	public AccessorialServices getAccessorialServiceByServiceGroupCode(
+			String serviceGroupCode, long typeNot) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("serviceGroupCode", serviceGroupCode);
+		paramObj.put("typeNot", typeNot);
+		return (AccessorialServices) getSqlMapClientTemplate().queryForObject(
+				"getAccessorialServiceByServiceGroupCode", paramObj);
+
+	}
+
+	public AccessorialServices getAccessorialServiceByServiceCode(
+			String serviceCode) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("serviceCode", serviceCode);
+		return (AccessorialServices) getSqlMapClientTemplate().queryForObject(
+				"getAccessorialServiceByServiceCode", paramObj);
+
+	}
+
+	public List<EshipplusCarrierFilter> getEshipPlusCarrierByCustomerId(
+			Long customerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("customerId", customerId);
+		return (List<EshipplusCarrierFilter>) getSqlMapClientTemplate()
+				.queryForList("getEshipPlusCarrierByCustomerId", paramObj);
+	}
+
+	public void updateEshipCarrierFilter(EshipplusCarrierFilter eshipCC,
+			String sCustomerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+
+		paramObj.put("customerId", sCustomerId);
+		paramObj.put("eShipCarrier_id", eshipCC.getEshipCarrierId());
+		paramObj.put("disabled", eshipCC.getDisabled());
+		paramObj.put("eshipCarrierName", eshipCC.getEshipCarrierName());
+		try {
+			getSqlMapClientTemplate().update("updateEshipCarrierFilter",
+					paramObj);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+	}
+
+	public void updateUserFreightClassMode(int disabled, Long customerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("autoFreight", disabled);
+		paramObj.put("customerId", customerId);
+		User user = UserUtil.getMmrUser();
+		paramObj.put("username", user.getUsername());
+		try {
+			int i=getSqlMapClientTemplate().update("updateUserFreightClassMode",paramObj);
+			if(disabled!=0 && i==0){
+				log.error("Error in updating user table");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public List<EshipplusPackage> getEshipplusPackagesList() {
+		// return (List<EshipplusPackage>)
+		// getSqlMapClientTemplate().queryForList(
+		// "getEshipplusPackagesList");
+		return getSqlMapClientTemplate().queryForList(
+				"getEshipplusPackagesList");
+	}
+
+	public void updateEshipLabel(long orderId, byte[] outputLabel) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("orderId", orderId);
+		paramObj.put("label", outputLabel);
+		paramObj.put("updated", 1);
+		getSqlMapClientTemplate().update("updateEshipLabel", paramObj);
+	}
+
+	public Long getLatestOrderId() {
+		return (Long) getSqlMapClientTemplate().queryForObject(
+				"getLatestOrderId");
+	}
+
+	public int checkAccessorial(String chargeCode) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("serviceCode", chargeCode);
+
+		int obj = (Integer) getSqlMapClientTemplate().queryForObject(
+				"checkAccessorial", paramObj);
+		if (obj > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+}

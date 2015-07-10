@@ -28,8 +28,28 @@ public class Package implements Serializable {
 	private boolean isDoc;
 	private String dimmedString;
 	private boolean isWidthTwo;
-	   private boolean isHeightTwo;
-	   private boolean isLengthTwo;
+	private boolean isHeightTwo;
+	private boolean isLengthTwo;
+
+	private String packageType;
+	private String packageQuantity;
+
+	public String getPackageQuantity() {
+		return packageQuantity;
+	}
+
+	public void setPackageQuantity(String packageQuantity) {
+		this.packageQuantity = packageQuantity;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
+	}
+	    	
 	 
 	public long getPackageId() {
 		return packageId;

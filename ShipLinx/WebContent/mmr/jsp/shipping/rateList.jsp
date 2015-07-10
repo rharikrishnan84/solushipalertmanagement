@@ -84,7 +84,7 @@ function removeCustomAlert1(v) {
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>	
 <style>
 .total_label{ position:relative;}
-.popup_text{display:none; position:absolute;  height:auto; padding:5px 10px 5px 5px  ; width:200px; left:-30px; color:#000;	 background-color:#fff; border:1px solid #999; z-index:1000;  }
+.popup_text{display:none; position:absolute;  height:auto; padding:5px 10px 5px 5px  ; width:'auto'; left:-30px; color:#000;	 background-color:#fff; border:1px solid #999; z-index:1000;  }
 
 </style>
 <head>
@@ -120,14 +120,14 @@ function removeCustomAlert1(v) {
 					$(this).next().css({
 						'display':'block',
 						'top':'-50px',
-						'left':'-150px'
+						'left':'-180px'
 					});
 				}
 				else{
 					$(this).next().css({
 						'display':'block',
 						'top':'25px',
-						'left':'-150px'
+						'left':'-180px'
 					});
 				}
 			});
@@ -228,12 +228,12 @@ function removeCustomAlert1(v) {
 						        $(this).dataTable({
 						        	"columnDefs": [
 						        	               {
-							        	                   "targets": 7,
+							        	                   "targets": 8,
 							        	                   "visible": false,
 							        	                   "searchable": false
 							        	               }
 							        	           ],
-							            "aoColumns": [null, null, null, null,null,null,{ "iDataSort": 7 },{ "sType": "natural"},null]
+							        	           "aoColumns": [null, null, null, null,null,null,null,{ "iDataSort": 8 },{ "sType": "natural"},null]
 							        });
 							    });
 					
@@ -241,13 +241,213 @@ function removeCustomAlert1(v) {
 	</script>
 	
 		
-<SCRIPT language="JavaScript">
+<%-- <SCRIPT language="JavaScript">
 var radioselected = 0;
 
-
-	function submitShipment()
-	{
+function submitShipment(){
 	var editUserId = document.getElementsByName("check_uncheck");
+	 var i1,txt1 = 0;
+	 for (i1=0;i1<editUserId.length;i1++){
+	  if (editUserId[i1].checked){
+	   txt1 += 1;      
+	  }
+	 }
+	 if(txt1 < 1){
+	  alert('Please check atleast one');
+	 }
+	 else if(txt1>1){
+	  alert('Please check atmost one');
+	 }
+	 else{    
+	  var jconfirm1=false;
+	  var Login_url,ratelist_id,checkbox_value;
+	  for (i=0;i<editUserId.length;i++){
+	   if (editUserId[i].checked){
+	    var carrier=document.getElementById("shipmentCarrierId"+editUserId[i].value).value;
+	    checkbox_value = editUserId[i].value;
+	   }
+	  }
+	 }
+	 if(carrier==6){
+	  var method="check";
+	  ajax_Service=ajaxFunction();
+	  ajax_Service.onreadystatechange=function(){
+	   if(ajax_Service.readyState==4){
+	    response=ajax_Service.responseText;
+	    autoFreightClass='<%=session.getAttribute("autoFreightClass")%>';
+	    <%
+	       com.meritconinc.shiplinx.model.ShippingOrder shippingOrder1=(com.meritconinc.shiplinx.model.ShippingOrder)session.getAttribute("shippingOrder");
+	    %>  
+	    var frieghtClass='<%=shippingOrder1.getPackages().get(0).getFreightClass()%>';
+	 
+	    if('null' != frieghtClass && frieghtClass!=''){
+	     submitShipment2();
+	    }
+	    else{
+	     if(autoFreightClass!=null && autoFreightClass=="false"){
+	     jConfirm('We have based this rate on a estimated class and is subject to reclassification, If you would like to put in a accurate class please click YES?<br><input type="checkbox" id="check_auto_detect" value="true" onclick="autoFreightClassCheck()"/>accept terms and conditions for all future shipments</input>','Yes','No', function(r) {
+	      if(r){
+	      method="update0";
+	      ajax_Service=ajaxFunction();
+	      ajax_Service.onreadystatechange=function(){
+	       if(ajax_Service.readyState==4){
+	        response=ajax_Service.responseText;
+	        backToShipment(); 
+	       }
+	      }
+	      var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+	        ajax_Service.open("GET",url1,true);
+	        ajax_Service.send(this);
+	     }
+	     else{
+	      method="insert";
+	      ajax_Service=ajaxFunction();
+	      ajax_Service.onreadystatechange=function(){
+	       if(ajax_Service.readyState==4){
+	        response=ajax_Service.responseText;
+	        submitShipment2();
+	       }
+	      }
+	      var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+	        ajax_Service.open("GET",url1,true);
+	        ajax_Service.send(this);
+	     }
+	    });
+	    }
+	     else{
+	      submitShipment2();
+	     }
+	    }
+	   }
+	  }
+	  var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+	    ajax_Service.open("GET",url1,true);
+	    ajax_Service.send(this); 
+	 }
+	 else{
+	  submitShipment2();
+	 }
+} --%>
+
+
+<SCRIPT type="text/javascript">
+var radioselected = 0;
+var autoFreightClass=false;
+function submitShipment(){
+ var editUserId = document.getElementsByName("check_uncheck");
+ var i1,txt1 = 0;
+ for (i1=0;i1<editUserId.length;i1++){
+  if (editUserId[i1].checked){
+   txt1 += 1;      
+  }
+ }
+ if(txt1 < 1){
+  alert('Please check atleast one');
+ }
+ else if(txt1>1){
+  alert('Please check atmost one');
+ }
+ else{    
+  var jconfirm1=false;
+  var Login_url,ratelist_id,checkbox_value;
+  for (i=0;i<editUserId.length;i++){
+   if (editUserId[i].checked){
+    var carrier=document.getElementById("shipmentCarrierId"+editUserId[i].value).value;
+    checkbox_value = editUserId[i].value;
+   }
+  }
+ }
+ if(carrier==6){
+  var method="check";
+  ajax_Service=ajaxFunction();
+  ajax_Service.onreadystatechange=function(){
+   if(ajax_Service.readyState==4){
+    response=ajax_Service.responseText;
+    autoFreightClass='<%=session.getAttribute("autoFreightClass")%>';
+    <%
+       com.meritconinc.shiplinx.model.ShippingOrder shippingOrder1=(com.meritconinc.shiplinx.model.ShippingOrder)session.getAttribute("shippingOrder");
+    %>
+    var frieghtClass='<%=shippingOrder1.getPackages().get(0).getFreightClass()%>';
+    if('null' != frieghtClass && frieghtClass!=''){
+     submitShipment2();
+    }
+    else{
+     if(autoFreightClass!=null && autoFreightClass=="false"){
+     jConfirm('We have based this rate on a estimated class and is subject to reclassification, If you would like to put in a accurate class please click YES?<br><input type="checkbox" id="check_auto_detect" value="true" onclick="autoFreightClassCheck()"/>accept terms and conditions for all future shipments</input>','Yes','No', function(r) {
+      if(r){
+      method="update0";
+      ajax_Service=ajaxFunction();
+      ajax_Service.onreadystatechange=function(){
+       if(ajax_Service.readyState==4){
+        response=ajax_Service.responseText;
+        backToShipment(); 
+       }
+      }
+      var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+        ajax_Service.open("GET",url1,true);
+        ajax_Service.send(this);
+     }
+     else{
+      method="insert";
+      ajax_Service=ajaxFunction();
+      ajax_Service.onreadystatechange=function(){
+       if(ajax_Service.readyState==4){
+        response=ajax_Service.responseText;
+        submitShipment2();
+       }
+      }
+      var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+        ajax_Service.open("GET",url1,true);
+        ajax_Service.send(this);
+     }
+    });
+    }
+     else{
+      submitShipment2();
+     }
+    }
+   }
+  }
+  var url1="shipment.autoFreightClassCheck.action?autoFreightClass="+autoFreightClass+"&method="+method;
+    ajax_Service.open("GET",url1,true);
+    ajax_Service.send(this);
+ }
+ else{
+  submitShipment2();
+ }
+}
+	function autoFreightClassCheck() {
+			var method = "update1";
+			if ($('#check_auto_detect').prop("checked") == true) {
+				autoFreightClass = $("#check_auto_detect").val();
+				ajax_Service = ajaxFunction();
+				ajax_Service.onreadystatechange = function() {
+					if (ajax_Service.readyState == 4) {
+						response = ajax_Service.responseText;
+					}
+				}
+				var url1 = "shipment.autoFreightClassCheck.action?autoFreightClass="
+						+ autoFreightClass + "&method=" + method;
+				ajax_Service.open("GET", url1, true);
+				ajax_Service.send(this);
+			} else {
+				method = "update0";
+				autoFreightClass = $("#check_auto_detect").val();
+				ajax_Service = ajaxFunction();
+				ajax_Service.onreadystatechange = function() {
+					if (ajax_Service.readyState == 4) {
+						response = ajax_Service.responseText;
+					}
+				}
+				var url1 = "shipment.autoFreightClassCheck.action?autoFreightClass="
+						+ autoFreightClass + "&method=" + method;
+				ajax_Service.open("GET", url1, true);
+				ajax_Service.send(this);
+			}
+		}
+	function submitShipment2()
+	{
+		var editUserId = document.getElementsByName("check_uncheck");
 			
 			var i1,txt1 = 0;
 		   for (i1=0;i1<editUserId.length;i1++){
@@ -830,6 +1030,7 @@ var radioselected = 0;
 		<div class="form_buttons" >
 			<a href="javascript: sendCustomerEmail()" title="Email Quote" ><mmr:message messageId="btn.email"/></a>
 			<a href="javascript:submitShipment()"><mmr:message messageId="btn.shipnow"/></a>
+			
 		</div>
 	</div>
 	<div id="rate_results">	
@@ -885,6 +1086,7 @@ var radioselected = 0;
 					<th><mmr:message messageId="label.ghead.service"/></th>
 					<th><mmr:message messageId="label.ghead.transitdays"/></th>
 					<th style="width:100px"><mmr:message messageId="label.ghead.billwt"/>(LBS)</th>
+					<th style="width:60px">Currency</th>
 					<s:if test="%{#request.BillToType!=null}">
 					<th><mmr:message messageId="label.ghead.billto"/></th>
 					<th style="display:none">BT</th>
@@ -932,7 +1134,8 @@ var radioselected = 0;
 					</s:else>
 				</td>
 				<td style="text-align:left"><s:property value="billWeight" /></td>
-				<s:if test="%{#request.BillToType!=null}">
+				<td><s:property value="costCurrencyCode"/></td>
+  				<s:if test="%{#request.BillToType!=null}">
 				<td style="text-align:right"><s:property value="%{#request.BillToType}"/></td>
 				<td style="display:none"><s:property value="%{#request.BillToType}"/></td>
 				</s:if>

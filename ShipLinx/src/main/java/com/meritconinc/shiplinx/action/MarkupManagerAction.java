@@ -15,6 +15,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
+import com.meritconinc.shiplinx.service.ShippingService;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
 import com.meritconinc.mmr.exception.MarkupAlreadyExistsException;
 import com.meritconinc.mmr.model.common.CountryVO;
 import com.meritconinc.mmr.model.security.User;
@@ -55,6 +58,7 @@ public class MarkupManagerAction extends BaseAction implements Preparable, Servl
   private String uploadFileName;
   private File upload;
   private Map<String, Long> customerSearchResult = new HashMap<String, Long>();
+  private ShippingService shippingService;
   public Map<String, Long> getCustomerSearchResult() {
 	return customerSearchResult;
 }
@@ -508,7 +512,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
     return true;
   }
 
-  public String saveMarkupList() throws Exception {
+  /*public String saveMarkupList() throws Exception {
     try {
       loadListsFromSession();
       String selectedItem=request.getParameter("selectedItem");    	   
@@ -553,7 +557,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
     }
     return init();
   }
-
+*/
   private boolean isMarkupDirty(Markup m, int p, double f, boolean d, int v) {
     // TODO Auto-generated method stub
     if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
@@ -879,4 +883,135 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  
 	  	    getSession().put("fromcustomersList", customerSearchResult);
 	  	  }
+  public String searchEshipPlusMarkup() throws Exception {
+	  		shippingService = (ShippingService) MmrBeanLocator.getInstance()
+	  				.findBean("shippingService");
+	  	//session.put("eshipCarrierFound", "false");
+	  		getSession().put("eshipCarrierFound", "false");
+	  		Markup markup = new Markup();
+	  		markup = getMarkup();
+	  		String carrierIdStr, customerIdStr;
+	  		Long carrierId, customerId;
+	  		if (markup == null || markup.getCustomerId() == null
+	  				|| markup.getCarrierId() == null) {
+	  			carrierIdStr = request.getParameter("carrierId");
+	  			customerIdStr = request.getParameter("customerId");
+	  			carrierId = Long.parseLong(carrierIdStr);
+	  
+	  			customerId = Long.parseLong(customerIdStr);
+	  		} else {
+	  			carrierId = markup.getCarrierId();
+	  			customerId = markup.getCustomerId();
+	  		}
+	  		eshipCarrierList = shippingService.getEshipPlusCarrierByCustomerId(customerId);
+	  		session.put("eshipCustomerCarrier", eshipCarrierList);
+	  		this.setEshipCarrierList(eshipCarrierList);
+	  		if(eshipCarrierList!=null && eshipCarrierList.size()>0){
+	  			getSession().put("eshipCarrierFound", "true");
+	  		}
+	  		return init();
+	  	}
+	  
+	  
+	  
+	  public String saveMarkupList() throws Exception {
+	  		try {
+	  		Boolean eshipCarrierUpdated=false;
+	  			shippingService = (ShippingService) MmrBeanLocator.getInstance()
+	  					.findBean("shippingService");
+	  		loadListsFromSession();
+	  			User user = UserUtil.getMmrUser();
+	  			String carrierId = request.getParameter("carrierId");
+	  		if (carrierId != null) {
+	  				if (carrierId.equalsIgnoreCase("6")) {
+	  				EshipplusCarrierFilter eshipplusCarrierFilter = new EshipplusCarrierFilter();
+	  					String carrierName = request.getParameter("carrierName");
+	  					carrierName=carrierName.replace('~', '&');
+	  					String carrierInactive = request
+	  
+	  							.getParameter("carrierInactive");
+	  					String eshipCarLt[] = carrierName.split(",");
+	  					String eshipCarInAc[] = carrierInactive.split(",");
+	  				for (int i1 = 0; i1 < eshipCarLt.length; i1++) {
+	  						if(eshipCarInAc[i1] !=null && !eshipCarInAc[i1].equalsIgnoreCase("undefined")){
+	  							eshipplusCarrierFilter
+	  							.setCarrierDisabledFlag(convertStringToBoolean(eshipCarInAc[i1]));
+	  							eshipplusCarrierFilter
+	  						.setEshipCarrierName(eshipCarLt[i1]);
+	  							shippingService.updateEshipCarrierFilter(
+	  									eshipplusCarrierFilter, String.valueOf(this
+	  											.getMarkup().getCustomerId()));
+	  						eshipCarrierUpdated=true;
+	  						}
+	  
+	  					}
+	  				}
+	  		}
+	  			if(eshipCarrierUpdated!=null && eshipCarrierUpdated){
+	  				addActionMessage("Carrier Updated Successfully");
+	  			}
+	  			String selectedItem = request.getParameter("selectedItem");
+	  			String percentage = request.getParameter("percentage");
+	  		String flat = request.getParameter("flat");
+	  			String disabledFlag = request.getParameter("disabledFlag");
+	  			String variable = request.getParameter("variable");
+	  			String item[] = selectedItem.split(",");
+	  			String mPs[] = percentage.split(",");
+	  			String mFs[] = flat.split(",");
+	  			String mDs[] = disabledFlag.split(",");
+	  			String mVs[] = variable.split(",");
+	  			// if (this.getMarkupList().size() != item.length)
+	  			for (int i1 = 0; i1 < item.length; i1++) {
+	  				if (!item[i1].equalsIgnoreCase("")) {
+	  					// for (int i = 0; i < this.getMarkupList().size(); i++) {
+	  					Markup m = this.getMarkupList().get(Integer.parseInt(item[i1]));					int p = Integer.parseInt(mPs[i1]);
+	  					double f = Double.parseDouble(mFs[i1]);
+	  				boolean d = convertStringToBoolean(mDs[i1]);
+	  					int v = Integer.parseInt(mVs[i1]);
+	  					if (isMarkupDirty(m, p, f, d, v)) {
+	  						m.setMarkupPercentage(p);
+	  					m.setMarkupFlat(f);
+	  						m.setDisabledFlag(d);
+	  						m.setVariable(v);
+	  						// If user is in Customer Markup and modified default
+	  					// markup
+	  						// it should be added as a new record customer specific
+	  						// markup
+	  						if (m.getCustomerId().longValue() == 0
+	  							&& getMarkup().getCustomerId().longValue() != 0) {
+	  							m.setCustomerId(getMarkup().getCustomerId());
+	  							this.markupManagerService.addMarkup(m);
+	  							addActionMessage("Added Successfully");
+	  						} else {
+	  						this.markupManagerService.updateMarkup(m);
+	  							addActionMessage("Updated Successfully");
+	  						}
+	  				}
+	  				}
+	  			}
+	  			eshipCarrierList = shippingService
+	  					.getEshipPlusCarrierByCustomerId(this
+	  							.getMarkup().getCustomerId());
+	  			session.put("eshipCustomerCarrier", eshipCarrierList);
+	  			this.setEshipCarrierList(eshipCarrierList);
+	  		} catch (Exception e) {
+	  			e.printStackTrace();
+	  		addActionError(getText("content.error.unexpected"));
+	  			return INPUT;
+	  		}
+	  		return init();
+	  	}
+	  
+	  
+	  
+	   private List<EshipplusCarrierFilter> eshipCarrierList;
+	  public List<EshipplusCarrierFilter> getEshipCarrierList() {
+	  
+	  	return eshipCarrierList;
+	  
+	  }
+	  
+	  public void setEshipCarrierList(List<EshipplusCarrierFilter> eshipCarrierList) {
+	  	this.eshipCarrierList = eshipCarrierList;
+	  }
 }

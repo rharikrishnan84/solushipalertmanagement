@@ -25,6 +25,8 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import com.meritconinc.shiplinx.service.MarkupManager;
+import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -152,6 +154,7 @@ public class GenericCarrierAPI implements CarrierService {
   private MarkupManagerDAO markupDAO;
   private CarrierServiceDAO carrierServiceDAO;
 
+  private MarkupManager markupManagerService;
   public CarrierServiceDAO getCarrierServiceDAO() {
     return carrierServiceDAO;
   }
@@ -669,6 +672,7 @@ public class GenericCarrierAPI implements CarrierService {
       rating.setTransitDays(sr.getTtm2());
     else
       rating.setTransitDays(sr.getTtm1());
+    rating=getAdditionalCharges(rating,shippingOrder);
     for(int i=0;i<rating.getCharges().size();i++){
     	    	  if(rating.getCharges().get(i).getCurrency()!=null){
     	    	              if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
@@ -679,7 +683,83 @@ public class GenericCarrierAPI implements CarrierService {
     log.debug("SUCCESS");
     return rating;
   }
-
+  private Rating getAdditionalCharges(Rating rating,ShippingOrder order){
+	  	  	  //	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
+	  	  	  List<CarrierChargeCode> carrierChargesList = new ArrayList<CarrierChargeCode>();
+	  	  	  Charge charge=new Charge();
+	  	  	  //PopwerTail Gate
+	  	  	  if(order.isFromTailgate()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  if(order.isToTailgate()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  //Pallet Jack
+	  	  	  if(order.getFromPalletJack()!=null && order.getFromPalletJack()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  if(order.getToPalletJack()!=null && order.getToPalletJack()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  //Inside Pickup
+	  	  	  if(order.isInsidePickup()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  if(order.getInsideDelivery()!=null && order.getInsideDelivery()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  //HoldForPickup
+	  	  	  if(order.getHoldForPickupRequired()!=null && order.getHoldForPickupRequired()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  //Dangerous goods
+	  	  	  if(order.getDangerousGoods()!=null && order.getDangerousGoods()>0){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  if(order.getToAddress()!=null && order.getToAddress().isResidential()){
+	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  		  }
+	  	  	  }
+	  	  	  return rating;
+	  	    }
+	  	  	  	    
+	  	  	  	    private Charge applyAdditionalToCharges(CarrierChargeCode carrierCharge){
+	  	  	  	  	  	  Charge charge=new Charge();
+	  	  	  	  	    charge.setChargeCode(carrierCharge.getChargeCode());
+	  	  	    	  	  charge.setCharge(carrierCharge.getCarrierCharge());
+	  	  	  	  	  	  charge.setCost(carrierCharge.getCarrierCost());
+	  	  	  	  	  	  charge.setName(carrierCharge.getChargeDesc());
+	  	  	  	  	  	  charge.setChargeGroupId((int) (long)carrierCharge.getGroupId());
+	  	  	  	  	  	  charge.setChargeCodeLevel2(carrierCharge.getChargeCodeLevel2());
+	  	  	  	    	  charge.setTariffRate(carrierCharge.getCarrierCharge());
+	  	  	  	  	  	  return charge;
+	  	  	    	     }
   private Zone getZone(Long zoneStructureId, Address address) {
     Zone z = this.markupDAO.findZone(zoneStructureId, address);
     if (z == null) {
@@ -886,9 +966,14 @@ public class GenericCarrierAPI implements CarrierService {
           rating.setTransitDays(pr.getTtm2());
         else
           rating.setTransitDays(pr.getTtm1());
+        //My new inclusion for pound
+        rating=getAdditionalCharges(rating,shippingOrder);
+        //---end---
         for(int i=0;i<rating.getCharges().size();i++){
+        	 if(rating.getCharges().get(i).getCurrency()!=null){
         	        	            if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
-        	        	            	rating.setCurrency(pr.getCurrency());;
+        	        	            	rating.setCurrency(pr.getCurrency());
+        	        	            }
         	        	          }
         	        	        }
         log.debug("SUCCESS");
@@ -1051,11 +1136,13 @@ public class GenericCarrierAPI implements CarrierService {
           p.setType(packageType);
         }
       }
+      order.setCarrierName(order.getCharges().get(0).getCarrierName());
       parameters.put("logo", logo);
       parameters.put("accountNum", order.getAccountNum());
       parameters.put("BUSINESS", business);
       parameters.put("Order", order);
       parameters.put("logo", logo);
+      parameters.put("temperature", order.getTemperature());
 
       parameters.put("Package", order.getPackages());
 
@@ -1614,6 +1701,7 @@ public class GenericCarrierAPI implements CarrierService {
               rating.setTransitDays(pr.getTtm2());
             else
               rating.setTransitDays(pr.getTtm1());
+            rating=getAdditionalCharges(rating,shippingOrder);
             for(int i=0;i<rating.getCharges().size();i++){
             	            	            if(rating.getCharges().get(i).getCurrency().equalsIgnoreCase(ShiplinxConstants.CURRENCY_US_STRING)){
             	            	            	rating.setCurrency(pr.getCurrency());;
@@ -1632,4 +1720,12 @@ public class GenericCarrierAPI implements CarrierService {
     return null;
 
   }
+
+	public MarkupManager getMarkupManagerService() {
+		return markupManagerService;
+	}
+
+	public void setMarkupManagerService(MarkupManager markupManagerService) {
+		this.markupManagerService = markupManagerService;
+	}
 }

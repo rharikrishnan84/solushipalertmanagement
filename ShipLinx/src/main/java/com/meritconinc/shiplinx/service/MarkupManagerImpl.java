@@ -725,4 +725,33 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	public List<Zone> getOverallZones(String City, Long ZoneStructureId, String Country, String Province){
 					return markupDAO.getOverallZones(City,ZoneStructureId,Country,Province);
 		 		}
+	
+	public boolean getEshipCarriersbyCustomerId(String carrierScac,
+			Long customerId) {
+		return markupDAO.getEshipCarriersbyCustomerId(carrierScac, customerId);
+	}
+
+	public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(
+			long carrierId, long chargeGroupId) {
+		return markupDAO.getChargesByCarrierIdAndGroupCode(carrierId,
+				chargeGroupId);
+	}
+
+	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+			long carrierId, String chargeCode, long customerId) {
+		return markupDAO.getChargesByChargeCodeAndCarrier(carrierId,
+				chargeCode, customerId);
+	}
+
+	public Markup getUniqueMarkupUsingCost(Markup markup) {
+		// TODO Auto-generated method stub
+		if (markupDAO != null && markup != null) {
+			List<Markup> mList = markupDAO
+					.findMarkupListForUniqueMarkupUsingCostRange(markup);
+			if (mList != null && mList.size() > 0) {
+				return applyRules(mList, markup);
+			}
+		}
+		return null;
+	}
 }
