@@ -103,6 +103,7 @@ public class EstimatingServiceClient {
 	private CarrierServiceDAO carrierServiceDAO;
 	private MarkupManagerDAO markupManagerDAO;
 	private ShippingDAO shippingDAO;
+	private static final Double PUROLATOR_ADDTIONALHANDLING_CHARGE = 50.0;
 
 	public EstimatingServiceClient(ShippingOrder order, CustomerCarrier customerCarrier,  CarrierServiceDAO carrierServiceDAO)
 	{
@@ -399,7 +400,23 @@ public class EstimatingServiceClient {
 						logger.debug("OptionPrices not available");
 					}
 					rate.setServiceName(shiplinxService.getName());
-
+					/*boolean HWFlag = false;
+										 Charge c = new Charge();
+										for(Charge charge : rate.getCharges()){
+										if(charge.getChargeCode().equals("RESI") && rate.getBillWeight() > ShiplinxConstants.PUROLATOR_ADDITIONALHANDLING_WEIGHT){
+								    		  
+								    	      c.setName(ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING1);
+								    	      c.setCharge(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+								    	      c.setCost(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+								    	      c.setTariffRate(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+								    	      c.setCurrency("CAD");
+								    	      HWFlag = true;
+								    	      break;
+								    	  }
+										}
+										if(HWFlag){
+											rate.getCharges().add(c);
+										}*/
 					ratingList.add(rate);
 
 				}

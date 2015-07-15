@@ -683,7 +683,7 @@
 	message, tradeshow_pickup, tradeshow_delivery, inside_pickup,
 	appointment_pickup, appointment_delivery, tracking_url,
 	rated_as_weight, billing_type,
-	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature)
+	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature,account_num)
 	values (#orderNum#, #statusId#,#shipToId#, #shipFromId#,
 	#packageTypeId.packageTypeId#, #businessId#, #customerId#,
 	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,
@@ -702,7 +702,7 @@
 	#createdBy#, #batchId#, #message#, #tradeShowPickup#,
 	#tradeShowDelivery#, #insidePickup#, #appointmentPickup#,
 	#appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#,
-	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#)
+	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#,#accountNum#)
 	<selectKey resultClass="long" type="post" keyProperty="id">select
 		LAST_INSERT_ID() as value
 	</selectKey>

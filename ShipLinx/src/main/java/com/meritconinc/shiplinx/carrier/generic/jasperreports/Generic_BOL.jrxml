@@ -305,7 +305,7 @@
 				<textElement>
 					<font fontName="SansSerif"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrier().getName()!=null)?(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrier().getName()):(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrierName())]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrierName()!=null)?(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrierName()):(((com.meritconinc.shiplinx.model.ShippingOrder)$P{Order}).getCarrier().getName())]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="textField-98" x="385" y="125" width="80" height="14"/>

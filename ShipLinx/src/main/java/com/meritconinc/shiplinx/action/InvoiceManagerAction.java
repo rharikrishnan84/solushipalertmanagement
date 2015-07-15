@@ -3181,4 +3181,51 @@ public User getLoginedUser() {
 public void setLoginedUser(User loginedUser) {
 	this.loginedUser = loginedUser;
  } 
+
+//method to delete the pdf in report path
+public String deleteInvoicePdf() {
+    try {
+    	boolean flag=true;
+      //Invoice invoice = this.getInvoice();
+      String invId = request.getParameter("stored_value");
+      String ids[] = invId.split(",");
+      for (int i = 0; i < ids.length; i++) {      
+    	  long invoiceId = Long.parseLong(ids[i]);
+      Invoice invoice = invoiceManager.getInvoiceById(invoiceId);
+      if (invoice != null) {
+        PDFRenderer pdfRenderer = new PDFRenderer();
+        ArrayList<String> srcList = new ArrayList<String>();
+  	    Business business = businessDAO.getBusiessById(invoice.getBusinessId());
+  	    String reportPathInvoice = business.getReportPathInvoice();
+  	    String invoiceNum=invoice.getInvoiceNum();
+	      File folderPath = new File(reportPathInvoice);
+	      if (folderPath.isDirectory()) {
+	    	  File[] fList = folderPath.listFiles();
+	    	  if(fList!=null){
+	    		  for(File file:fList){
+	    			  String fileName=file.getName();
+	    			  String[] splitFileName=fileName.split("_");
+			  			  if(invoiceNum.equals(splitFileName[1])){
+			  				  	flag= false;
+			    				srcList.add(file.toString());
+			    				pdfRenderer.deleteFiles(srcList);
+			  			  }
+	    		  }
+	    	  }
+	      }
+      }
+      }
+      if(flag == true){
+    	  addActionError(getText("There is no pdf available in report path for this selection"));
+      }else{
+    	  addActionMessage("The Selected Invoice pdf(s) deleted Successfully");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      addActionError(getText("content.error.unexpected"));
+    }
+
+    return searchInvoice();
+  }
+
 }

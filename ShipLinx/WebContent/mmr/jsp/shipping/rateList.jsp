@@ -1134,7 +1134,7 @@ function submitShipment(){
 					</s:else>
 				</td>
 				<td style="text-align:left"><s:property value="billWeight" /></td>
-				<td><s:property value="costCurrencyCode"/></td>
+				<td><s:property value="chargeCurrencyCode"/></td>
   				<s:if test="%{#request.BillToType!=null}">
 				<td style="text-align:right"><s:property value="%{#request.BillToType}"/></td>
 				<td style="display:none"><s:property value="%{#request.BillToType}"/></td>

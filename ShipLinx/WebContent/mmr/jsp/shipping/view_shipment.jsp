@@ -1473,7 +1473,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										<!-- Unbilled charges will only be displayed to Business Admin -->
 											<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 											<td class="ordrdtl_title_val" nowrap>
-											<s:if test="%{selectedOrder.carrierId ==6}"><s:property value="%{selectedOrder.service.masterCarrier.name}" /></s:if>
+											<s:if test="%{selectedOrder.carrierId ==6}">eShipPlus</s:if>
 												<s:else><s:property value="carrierName" /></s:else>
 											</td>
 										</s:if>

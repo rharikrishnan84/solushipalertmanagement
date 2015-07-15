@@ -178,6 +178,36 @@
 			
 			
 		}
+	
+	function deletepdf(){
+						var uploadMarkupId = document.getElementsByClassName("check_uncheck_row");
+						  var i, txt = 0;
+						  for (i = 0; i < uploadMarkupId.length; i++) {
+						   if (uploadMarkupId[i].checked) {
+						    txt += 1;
+						   }
+						  }
+						  if (txt < 1) {
+						   alert('Please select at least one');
+						   
+						  } else {
+							  /* $('#loader').css('display','block');
+							  $('#loaderImg').css('display','block');   */
+						   var i1, shipmentid, value_checked, stored_value = "";
+						   for (i1 = 0; i1 < uploadMarkupId.length; i1++) {
+						    if (uploadMarkupId[i1].checked) {
+						     shipmentid = uploadMarkupId[i1].value;
+							 invoiceId = document.getElementById("selectedInvoices["+shipmentid+"].invoiceId").value;
+						     //value_checked = document.getElementById("shipmentcheckbox"+shipmentid).value;
+						     //confirm("this is value is value checked variable "+value_checked+"  this is value is from shipmentid "+shipmentid);
+						     //stored_value = stored_value + value_checked + ",";
+						     stored_value=stored_value+invoiceId+",";
+						    }
+						   }
+						   window.location.href = "delete.invoice.pdf.action?stored_value="+ stored_value;
+					
+						  }
+			}
 		
 		
 		
@@ -403,6 +433,7 @@
 				<li><a href="javascript:pdf2();"  ><mmr:message messageId="label.pdf"/></a></li>
 				<li><a href="javascript:editpayment();"><mmr:message messageId="label.list.edit"/></a></li>
 				<li><a href="javascript:delete1();"><mmr:message messageId="label.delete"/></a></li>
+				<li><a href="javascript:deletepdf();"><mmr:message messageId="label.delete.pdfFile"/></a></li>
 				</ul>
 			</div>
 		</div>

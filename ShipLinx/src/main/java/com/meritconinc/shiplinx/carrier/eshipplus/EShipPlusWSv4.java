@@ -4,11 +4,15 @@ package com.meritconinc.shiplinx.carrier.eshipplus;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceFeature;
+
+import com.meritconinc.shiplinx.carrier.eshipplus.eshipplusservice.EShipPlusAPI;
+import com.meritconinc.shiplinx.carrier.eshipplus.eshipplusservice.EshipPlusRequestConnector;
 
 
 /**
@@ -17,7 +21,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "eShipPlusWSv4", targetNamespace = "http://www.eshipplus.com/", wsdlLocation = "http://lpdev.eshipplus.com/services/eshippluswsv4.asmx?WSDL")
+@WebServiceClient(name = "eShipPlusWSv4", targetNamespace = "http://www.eshipplus.com/", wsdlLocation = "http://www.eshipplus.com/services/eShipPlusWSv4.asmx?WSDL")
 public class EShipPlusWSv4
     extends Service
 {
@@ -30,9 +34,9 @@ public class EShipPlusWSv4
         try {
             URL baseUrl;
             baseUrl = com.meritconinc.shiplinx.carrier.eshipplus.EShipPlusWSv4 .class.getResource(".");
-            url = new URL(baseUrl, "http://lpdev.eshipplus.com/services/eshippluswsv4.asmx?WSDL");
+            url = new URL(baseUrl, EshipPlusRequestConnector.LIVE_URL_RATE.concat("?WSDL"));
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://lpdev.eshipplus.com/services/eshippluswsv4.asmx?WSDL', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://www.eshipplus.com/services/eShipPlusWSv4.asmx?WSDL', retrying as a local file");
             logger.warning(e.getMessage());
         }
         ESHIPPLUSWSV4_WSDL_LOCATION = url;

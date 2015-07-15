@@ -1937,7 +1937,12 @@
            <!--  <result name="success">invoice.list</result> -->
              <result type="tiles" name="success">searchInvoice</result>
              <result type="tiles" name="paylist">payInvoices</result>
-       	</action>       	      	        
+       	</action> 
+       	<action name="delete.invoice.pdf" method="deleteInvoicePdf" class="invoiceManagerAction">
+           <!--  <result name="success">invoice.list</result> -->
+             <result type="tiles" name="success">searchInvoice</result>
+             <result type="tiles" name="input">invoice.list</result>
+       	</action>      	      	        
        	
        	<!--  Reports Management  -->
         <action name="commReport" class="invoiceManagerAction" method="commReport">

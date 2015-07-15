@@ -33,10 +33,13 @@ public class EshipPlusRequestConnector {
 	private static final Logger log = LogManager.getLogger(EShipPlusAPI.class);
 	private final static String Username ="ryan.blakey"; 
 	//private final static String Password = "Reynard1";
-	private final static String Password = "ry1234";
+	private final static String Password = "Reynard1";
 	private final static String Accesscode ="TENANT1"; 
-	private final static String AccessKey ="dd9c2694-672b-4498-9a96-2a96f3f82364";
+	//private final static String AccessKey ="dd9c2694-672b-4498-9a96-2a96f3f82364";
+	private final static String AccessKey ="a33b98de-a066-4766-ac9e-1eab39ce6806";
+	public static String LIVE_URL_RATE = "http://www.eshipplus.com/services/eShipPlusWSv4.asmx";
 	EShipPlusWSv4 eshipPluswv4 = null;
+	private CustomerCarrier customerCarrier;
 	AuthenticationToken authenticationToken = null;
 	/*
 	 * setting the eship splus authenticating token in the constructor
@@ -52,7 +55,22 @@ public class EshipPlusRequestConnector {
 		authenticationtoken.setPassword(Password);
 		authenticationtoken.setAccessCode(Accesscode);
 		authenticationtoken.setAccessKey(AccessKey);
-		
+		return authenticationtoken;
+	}
+	
+	public EshipPlusRequestConnector(CustomerCarrier customerCarrier)
+	{
+		this.customerCarrier=customerCarrier;
+		this.LIVE_URL_RATE=customerCarrier.getProperty5();
+		authenticationToken = authentication(this.customerCarrier);
+	}
+	
+	private AuthenticationToken authentication(CustomerCarrier customerCarrier) {
+		AuthenticationToken authenticationtoken = new AuthenticationToken();
+		authenticationtoken.setUsername(customerCarrier.getProperty1());
+		authenticationtoken.setPassword(customerCarrier.getProperty2());
+		authenticationtoken.setAccessCode(customerCarrier.getProperty3());
+		authenticationtoken.setAccessKey(customerCarrier.getProperty4());
 		return authenticationtoken;
 	}
 	
@@ -176,9 +194,10 @@ public class EshipPlusRequestConnector {
 							rating.setCustomerCarrier(customerCarrier); //remember the account that was used to rate, we will use the same one at shipping time
 							//Currency
 							if(order.getCurrency()==null || "".equalsIgnoreCase(order.getCurrency())){
-								rating.setCurrency("CAD");
-							}
+								rating.setCurrency("USD");
+							}else{
 							rating.setCurrency(order.getCurrency());
+							}
 							//Total cost
 							rating.setTotalCost(getFormattedValue(rateList.get(j).getTotalCharges().doubleValue()));
 							

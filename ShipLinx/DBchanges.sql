@@ -3634,5 +3634,370 @@ insert into resourcebundle(msg_id, msg_content, locale, is_fmk)
 values('label.business.footer2', 'Footer2', 'en_CA', 1);
 
 INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.upload.favIcon', 'Upload FavIcon', 'en_CA', 1);
---------------------------------------END of LIVE SERVER COMMIT---------------------------------------
 
+ALTER TABLE `user` ADD COLUMN `auto_freight_class` BIT(1) NOT NULL DEFAULT b'0' AFTER `isbusiness_level`;
+
+alter table shipping_order add from_pallet_jack bit(1) not null default b'0';
+
+alter table shipping_order add to_pallet_jack bit(1) not null default b'0';
+
+alter table shipping_order add from_dock_level bit(1) not null default b'0';
+
+alter table shipping_order add to_dock_level bit(1) not null default b'0';
+
+
+alter table shipping_order add from_floor_no varchar(6) not null default -1;
+
+alter table shipping_order add to_floor_no varchar(6) not null default -1;
+
+alter table shipping_order add istempControl bit(1) default b'0';
+
+alter table shipping_order add temperature varchar(6);
+
+
+ALTER TABLE `shipping_order` 
+CHANGE COLUMN `link_to_order` `link_to_order` INT(11) NULL DEFAULT 0 ;
+
+alter table `shipping_order`ADD COLUMN `def_pickup_time_between` VARCHAR(45) NULL DEFAULT NULL AFTER `link_to_order`;
+
+ALTER TABLE `customer_carrier` CHANGE COLUMN `property_5` `property_5` VARCHAR(100) NULL DEFAULT NULL ;
+
+ALTER TABLE `shipping_labels` ADD COLUMN `original_label` MEDIUMBLOB NULL DEFAULT NULL AFTER `cod_label`,
+ADD COLUMN `label_updated` TINYINT(4) NULL DEFAULT '0' AFTER `original_label`;
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.tailGateDelivery', 
+'Tailgate Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.fromPalletJack', 
+'PalletJack Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.toPalletJack', 
+'PalletJack Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.fromDockLevel', 
+'DockLevel Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.toDockLevel', 
+'DockLevel Delivery', 'en_CA', 1);
+
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.additionalInformation','ADDITIONAL INFORMATION',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.worshipPickup','Worship pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.worshipDelivery','Worship Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.utilityPickup','Construction/Utility Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.utilityDelivery','Construction/Utility Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.governmentPickup','Government Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.governmentDelivery','Government Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.mineSitePickup','Mine site Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.mineSiteDelivery','Mine site Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.limitedAccessPickup','Non commercial Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.limitedAccessDelivery','Non commercial Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.nonCommercialDelivery','Non commercial Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.schoolPickup','School Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.schoolDelivery','School Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.insideStreetPickup','Inside Pickup-Street Level',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.insideStreetDelivery','Inside Delivery-Street Level',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.liftGatePickup','Lift Gate Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.liftGateDelivery','Lift Gate Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.selfStoragePickup','Self-storage Pickup',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.selfStorageDelivery','Self-storage Delivery',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.hazardousDelivery','Hazardous Materials',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.protectFreeze','Protect from freeze',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.destinationNotify','Destination notify',
+'en_CA',1);
+
+insert into resourcebundle(msg_id,msg_content,locale,is_fmk)
+values ('label.shipping_order.correctionFee','Correction fee',
+'en_CA',1);
+
+UPDATE `service` SET `master_carrier_id`='10' WHERE `service_id`='200021';
+UPDATE `service` SET `master_carrier_id`='10' WHERE `service_id`='200022';
+UPDATE `service` SET `master_carrier_id`='10' WHERE `service_id`='2000023';
+UPDATE `carrier` SET `name`='eShipPlus' WHERE `carrier_id`='6';
+UPDATE `service` SET `master_service_id`='200021' WHERE `service_id`='200021';
+UPDATE `service` SET `master_service_id`='200022' WHERE `service_id`='200022';
+UPDATE `service` SET `master_service_id`='200023' WHERE `service_id`='2000023';
+
+INSERT INTO `business_carrier` (`business_id`, `carrier_id`, `business_carrier_discount`, `display_name`) VALUES ('1', '6', '0', 'eShipPlus');
+
+INSERT INTO `carrier` (`carrier_id`, `name`, `tracking_url`, `implementing_class`, `currency_id`) VALUES ('6', 'eShipPlus', 'http://www.eshipplus.com/Public/com/Default.aspx', 'eShipPlus', '1');
+
+INSERT INTO `service` VALUES(200021,'IC Class Expedited',6,6,NULL,'LTL - Logistics Plus','LTL-PP',NULL,NULL,2,0,NULL,2000021,0,0,0,0,'LTL',0,0,0,0,0,0),
+(200022,'IC Class Standard',6,6,NULL,'LTL - Logistics Plus','LTL-PP',NULL,NULL,2,0,NULL,2000022,0,0,0,0,'LTL',0,0,0,0,0,0),
+(2000023,'IC Class Economy',6,6,NULL,'LTL - Logistics Plus','LTL-PP',NULL,NULL,2,0,NULL,2000023,0,0,0,0,'LTL',0,0,0,0,0,0),
+(2000024,'PurolatorExpressU.S. Import',20,20,NULL,'PurolatorExpressU.S. Import','PurolatorExpressU.S. Import','601',NULL,1,0,NULL,0,0,0,0,151,'SPD',0,0,0,0,0,0);
+
+DROP TABLE IF EXISTS `eshipplus_packages`;
+CREATE TABLE `eshipplus_packages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `package_key` int(11) NOT NULL DEFAULT '0',
+  `def_height` double NOT NULL DEFAULT '0',
+  `def_length` double NOT NULL DEFAULT '0',
+  `def_width` double NOT NULL DEFAULT '0',
+  `message` varchar(45) DEFAULT NULL,
+  `ic_package_name` varchar(45) DEFAULT NULL,
+  `eship_package_name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `eshipplus_packages` VALUES (1,258,40,48,48,NULL,'Pallet','PALLET(S)'),(2,250,0,0,0,NULL,'Carton','CARTONS'),(3,253,0,0,0,NULL,'Crate','CRATE(S)'),(4,255,0,0,0,NULL,'Drum','DRUM(S)'),(5,244,0,0,0,NULL,'Boxes','BOX(ES)'),(6,261,0,0,0,NULL,'Rolls','ROLL(S)'),(7,266,0,0,0,NULL,'Pipes/TubesBales','TUBES/PIPES'),(8,242,0,0,0,NULL,'Bags','BAGS'),(9,254,0,0,0,NULL,'Cylinder','CYLINDER(S)'),(10,260,0,0,0,NULL,'Pails,Reels','REELS(S)'),(11,267,0,0,0,NULL,'Other','YOUR PACKAGING/UNITS');
+
+CREATE TABLE `eshipplus_carrier_filter` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(12) DEFAULT '0',
+  `eship_carrier_id` int(10) DEFAULT '0',
+  `eship_carrier_scac` varchar(45) DEFAULT NULL,
+  `eship_carrier_name` varchar(65) DEFAULT NULL,
+  `disabled` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `eshipplus_carrier_filter` VALUES (1,0,97,'AACT','AAA COOPER',0),(2,0,98,'BAHF','B & H FREIGHT LINE',0),(3,0,99,'CNWY','CON-WAY FREIGHT',0),(4,0,100,'CNWY','CON-WAY FREIGHT (Canada)',0),(5,0,101,'CPPV','CALTOP LOGISTICS',0),(6,0,102,'CRST','CRYSTAL MOTOR EXPRESS',0),(7,0,103,'DAFG','Dayton Freight',0),(8,0,104,'DUBL','Dugan Truck Line',0),(9,0,105,'EXLA','ESTES',0),(10,0,106,'FXFE','Fedex Freight - Priority',0),(11,0,107,'FXNL','Fedex Freight - Economy',0),(12,0,108,'HMES','HOLLAND',0),(13,0,109,'HWEP','RIST TRANSPORT (Howards)',0),(14,0,110,'LAXV','Land Air Express of New England',0),(15,0,111,'LKVL','Lakeville Motor Express',0),(16,0,112,'NEBT','Nebraska Transport',0),(17,0,113,'NEMF','NEMF (New England Motor Freight)',0),(18,0,114,'NPME','NEW PENN',0),(19,0,115,'ODFL','OLD DOMINION',0),(20,0,116,'PITD','Pitt Ohio',0),(21,0,117,'PITD','Pitt Ohio (FRIDAY rates- for FRIDAY PICKUPS ONLY)',0),(22,0,118,'PYLE','A Duie Pyle Inc',0),(23,0,119,'RDWY','YRC <1000 EFF 6-16-2014',0),(24,0,120,'RDWY','YRC >1000 EFF 6-16-2014',0),(25,0,121,'RETL','REDDAWAY',0),(26,0,122,'SAIA','SAIA',0),(27,0,123,'SEFL','SOUTHEASTERN [SEFL]',0),(28,0,124,'SMTL','Southwestern Motor Transport (SMT)',0),(29,0,125,'STDF','STANDARD FORWARDING',0),(30,0,126,'UPGF','UPS Freight',0),(31,0,127,'USRD','US ROAD FREIGHT EXPRESS',0),(32,0,128,'WARD','Ward Trucking',0),(33,0,129,'WTVA','WILSON TRUCKING',0),(199,4161,97,'AACT','AAA COOPER',0),(200,4161,98,'BAHF','B & H FREIGHT LINE',0),(201,4161,99,'CNWY','CON-WAY FREIGHT',0),(202,4161,100,'CNWY','CON-WAY FREIGHT (Canada)',0),(203,4161,101,'CPPV','CALTOP LOGISTICS',0),(204,4161,102,'CRST','CRYSTAL MOTOR EXPRESS',0),(205,4161,103,'DAFG','Dayton Freight',0),(206,4161,104,'DUBL','Dugan Truck Line',0),(207,4161,105,'EXLA','ESTES',0),(208,4161,106,'FXFE','Fedex Freight - Priority',0),(209,4161,107,'FXNL','Fedex Freight - Economy',0),(210,4161,108,'HMES','HOLLAND',0),(211,4161,109,'HWEP','RIST TRANSPORT (Howards)',0),(212,4161,110,'LAXV','Land Air Express of New England',0),(213,4161,111,'LKVL','Lakeville Motor Express',0),(214,4161,112,'NEBT','Nebraska Transport',0),(215,4161,113,'NEMF','NEMF (New England Motor Freight)',0),(216,4161,114,'NPME','NEW PENN',0),(217,4161,115,'ODFL','OLD DOMINION',0),(218,4161,116,'PITD','Pitt Ohio',0),(219,4161,117,'PITD','Pitt Ohio (FRIDAY rates- for FRIDAY PICKUPS ONLY)',0),(220,4161,118,'PYLE','A Duie Pyle Inc',0),(221,4161,119,'RDWY','YRC <1000 EFF 6-16-2014',0),(222,4161,120,'RDWY','YRC >1000 EFF 6-16-2014',0),(223,4161,121,'RETL','REDDAWAY',0),(224,4161,122,'SAIA','SAIA',0),(225,4161,123,'SEFL','SOUTHEASTERN [SEFL]',0),(226,4161,124,'SMTL','Southwestern Motor Transport (SMT)',0),(227,4161,125,'STDF','STANDARD FORWARDING',0),(228,4161,126,'UPGF','UPS Freight',0),(229,4161,127,'USRD','US ROAD FREIGHT EXPRESS',0),(230,4161,128,'WARD','Ward Trucking',0),(231,4161,129,'WTVA','WILSON TRUCKING',0),(232,4948,97,'AACT','AAA COOPER',0),(233,4948,98,'BAHF','B & H FREIGHT LINE',0),(234,4948,99,'CNWY','CON-WAY FREIGHT',0),(235,4948,100,'CNWY','CON-WAY FREIGHT (Canada)',0),(236,4948,101,'CPPV','CALTOP LOGISTICS',0),(237,4948,102,'CRST','CRYSTAL MOTOR EXPRESS',0),(238,4948,103,'DAFG','Dayton Freight',0),(239,4948,104,'DUBL','Dugan Truck Line',0),(240,4948,105,'EXLA','ESTES',0),(241,4948,106,'FXFE','Fedex Freight - Priority',0),(242,4948,107,'FXNL','Fedex Freight - Economy',0),(243,4948,108,'HMES','HOLLAND',0),(244,4948,109,'HWEP','RIST TRANSPORT (Howards)',0),(245,4948,110,'LAXV','Land Air Express of New England',0),(246,4948,111,'LKVL','Lakeville Motor Express',0),(247,4948,112,'NEBT','Nebraska Transport',0),(248,4948,113,'NEMF','NEMF (New England Motor Freight)',0),(249,4948,114,'NPME','NEW PENN',0),(250,4948,115,'ODFL','OLD DOMINION',0),(251,4948,116,'PITD','Pitt Ohio',0),(252,4948,117,'PITD','Pitt Ohio (FRIDAY rates- for FRIDAY PICKUPS ONLY)',0),(253,4948,118,'PYLE','A Duie Pyle Inc',0),(254,4948,119,'RDWY','YRC <1000 EFF 6-16-2014',0),(255,4948,120,'RDWY','YRC >1000 EFF 6-16-2014',0),(256,4948,121,'RETL','REDDAWAY',0),(257,4948,122,'SAIA','SAIA',0),(258,4948,123,'SEFL','SOUTHEASTERN [SEFL]',0),(259,4948,124,'SMTL','Southwestern Motor Transport (SMT)',0),(260,4948,125,'STDF','STANDARD FORWARDING',0),(261,4948,126,'UPGF','UPS Freight',0),(262,4948,127,'USRD','US ROAD FREIGHT EXPRESS',0),(263,4948,128,'WARD','Ward Trucking',0),(264,4948,129,'WTVA','WILSON TRUCKING',0),(265,4151,97,'AACT','AAA COOPER',0),(266,4151,98,'BAHF','B & H FREIGHT LINE',0),(267,4151,99,'CNWY','CON-WAY FREIGHT',0),(268,4151,100,'CNWY','CON-WAY FREIGHT (Canada)',0),(269,4151,101,'CPPV','CALTOP LOGISTICS',0),(270,4151,102,'CRST','CRYSTAL MOTOR EXPRESS',0),(271,4151,103,'DAFG','Dayton Freight',0),(272,4151,104,'DUBL','Dugan Truck Line',0),(273,4151,105,'EXLA','ESTES',0),(274,4151,106,'FXFE','Fedex Freight - Priority',0),(275,4151,107,'FXNL','Fedex Freight - Economy',0),(276,4151,108,'HMES','HOLLAND',0),(277,4151,109,'HWEP','RIST TRANSPORT (Howards)',0),(278,4151,110,'LAXV','Land Air Express of New England',0),(279,4151,111,'LKVL','Lakeville Motor Express',0),(280,4151,112,'NEBT','Nebraska Transport',0),(281,4151,113,'NEMF','NEMF (New England Motor Freight)',0),(282,4151,114,'NPME','NEW PENN',0),(283,4151,115,'ODFL','OLD DOMINION',0),(284,4151,116,'PITD','Pitt Ohio',0),(285,4151,117,'PITD','Pitt Ohio (FRIDAY rates- for FRIDAY PICKUPS ONLY)',0),(286,4151,118,'PYLE','A Duie Pyle Inc',0),(287,4151,119,'RDWY','YRC <1000 EFF 6-16-2014',0),(288,4151,120,'RDWY','YRC >1000 EFF 6-16-2014',0),(289,4151,121,'RETL','REDDAWAY',0),(290,4151,122,'SAIA','SAIA',0),(291,4151,123,'SEFL','SOUTHEASTERN [SEFL]',0),(292,4151,124,'SMTL','Southwestern Motor Transport (SMT)',0),(293,4151,125,'STDF','STANDARD FORWARDING',0),(294,4151,126,'UPGF','UPS Freight',0),(295,4151,127,'USRD','US ROAD FREIGHT EXPRESS',0),(296,4151,128,'WARD','Ward Trucking',0),(297,4151,129,'WTVA','WILSON TRUCKING',0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.shippingOrder.temperature', 'Temperature', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.shippingOrder.tempControl', 'Temp Control', 'en_CA', 1);
+
+DROP TABLE IF EXISTS `address_checklist`;
+CREATE TABLE `address_checklist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `address_id` int(11) NOT NULL,
+  `commercial_business` tinyint(1) DEFAULT '0',
+  `description` varchar(45) DEFAULT NULL,
+  `pickup_or_deliver` tinyint(1) DEFAULT '0',
+  `prior_to_pickup` tinyint(1) DEFAULT '0',
+  `dock_level` tinyint(1) DEFAULT '0',
+  `pallet_jack` tinyint(1) DEFAULT '0',
+  `power_tailgate` tinyint(1) DEFAULT '0',
+  `inside_pickup` tinyint(1) DEFAULT '0',
+  `floor_no` int(11) DEFAULT '-1',
+  PRIMARY KEY (`id`,`address_id`)
+);
+INSERT INTO `address_checklist` VALUES (1,97445,0,'',0,0,0,0,0,0,-1),(2,3504,0,'IC10006_1',0,0,0,0,0,0,-1),(3,426,1,'IC10006_1',1,0,0,0,0,1,-1),(4,0,0,'IC10008_1',0,0,0,0,0,0,-1),(5,314543,0,'',1,0,0,1,0,0,0),(6,164619,0,'IC10014_0',0,0,0,0,0,0,0);
+
+INSERT INTO `carrier_charge_code` (carrier_id,charge_code,charge_code_level_2,charge_name,charge_desc,charge_group_id,charge,cost,customer_id)VALUES (6,'050','050','Freight Charge','Freight Charge',1,0,0,0)
+,(6,'FUEL','010','Fuel Surcharge','Fuel Surcharge',3,0,0,0),
+(6,'IC10001_1','CHURCHP','CHURCH OR PLACE OF WORSHIP','CHURCH OR PLACE OF WORSHIP PICKUP',2,0,0,0),
+(6,'IC10001_2','CHURCHD','CHURCH OR PLACE OF WORSHIP','CHURCH OR PLACE OF WORSHIP DELIVERY	',2,0,0,0),
+(6,'IC10002_1','CUP','CONSTRUCTION/UTILITY','CONSTRUCTION/UTILITY PICK-UP',2,0,0,0),
+(6,'IC10002_2','CUD','CONSTRUCTION/UTILITY','CONSTRUCTION/UTILITY DELIVERY',2,0,0,0),
+(6,'IC10003_1','GOVPU','GOVERNMENT SERVICE','GOVERNMENT PICKUP',2,0,0,0),
+(6,'IC10003_2','GOVDE','GOVERNMENT SERVICE','GOVERNMENT DELIVERY',2,0,0,0),
+(6,'IC10004_1','MINE SITE PICKUP','MINE SITE ','MINE SITE PICKUP',2,0,0,0),
+(6,'IC10004_2','MINE SITE DELIVERY','MINE SITE ','MINE SITE DELIVERY',2,0,0,0),
+(6,'IC10005_1','LAP','NON-COMMERCIAL/ LIMITED ACCESS','NON-COMMERCIAL/ LIMITED ACCESS PICKUP/NOI',2,0,0,0),
+(6,'IC10005_2','LAD','NON-COMMERCIAL/ LIMITED ACCESS','NON-COMMERCIAL/ LIMITED ACCESS DELIVERY/NOI',2,0,0,0),
+(6,'IC10006_1','SCHP','SCHOOL SERVICE','SCHOOL PICKUP',2,0,0,0),
+(6,'IC10006_2','SCHD','SCHOOL SERVICE','SCHOOL DELIVERY',2,0,0,0),
+(6,'IC10007_1','INP','INSIDE -STREET LEVEL SERVICE','INSIDE PICKUP -STREET LEVEL',2,0,0,0),
+(6,'IC10007_2','IND','INSIDE -STREET LEVEL SERVICE','INSIDE DELIVERY -Street Level',2,0,0,0),
+(6,'IC10008_1','PJACKP','PALLET JACK','PALLET JACK SERVICE AT PICKUP',2,0,0,0),
+(6,'IC10008_2','PJACKD','PALLET JACK','PALLET JACK SERVICE AT DELIVERY',2,0,0,0),
+(6,'IC10009_1','LGP','LIFT GATE ','LIFT-GATE SERVICE PICKUP',2,0,0,0),
+(6,'IC10009_2','LGD','LIFT GATE ','LIFT GATE DELIVERY',2,0,0,0),
+(6,'IC10010_1','SELFSTOP','PICKUP/DELIVERY TO SELF STORAGE FACILITY','PU AT SELF STORAGE FACILITY',2,0,0,0),
+(6,'IC10010_2','SELFSTOD','PICKUP/DELIVERY TO SELF STORAGE FACILITY','DELIVERY TO SELF STORAGE FACILITY',2,0,0,0),
+(6,'IC10011_2','RAD','REMOTE ACCESS DELIVERY','REMOTE ACCESS DELIVERY',2,0,0,0),
+(6,'IC10011_0','HAZ','HAZARDOUS MATERIALS	','HAZARDOUS MATERIALS	',2,0,0,0),
+(6,'IC10012_0','PTS','PROTECT FROM FREEZE','PROTECT FROM FREEZE	',2,0,0,0),
+(6,'IC10013_0','DNT','DESTINATION NOTIFY OR APPOINTMENT','DESTINATION NOTIFY OR APPOINTMENT',2,0,0,0),
+(6,'IC10014_0','DENCOR','CORRECTION/VERIFICATION FEE','CORRECTION/VERIFICATION FEE',2,0,0,0),
+(6,'IC10015_2','RESD','RESIDENTIAL','RESIDENTIAL DELIVERY',2,0,0,0),
+(6,'IC10015_1','RESP','RESIDENTIAL','RESIDENTIAL PICKUP',2,0,0,0);
+
+INSERT INTO `carrier_charge_code` ( `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ( '10', 'IC10008_1', 'PJACKP', 'PALLET JACK', 'PALLET JACK SERVICE AT PICKUP', '2', '0', '50', '0');
+
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('10', 'IC10008_2', 'PJACKD', 'PALLET JACK', 'PALLET JACK SERVICE AT DELIVERY', '2', '0', '50', '0');
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.tailGateDelivery', 
+'Tailgate Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.fromPalletJack', 
+'PalletJack Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.toPalletJack', 
+'PalletJack Delivery', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.fromDockLevel', 
+'DockLevel Pickup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, 
+`locale`, `is_fmk`) VALUES ('label.viewship.toDockLevel', 
+'DockLevel Delivery', 'en_CA', 1);
+
+CREATE TABLE `user_eshipplus_info` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(50) NULL,
+  `date_time` VARCHAR(45) NULL,
+  `order_id` VARCHAR(45) NULL,
+  `auto_freight_class` BIT NULL DEFAULT b'0',
+  PRIMARY KEY (`id`));
+
+
+DROP TABLE IF EXISTS `accessorial_services`;
+CREATE TABLE `accessorial_services` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `billing_code` varchar(45) DEFAULT NULL,
+  `service_code` varchar(45) DEFAULT NULL,
+  `service_description` varchar(45) DEFAULT NULL,
+  `type` tinyint(1) DEFAULT '0',
+  `service_group` varchar(45) DEFAULT NULL,
+  `service_group_code` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `accessorial_services` VALUES (1,'CHURCHD','CHURCHD','CHURCH OR PLACE OF WORSHIP DELIVERY',2,'CHURCH OR PLACE OF WORSHIP','CHURCH'),(2,'CHURCHP','CHURCHP','CHURCH OR PLACE OF WORSHIP PICKUP',1,'CHURCH OR PLACE OF WORSHIP','CHURCH'),(3,'CUD','CUD','CONSTRUCTION/UTILITY DELIVERY',2,'CONSTRUCTION/UTILITY','CU'),(4,'CUP','CUP','CONSTRUCTION/UTILITY PICK-UP',1,'CONSTRUCTION/UTILITY','CU'),(5,'SELFSTOD','SELFSTOD','DELIVERY TO SELF STORAGE FACILITY',2,'DELIVERY TO SELF STORAGE FACILITY','SELFSTO'),(6,'GOVDE','GOVDE','GOVERNMENT DELIVERY',2,'GOVERNMENT SERVICE','GOV'),(7,'GOVPU','GOVPU','GOVERNMENT PICKUP',1,'GOVERNMENT SERVICE','GOV'),(8,'MSD','MSD','MINE SITE DELIVERY',2,'MINE SITE ','MS'),(9,'MSP','MSP','MINE SITE PICKUP',1,'MINE SITE ','MS'),(10,'LAD','LAD','NON-COMMERCIAL/ LIMITED ACCESS DELIVERY/NOI',2,'NON-COMMERCIAL/ LIMITED ACCESS','LA'),(11,'LAP','LAP','NON-COMMERCIAL/ LIMITED ACCESS PICKUP/NOI',1,'NON-COMMERCIAL/ LIMITED ACCESS','LA'),(12,'SELFSTOP','SELFSTOP','PU AT SELF STORAGE FACILITY',1,'PU AT SELF STORAGE FACILITY','SELFSTO'),(13,'RAD','RAD','REMOTE ACCESS DELIVERY',2,'REMOTE ACCESS','RA'),(14,'SCHD','SCHD','SCHOOL DELIVERY',2,'SCHOOL SERVICE','SCH'),(15,'SCHP','SCHP','SCHOOL PICKUP',1,'SCHOOL SERVICE','SCH'),(16,'HAZ','HAZ','HAZARDOUS MATERIALS',0,'HAZARDOUS MATERIALS','HAZ'),(17,'PTS','PTS','PROTECT FROM FREEZE',0,'PROTECT FROM FREEZE','PTS'),(18,'INP','INP','INSIDE PICKUP -STREET LEVEL',1,'INSIDE -STREET LEVEL SERVICE','IN'),(19,'DNT','DNT','DESTINATION NOTIFY OR APPOINTMENT',0,'DESTINATION NOTIFY OR APPOINTMENT','DNT'),(20,'PJACKD','PJACKD','PALLET JACK SERVICE AT DELIVERY',2,'PALLET JACK ','PJACK'),(21,'PJACKP','PJACKP','PALLET JACK SERVICE AT PICKUP',1,'PALLET JACK ','PJACK'),(22,'LGD','LGD','LIFT GATE DELIVERY',2,'LIFT GATE ','LG'),(23,'LGP','LGP','LIFT-GATE SERVICE PICKUP',1,'LIFT GATE ','LG'),(24,'IND','IND','INSIDE DELIVERY -Street Level',2,'INSIDE -STREET LEVEL SERVICE','IN');
+
+  
+UPDATE `carrier` SET `name`='Integrated Carriers' WHERE `carrier_id`='6';
+  
+UPDATE `business_carrier` SET `display_name`='Integrated Carriers' WHERE `bc_id`='2031' and`business_id`='1' and`carrier_id`='6';
+  
+INSERT INTO carrier_charge_code(`id`, `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('', '6', 'HOM', 'HOM', 'HOMELAND SECURITY-BORDER PROCESSING FEE', 'HOMELAND SECURITY-BORDER PROCESSING FEE', '1', '0', '0', '0');
+
+ALTER TABLE `customer_carrier` 
+CHANGE COLUMN `property_5` `property_5` VARCHAR(100) NULL DEFAULT NULL ;
+
+INSERT INTO `carrier_charge_code` (`id`, `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('', '1070', 'FRT', 'FRT', 'Freight', 'Freight', '1', '0', '0', '0');
+INSERT INTO `carrier_charge_code` (`id`, `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('', '1070', 'FRT', 'FRT', 'Freight', 'Freight', '1', '0', '0', '0');
+
+INSERT INTO `carrier_charge_code` (`id`, `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('', '1070', 'FRT', 'FRT', 'Freight', 'Freight', '1', '0', '0', '0');
+INSERT INTO `carrier_charge_code` (`id`, `carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('', '1070', 'FSC', 'FUE', 'Fuel', 'Fuel', '3', '0', '0', '0');
+
+UPDATE `charge_group` SET `is_taxable`='Yes' WHERE `id`='1';
+UPDATE `charge_group` SET `is_taxable`='Yes' WHERE `id`='2';
+UPDATE `charge_group` SET `is_taxable`='Yes' WHERE `id`='3';
+UPDATE `charge_group` SET `is_taxable`='Yes' WHERE `id`='4';
+
+UPDATE `carrier_charge_code` SET `charge_group_id`='14' WHERE `id`='4045';
+
+UPDATE `carrier` SET `name`='eShipPlus' WHERE `carrier_id`='6';
+
+UPDATE `service` SET `master_carrier_id`='10', `master_service_id`='200021' WHERE `service_id`='200021';
+UPDATE `service` SET `master_carrier_id`='10', `master_service_id`='200022' WHERE `service_id`='200022';
+UPDATE `service` SET `master_carrier_id`='10' WHERE `service_id`='2000023';
+
+INSERT INTO `customer_carrier` (`customer_id`, `business_id`, `country`, `isdefaultaccount`, `account_number1`, `account_number2`, `property_1`, `property_2`, `property_3`, `property_4`, `property_5`, `carrier_id`, `isLive`) VALUES ('0', '1', 'US', '1', '20000', '', 'ryan.blakey', 'ry1234', 'TENANT1', 'dd9c2694-672b-4498-9a96-2a96f3f82364', 'http://lpdev.eshipplus.com/services/eshippluswsv4.asmx', '6', '0');
+
+ALTER TABLE `user_history` 
+ADD COLUMN `auto_freight_class` BIT(1) NULL DEFAULT b'0' AFTER `isbusiness_level`;
+
+
+INSERT INTO `customer_carrier` (`carrieraccount_id`, `customer_id`, `business_id`, `country`, `isdefaultaccount`, `account_number1`, `account_number2`, `property_1`, `property_2`, `property_3`, `property_4`, `property_5`, `carrier_id`, `isLive`) VALUES (NULL, '0', '1', 'US', '1', '20000', '', 'ryan.blakey', 'ry1234', 'TENANT1', 'dd9c2694-672b-4498-9a96-2a96f3f82364', 'http://lpdev.eshipplus.com/services/eshippluswsv4.asmx', '6', '0');
+
+ALTER TABLE `business_loader` 
+ADD COLUMN `error_msg` VARCHAR(200) NULL DEFAULT NULL AFTER `footer2`;
+
+ALTER TABLE `business_loader` 
+ADD COLUMN `package_image` BLOB NULL DEFAULT NULL AFTER `error_msg`;
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.upload.packageImage', 'Upload Package Image', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.upload.actionError.ForBusiness', 'Enter Transit Time Action Msg', 'en_CA', 1);
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('shipment.autoFreightClassCheck', '221', 1, 'Auto Frieght class check', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1079');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1079');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_shipper', '1079');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1079');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_base', '1079');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('shipment.updateCheckList', '221', 1, 'AddressChecklist', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1080');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1080');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1080');
+
+insert into action(action,menu_id,highlight,description,reload_safe) values('searchEshipPlusMarkup',161,1,'Eship markup search page',1);
+insert into role_action(role,action_id) values('busadmin',1081);
+insert into role_action(role,action_id) values('sysadmin',1081);
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('delete.invoice.pdf', '181', 1, 'Delete invoice pdf', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1082');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1082');
+
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.delete.pdfFile', 'DELETE FILE', 'en_CA', 1);
+--------------------------------------END of LIVE SERVER COMMIT---------------------------------------

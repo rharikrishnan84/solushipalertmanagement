@@ -134,7 +134,7 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 public class EShipPlusAPI implements CarrierService,Job{
 	private static final Logger log = LogManager.getLogger(EShipPlusAPI.class);
 	private HttpServletRequest request;
-	public static final String LIVE_URL_RATE = "http://www.eshipplus.com/";
+	public static final String LIVE_URL_RATE = "";
 	//public static 
 	
 	public static final String ESHIPPLUS_PACKAGE_PALLET_STRING = "pallet";
@@ -297,7 +297,7 @@ public class EShipPlusAPI implements CarrierService,Job{
 		try {
 			if(shippingOrder.getPackageTypeId().getName().equalsIgnoreCase(ESHIPPLUS_PACKAGE_PALLET_STRING)){
 			WSShipment2 wsShipment2 = setOrderDetails(shippingOrder);
-			EshipPlusRequestConnector eshipPlusRequestConnector = new EshipPlusRequestConnector();
+			EshipPlusRequestConnector eshipPlusRequestConnector = new EshipPlusRequestConnector(customerCarrier);
 			WSShipment2 shipmentRateDetails = eshipPlusRequestConnector.getEshipPlusRate(wsShipment2);
 			ratingListNew=eshipPlusRequestConnector.buildRateFromRequest(shippingOrder,shipmentRateDetails, ratingList, customerCarrier, services);
 			ratingList.addAll(ratingListNew);
@@ -324,7 +324,7 @@ public class EShipPlusAPI implements CarrierService,Job{
 		SubmitBookingRequest submitBookingRequest=new SubmitBookingRequest();
 		WSBookingRequest wsBookingRequest=new WSBookingRequest();
 		
-		AuthenticationToken authenticationtoken = AuthenticationProvider.authendication();
+		AuthenticationToken authenticationtoken = AuthenticationProvider.authendication(customerCarrier);
 		WSShipment2 shipment2 = new WSShipment2();
 		EShipPlusWSv4 eshipplusws4=new EShipPlusWSv4();
 		/*************SENDING BOOK REQUEST AND GETTING RESPONCE BACK****************************************/

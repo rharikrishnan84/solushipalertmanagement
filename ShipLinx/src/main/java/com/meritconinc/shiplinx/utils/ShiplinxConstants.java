@@ -185,6 +185,8 @@ public class ShiplinxConstants {
 	public static final String CHARGE_CODE_LEVEL_2_PURO_OTH = "OTH";	
 
 	public static final String CHARGE_NAME_ADDITIONAL_HANDLING = "Additional Handling";
+	public static final String CHARGE_NAME_ADDITIONAL_HANDLING1 = "Heavy Weight Charge";
+	public static final double PUROLATOR_ADDITIONALHANDLING_WEIGHT = 69.0;
 	
 	private static String instanceName = null;
 

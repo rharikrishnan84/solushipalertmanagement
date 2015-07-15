@@ -2942,9 +2942,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    	  }
 	      }Collections.sort(ratingList, Rating.PriceComparator1);
 	      for(Rating r : ratingList){
-	    	  	    	  int costCurrencyId = r.getCharges().get(0).getCostcurrency();
-	    	  	    	  CurrencySymbol currencySymbol = shippingService.getCurrencyCodeById(costCurrencyId);
-	    	  	    	  r.setCostCurrencyCode(currencySymbol.getCurrencyCode());
+	    	  	    	  int chargeCurrencyId = r.getCharges().get(0).getChargecurrency();
+	    	  	    	  CurrencySymbol currencySymbol = shippingService.getCurrencyCodeById(chargeCurrencyId);
+	    	  	    	  r.setChargeCurrencyCode(currencySymbol.getCurrencyCode());
 	    	  	      }
 	    } catch (Exception e) {
 	      e.printStackTrace();
@@ -5420,6 +5420,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      if (shipmentId != null && !shipmentId.isEmpty()) {
 	        long id = Long.valueOf(shipmentId);
 	        selectedOrder = this.shippingService.getShippingOrder(id);
+	        if(selectedOrder.getCarrierId()==6 && UserUtil.getMmrUser().getUserRole().equals("busadmin")){
+	        		        	selectedOrder.getService().getMasterCarrier().setName(selectedOrder.getCharges().get(0).getCarrierName());
+	        		        }
 	        if (selectedOrder != null) {
 	          List<Package> packages = shippingService.getShippingPackages(id);
 	          float insuranceValue = 0.0f;
