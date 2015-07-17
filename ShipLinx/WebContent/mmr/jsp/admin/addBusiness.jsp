@@ -588,7 +588,7 @@ window.onload = function() {
 </div>
 <div class="content">
 <div class="content_body">
-<s:form action="createUser" name="userform" style="margin-bottom:0px"  enctype="multipart/form-data">
+<s:form action="createUser" name="userform" style="margin-bottom:0px" accept-charset="ISO-8859-1" enctype="multipart/form-data">
 <input type="hidden" name="htmlCont" id="htmlC"> 
   <input type="hidden" name="locale" id="locale1"> 
   <input type="hidden" name="emailType" id="emailType1"> 

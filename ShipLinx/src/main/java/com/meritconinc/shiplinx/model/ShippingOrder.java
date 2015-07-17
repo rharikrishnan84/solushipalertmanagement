@@ -798,8 +798,12 @@ public void setToProvinceName(String toProvinceName) {
   }
 
   public String getCarrierName() {
-    if (StringUtil.isEmpty(this.carrierName))
-      this.setCarrierName(ShiplinxConstants.getCarrierName(this.getCarrierId().intValue()));
+    /*if (StringUtil.isEmpty(this.carrierName))
+      this.setCarrierName(ShiplinxConstants.getCarrierName(this.getCarrierId().intValue()));*/
+	  if (StringUtil.isEmpty(this.carrierName)){
+		      	if(this.getCarrierId() != null)
+		      	this.setCarrierName(ShiplinxConstants.getCarrierName(this.getCarrierId().intValue()));
+		      }
     return this.carrierName;
   }
 

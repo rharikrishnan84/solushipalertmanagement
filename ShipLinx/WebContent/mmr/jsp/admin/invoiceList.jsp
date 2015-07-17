@@ -133,10 +133,36 @@
 					}
 				}
 				
-				window.location.href="download.csv.invoice.action?invoiceId="+invoiceId;
+				//window.location.href="download.csv.invoice.action?invoiceId="+invoiceId;
+				var downloadId =new Date().getTime().toString();
+				window.location.href = "download.csv.invoice.action?invoiceId="+invoiceId +"&downloadId="+downloadId;
 				$('#loader').css('display','block');
 				$('#loaderImg').css('display','block');
-				setTimeout(function(){location.reload();}, 15000);
+				//setTimeout(function(){location.reload();}, 15000);
+				$('#actionmenu').css('display','none');
+				var cookiePattern = new RegExp( ( "downloadID=" + downloadId ), "i" );
+				//Set the timer to search the cookie
+							var cookieTimer = setInterval(function(){checkCookies()}, 500 );
+								//Check the cookie for every five hundred milliSeconds
+								function checkCookies() {
+				                    if ( document.cookie.search(cookiePattern)>= 0 ) {
+				                     //Once find the cookie then turn off the timer and hide the gif loader finally reload the window.
+				                        clearInterval( cookieTimer );
+				                        $('#loaderImg').hide();
+				                        location.reload();
+				                        
+				                        return(
+				                            console.log( "Download complete!!" )
+				                        );
+				                   }
+				                    else{
+				                    	 console.log(
+				                                 "File still downloading...",
+				                                 new Date().getTime()
+				                             );
+				                    }
+								}
+				
 			}
 			
 			
@@ -169,10 +195,37 @@
 					}
 				}
 				
-				window.location.href="print.invoice.action?invoiceId="+invoiceId;
+				//window.location.href="print.invoice.action?invoiceId="+invoiceId;
+				var downloadId =new Date().getTime().toString();
+				window.location.href ="print.invoice.action?invoiceId="+invoiceId+"&downloadId="+downloadId;;
 				$('#loader').css('display','block');
 				$('#loaderImg').css('display','block');
-				setTimeout(function(){location.reload();}, 15000);
+//				setTimeout(function(){location.reload();}, 15000);
+				$('#actionmenu').css('display','none');
+								var cookiePattern = new RegExp( ( "downloadID=" + downloadId ), "i" );
+								//Set the timer to search the cookie
+								var cookieTimer = setInterval(function(){checkCookies()}, 500 );
+								//Check the cookie for every five hundred milliSeconds
+								function checkCookies() {
+				
+				                    if ( document.cookie.search(cookiePattern)>= 0 ) {
+				                    	//Once find the cookie then turn off the timer and hide the gif loader finally reload the window.
+				                        clearInterval( cookieTimer );
+				                        $('#loaderImg').hide();
+				                        location.reload();
+				                        
+				                        return(
+				                            console.log( "Download complete!!" )
+				                        );
+				                    }
+				                    else{
+				                    	 console.log(
+				                                 "File still downloading...",
+				                                 new Date().getTime()
+				                             );
+				                    }
+								}
+
 			}
 			
 			

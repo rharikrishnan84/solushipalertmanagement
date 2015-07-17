@@ -60,5 +60,5 @@ public interface CustomerDAO{
 				public List<Customer> getAllCustomersByBranchLevel(Long businessId,
 						Long partnerId, Long countryPartnerId, long branchId);
 				public List<Customer> getCustomersBySalesUser(String useName);
-	
+				public void callCommissionStoredProcedure();
 }	

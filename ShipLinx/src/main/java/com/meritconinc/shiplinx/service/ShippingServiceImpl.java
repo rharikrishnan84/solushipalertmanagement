@@ -88,6 +88,7 @@ public class ShippingServiceImpl implements ShippingService {
   private CarrierServiceManager carrierServiceManager;
   private List<ShippingOrder> shipments = null;
   private BatchShipmentInfo batchInfo = null;
+  private ShippingService shippingService;
  
   public List<String> findPackageTypeByName(String name) {
     return getShippingDAO().findPackageTypeByName(name);
@@ -895,14 +896,60 @@ public class ShippingServiceImpl implements ShippingService {
     	    	  c.setCarrierName(order.getCarrierName());
     	        }
 
-      c.setChargeCode(ShiplinxConstants.CHARGE_CODE_UPS_ACC);
+     /* c.setChargeCode(ShiplinxConstants.CHARGE_CODE_UPS_ACC);
       c.setChargeCodeLevel2(ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH);
       c.setName(ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING);
       c.setCharge(customer.getAdditionalHandlingCharge());
       c.setCost(0.0);
       c.setTariffRate(c.getCharge());
-      c.setCurrency(order.getCurrency());
-
+      c.setCurrency(order.getCurrency());*/
+    	        
+    	        String fromCurrency = order.getCurrency();
+    	            	        String toCurrency   = customer.getDefaultCurrency();
+    	            	        if(toCurrency==null || toCurrency.isEmpty()){
+    	            	      	  toCurrency=fromCurrency;
+    	            	        }
+    	            	        Double exchRate = 1.0;
+    	            	        if(fromCurrency!=null && toCurrency!=null){
+    	            	      	  if(fromCurrency.equalsIgnoreCase(toCurrency)){
+    	            	          	  exchRate = 1.0;
+    	            	            }
+    	            	            if(!fromCurrency.equalsIgnoreCase(toCurrency)){
+    	            	      		  exchRate=getShippingService().getExchangeRate(fromCurrency,toCurrency);
+    	            	            }
+    	            	        }
+    	            	        c.setChargeCode(ShiplinxConstants.CHARGE_CODE_UPS_ACC);
+    	            	        c.setChargeCodeLevel2(ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH);
+    	            	        c.setName(ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING);
+    	            	        c.setCharge(customer.getAdditionalHandlingCharge()*exchRate);
+    	            	        c.setCost(0.0);
+    	            	        c.setTariffRate(c.getCharge()*exchRate);
+    	            	        BigDecimal exch = new BigDecimal(exchRate);
+    	            	        c.setExchangerate(exch);
+    	            	        //c.setCurrency(order.getCurrency());
+    	            	        int as = 1;
+    	            	        if(fromCurrency != null && !(fromCurrency.isEmpty())){
+    	        	    	        as=shippingDAO.getCurrencyIdByCurrencyCode(order.getCurrency());
+    	        	    	        c.setCostcurrency(as);
+    	            	        }else if(order.getCustomer().getDefaultCurrency() != null 
+    	            	        		&& !(order.getCustomer().getDefaultCurrency().isEmpty())){
+    	            	        	as=shippingDAO.getCurrencyIdByCurrencyCode(order.getCustomer().getDefaultCurrency());
+    	            	        	c.setCostcurrency(as);
+    	            	        } else{
+    	            	        	as=shippingDAO.getCurrencyIdByCurrencyCode("CAD");
+    	            	        	c.setCostcurrency(as);
+    	            	        }
+    	            	        
+    	            	        if(order.getCustomer().getDefaultCurrency() != null 
+    	            	        		&& !(order.getCustomer().getDefaultCurrency().isEmpty())){
+    	            	        	as=shippingDAO.getCurrencyIdByCurrencyCode(order.getCustomer().getDefaultCurrency());
+    	            	        	c.setChargecurrency(as);
+    	            	        } else if(fromCurrency != null && !(fromCurrency.isEmpty())){
+    	            	        	as=shippingDAO.getCurrencyIdByCurrencyCode(fromCurrency);
+    	            	        	c.setChargecurrency(as);
+    	            	        } else{
+    	            	        	c.setChargecurrency(as);
+    	            	        }
       if (chargeType == ShiplinxConstants.CHARGE_TYPE_ACTUAL) { // coming
         // from
         // EDI
@@ -2328,6 +2375,14 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 
 	public int checkAccessorial(String chargeCode) {
 		return this.shippingDAO.checkAccessorial(chargeCode);
+	}
+
+	public ShippingService getShippingService() {
+		return shippingService;
+	}
+
+	public void setShippingService(ShippingService shippingService) {
+		this.shippingService = shippingService;
 	}
 
 }

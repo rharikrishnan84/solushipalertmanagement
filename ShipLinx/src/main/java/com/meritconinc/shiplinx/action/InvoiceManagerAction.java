@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -1302,13 +1303,19 @@ public String getSalesRep() {
     try {
       String invoiceId = request.getParameter("invoiceId");
       String salesUser = request.getParameter("salesUser");
+      String downloadId = request.getParameter("downloadId");
+      final String cookiePath = "/";
       if (invoiceId != null) {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Disposition","attachment; filename=label.pdf");
         response.setHeader("Expires", "0");
         response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
         response.setHeader("Pragma", "public");
-        response.setContentType("application/pdf");        
+        response.setContentType("application/pdf");
+		Cookie myCookie = new Cookie("downloadId", downloadId);
+		myCookie.setPath(cookiePath);
+		response.addCookie(myCookie);
+
         Long l = Long.parseLong(invoiceId);
         if(salesUser!=null){
         	 /*this.invoiceManager.getSalesInvoicePdf(l, request.getContextPath(), response.getOutputStream(),
@@ -1838,10 +1845,18 @@ public String sendEmailNotificationForInvoice() {
     boolean CSVDownload = false;
     try {
       String invoiceId = request.getParameter("invoiceId");
+      String downloadId = request.getParameter("downloadId");
+      //log.debug(downloadId);
+      final String cookiePath = "/";
+     
       String strFile = "Invoice_" + invoiceId + ".csv";
       if (invoiceId != null) {
-        response.setContentType("application/octet-stream");
+        //response.setContentType("application/octet-stream");
+    	response.setContentType("application/csv");
         response.setHeader("Content-Disposition", "attachment; filename=" + strFile);
+		Cookie myCookie = new Cookie("downloadId", downloadId);
+		myCookie.setPath(cookiePath);
+		response.addCookie(myCookie);
         Long l = Long.parseLong(invoiceId);
         CSVDownload = invoiceManager.downloadInvoiceCSV(l, response.getOutputStream());
         if (CSVDownload)

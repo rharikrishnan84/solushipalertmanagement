@@ -1467,8 +1467,15 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 		@Override
 										public Long insertFutureReference(FutureReference fc) {
 											System.out.println("Enter impl");
-											long in;
-											in=((Long)getSqlMapClientTemplate().insert("addFutureReference",fc)).longValue();
+											/*long in;
+											in=((Long)getSqlMapClientTemplate().insert("addFutureReference",fc)).longValue();*/
+											Long in = null;
+											try{
+											in=(Long)getSqlMapClientTemplate().insert("addFutureReference",fc);
+											}
+											catch(Exception e){
+											e.printStackTrace();
+											}
 											System.out.println(in);
 											return in;
 										
@@ -1697,4 +1704,13 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 			return 0;
 		}
 	}
+	
+	public int getCurrencyIdByCurrencyCode(String currency){
+					Integer cid=(Integer)getSqlMapClientTemplate().queryForObject("getCurrencyIdByCurrencyCode", currency);
+					if(cid!=null){
+						return cid.intValue();
+					}else{
+						return 1;
+				}
+				}
 }

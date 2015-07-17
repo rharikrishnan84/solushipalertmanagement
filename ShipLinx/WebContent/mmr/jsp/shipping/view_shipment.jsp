@@ -85,6 +85,16 @@ var product_id=0;
 		   return bcurncy;
 		  }
 		  function updateActualCharge() {
+			var contacts = document.viewform.commissionable;
+			var obj = document.getElementsByName("commissionableHid");
+			var ids = [];
+			for (var i = 0; i < contacts.length; i += 1){
+			  if (contacts[i].checked){
+			    obj.item(i).value="true";
+			  	 }else{
+			  			obj.item(i).value="false";
+			  				  }
+			  			  }
 		   var rest = isCurrenciesDifferent("actualchargecurrency");
 		   if (typeof rest === 'boolean'){
 		    if (rest){
@@ -1842,6 +1852,9 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 									<td class="ordrdtl_title_hdng" ><strong>&nbsp;<mmr:message messageId="label.ghead.edi"/> #</strong></td>
 								</s:if>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
+								<td class="ordrdtl_title_hdng" >&nbsp;</td>
+								<td class="ordrdtl_title_hdng" >&nbsp;</td>
+								<td class="ordrdtl_title_hdng" ><strong style="width:100px; float:left;"><mmr:message messageId="label.ghead.commissonable"/> </strong></td>
 
 							</tr>
 							<tr>
@@ -1954,6 +1967,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												</a>
 												</span>
 											</td>
+											<td style="width:30px !important; text-align:center;">
+												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
+												<s:hidden name="commissionableHid" value="" />
+										   </td>
 										</s:if>
 										<s:else>
 											<td ><s:property value="name" /></td>

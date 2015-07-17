@@ -195,6 +195,8 @@ public class UPSAPI implements CarrierService {
 //			return null;
 //		}
 		ShiplinxConstants.setServices(services);
+		order.setFromRatingList(new ArrayList<Rating>());
+		order.setToRatingList(new ArrayList<Rating>());
 		log.debug("----------rateShipment-- UPS---"+services.size());
 		List<Rating> rates = new ArrayList<Rating>();
 		List<Rating> rateList = new ArrayList<Rating>();

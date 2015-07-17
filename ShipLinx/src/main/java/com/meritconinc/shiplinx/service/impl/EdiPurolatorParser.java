@@ -155,6 +155,9 @@ public class EdiPurolatorParser extends EdiParser {
 	private static final String REC_TYPE_SHIPMENT = "S"; // S = Shipment or Accessorial, P = Piece Detail Information
 	private static final String ADDRESS_CORR_SUFFIX = "AC";
 	private static final Object ADDRESS_CORR_CODE = "482";
+	private static final Object HEAVY_WEIGHT_CODE = "588";
+	private static final String HEAVY_WEIGHT_SUFFIX = "HW";
+	private static final String CHARGE_HEAVY_WEIGHT = "Heavy Weight";
 	private static final Object CHARGE_NAME_FREIGHT = "Freight";
 	private static final String CHARGE_ADDRESS_CORRECTION = "Address Correction";
 	
@@ -256,7 +259,13 @@ public class EdiPurolatorParser extends EdiParser {
 			isAddressCorrection = true;
 		}
 
-		
+		boolean isHeavyWeight = false;
+				// Address Correction - Tracking # End with 'AC'
+				if (!StringUtil.isEmpty(transitCode) && !StringUtil.isEmpty(shipment.getMasterTrackingNum()) &&
+					transitCode.equals(HEAVY_WEIGHT_CODE) && shipment.getMasterTrackingNum().endsWith(HEAVY_WEIGHT_SUFFIX) ) {
+					shipment.setMasterTrackingNum(shipment.getMasterTrackingNum().replace(HEAVY_WEIGHT_SUFFIX, ""));
+					isHeavyWeight = true;
+				}
 		Service service = this.getServiceType(shipment.getCarrierId(), transitCode);
 		
 		if (!isRecTypeShipment()) {
@@ -292,7 +301,7 @@ public class EdiPurolatorParser extends EdiParser {
 			
 			populateCustomer(shipment, item.getAccountNumber());
 			
-			populateCharges(shipment, item, isAddressCorrection);
+			populateCharges(shipment, item, isAddressCorrection,isHeavyWeight);
 			if(shipment.getCharges()!=null && shipment.getCharges().size()>0)
 							{
 								shipment.setCurrency(shipment.getCharges().get(0).getCurrency());
@@ -421,10 +430,10 @@ public class EdiPurolatorParser extends EdiParser {
 		return null;
 	}	
 	
-	private void populateCharges(ShippingOrder shipment, EdiItem item, boolean isAddressCorrection) {
+	private void populateCharges(ShippingOrder shipment, EdiItem item, boolean isAddressCorrection,boolean isHeavyWeight) {
 		Charge charge = null;
 		for (int i=0; i<chargeCodeMap.length; i++) {
-			charge = populateCharge(shipment, item, chargeCodeMap[i], isAddressCorrection);
+			charge = populateCharge(shipment, item, chargeCodeMap[i], isAddressCorrection,isHeavyWeight);
 			if (charge != null) {
 				if(charge!=null && charge.getCost()>0) //if cost is 0, then don't add charge. Example: Freight Collect
 					shipment.getCharges().add(charge); 
@@ -432,7 +441,7 @@ public class EdiPurolatorParser extends EdiParser {
 		}
 	}	
 	
-	private Charge populateCharge(ShippingOrder shipment, EdiItem item, String[] chargeCodeMapInfo, boolean isAddressCorrection) {
+	private Charge populateCharge(ShippingOrder shipment, EdiItem item, String[] chargeCodeMapInfo, boolean isAddressCorrection,boolean isHeavyWeight) {
 		// TODO Auto-generated method stub
 		Charge charge = new Charge();
 		String chargeGroupCode = null;
@@ -488,6 +497,12 @@ public class EdiPurolatorParser extends EdiParser {
 			chargeName = CHARGE_ADDRESS_CORRECTION;
 			charge.setChargeCode(ShiplinxConstants.CHARGE_CODE_PURO_ACC);
 		}
+		// If it's Heavy weight and charge name is freight, then change the charge name to "Heavy weight" and charge code to "OTH"
+		if (isHeavyWeight && chargeName.equals(CHARGE_NAME_FREIGHT)){
+						chargeName = CHARGE_HEAVY_WEIGHT;
+						charge.setChargeCode(ShiplinxConstants.CHARGE_CODE_PURO_ACC);
+						chargeGroupCode=ShiplinxConstants.CHARGE_CODE_PURO_ACC;
+					}
 		charge.setName(chargeName);
 		charge.setCurrency(shipment.getCurrency());
 		charge.setDiscountAmount(new Double(0.0)); 

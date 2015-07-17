@@ -65,7 +65,7 @@ public class DHLAPI implements CarrierService {
 	public static final long SERVICE_IMPORT_12PM = 308;
 	public static final long SERVICE_INTL_GROUND = 309;
 	private static final int OVERSIZE_INCHES = 48;
-	private static final int OVERWEIGHT_LBS = 154;
+	private static final int OVERWEIGHT_LBS = 149;
 	private static final String OVERSIZE_CHARGE_CODE = "520";
 	private static final String SATURDAY_DELIVERY_CHARGE_CODE = "665";
 	private static final String INSURANCE_CHARGE_CODE = "INS";

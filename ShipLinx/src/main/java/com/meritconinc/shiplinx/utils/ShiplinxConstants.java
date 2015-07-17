@@ -553,4 +553,5 @@ public class ShiplinxConstants {
 	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_CODE = "IC10013_0";
 	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_LEVEL_2 = "DNT";
 	
+	 private static final String CHARGE_CODE_FOR_HEAVY_WEIGHT = "588";
 }

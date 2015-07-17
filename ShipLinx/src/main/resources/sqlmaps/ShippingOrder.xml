@@ -340,7 +340,8 @@
             <result property="cancelledInvoice" column="cancelled_invoice"/>
             <result property="costcurrency" column="cost_currency" />
             <result property="chargecurrency" column="charge_currency" />
-             <result property="exchangerate" column="exchange_rate" /> 		
+             <result property="exchangerate" column="exchange_rate" /> 	
+             <result property="isCommissonable" column="commissionable" />	
 		
 	</resultMap>
 	
@@ -367,6 +368,7 @@
       <result property="exchangerate" column="exchange_rate" />
 	  <result property="chargeGroupId" column="charge_group_id" />
 	  <result property="calculateTax" column="calculate_tax" />
+	  <result property="isCommissonable" column="commissionable" />
        </resultMap>
 	
   <resultMap id="chargesResult" class="com.meritconinc.shiplinx.model.Charge">
@@ -390,7 +392,7 @@
       <result property="costcurrency" column="cost_currency" />
             <result property="chargecurrency" column="charge_currency" />
              <result property="exchangerate" column="exchange_rate" />
-
+	 <result property="isCommissonable" column="commissionable" />
       </resultMap>
 
 	<resultMap id="carrierChargeCodeResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
@@ -1083,7 +1085,7 @@
 	<update id="updateCharge" parameterClass="com.meritconinc.shiplinx.model.Charge">
 			 update charges set name=#name#, charge=#charge#, cost=#cost#, discount_amount=#discountAmount#, status=#status#, tariff_rate=#tariffRate#,
 						carrier_name=#carrierName#,carrier_id=#carrierId#, edi_invoice_number=#ediInvoiceNumber#,cost_currency=#costcurrency#,charge_currency=#chargecurrency#,
-						exchange_rate=#exchangerate#, calculate_tax=#calculateTax# where id=#id#              				
+						exchange_rate=#exchangerate#, calculate_tax=#calculateTax#,commissionable=#isCommissonable# where id=#id#              				
  	</update>		
 		
 	<update id = "updatePackage" parameterClass="com.meritconinc.shiplinx.model.Package" >
@@ -1980,6 +1982,9 @@
 
 	<select id="checkAccessorial" resultClass="int">
 		select count(service_code) as count from accessorial_services where service_code=#serviceCode#
+	</select>
+	<select id="getCurrencyIdByCurrencyCode" resultClass="java.lang.Integer">
+		select id from currency_symbol where currency_code=#currency#
 	</select>
 </sqlMap>
 

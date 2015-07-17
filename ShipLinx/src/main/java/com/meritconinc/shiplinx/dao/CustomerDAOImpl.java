@@ -495,6 +495,12 @@ public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 				
 				
 			}
+
+			@Override
+			public void callCommissionStoredProcedure() {
+				// TODO Auto-generated method stub
+				getSqlMapClientTemplate().queryForObject("getcommission");
+			}
 		}
 	
 	

@@ -2835,8 +2835,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      int fromCurrencysymbol1=1,toCurrencysymbol1=1;
 	      symbolList=shippingService.getallCurrencySymbol();
 	      //// ==================== Exchanage Rate ===================
+	      Boolean customerCurrency=false;
 	      if(shippingOrder.getCustomer() != null && shippingOrder.getCustomer().getDefaultCurrency()!=null && !shippingOrder.getCustomer().getDefaultCurrency().isEmpty()){
 	    	  	    	  symbol=shippingService.getSymbolByCurrencycode(shippingOrder.getCustomer().getDefaultCurrency());
+	    	  	    	  customerCurrency=true;
 	    	  	      }/*else{//EUCG
 	    	  	    	  symbol=shippingService.getCurrencyCodeByCountryName(user.getLocale().substring(3, 5));
 	    	  	      	  if(symbol==null){
@@ -2861,6 +2863,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  session.put("LocalCurrencySymbol", symbol.getCurrencySymbol());
 	    		  toCurrency=symbol.getCurrencyCode();
 	    		  rate.setLocalCurrencySymbol(symbol.getCurrencySymbol());
+	    		  if(customerCurrency==false)
+	    		  symbol=new CurrencySymbol();
 	    	  }else{
 	    		  session.put("LocalCurrencySymbol", "$");
 	    		  toCurrency = "CAD";
@@ -2991,14 +2995,23 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	  }
 	
 	private void createFutureReference(ShippingOrder shippingOrder) {
-				User user = UserUtil.getMmrUser();
+				//User user = UserUtil.getMmrUser();
+		try{
+						User user = null;
+					
+					if(shippingOrder!=null){
+					       if(UserUtil.getMmrUser()!=null){
+					       	 user = UserUtil.getMmrUser();
+					       }
 			    userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
 			    String[] sertype;
 			    String shipdate;
 			    frp=new FutureReferencePackages();
 				fc=new FutureReference();
-				fc.setCustomerId(shippingOrder.getCustomerId());        		 
+				fc.setCustomerId(shippingOrder.getCustomerId());    
+				if(user!=null&&user.getUsername()!=null&&!user.getUsername().isEmpty()){
 				fc.setCreatedBy(user.getUsername());
+					}
 				fc.setDateCreated((Timestamp)shippingOrder.getDateCreated());
 				sertype=(shippingOrder.getPackageTypeId().getType()).split("_");
 				shipdate=shippingOrder.getScheduledShipDate_web();
@@ -3007,7 +3020,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				closeTime=shippingOrder.getPickup().getCloseHour()+":"+shippingOrder.getPickup().getCloseMin();
 			    String pickupInstruction;
 			    pickupInstruction=shippingOrder.getPickup().getInstructions();
+			    if(shippingOrder.getDocsOnly()!=null) {
 			    fc.setDocumentsOnly(shippingOrder.getDocsOnly());
+			    }
 			    fc.setAppointmentPickup(shippingOrder.isAppointmentPickup());
 			    fc.setTradeShowPickup(shippingOrder.isTradeShowPickup());
 			    fc.setTaligateDelivery(shippingOrder.isToTailgate());
@@ -3017,8 +3032,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			    fc.setTaligatePickup(shippingOrder.isFromTailgate());
 			    fc.setDangerousGoods(shippingOrder.getDangerousGoodsName());
 			    fc.setRefCode(shippingOrder.getReferenceCode());
+			    if(shippingOrder.getHoldForPickupRequired()!=null){
 			    fc.setHoldForPickup(shippingOrder.getHoldForPickupRequired());
+			    }
+			    if(shippingOrder.getSatDelivery()!=null){
 			    fc.setSaturdayDelivery(shippingOrder.getSatDelivery());
+			    }
 			    int sig_req;
 			    sig_req=shippingOrder.getSignatureRequired();
 			    if(sig_req==1)
@@ -3061,8 +3080,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				fc.setFromPostalCode(shippingOrder.getFromAddress().getPostalCode());
 				fc.setToPostalCode(shippingOrder.getToAddress().getPostalCode());
 						
-				
+				if(shippingOrder.getCustomer()!=null&&shippingOrder.getCustomer().getName()!=null){
 				fc.setName(shippingOrder.getCustomer().getName());
+				}
 				fc.setFromCity(shippingOrder.getFromAddress().getCity());
 				fc.setFromState(shippingOrder.getFromAddress().getProvinceCode());
 				fc.setFromCountry(shippingOrder.getFromAddress().getCountryName());
@@ -3093,7 +3113,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				fc.setFromResidential(shippingOrder.getFromAddress().getResidential());
 				fc.setToresidential(shippingOrder.getToAddress().getResidential());
 				fc.setBusinessId(shippingOrder.getBusinessId());
-		        long frId=shippingService.insertFutureReference(fc);
+		       // long frId=shippingService.insertFutureReference(fc);
+				Long frId=shippingService.insertFutureReference(fc);
+				  if(frId!=null) {
 		        int len=shippingOrder.getPackages().size();
 		        int i;
 		        for(i=0;i<len;i++)
@@ -3109,9 +3131,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				        frp.setPackDescription(shippingOrder.getPackages().get(i).getDescription());
 				        
 				        shippingService.insertFuturePackages(frp);
-		        }
+		                    }
+				          }
+				  		}
+		              }
+				  		catch(Exception e){
+				  		
+				  			log.error(e.getMessage());
+				  		}
+				  	}
+				   
+		        
 		       
-			}
+			
 
 	
 	public ShippingOrder applyCOD(ShippingOrder order){
@@ -6103,6 +6135,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				String[] costCurrency = this.request.getParameterValues("actualcostcurrency");
 			    String[] chargeCurrency = this.request.getParameterValues("actualchargecurrency");
 			    String[] exchangeRate = this.request.getParameterValues("actualexchangerate");
+			    String[] commissionable =this.request.getParameterValues("commissionableHid");
                
 			           ///////////// =================== Exchange Rate ===============
 			    CurrencySymbol costCurrencytmp=new CurrencySymbol();
@@ -6145,7 +6178,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				              BigDecimal exchangerate = StringUtil.getBigDecimal(exchangeRate[i]);
 				              if (isChargeDirty(soCharge, ch, cost, name, statusText, ediNumber, costcurr,
 				                  chargecurr, exchangerate)) {
-
+				            soCharge.setisCommissonable(Boolean.parseBoolean(commissionable[i]));	  
 			                this.getShippingService().updateCharge(soCharge);
 			                addActionMessage(getText("charges.save.successfully"));
 			              }

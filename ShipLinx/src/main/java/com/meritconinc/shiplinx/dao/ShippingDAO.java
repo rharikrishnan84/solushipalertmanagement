@@ -271,4 +271,5 @@ public interface ShippingDAO {
 
 	public int checkAccessorial(String chargeCode);
 
+	public int getCurrencyIdByCurrencyCode(String currency);
 }

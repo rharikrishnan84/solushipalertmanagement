@@ -44,7 +44,7 @@ public class Charge implements Serializable {
   private String showSubTotal;
     private Double totalTax;
     private String taxName;
-  
+    private boolean isCommissonable;
     
     public String getShowSubTotal() {
   	  	return showSubTotal;
@@ -457,6 +457,13 @@ public void setChargeGroupId(int chargeGroupId) {
 	public void setCustomerTarrifRate(Double customerTarrifRate) {
 		this.customerTarrifRate = customerTarrifRate;
 	}
-	  
-	  
+
+	public boolean getisCommissonable() {
+		return isCommissonable;
+	}
+
+	public void setisCommissonable(boolean isCommissonable) {
+		this.isCommissonable = isCommissonable;
+	}
+
 }
