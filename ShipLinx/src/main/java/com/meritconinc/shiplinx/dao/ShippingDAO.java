@@ -192,7 +192,8 @@ public interface ShippingDAO {
   //Written By Mohan R
   public CarrierChargeCode getChargeByChargeGroupId(long carrierId, int chargeGroupId);
   //
-  public void updateEDI(String ediNumber,long chargeId);
+  //public void updateEDI(String ediNumber,long chargeId);
+  public void updateEDI(String ediNumber,long chargeId, boolean commissionable);
   public Carrier getCarrierByServiceId(Long serviceId);
   
   public List<CarrierChargeCode> getChargeListByCarrierAndCodesGroup(long carrierId, String chargeCode,

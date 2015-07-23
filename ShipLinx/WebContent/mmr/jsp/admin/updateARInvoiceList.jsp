@@ -91,18 +91,36 @@ function submitform()
 	/*this code is to pass the value into transaction table */
 		var modeOfPay=document.getElementsByClassName("text_01_combo_medium");
 	 	var payRefNum=document.getElementsByClassName("text_02_tf_small1");
+	 	var payAmount=document.getElementsByClassName("text_02_tf_small");
+	 	var paymentDate=document.getElementsByClassName("text_02_tf");
+	 	var modeBoolean=true;
+	 	var paymentDateBoolean=true;
+	 	var payRefNumBoolean=true;
 	 	//alert("selected value "+modeOfPay+""+payRefNum);
 			var i,txt = 0;
 			for (i=0;i<uploadMarkupId.length;i++){
 				if (uploadMarkupId[i].checked){
+					if(paymentDate[i].value==""){
+						paymentDateBoolean=false;
+						alert("Please Enter Date Remitted");
+						}		
+						 if(modeOfPay[i].options[modeOfPay[i].selectedIndex].value==""){
+							 modeBoolean=false;
+							 alert("Please Enter Mode of Payment");
+							 }
+						 if(payRefNum[i].value==""){
+							 payRefNumBoolean=false;
+							 alert("Please Enter Payment Ref Number");
+						 }
 					txt += 1;						
 				}
 			}
 			if(txt < 1){
 				alert('Please select at least one');
 			}
-			else{
-				var i1,shipmentid,value_checked,stored_value="",modeofpay="",payrefnum="";
+			else if(modeBoolean==true && paymentDateBoolean==true && payRefNumBoolean==true){
+				//var i1,shipmentid,value_checked,stored_value="",modeofpay="",payrefnum="";
+				var i1,shipmentid,value_checked,stored_value="",modeofpay="",payrefnum="",payamount="";
 			 for (i1=0;i1<uploadMarkupId.length;i1++){
 		   if (uploadMarkupId[i1].checked){
 			shipmentid = uploadMarkupId[i1].value ;
@@ -110,10 +128,12 @@ function submitform()
 						payrefnum= payrefnum+ payRefNum[i1].value+",";
 			value_checked = document.getElementsByName("shipmentcheckbox"+shipmentid)[0].value;
 			stored_value = stored_value  + value_checked+ "," ;
+			payamount=payamount+payAmount[i1].value+",";
 			
 		   }
 		   }
-			 document.updateARForm.action = "processAR.action?InvoiceIdList="+stored_value+"&modeOfPay="+modeofpay+"&payRefNum="+payrefnum;
+			// document.updateARForm.action = "processAR.action?InvoiceIdList="+stored_value+"&modeOfPay="+modeofpay+"&payRefNum="+payrefnum;
+			document.updateARForm.action = "processAR.action?InvoiceIdList="+stored_value+"&modeOfPay="+modeofpay+"&payRefNum="+payrefnum+"&payAmounts="+payamount;
 		 document.updateARForm.submit();
 	}
 	}

@@ -134,6 +134,7 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 public class EShipPlusAPI implements CarrierService,Job{
 	private static final Logger log = LogManager.getLogger(EShipPlusAPI.class);
 	private HttpServletRequest request;
+	private CarrierServiceDAO carrierDAO = null;
 	public static final String LIVE_URL_RATE = "";
 	//public static 
 	
@@ -148,7 +149,10 @@ public class EShipPlusAPI implements CarrierService,Job{
 	private CustomerManager customerService;
 	private MarkupManager markupManagerService;
 	
-
+	public EShipPlusAPI(){
+		this.carrierDAO=(CarrierServiceDAO) MmrBeanLocator.getInstance().findBean(
+				"carrierServiceDAO");
+	}
 	public MarkupManager getMarkupManagerService() {
 		return markupManagerService;
 	}
@@ -158,6 +162,12 @@ public class EShipPlusAPI implements CarrierService,Job{
 	}
 
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
+		String domain = System.getProperty("DOMAIN_NAME");
+						log.info("DOMAIN NAME :" + " " + domain);
+						if (domain != null){
+							boolean flag = carrierDAO.getSchdulerFlagByDomain(domain);
+							synchronized (this){
+								if (flag) {
 		log.debug("-------------------------------------Eship Plus Quartz Trigger Started-------------------------------------------------------");
 		shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 		loggedEventDAO=(LoggedEventDAO) MmrBeanLocator.getInstance().findBean("loggedEventDAO");
@@ -202,6 +212,11 @@ public class EShipPlusAPI implements CarrierService,Job{
 			}
 		}
 		log.debug("-------------------------------------Eship Plus Quartz Trigger End-------------------------------------------------------");
+								}else{
+											log.info("Eship Plus Job  not executed");
+										}
+								}
+								}
 	}
 	
 	/**CarrierService method implementation **/

@@ -56,6 +56,7 @@ public class QuartzInitializerListener implements ServletContextListener {
 						//e ship plus
 						JobDetail job1 = new JobDetail();
 									job1.setName("Job4");
+									job1.setName("Job1");
 									job1.setJobClass(EShipPlusAPI.class);
 									CronTrigger crt1 = new CronTrigger();
 						
@@ -64,23 +65,28 @@ public class QuartzInitializerListener implements ServletContextListener {
 						
 									crt1.setCronExpression("0 30 * * * ?");
 									crt1.setTimeZone(TimeZone.getTimeZone("EST"));
-									 scheduler.start();
-								     scheduler.scheduleJob(job1, crt1);
+									// scheduler.start();
+								     //scheduler.scheduleJob(job1, crt1);
 								     
 								     //eship plus end
+								     //start of commission stored proc
 									
 						JobDetail commisionjob = new JobDetail();
 						commisionjob.setName("Commision Procedure Job");
 						commisionjob.setJobClass(CommsionUpdateController.class);
 						CronTrigger commissionCrt = new CronTrigger();
 						commissionCrt.setName("Commission Trigger");
-						commissionCrt.setCronExpression("0	19	*	*	6");
+						//commissionCrt.setCronExpression("0	19	*	*	6");
+						commissionCrt.setCronExpression("0 0 19 ? * SAT *");
 						commissionCrt.setTimeZone(TimeZone.getTimeZone("EST"));
-						scheduler.scheduleJob(commisionjob, commissionCrt);
+						//scheduler.scheduleJob(commisionjob, commissionCrt);
+						//End of commission stored proc
 			
 			scheduler.start();
 			scheduler.scheduleJob(job, crt);
 			scheduler.scheduleJob(job3, crt3);
+			scheduler.scheduleJob(job1, crt1);
+			scheduler.scheduleJob(commisionjob, commissionCrt);
 			//scheduler.scheduleJob(job1, crt1);
 		} catch (Exception e) {
 			System.out.println(e);

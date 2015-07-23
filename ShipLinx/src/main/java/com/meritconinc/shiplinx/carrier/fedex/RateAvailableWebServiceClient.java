@@ -624,7 +624,8 @@ public class RateAvailableWebServiceClient extends FedExRequestHelper{
 			//set weight
 		    rp.setWeight(new Weight(WeightUnits.LB, p.getWeight()));
 		    if(order.getPackageTypeId().getPackageTypeId()==ShiplinxConstants.PACKAGE_TYPE_ENVELOPE)
-		    	rp.setWeight(new Weight(WeightUnits.LB, new BigDecimal(0.5)));
+		    	//rp.setWeight(new Weight(WeightUnits.LB, new BigDecimal(0.5)));
+		    rp.setWeight(new Weight(WeightUnits.LB, p.getWeight()));
 		    // set insurance value
 	    	rp.setInsuredValue(new Money(currency, p.getInsuranceAmount()));		    
 		    rp.setDimensions(new Dimensions(new NonNegativeInteger(Integer.toString(p.getLength().intValue())), new NonNegativeInteger(Integer.toString(p.getWidth().intValue())), new NonNegativeInteger(Integer.toString(p.getHeight().intValue())), LinearUnits.IN));

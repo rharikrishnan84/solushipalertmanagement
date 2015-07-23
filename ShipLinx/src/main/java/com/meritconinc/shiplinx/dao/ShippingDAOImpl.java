@@ -1261,10 +1261,12 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 	    return searchResult;
 	  }
   
-  public void updateEDI(String ediNumber,long chargeId){
+  //public void updateEDI(String ediNumber,long chargeId){
+  public void updateEDI(String ediNumber,long chargeId,boolean commissionable){
 	  	  Map<String, Object> paramObj = new HashMap<String, Object>();
 	        paramObj.put("ediNumber",ediNumber);
 	        paramObj.put("id", chargeId);
+	        paramObj.put("commissionable",commissionable);
 	  	  getSqlMapClientTemplate().update("updateEDI", paramObj);
 	    }
 	   

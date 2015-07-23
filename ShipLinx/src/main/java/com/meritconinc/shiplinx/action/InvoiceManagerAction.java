@@ -990,7 +990,7 @@ public String getSalesRep() {
     		businessIds.clear();
     		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
     		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
-    		i.getBusinessIds().clear();
+    		//i.getBusinessIds().clear();
     		i.setBusinessIds(businessIds);
     	}
 	}
@@ -1013,6 +1013,7 @@ public String getSalesRep() {
 	    //this is code is to set value in transaction table
 	    	    String modeofpay[]=request.getParameter("modeOfPay").split(",");
 	    	    String payrefnum[]=request.getParameter("payRefNum").split(",");
+	    	    String payAmount[]=request.getParameter("payAmounts").split(",");
 	    String id_list = request.getParameter("InvoiceIdList");
 	    ids = id_list.split(","); 
 	    
@@ -1023,6 +1024,7 @@ public String getSalesRep() {
 	     invoice.getArTransaction().setAmount(invoice.getTotalInvoiceCharge());
 	     invoice.getArTransaction().setModeOfPayment(modeofpay[i]);
 	     invoice.getArTransaction().setPaymentRefNum(payrefnum[i]);
+	     invoice.getArTransaction().setPayAmount(Double.parseDouble(payAmount[i]));
 	     try{     
 	      invoicesToUpdate.add(invoice);
 	      if(invoicesToUpdate.get(i).getCustomer()!=null && invoicesToUpdate.get(i).getCustomer().getCreditLimit().doubleValue() > 0){

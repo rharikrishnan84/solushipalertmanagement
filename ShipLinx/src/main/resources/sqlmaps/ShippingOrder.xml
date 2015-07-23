@@ -1673,7 +1673,8 @@
 	</select>
 	
 	<insert id="updateEDI">
-			 update charges set edi_invoice_number=#ediNumber# where id=#id#              				
+			 <!-- update charges set edi_invoice_number=#ediNumber# where id=#id#      -->  
+			 update charges set edi_invoice_number=#ediNumber#, commissionable=#commissionable# where id=#id#        				
  	</insert>
  	<select id="getCarrierByServiceId" resultMap="carrierResult" >
       select c.* from carrier c,service s  where c.carrier_id=s.carrier_id and s.service_id=#serviceId#
@@ -1986,5 +1987,8 @@
 	<select id="getCurrencyIdByCurrencyCode" resultClass="java.lang.Integer">
 		select id from currency_symbol where currency_code=#currency#
 	</select>
+	<procedure id="getcommission">
+  { call insert_commission_amount() }
+ </procedure>
 </sqlMap>
 

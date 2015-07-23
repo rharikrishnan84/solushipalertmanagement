@@ -614,8 +614,10 @@ public class InvoiceManagerImpl implements InvoiceManager {
 			    	
 			    }
        /// =============== End ==================
-         i.setInvoiceAmount(i.getInvoiceAmount()-i.getInvoiceTax());
-         i.setInvoiceCost(i.getInvoiceCost()-i.getInvoiceTax());
+         /*i.setInvoiceAmount(i.getInvoiceAmount()-i.getInvoiceTax());
+         i.setInvoiceCost(i.getInvoiceCost()-i.getInvoiceTax());*/
+         i.setInvoiceAmount(invoiceAmt-i.getInvoiceTax());
+         i.setInvoiceCost(i.getInvoiceCost());
     } catch (Exception e) {
       log.error("Unable to create invoice for customer " + customer.getName());
       log.error(e.getMessage(), e);
@@ -1000,7 +1002,8 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  								|| (chargesOrderedTemp.get(index).getName().contains("Duty")
 	  									&& chargesOrderedTemp.get(index).getName().equalsIgnoreCase("Duty"))) {
 	  						
-	  							if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	  							//if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	  							if (chargesOrderedTemp.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){	
 	  								chargesOrderedTemp.get(index).setShowSubTotal("false1");
 	  								lastCharge = index;
 	  							}
@@ -1143,8 +1146,13 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     transaction.setBusinessId(invoice.getBusinessId());
     transaction.setCustomerId(invoice.getCustomerId());
     if(transaction.getAmount()!=null){
-    invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
-        transaction.getAmount().doubleValue()).doubleValue());
+    /*invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
+        transaction.getAmount().doubleValue()).doubleValue());*/
+    	Double paidAmount1=invoice.getPaidAmount();
+    	        		paidAmount1=paidAmount1+transaction.getPayAmount();
+    	    	  	    Double balanceDue=transaction.getAmount().doubleValue()-paidAmount1;
+    	    	  	    invoice.setPaidAmount(paidAmount1);
+    	    	  	    invoice.setBalanceDue(balanceDue);
     }
     if (invoice.getBalanceDue() == 0)
       invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);
@@ -2532,8 +2540,13 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  	  	    transaction.setBusinessId(invoice.getBusinessId());
 	  	  	    transaction.setCustomerId(invoice.getCustomerId());
 	  	  	    if(transaction.getAmount()!=null){
-	  	  	    invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
-	  	  	        transaction.getAmount().doubleValue()).doubleValue());
+	  	  	    /*invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
+	  	  	        transaction.getAmount().doubleValue()).doubleValue());*/
+	  	  	    Double paidAmount1=invoice.getPaidAmount();
+	  	  	        		paidAmount1=paidAmount1+transaction.getPayAmount();
+	  	  	    	  	    Double balanceDue=transaction.getAmount().doubleValue()-paidAmount1;
+	  	  	    	  	    invoice.setPaidAmount(paidAmount1);
+	  	  	    	  	    invoice.setBalanceDue(balanceDue);
 	  	  	    }
 	  	  	    if (invoice.getBalanceDue() == 0)
 	  	  	      invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);

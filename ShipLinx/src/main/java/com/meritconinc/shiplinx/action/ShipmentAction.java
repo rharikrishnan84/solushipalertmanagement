@@ -2397,6 +2397,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    String stagethree = request.getParameter("getrates");
 	    String emailNotification = request.getParameter("emailNotify");
 	    String emailNotification2 = request.getParameter("emailNotify2");
+	    getSession().put("Exception", "rates");
 	    ShippingOrder shippingOrder = getShippingOrder();
 	   /* if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 			shippingOrder.setCurrency("USD");
@@ -3236,6 +3237,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 								shippingOrder.getPickup().setPickupRequired(
 										Boolean.parseBoolean(pickupRequired));
 								String autoFreightUpdate = request.getParameter("autoFreightUpdate");
+								getSession().put("Exception", "shipping");
 								// shippingService = (ShippingService)
 								// MmrBeanLocator.getInstance().findBean("ShippingService");
 								try {
@@ -6187,18 +6189,32 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					}
 			          ShippingOrder curOrder = new ShippingOrder();
 			          int count =0;
+			          boolean bol;
 			          for (int i = 0; i < this.getSelectedOrder().getCharges().size(); i++) {
 			            if (this.getSelectedOrder().getCharges().get(i).getType() == 1) {
 			              totalActualCharge += this.getSelectedOrder().getCharges().get(i).getCharge();
 			              totalActualCost += this.getSelectedOrder().getCharges().get(i).getCost();
-			              if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
-			            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+			             /* if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
+			            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());*/
+			              if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() ){
+			            	  			            	  if(commissionable[count]!= null && !commissionable[count].isEmpty()){
+			            	  			            		  			            	  		bol = Boolean.parseBoolean(commissionable[count]);
+			            	  			            		  			            	  	}else{
+			            	  			            		    			            	  		bol = true;
+			            	  			            		    			            	  	}
+			            	  			            		  				shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
 			            	  			              }else if(this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() == null && userEdiInvoiceNumber[count]!=null){
-			            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
-			            	  			              }
+			            	  			            	  //shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+			            	  			            	  if(commissionable[count]!= null && !commissionable[count].isEmpty()){
+				            			            	  		bol = Boolean.parseBoolean(commissionable[count]);
+				            			            	  }else{
+				              			            	  		bol = true;
+				              			            	  }
+	            	  			                 	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
+			            	  			              }	
 			            	  			              count++;
 			            }
-			          }
+			          }	
 			          DecimalFormat round = new DecimalFormat("###.##");
 			          curOrder.setId(this.getSelectedOrder().getId());
 			         // curOrder.setActualTotalCost(Double.valueOf(round.format(totalActualCost)));
@@ -6207,12 +6223,26 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 				}else{
 					int count =0;
+					boolean bol;
 					  for (int i = 0; i < this.getSelectedOrder().getCharges().size(); i++) {
 				            if (this.getSelectedOrder().getCharges().get(i).getType() == 1) {
-				              if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
-				            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+				              //if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() && !this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber().equals(userEdiInvoiceNumber[count])){
+				            	  			            	  //shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+				            	if( userEdiInvoiceNumber[count]!=null && this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() !=null && !userEdiInvoiceNumber[count].isEmpty() ){
+				            		if(commissionable[count]!= null && !commissionable[count].isEmpty()){
+					            	  		bol = Boolean.parseBoolean(commissionable[count]);
+					            	  	}else{
+					            	  		bol = true;
+					            	  	}
+            	  								shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
 				            	  			              }else if(this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() == null && userEdiInvoiceNumber[count]!=null){
-				            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
+				            	  			            	if(commissionable[count]!= null && !commissionable[count].isEmpty()){
+				            	  			            	  		bol = Boolean.parseBoolean(commissionable[count]);
+				            	  			            	  	}else{
+				            	  			            	  		bol = true;
+				            	  			            	  	}
+					            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
+				            	  			            	  //shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
 				            	  			              }
 				            	  			              count++;
 				            }

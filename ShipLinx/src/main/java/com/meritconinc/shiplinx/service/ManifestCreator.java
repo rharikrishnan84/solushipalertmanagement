@@ -23,6 +23,7 @@ public class ManifestCreator implements Job {
 
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 			String	domain = System.getProperty("DOMAIN_NAME");
+			logger.info("============= Mildland FTP Job Started==================");
 			logger.info("DOMAIN NAME :" + " " + domain);
 			if (domain != null) {
 				boolean flag = carrierDAO.getSchdulerFlagByDomain(domain);
@@ -40,8 +41,7 @@ public class ManifestCreator implements Job {
 				    }
 				   }
 			}
-
-
+			logger.info("============= Mildland FTP Job Ended==================");
 	}
 
 	private void synchronize(ManifestCreator manifestCreator) {

@@ -25,6 +25,7 @@ public class ARTransaction {
 	private List<Long> businessIds;
 	
 	private String paymentDate_web;
+	private Double payAmount;
 	
 	public Long getArId() {
 		return arId;
@@ -121,6 +122,12 @@ public class ARTransaction {
 			}
 			public void setBusinessIds(List<Long> businessIds) {
 				this.businessIds = businessIds;
+			}
+			public Double getPayAmount() {
+				return payAmount;
+			}
+			public void setPayAmount(Double payAmount) {
+				this.payAmount = payAmount;
 			}
 	
 	

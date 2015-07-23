@@ -79,7 +79,12 @@ var product_id=0;
 		      return false;
 		     }
 		    }else{
-		     return false;
+		    	if (bcurncy == "" || bcurncy == selobj.value){
+		    						      bcurncy = selobj.value;
+		    						     }else{ 
+		    						      return false;
+		    						    }
+		     //return false;
 		    }
 		   }
 		   return bcurncy;
@@ -1981,9 +1986,11 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<td class="ordrdtl_title_val"><s:property value="cost" /></td>
 											<td class="ordrdtl_title_val">
                                                <s:if test="%{costcurrency==1}">
+                                               <s:hidden name="actualchargecurrency" value="CAD" />
                                            CAD
                                            </s:if>
                                            <s:elseif test="%{costcurrency==2}">
+                                           <s:hidden name="actualchargecurrency" value="USD" />
                                            
                                            USD
                                            </s:elseif>
@@ -2035,6 +2042,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												</s:else>
  											</s:if>
 											<td></td>
+											<td style="width:30px !important; text-align:center;">
+												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
+												<s:hidden name="commissionableHid" value="" />
+										   </td>
 											
 										</s:else>
 

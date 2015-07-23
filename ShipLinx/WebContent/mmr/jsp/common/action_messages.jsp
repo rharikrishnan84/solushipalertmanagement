@@ -36,32 +36,62 @@ function showOrHideException()
 	
 	 <s:if test="hasErrors()">
 	 <s:if test="actionErrors.size>2||fieldErrors.size>2" >
-	 <div class="content">	
-<div class="content_body" >	
-
-	<div class="content_table" id="showbutton" style="background-color:#FFF;width:960px !important;">
-<div class="content_header" style="margin-bottom:1px;" >
-									<div class="cont_hdr_title"><mmr:message messageId="add.label.error.exception"/></div>
-									<div class="form_buttons">	
-					<a href="#" class="show_summ1" onclick="showOrHideException()"  style="background-color:transparent; padding:0px;"><img src="<%=request.getContextPath()%>/mmr/images/show.png"></a>
-				</div></div>
-				</div>
-				</div>
-				</div>
-<div class="content" >	
-<div class="content_body" >	
-	<div class="content_table" id="contenttbl" style="background-color:#FFF;width:960px !important;">
-		<div id="errorMsgContainer"  style="display:none;">
-			<div Style="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;">
-				<s:actionerror cssClass="actionErrorStyle" cssStyle="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;"/>
-				<s:fielderror cssClass="fieldErrorStyle" />
-			</div>
-		</div>
-	</div>
-</div>
-</div>
-</s:if>
-<s:else>
+	 <s:if test="%{#session.Exception=='rates'}">
+	      <div class="content">	
+             <div class="content_body" >	
+	             <div class="content_table" id="showbutton" style="background-color:#FFF;width:960px !important;">
+                     <div class="content_header" style="margin-bottom:1px;" >
+						 <div class="cont_hdr_title"><mmr:message messageId="add.label.error.exception"/></div>
+							  <div class="form_buttons">	
+				            <a href="#" class="show_summ1" onclick="showOrHideException()"  style="background-color:transparent; padding:0px;"><img src="<%=request.getContextPath()%>/mmr/images/show.png"></a>
+					            <%request.getSession().removeAttribute("Exception");%>
+			                  </div>
+				             </div>
+				       </div>
+			       </div>
+		     </div>
+             <div class="content" >	
+               <div class="content_body" >	
+	            <div class="content_table" id="contenttbl" style="background-color:#FFF;width:960px !important;">
+		           <div id="errorMsgContainer"  style="display:none;">
+			          <div Style="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;">
+				          <s:actionerror cssClass="actionErrorStyle" cssStyle="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;"/>
+				          <s:fielderror cssClass="fieldErrorStyle" />
+			          </div>
+		            </div>
+	             </div>
+              </div>
+            </div>
+         </s:if>
+         <s:else>
+          <div class="content">	
+             <div class="content_body" >	
+	             <div class="content_table" id="showbutton" style="background-color:#FFF;width:960px !important;">
+                     <div class="content_header" style="margin-bottom:1px;" >
+						 <div class="cont_hdr_title"><mmr:message messageId="add.label.error.exception"/></div>
+							  <div class="form_buttons">	
+					            <a href="#" class="show_summ1" onclick="showOrHideException()"  style="background-color:transparent; padding:0px;"><img src="<%=request.getContextPath()%>/mmr/images/hide.png"></a>
+					            <%request.getSession().removeAttribute("Exception");%>
+				                  </div>
+				             </div>
+				       </div>
+			       </div>
+		     </div>
+             <div class="content" >	
+               <div class="content_body" >	
+	            <div class="content_table" id="contenttbl" style="background-color:#FFF;width:960px !important;">
+		           <div id="errorMsgContainer">
+			          <div Style="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;">
+				          <s:actionerror cssClass="actionErrorStyle" cssStyle="color:#FF0000;padding:3px 20px; font-size:14px;  background-color: #F8ECE0;"/>
+				          <s:fielderror cssClass="fieldErrorStyle" />
+			          </div>
+		            </div>
+	             </div>
+              </div>
+            </div>
+            </s:else>
+        </s:if>
+ <s:else>
 <div class="content">	
 <div class="content_body" >	
 	<div class="content_table" id="contenttbl" style="background-color:#FFF;width:960px !important;">
