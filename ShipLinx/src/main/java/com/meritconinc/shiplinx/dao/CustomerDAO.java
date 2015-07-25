@@ -61,4 +61,5 @@ public interface CustomerDAO{
 						Long partnerId, Long countryPartnerId, long branchId);
 				public List<Customer> getCustomersBySalesUser(String useName);
 				public void callCommissionStoredProcedure();
+				public void setCopyCustomerMarkupFlag(long customerId, long businessId);
 }	

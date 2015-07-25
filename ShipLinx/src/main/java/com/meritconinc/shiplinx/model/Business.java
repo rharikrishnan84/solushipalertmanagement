@@ -92,6 +92,8 @@ public class Business {
 	private String contactPath;
 	private String feedbackPath;
 	
+	private boolean copyMarkup;
+	
 		public CSSVO getCssVO() {
 			return cssVO;
 		}
@@ -491,6 +493,14 @@ public class Business {
 
 				public void setFeedbackPath(String feedbackPath) {
 					this.feedbackPath = feedbackPath;
+				}
+
+				public boolean isCopyMarkup() {
+					return copyMarkup;
+				}
+
+				public void setCopyMarkup(boolean copyMarkup) {
+					this.copyMarkup = copyMarkup;
 				}
 						
 			

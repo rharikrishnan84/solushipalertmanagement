@@ -163,6 +163,7 @@ public class EShipPlusAPI implements CarrierService,Job{
 
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		String domain = System.getProperty("DOMAIN_NAME");
+		
 						log.info("DOMAIN NAME :" + " " + domain);
 						if (domain != null){
 							boolean flag = carrierDAO.getSchdulerFlagByDomain(domain);
@@ -1115,7 +1116,21 @@ public class EShipPlusAPI implements CarrierService,Job{
 	
 	public WSShipmentStatus GetShipmentStatus(ShippingOrder order) {
 		String shipmentNumber=order.getMasterTrackingNum().toString();
-		AuthenticationToken authenticationtoken = AuthenticationProvider.authendication();
+		//AuthenticationToken authenticationtoken = AuthenticationProvider.authendication();
+		AuthenticationToken authenticationtoken = null;
+				CustomerCarrier customerCarrier=null;
+			if(order!=null)
+				{
+				 customerCarrier=carrierDAO.getCarrierAccount(0l,order.getBusinessId(),order.getCarrierId(),"US", null);
+				}
+				if(customerCarrier!=null)
+				{
+				 authenticationtoken = AuthenticationProvider.authendication(customerCarrier);
+				}
+				else
+				{
+					authenticationtoken = AuthenticationProvider.authendication();
+				}
 		EShipPlusWSv4 eshipplusws4=new EShipPlusWSv4();
 		WSShipmentStatus wsshipmentStatus=new WSShipmentStatus();
 		wsshipmentStatus=eshipplusws4.getEShipPlusWSv4Soap().getShipmentStatus(shipmentNumber, authenticationtoken);

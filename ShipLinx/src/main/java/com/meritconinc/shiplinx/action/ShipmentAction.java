@@ -882,6 +882,33 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			setOrderAddress(newShippingOrder);
 			//set shippingorder
 			this.setShippingOrder(newShippingOrder);
+			List<AddressCheckList> fromAddressCheckList = new ArrayList<AddressCheckList>();
+			    	      		List<AddressCheckList> toAddressCheckList = new ArrayList<AddressCheckList>();
+			    	      		// Accessorial services
+			    	      		// List------------------------------------------------
+			    	      		List<CarrierChargeCode> accessorialServices = new ArrayList<CarrierChargeCode>();
+			   	      		List<CarrierChargeCode> accessorialServicesFrom = new ArrayList<CarrierChargeCode>();
+			    	      		List<CarrierChargeCode> accessorialServicesTo = new ArrayList<CarrierChargeCode>();
+			    	      		markupManagerService = (MarkupManager) MmrBeanLocator.getInstance()
+			    	      				.findBean("markupManagerService");
+			    	      		accessorialServices = markupManagerService
+			    	      				.getChargesByCarrierIdAndGroupCode(
+			    	      						ShiplinxConstants.CARRIER_ESHIPPLUS,
+			    	      						ShiplinxConstants.GROUP_ACCESSORIAL_CHARGE);
+			   	      		for (CarrierChargeCode charge : accessorialServices) {
+			   	      			String typeFromCode = charge.getChargeCode().substring(
+			   	      					charge.getChargeCode().length() - 1);
+			    	      			if (typeFromCode.equalsIgnoreCase("1")) {
+			    	      				accessorialServicesFrom.add(charge);
+			    	      			} else if (typeFromCode.equalsIgnoreCase("2")) {
+			    	      		accessorialServicesTo.add(charge);
+			    	      			} else {
+			    	      				accessorialServicesFrom.add(charge);
+			          				accessorialServicesTo.add(charge);
+			    	      			}
+			    	      		}
+			    	      		session.put("AccessorialServicesListFrom", accessorialServicesFrom);
+			    	      		session.put("AccessorialServicesListTo", accessorialServicesTo);
 		}
 		
 		return SUCCESS;
@@ -5454,6 +5481,9 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	      if (shipmentId != null && !shipmentId.isEmpty()) {
 	        long id = Long.valueOf(shipmentId);
 	        selectedOrder = this.shippingService.getShippingOrder(id);
+	        if(selectedOrder.getCarrierId() == null){
+	        	selectedOrder.setCarrierId(0L);
+	        }
 	        if(selectedOrder.getCarrierId()==6 && UserUtil.getMmrUser().getUserRole().equals("busadmin")){
 	        		        	selectedOrder.getService().getMasterCarrier().setName(selectedOrder.getCharges().get(0).getCarrierName());
 	        		        }
@@ -6146,8 +6176,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			    			      currencyList=shippingDAO.getallCurrencySymbol();
 			    			      if (ids != null) {
 			    			    	  for (int i = 0; i < ids.length; i++) {
+			    			    		  CurrencySymbol chargeCurrencytmp1=new CurrencySymbol();
 			    			    		  costCurrencytmp=currencyList.get(Integer.parseInt(costCurrency[i])-1);
-			    			    		  chargeCurrencytmp=currencyList.get(Integer.parseInt(chargeCurrency[i])-1);
+			    			    		  try{
+			    			    			  chargeCurrencytmp=currencyList.get(Integer.parseInt(chargeCurrency[i])-1);
+			    			    		  }catch(Exception e)
+  			    			    		  {
+	  			    			    			  
+	  			    			    			  if(chargeCurrency[i]!=null && !chargeCurrency[i].equals("")){
+	  			    			    			  chargeCurrencytmp1=shippingDAO.getSymbolByCurrencycode(chargeCurrency[i]);
+	  			    			    			  if(chargeCurrencytmp1!=null)
+	  			    			    			  chargeCurrencytmp=currencyList.get(chargeCurrencytmp1.getId()-1);
+	  			    			    			  }
+	  			    			    		  }
+			    			    		 // chargeCurrencytmp=currencyList.get(Integer.parseInt(chargeCurrency[i])-1);
 			    			    		  Double exchangeRatetmp=null;
 			    			    		  if(costCurrencytmp.getCurrencyCode()!=null && chargeCurrencytmp.getCurrencyCode()!=null){
 			    			    			  if(!costCurrencytmp.getCurrencyCode().equalsIgnoreCase(chargeCurrencytmp.getCurrencyCode())){
@@ -6175,9 +6217,24 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			              String name = (userNames[i] == null ? "" : userNames[i]);
 			              String statusText = (userStatusTexts[i + 1] == null ? "" : userStatusTexts[i + 1]);		 
 			              String ediNumber="";
+			              int chargecurr = 0;
 							 int costcurr = StringUtil.getInteger(costCurrency[i]);
-				             int chargecurr = StringUtil.getInteger(chargeCurrency[i]);
-				              BigDecimal exchangerate = StringUtil.getBigDecimal(exchangeRate[i]);
+							 try
+							 							 {
+							 				              chargecurr = StringUtil.getInteger(chargeCurrency[i]);
+							 							 }
+							 							 catch(Exception e)
+							    			    		  {
+							 								 
+							    			    			  if(chargeCurrency[i]!=null && !chargeCurrency[i].equals("")){
+							    			    			  chargeCurrencytmp1=shippingDAO.getSymbolByCurrencycode(chargeCurrency[i]);
+							    			    			  if(chargeCurrencytmp1!=null)
+							    			    			  {
+							    			    			  chargeCurrencytmp=currencyList.get(chargeCurrencytmp1.getId()-1);
+							    			    		   chargecurr=chargeCurrencytmp.getId();
+							    			    			  }
+							    			    			  }
+							    			    		  }				              BigDecimal exchangerate = StringUtil.getBigDecimal(exchangeRate[i]);
 				              if (isChargeDirty(soCharge, ch, cost, name, statusText, ediNumber, costcurr,
 				                  chargecurr, exchangerate)) {
 				            soCharge.setisCommissonable(Boolean.parseBoolean(commissionable[i]));	  

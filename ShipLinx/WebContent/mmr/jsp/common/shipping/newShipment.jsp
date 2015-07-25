@@ -1052,7 +1052,16 @@ var count=parseInt(prevQuantity);
 		<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')) && shippingOrder.isAdditionalFieldsEditable() != false}">
 		<s:include value="shipping_additional_fields.jsp"/>
 		<div class="form_buttons id="img_save_shipment">
-			<a href="javascript:updateShipment()"> <mmr:message messageId="label.btn.save.shipment"/></a>
+			<%-- <a href="javascript:updateShipment()"> <mmr:message messageId="label.btn.save.shipment"/></a> --%>
+			<a href="javascript:updateShipment()"> 
+			<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
+			<mmr:message messageId="label.btn.save.shipment"/>
+			</s:if>
+			<s:else>
+			<mmr:message messageId="label.add.button.save.shipment"/>
+			</s:else>
+			
+			</a>
 		</div>
 	</s:if>
 	<s:else>
@@ -1060,7 +1069,15 @@ var count=parseInt(prevQuantity);
 	<div class="content_body">	
 		<div class="content_table borderLeftRight borderOnlyBottom" style=" overflow:auto; width:955px !important; padding:0px 3px 10px 0px; margin-bottom:20px;">
 			<div class="form_buttons id="img_get_rates" style=" width:206px; float:right !important;">
-				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div>
+				<%-- <div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div> --%>
+				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">
+				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
+				<mmr:message messageId="btn.save.shipment"/>
+				</s:if>
+				<s:else>
+				<mmr:message messageId="label.add.button.save.shipment"/>
+				</s:else>
+				</a></div>
 				<div align="left" style="float:left !important;" id="get_rates_td"><a href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>
 			</div>
 		</div>

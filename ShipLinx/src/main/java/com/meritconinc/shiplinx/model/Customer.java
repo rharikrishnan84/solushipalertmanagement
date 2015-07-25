@@ -73,6 +73,8 @@ public class Customer {
 	
 	private User user;
 	private boolean chbCustomer;
+	
+	private boolean copyCustomerMarkup;
 	public boolean isChbCustomer() {
 		return chbCustomer;
 	}
@@ -503,6 +505,15 @@ public class Customer {
 												 
 												    return true;
 												  }
+
+											public boolean isCopyCustomerMarkup() {
+												return copyCustomerMarkup;
+											}
+
+											public void setCopyCustomerMarkup(
+													boolean copyCustomerMarkup) {
+												this.copyCustomerMarkup = copyCustomerMarkup;
+											}
 						
 						
 }

@@ -1468,7 +1468,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 					 				try {
 					 					File file = new File(fileName);
 					 					List<BufferedImage> image = ICODecoder.read(business.getCssVO().getFavIcon());
-					 					BufferedImage bi = ImageIO.read(file);
+					 					BufferedImage bi = image.get(0);
 					 					int width = bi.getWidth();
 					 					int height = bi.getHeight();
 					 					if (!(width == 16 && height == 16)) {

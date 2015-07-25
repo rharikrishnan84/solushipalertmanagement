@@ -30,12 +30,12 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
       // paramObj.put("toCountryCode", markup.getToCountryCode());
       // if (markup.getServiceId() != null)
       // paramObj.put("serviceId", markup.getServiceId());
-    	if((markup.getBusinessId()!=null ) && (markup.getBusinessIds()==null|| markup.getBusinessIds().size()<0) ){
+    	/*if((markup.getBusinessId()!=null ) && (markup.getBusinessIds()==null|| markup.getBusinessIds().size()<0) ){
     	      List<Long> businessIds=new ArrayList<Long>();
     	      businessIds.add(markup.getBusinessId());
     	      markup.setBusinessIds(businessIds);
     	      
-    	     }
+    	     }*/
     	
     	String fromCountry = markup.getFromCountryCode();
     	String toCountry = markup.getToCountryCode();
@@ -598,5 +598,20 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 		}
 		return null;
 	}
+	public long ismarkupavailable(long businessId){
+						long i=0;
+						try{
+							
+							 i = (Long)getSqlMapClientTemplate().queryForObject("ismarkupavailable", businessId);
+				
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						if(i>0){
+							return 1;
+						}else{
+							return 0;
+						}
+					}
 
 }

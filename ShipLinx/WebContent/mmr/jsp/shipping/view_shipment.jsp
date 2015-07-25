@@ -82,7 +82,7 @@ var product_id=0;
 		    	if (bcurncy == "" || bcurncy == selobj.value){
 		    						      bcurncy = selobj.value;
 		    						     }else{ 
-		    						      return false;
+		    						      return "";
 		    						    }
 		     //return false;
 		    }

@@ -442,17 +442,6 @@ display:none;
 
 
 
-
-	function copyCustomerMarkup()
-	{
-	 document.searchform.action = "copyCustomerMarkup.action";
-	 document.searchform.submit();
-	}	
-
-
-
-
-	
 	function getAccountInformation(url){
 		window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
 	}
@@ -473,6 +462,11 @@ display:none;
 		  	ajax_Service.open("GET",url,true);
 		  	ajax_Service.send(this);
 	} // End function showState()	
+	//Copy parent markup to child
+			function copyParentMarkup(customerId){
+				document.searchform.action = "copyParent.markup.action?customerId="+customerId;
+				document.searchform.submit();
+			}
 	
 	
 
@@ -540,6 +534,11 @@ display:none;
           <a href="javascript: defaultmarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.btn.reset"/></a>
 		 
           <a href="javascript: searchMarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.search.btn.search"/></a> 
+          <s:if test="%{#session.MarkupCopyCheck == true || #session.CopyCustomerMarkup == true}">
+          
+          <a href="javascript: copyParentMarkup('<s:property value="%{markup.customerId}"/>')"><mmr:message messageId="label.btn.copy.parent"/></a> 
+         
+         </s:if> 
          </div>
         </div>
         <div class="cont_data_body">

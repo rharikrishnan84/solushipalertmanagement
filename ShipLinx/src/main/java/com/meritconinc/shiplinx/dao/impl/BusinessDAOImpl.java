@@ -353,4 +353,8 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 		getSqlMapClientTemplate().update("updateEmailResources", be3);
 
 	}
+	public void setCopyMarkupFlag(long businessId){
+						getSqlMapClientTemplate().update("setCopyMarkupFlag",
+								businessId);
+					}
 }

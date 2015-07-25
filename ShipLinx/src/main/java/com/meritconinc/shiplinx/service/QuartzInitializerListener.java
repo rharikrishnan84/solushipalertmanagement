@@ -64,6 +64,7 @@ public class QuartzInitializerListener implements ServletContextListener {
 									// 0 m H
 						
 									crt1.setCronExpression("0 30 * * * ?");
+									
 									crt1.setTimeZone(TimeZone.getTimeZone("EST"));
 									// scheduler.start();
 								     //scheduler.scheduleJob(job1, crt1);

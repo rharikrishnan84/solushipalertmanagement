@@ -1189,7 +1189,15 @@ var count=parseInt(prevQuantity);
 			<div class="content_table">
 				<div class="cont_data_body borderLeftRight" style="margin-bottom:10px;  border-bottom:1px solid #c4c4c4;">
 					<div class="form_buttons id="img_save_shipment" style=" padding-right:3px; padding-bottom:5px;">
-						<a href="javascript:updateShipment()"> <mmr:message messageId="btn.save.shipment"/></a>
+						<%-- <a href="javascript:updateShipment()"> <mmr:message messageId="btn.save.shipment"/></a> --%>
+						<a href="javascript:updateShipment()">
+						<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}"> 
+						<mmr:message messageId="btn.save.shipment"/>
+						</s:if>
+						<s:else>
+						<mmr:message messageId="label.add.button.save.shipment"/>
+						</s:else>
+						</a>
 					</div>
 				</div>
 			</div>	
@@ -1211,7 +1219,15 @@ var count=parseInt(prevQuantity);
 		
 		<div class="content_table borderLeftRight borderOnlyBottom" style=" overflow:auto; width:958 px !important; padding:0px 0px 10px 0px; margin-bottom:20px;">
 			<div class="form_buttons" id="img_get_rates" style=" width:auto; margin-right:20px; float:right !important;">
-				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div>
+				<%-- <div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div> --%>
+				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">
+				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
+				<mmr:message messageId="btn.save.shipment"/>
+				</s:if>
+				<s:else>
+				<mmr:message messageId="label.add.button.save.shipment"/>
+				</s:else>
+				</a></div>
 				<div align="left" style="float:left !important;" id="get_rates_td"><a id="getratesBtn" href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>
 				
 			</div>

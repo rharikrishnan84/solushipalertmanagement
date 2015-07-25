@@ -501,6 +501,14 @@ public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 				// TODO Auto-generated method stub
 				getSqlMapClientTemplate().queryForObject("getcommission");
 			}
+			
+			public void setCopyCustomerMarkupFlag(long customerId, long businessId){
+												Map<String, Object> paramObj = new HashMap<String, Object>();
+											    paramObj.put("businessId", businessId);
+											    paramObj.put("customerId", customerId);
+												getSqlMapClientTemplate().update("setCopyCustomerMarkupFlag",
+														paramObj);
+											}
 		}
 	
 	
