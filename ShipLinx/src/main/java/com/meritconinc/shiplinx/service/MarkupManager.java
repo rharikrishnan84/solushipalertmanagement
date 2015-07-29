@@ -82,5 +82,6 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public Markup getUniqueMarkupUsingCost(Markup markup);
   public boolean getEshipCarriersbyCustomerId(String carrierScac,Long customerId);
   public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(long carrierId, long chargeGroupId);
-  public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);
+  /*public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);*/
+  public  CarrierChargeCode getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);
 }

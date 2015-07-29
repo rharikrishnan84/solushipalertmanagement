@@ -2131,9 +2131,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                              rate.getCarrierId(), c.getChargeCode(), null);
                                  }
                                 }else{
+                                	int k=shippingService.checkAccessorial(c.getChargeCodeLevel2());
+                                if(k>0)
                                 	chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
-                                			                                    rate.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());
-                                			                        }
+                                			                                    /*rate.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());*/
+                                			c.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());
+                                else{
+                                	                                		chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+                                	                                				rate.getCarrierId(), c.getChargeCode(), c.getChargeCodeLevel2());
+                                	                                	} 
+                                	                                	
+                                	                                }
+                                			                        
                  
         ///End
         if (chargeGroupCode != null

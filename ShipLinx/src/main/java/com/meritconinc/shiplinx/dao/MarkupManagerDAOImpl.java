@@ -526,7 +526,8 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 					    return null;
 					}
 
-	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+	//public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+				public CarrierChargeCode getChargesByChargeCodeAndCarrier(
 			long carrierId, String chargeCode, long customerId) {
 
 		Map<String, Object> paramObj = new HashMap<String, Object>();
@@ -535,10 +536,20 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 		paramObj.put("customerId", customerId);
 		List<CarrierChargeCode> groupLtlPoundRate = (List) getSqlMapClientTemplate()
 				.queryForList("getChargesByChargeCodeAndCarrier", paramObj);
-		if (groupLtlPoundRate != null) {
-			return groupLtlPoundRate;
+		/*if (groupLtlPoundRate != null) {
+			return groupLtlPoundRate;*/
+		if (groupLtlPoundRate == null || groupLtlPoundRate.size()==0) {
+						return null;
 		}
-		return null;
+		//return null;
+		else{
+						for(CarrierChargeCode carrierChargeCodeTemp : groupLtlPoundRate){
+						if(carrierChargeCodeTemp.getCustomerId()>0 && carrierChargeCodeTemp.getCustomerId()==customerId){
+								return carrierChargeCodeTemp;
+							}
+						}
+					}
+					return groupLtlPoundRate.get(0);
 	}
 
 	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(

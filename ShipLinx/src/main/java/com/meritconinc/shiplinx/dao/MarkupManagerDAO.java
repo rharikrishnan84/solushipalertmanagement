@@ -91,7 +91,8 @@ public interface MarkupManagerDAO {
 	public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(
 			long carrierId, long chargeGroupId);
 
-	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+	//public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+	public CarrierChargeCode getChargesByChargeCodeAndCarrier(
 			long carrierId, String chargeCode, long customerId);
 
 	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(

@@ -220,6 +220,7 @@ public class ShiplinxConstants {
 	public static final long DEFAULT_PUROLATOR_PICKUP_SERVICE_ID = 2002;
 	public static boolean isTestMode(){
 		String mode = WebUtil.getProperty(Constants.SYSTEM_SCOPE, "LIVE_MODE");
+		//String mode = WebUtil.getProperty(Constants.SYSTEM_SCOPE, "TEST_MODE");
 		logger.debug("------------"+mode);
 		
 		if("LIVE".equalsIgnoreCase(mode))

@@ -808,20 +808,24 @@ public class EShipPlusAPI implements CarrierService,Job{
 		/**FROM ADDRESS CHECKLIST DESCRIPTION **/
 		//AccessorialServices accessorial=new AccessorialServices();
 		//CarrierChargeCode accessorial=new CarrierChargeCode();
-		List<CarrierChargeCode> accessorial1=new ArrayList<CarrierChargeCode>();
+		//List<CarrierChargeCode> accessorial1=new ArrayList<CarrierChargeCode>();
+		CarrierChargeCode accessorial1=new CarrierChargeCode();
 		CarrierChargeCode chargeCode=new CarrierChargeCode();
 		if(shippingOrder.getFromAddressCheckList().getDescription()!=null && !shippingOrder.getFromAddressCheckList().getDescription().equalsIgnoreCase("") && !shipmentMode.equalsIgnoreCase("QUOTE")){
 			//accessorial=shippingService.getAccessorialServiceByServiceGroupCode(shippingOrder.getFromAddressCheckList().getDescription(),2);
 			chargeCode.setChargeCode(shippingOrder.getFromAddressCheckList().getDescription().substring(0, shippingOrder.getFromAddressCheckList().getDescription().length()-1)+"1");
 			//accessorial=markupManagerService.getChargesByCode(chargeCode);
 			accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
-			if(accessorial1==null || accessorial1.size()<=0){
+			//if(accessorial1==null || accessorial1.size()<=0){
+			if(accessorial1==null){
 //				bowlNumber = bowlnNumber.substring(0,bowlNumber.length()-1) + "2";
 				chargeCode.setChargeCode(shippingOrder.getFromAddressCheckList().getDescription().substring(0, shippingOrder.getFromAddressCheckList().getDescription().length()-1)+"0");
 				accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
 			}
-			if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
-				if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
+			/*if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
+			   if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){*/
+				if(accessorial1!=null  && accessorial1.getChargeCodeLevel2()!= null){
+									if(accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
 					shipment2.setHazardousMaterialShipment(true);
 					shipment2.setHazardousMaterialContactName(shippingOrder.getFromAddress().getContactName());
 					shipment2.setHazardousMaterialContactEmail(shippingOrder.getFromAddress().getEmailAddress());
@@ -829,11 +833,15 @@ public class EShipPlusAPI implements CarrierService,Job{
 					shipment2.setHazardousMaterialContactPhone(shippingOrder.getFromAddress().getPhoneNo());
 				}
 				WSAccessorialService addditional=new WSAccessorialService();
-				addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
+				/*addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
 				addditional.setServiceCode(accessorial1.get(0).getChargeCodeLevel2());
 				addditional.setServiceDescription(accessorial1.get(0).getChargeDesc());
-				if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){
-					accessorialList.getWSAccessorialService().add(addditional);
+				if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){*/
+				addditional.setBillingCode(accessorial1.getChargeCodeLevel2());
+								addditional.setServiceCode(accessorial1.getChargeCodeLevel2());
+								addditional.setServiceDescription(accessorial1.getChargeDesc());
+								if((!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){	
+				accessorialList.getWSAccessorialService().add(addditional);
 				}
 			}
 		shipment2.setAccessorials(accessorialList);
@@ -844,13 +852,16 @@ public class EShipPlusAPI implements CarrierService,Job{
 			//accessorial=shippingService.getAccessorialServiceByServiceGroupCode(shippingOrder.getFromAddressCheckList().getDescription(),2);
 			chargeCode.setChargeCode(shippingOrder.getToAddressCheckList().getDescription().substring(0, shippingOrder.getToAddressCheckList().getDescription().length()-1)+"2");
 			accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
-			if(accessorial1==null || accessorial1.size()<=0){
+			/*if(accessorial1==null || accessorial1.size()<=0){*/
+			if(accessorial1==null){
 //				bowlNumber = bowlnNumber.substring(0,bowlNumber.length()-1) + "2";
 				chargeCode.setChargeCode(shippingOrder.getToAddressCheckList().getDescription().substring(0, shippingOrder.getToAddressCheckList().getDescription().length()-1)+"0");
 				accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
 			}
-			if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
-				if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
+			/*if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
+				if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){*/
+			if(accessorial1!=null && accessorial1.getChargeCodeLevel2()!= null){
+								if(accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
 					shipment2.setHazardousMaterialShipment(true);
 					shipment2.setHazardousMaterialContactName(shippingOrder.getToAddress().getContactName());
 					shipment2.setHazardousMaterialContactEmail(shippingOrder.getToAddress().getEmailAddress());
@@ -858,10 +869,14 @@ public class EShipPlusAPI implements CarrierService,Job{
 					shipment2.setHazardousMaterialContactPhone(shippingOrder.getToAddress().getPhoneNo());
 				}
 				WSAccessorialService addditional=new WSAccessorialService();
-				addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
+				/*addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
 				addditional.setServiceCode(accessorial1.get(0).getChargeCodeLevel2());
 				addditional.setServiceDescription(accessorial1.get(0).getChargeDesc());
-				if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){
+				if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){*/
+				addditional.setBillingCode(accessorial1.getChargeCodeLevel2());
+								addditional.setServiceCode(accessorial1.getChargeCodeLevel2());
+								addditional.setServiceDescription(accessorial1.getChargeDesc());
+								if((!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){
 					accessorialList.getWSAccessorialService().add(addditional);
 				}
 			}
@@ -1047,6 +1062,7 @@ public class EShipPlusAPI implements CarrierService,Job{
 		return shipment2;
 
 	}
+	
 	
 	public float findFreightClass(Package pack){
 		double length=pack.getLength().doubleValue();
@@ -1512,20 +1528,24 @@ public class EShipPlusAPI implements CarrierService,Job{
 				/**FROM ADDRESS CHECKLIST DESCRIPTION **/
 				//AccessorialServices accessorial=new AccessorialServices();
 				//CarrierChargeCode accessorial=new CarrierChargeCode();
-				List<CarrierChargeCode> accessorial1=new ArrayList<CarrierChargeCode>();
+				//List<CarrierChargeCode> accessorial1=new ArrayList<CarrierChargeCode>();
+				CarrierChargeCode accessorial1=new CarrierChargeCode();
 				CarrierChargeCode chargeCode=new CarrierChargeCode();
 				if(shippingOrder.getFromAddressCheckList().getDescription()!=null && !shippingOrder.getFromAddressCheckList().getDescription().equalsIgnoreCase("") && !shipmentMode.equalsIgnoreCase("QUOTE")){
 					//accessorial=shippingService.getAccessorialServiceByServiceGroupCode(shippingOrder.getFromAddressCheckList().getDescription(),2);
 					chargeCode.setChargeCode(shippingOrder.getFromAddressCheckList().getDescription().substring(0, shippingOrder.getFromAddressCheckList().getDescription().length()-1)+"1");
 					//accessorial=markupManagerService.getChargesByCode(chargeCode);
 					accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
-					if(accessorial1==null || accessorial1.size()<=0){
+					//if(accessorial1==null || accessorial1.size()<=0){
+					if(accessorial1==null){
 //						bowlNumber = bowlnNumber.substring(0,bowlNumber.length()-1) + "2";
 						chargeCode.setChargeCode(shippingOrder.getFromAddressCheckList().getDescription().substring(0, shippingOrder.getFromAddressCheckList().getDescription().length()-1)+"0");
 						accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
 					}
-					if((accessorial1!=null && accessorial1.size()>0) && accessorial1.get(0).getChargeCodeLevel2()!= null){
-						if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
+					/*if((accessorial1!=null && accessorial1.size()>0) && accessorial1.get(0).getChargeCodeLevel2()!= null){
+						if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){*/
+					if((accessorial1!=null ) && accessorial1.getChargeCodeLevel2()!= null){
+												if(accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
 							wsshipment2.setHazardousMaterialShipment(true);
 							wsshipment2.setHazardousMaterialContactName(shippingOrder.getFromAddress().getContactName());
 							wsshipment2.setHazardousMaterialContactEmail(shippingOrder.getFromAddress().getEmailAddress());
@@ -1533,10 +1553,14 @@ public class EShipPlusAPI implements CarrierService,Job{
 							wsshipment2.setHazardousMaterialContactPhone(shippingOrder.getFromAddress().getPhoneNo());
 						}
 						WSAccessorialService addditional=new WSAccessorialService();
-						addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
+						/*addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
 						addditional.setServiceCode(accessorial1.get(0).getChargeCodeLevel2());
 						addditional.setServiceDescription(accessorial1.get(0).getChargeDesc());
-						if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){
+						if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){*/
+						addditional.setBillingCode(accessorial1.getChargeCodeLevel2());
+												addditional.setServiceCode(accessorial1.getChargeCodeLevel2());
+												addditional.setServiceDescription(accessorial1.getChargeDesc());
+												if((!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getFromAddressCheckList().isCommercialBusiness()){
 							accessorialList.getWSAccessorialService().add(addditional);
 						}
 					}
@@ -1548,13 +1572,16 @@ public class EShipPlusAPI implements CarrierService,Job{
 					//accessorial=shippingService.getAccessorialServiceByServiceGroupCode(shippingOrder.getFromAddressCheckList().getDescription(),2);
 					chargeCode.setChargeCode(shippingOrder.getToAddressCheckList().getDescription().substring(0, shippingOrder.getToAddressCheckList().getDescription().length()-1)+"2");
 					accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
-					if(accessorial1==null || accessorial1.size()<=0){
+					//if(accessorial1==null || accessorial1.size()<=0){
+					if(accessorial1==null ){
 //						bowlNumber = bowlnNumber.substring(0,bowlNumber.length()-1) + "2";
 						chargeCode.setChargeCode(shippingOrder.getToAddressCheckList().getDescription().substring(0, shippingOrder.getToAddressCheckList().getDescription().length()-1)+"0");
 						accessorial1=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode.getChargeCode(),shippingOrder.getCustomerId());
 					}
-					if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
-						if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
+					/*if(accessorial1!=null && accessorial1.size()>0 && accessorial1.get(0).getChargeCodeLevel2()!= null){
+						if(accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){*/
+					if(accessorial1!=null && accessorial1.getChargeCodeLevel2()!= null){
+												if(accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE_LEVEL_2)){
 							wsshipment2.setHazardousMaterialShipment(true);
 							wsshipment2.setHazardousMaterialContactName(shippingOrder.getToAddress().getContactName());
 							wsshipment2.setHazardousMaterialContactEmail(shippingOrder.getToAddress().getEmailAddress());
@@ -1562,10 +1589,14 @@ public class EShipPlusAPI implements CarrierService,Job{
 							wsshipment2.setHazardousMaterialContactPhone(shippingOrder.getToAddress().getPhoneNo());
 						}
 						WSAccessorialService addditional=new WSAccessorialService();
-						addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
+						/*addditional.setBillingCode(accessorial1.get(0).getChargeCodeLevel2());
 						addditional.setServiceCode(accessorial1.get(0).getChargeCodeLevel2());
 						addditional.setServiceDescription(accessorial1.get(0).getChargeDesc());
-						if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){
+						if((!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.get(0).getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){*/
+						addditional.setBillingCode(accessorial1.getChargeCodeLevel2());
+												addditional.setServiceCode(accessorial1.getChargeCodeLevel2());
+												addditional.setServiceDescription(accessorial1.getChargeDesc());
+												if((!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_PICKUP_CHARGE_CODE_LEVEL_2)&&!accessorial1.getChargeCodeLevel2().equalsIgnoreCase(ShiplinxConstants.NON_COMMERCIAL_DELIVERY_CHARGE_CODE_LEVEL_2)) || !shippingOrder.getToAddressCheckList().isCommercialBusiness()){
 							accessorialList.getWSAccessorialService().add(addditional);
 						}
 					}
@@ -1776,16 +1807,21 @@ public class EShipPlusAPI implements CarrierService,Job{
 		//Method to reuse code 
 		markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
 			markupManagerService = (MarkupManager) MmrBeanLocator.getInstance().findBean("markupManagerService");
-			List<CarrierChargeCode> accessorial=new ArrayList<CarrierChargeCode>();
+			//List<CarrierChargeCode> accessorial=new ArrayList<CarrierChargeCode>();
+			CarrierChargeCode accessorial=new CarrierChargeCode();
 			CarrierChargeCode chargeCodeObj=new CarrierChargeCode();
 			WSAccessorialService additional=new WSAccessorialService();
 		try{
 			chargeCodeObj.setChargeCode(chargeCode);
 			accessorial=markupManagerService.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_ESHIPPLUS, chargeCode,customerId);
-			if(accessorial!=null && accessorial.size()>0){
+			/*if(accessorial!=null && accessorial.size()>0){
 				additional.setBillingCode(accessorial.get(0).getChargeCodeLevel2());
 				additional.setServiceCode(accessorial.get(0).getChargeCodeLevel2());
-				additional.setServiceDescription(accessorial.get(0).getChargeDesc());
+				additional.setServiceDescription(accessorial.get(0).getChargeDesc());*/
+			if(accessorial!=null ){
+								additional.setBillingCode(accessorial.getChargeCodeLevel2());
+								additional.setServiceCode(accessorial.getChargeCodeLevel2());
+								additional.setServiceDescription(accessorial.getChargeDesc());
 			}
 		}catch(Exception e){
 			e.printStackTrace();

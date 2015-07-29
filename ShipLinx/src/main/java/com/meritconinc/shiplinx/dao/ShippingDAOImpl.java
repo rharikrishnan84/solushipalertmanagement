@@ -408,6 +408,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     return searchResult;
   }
 
+  //public List<CarrierChargeCode> getChargeListByCarrierAndCodes(long carrierId, String chargeCode,
   public List<CarrierChargeCode> getChargeListByCarrierAndCodes(long carrierId, String chargeCode,
       String chargeCodeLevel2) {
 
@@ -452,12 +453,25 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     // in the carrier_charge_code table for carrier id 5
     if (carrierId == ShiplinxConstants.CARRIER_UPS_USA)
       carrierId = ShiplinxConstants.CARRIER_UPS;
-
+    long customerid=UserUtil.getMmrUser().getCustomerId();
     List<CarrierChargeCode> searchResult = this.getChargeListByCarrierAndCodes(carrierId,
         chargeCode, chargeCodeLevel2);
-    if (searchResult == null || searchResult.size() == 0)
+    /*if (searchResult == null || searchResult.size() == 0)
       return null;
-    return searchResult.get(0);
+    return searchResult.get(0);*/
+    if (searchResult != null && searchResult.size()>0){
+    	   for(CarrierChargeCode carrierChargeCodeTemp:searchResult){
+    	    	if(carrierChargeCodeTemp.getCustomerId()>0 && carrierChargeCodeTemp.getCustomerId()==customerid){
+    	    		return carrierChargeCodeTemp;
+    	    	}
+    	   	 else{
+    	    		 if(carrierChargeCodeTemp.getCustomerId()==0){
+    	   	        return carrierChargeCodeTemp;
+    	   		 }
+    	    	    }	
+    	    }
+    	    }
+            return null;
   }
 
   public List<Long> getAllCustomersWithPendingCharges(long businessId) {
@@ -1715,4 +1729,6 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 						return 1;
 				}
 				}
+
+	
 }

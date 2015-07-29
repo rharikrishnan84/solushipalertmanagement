@@ -737,7 +737,8 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 				chargeGroupId);
 	}
 
-	public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(
+	/*public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(*/
+	public CarrierChargeCode getChargesByChargeCodeAndCarrier(
 			long carrierId, String chargeCode, long customerId) {
 		return markupDAO.getChargesByChargeCodeAndCarrier(carrierId,
 				chargeCode, customerId);

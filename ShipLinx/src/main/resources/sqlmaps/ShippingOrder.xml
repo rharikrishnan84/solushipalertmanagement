@@ -412,6 +412,7 @@
 			<result property="isTaxable" column="is_taxable" />
 			<result property="charge" column="charge"/>
 			<result property="cost" column="cost"/>
+			<result property="customerId" column="customer_id"/>
 	</resultMap>
 	
 	<resultMap id="carrierChargeCodeGroupResultMap" class="com.meritconinc.shiplinx.model.CarrierChargeCode">
@@ -954,14 +955,15 @@
 	</select>
 
 	<select id="getChargeByCarrierAndCodes" resultMap="carrierChargeCodeResultMap" >
-		select ccc.id, ccc.carrier_id, ccc.charge_code,ccc.charge,ccc.cost, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id', cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order',cg.is_taxable as 'is_taxable' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
- 				where ccc.carrier_id=#carrierId#
+		select ccc.id, ccc.carrier_id, ccc.charge_code,ccc.charge,ccc.cost, ccc.charge_code_level_2, ccc.charge_name, ccc.charge_desc, ccc.charge_group_id as 'group_id',ccc.customer_id, cg.group_code, cg.group_name, cg.group_desc, ifnull(cg.is_tax,0) AS 'is_tax', cg.tax_rate, cg.display_order AS 'display_order',cg.is_taxable as 'is_taxable' from carrier_charge_code ccc left join charge_group cg on (ccc.charge_group_id = cg.id) 
+				where ccc.carrier_id=#carrierId# 
 		<isNotNull  property="chargeCode">
 		 and ccc.charge_code=#chargeCode# 
 		</isNotNull>
 		<isNotNull  property="chargeCodeLevel2">
 		 and ccc.charge_code_level_2=#chargeCodeLevel2# 
-		</isNotNull>		
+		</isNotNull>
+		order by customer_id DESC		
 	</select>
 	
   
@@ -1982,8 +1984,13 @@
 	</select>
 
 	<select id="checkAccessorial" resultClass="int">
-		select count(service_code) as count from accessorial_services where service_code=#serviceCode#
-	</select>
+<!-- 		select count(service_code) as count from accessorial_services where service_code=#serviceCode#
+ -->
+        select count(service_code) as count from accessorial_services where 
+	        <isNotNull>
+	         service_code=#serviceCode#
+		     </isNotNull>
+ 	</select>
 	<select id="getCurrencyIdByCurrencyCode" resultClass="java.lang.Integer">
 		select id from currency_symbol where currency_code=#currency#
 	</select>

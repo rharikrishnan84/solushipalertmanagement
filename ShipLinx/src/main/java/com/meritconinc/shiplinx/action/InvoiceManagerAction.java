@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.w3c.dom.Document;
@@ -846,6 +847,9 @@ public String getSalesRep() {
 
   public String payInvoices() {
 
+	  boolean payInvoice=false;
+	    Map session = (Map) ActionContext.getContext().getSession();
+	    HttpServletRequest request = ServletActionContext.getRequest();
     log.debug("In pay Invoices");
     List<Long> invoiceIds = new ArrayList<Long>();
     String id = request.getParameter("invoiceIdselect");
@@ -862,9 +866,12 @@ public String getSalesRep() {
         invoiceIds.add(invoice.getInvoiceId());
       }
    }*/
-   if(invoiceIds.size()>0)
-
+   if(invoiceIds.size()>0){
+	   payInvoice=true;
+   	   session.put("payInvoiceFlag",payInvoice);
     invoices = invoiceManager.processPayment(invoiceIds, creditCard, true);
+   }
+	   
 /*   String args[] = new String[1];
        args[0] = String.valueOf(invoices.size());*/
    for(Invoice invoice:invoices){
@@ -891,6 +898,8 @@ public String getSalesRep() {
 
   public String updateAR() {
 	  log.debug("In update A/R");
+	  getSession().remove("payInvoiceFlag");
+	// ActionContext.getContext().getSession().remove("payInvoiceFlag");
 	  	    String method = request.getParameter("method");
 	  	    log.debug("In update A/R-----method is:" + method);
 	  	    /*Customer c = new Customer();

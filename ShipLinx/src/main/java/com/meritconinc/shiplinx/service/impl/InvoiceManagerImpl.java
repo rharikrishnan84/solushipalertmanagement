@@ -67,12 +67,14 @@ import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.meritconinc.shiplinx.model.FutureReference;
-
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
+
 import java.util.Iterator;
+
 import com.meritconinc.mmr.dao.BusinessFilterDAO;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.shiplinx.service.ShippingService;
+import com.opensymphony.xwork2.ActionContext;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 
@@ -1098,7 +1100,9 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
         // partial
         // paying
         addARTransaction(aRTransaction);
-        invoice.setPaidAmount(balanceDue);
+       // invoice.setPaidAmount(balanceDue);
+        invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
+        		        		aRTransaction.getAmount().doubleValue()).doubleValue());
         invoice.setBalanceDue(0.0);
       } else {
         stb.append("Payment Not Processed!\n");
@@ -1146,13 +1150,29 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
     transaction.setBusinessId(invoice.getBusinessId());
     transaction.setCustomerId(invoice.getCustomerId());
     if(transaction.getAmount()!=null){
+    	boolean flagPay=false;
     /*invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
         transaction.getAmount().doubleValue()).doubleValue());*/
-    	Double paidAmount1=invoice.getPaidAmount();
+    	if(invoice.getPaidAmount()!=null)
+    		    	{  
+    		    		if((Boolean) ActionContext.getContext().getSession().get("payInvoiceFlag")!=null){
+    		    		flagPay=(Boolean) ActionContext.getContext().getSession().get("payInvoiceFlag");
+    		    		}
+    		    		if(flagPay)
+    		    	    {
+    		    			invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
+    		    			        transaction.getAmount().doubleValue()).doubleValue());
+    		    			invoice.setBalanceDue(0.0);
+    		    	     }
+    		    		else
+    		    		{
+    		    	 	double paidAmount1=invoice.getPaidAmount().doubleValue();
     	        		paidAmount1=paidAmount1+transaction.getPayAmount();
     	    	  	    Double balanceDue=transaction.getAmount().doubleValue()-paidAmount1;
     	    	  	    invoice.setPaidAmount(paidAmount1);
     	    	  	    invoice.setBalanceDue(balanceDue);
+    		    		}
+    		    		    	}
     }
     if (invoice.getBalanceDue() == 0)
       invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);
@@ -2542,11 +2562,13 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  	  	    if(transaction.getAmount()!=null){
 	  	  	    /*invoice.setPaidAmount(FormattingUtil.add(invoice.getPaidAmount().doubleValue(),
 	  	  	        transaction.getAmount().doubleValue()).doubleValue());*/
-	  	  	    Double paidAmount1=invoice.getPaidAmount();
-	  	  	        		paidAmount1=paidAmount1+transaction.getPayAmount();
-	  	  	    	  	    Double balanceDue=transaction.getAmount().doubleValue()-paidAmount1;
-	  	  	    	  	    invoice.setPaidAmount(paidAmount1);
-	  	  	    	  	    invoice.setBalanceDue(balanceDue);
+	  	  	    if(invoice.getPaidAmount()!=null){	  	
+	  	  	    	Double paidAmount1=invoice.getPaidAmount();
+  	        		paidAmount1=paidAmount1+transaction.getPayAmount();
+  	    	  	    Double balanceDue=transaction.getAmount().doubleValue()-paidAmount1;
+  	    	  	    invoice.setPaidAmount(paidAmount1);
+  	    	  	    invoice.setBalanceDue(balanceDue);
+	  	  	    }
 	  	  	    }
 	  	  	    if (invoice.getBalanceDue() == 0)
 	  	  	      invoice.setPaymentStatus(Invoice.INVOICE_STATUS_PAID);

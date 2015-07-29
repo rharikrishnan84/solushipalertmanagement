@@ -405,7 +405,8 @@ public class GenericCarrierAPI implements CarrierService {
                 if (ratingList != null && ratingList.size() > 0) {
                     Collections.sort(ratingList, Rating.PriceComparator);
                     ratingList.get(0).setServiceId(s.getId());
-                    ratingList.get(0).setCarrierId(s.getCarrierId());
+                    //ratingList.get(0).setCarrierId(s.getCarrierId());
+                    ratingList.get(0).setCarrierId(rate.getCarrierId());
                     ratingList.get(0).setServiceName(s.getName());
                     ratingList.get(0).setCarrierName(s.getCarrier().getName());
                     return ratingList.get(0);
@@ -549,7 +550,8 @@ public class GenericCarrierAPI implements CarrierService {
             if (ratingList != null && ratingList.size() > 0) {
               Collections.sort(ratingList, Rating.PriceComparator);
               ratingList.get(0).setServiceId(s.getId());
-              ratingList.get(0).setCarrierId(s.getCarrierId());
+             // ratingList.get(0).setCarrierId(s.getCarrierId());
+              ratingList.get(0).setCarrierId(rate.getCarrierId());
               ratingList.get(0).setServiceName(s.getName());
               ratingList.get(0).setCarrierName(s.getCarrier().getName());
               return ratingList.get(0);
@@ -687,67 +689,234 @@ public class GenericCarrierAPI implements CarrierService {
 	  	  	  //	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
 	  	  	  List<CarrierChargeCode> carrierChargesList = new ArrayList<CarrierChargeCode>();
 	  	  	  Charge charge=new Charge();
+	  	  	 CarrierChargeCode carrierChargeCodeTemp = new CarrierChargeCode();
 	  	  	  //PopwerTail Gate
 	  	  	  if(order.isFromTailgate()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		 /* carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  	  	       if(carrierChargeCodeTemp!=null){
+	  	  			  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  			   }
+	  	  			  	  		}
+	  	  			  	  	    else{
+	  	  			  	  	    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  	           if(carrierChargeCodeTemp!=null){
+	  	  		 	  			           rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		 	  			       }
+	  	  			  	  	           else{
+	  	  			  	 	  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.POWER_TAILGATE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			  	 	  	           if(carrierChargeCodeTemp!=null){
+	  	  			  			               rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  			           }
+	  	  		  		           }
+	  	  			  	  	 
+	  	  			  	  	    }
 	  	  	  }
 	  	  	  if(order.isToTailgate()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  	        if(carrierChargeCodeTemp!=null){
+	  	  			  			       rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  			    }
+	  	  				  	  		}
+	  	  			  	  		else{
+	  	  			  	  		     carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  	         if(carrierChargeCodeTemp!=null){
+	  	  				                   rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  				             }
+	  	  			  	  	         else{
+	  	  			  		  	  		 carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.POWER_TAILGATE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  		  	  	     if(carrierChargeCodeTemp!=null){
+	  	  				                     rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			                 }
+	  	  			  	  	         }
+	  	  	  }
 	  	  	  }
 	  	  	  //Pallet Jack
 	  	  	  if(order.getFromPalletJack()!=null && order.getFromPalletJack()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		 /* carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		 if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  				  	  			carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  				  	  		     if(carrierChargeCodeTemp!=null){
+	  	  				  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			 }
+	  	  				  	  		  }
+	  	  				  	  		  else{
+	  	  				  	  			carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		      
+	  	  				  	  			if(carrierChargeCodeTemp!=null){
+	  	  				  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  				  	  			}
+	  	  				  	  			else{
+	  	  					  	  			carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  					  	  		    if(carrierChargeCodeTemp!=null){
+	  	  				  	  		         rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  					  	  		    }
+	  	  				  	  			}
+	  	  	  }
 	  	  	  }
 	  	  	  if(order.getToPalletJack()!=null && order.getToPalletJack()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
-	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		if(carrierChargeCodeTemp!=null){
+	  	  		  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		  	  			 }
+	  	  		  	  		}
+	  	  			  	  		else{
+	  	  			  	  		  carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		  if(carrierChargeCodeTemp!=null){
+	  	  			  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			}
+	  	  		  	  		  else{
+	  	  				  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.PALLET_JACK_REQUIRED_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  				  	  		   if(carrierChargeCodeTemp!=null){
+	  	  				  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  				  	  			}
 	  	  		  }
+	  	  			  	  		}
 	  	  	  }
 	  	  	  //Inside Pickup
 	  	  	  if(order.isInsidePickup()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		if(carrierChargeCodeTemp!=null){
+	  	  		  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		  	  			 }
+	  	  			  	  		}
+	  	  			  	  		else{
+	  	  		  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		    if(carrierChargeCodeTemp!=null){
+	  	  			  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			}
+	  	  			  	  		    else{
+	  	  			 	  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.INSIDE_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			 	  	  		if(carrierChargeCodeTemp!=null){
+	  	  				  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  				  	  			}
+	  	  			  	  		    	
+	  	  		  	  		    }
+	  	  			  	  	      
+	  	  			  	  		}
 	  	  	  }
 	  	  	  if(order.getInsideDelivery()!=null && order.getInsideDelivery()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		if(carrierChargeCodeTemp!=null){
+	  	  		  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		  	  			 }
+	  	  			  	  		}
+	  	  		  	  		else{
+	  	  			  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		    if(carrierChargeCodeTemp!=null){
+	  	  			  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			}
+	  	  			  	  		    else{
+	  	  			 	  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.INSIDE_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			 	  	  		   if(carrierChargeCodeTemp!=null){
+	  	  				  	  			 rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			}
+	  	  			  	  		    }
+	  	  			  	  	  
+	  	  			  	  	    }
 	  	  	  }
 	  	  	  //HoldForPickup
 	  	  	  if(order.getHoldForPickupRequired()!=null && order.getHoldForPickupRequired()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  		 /* carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		 if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  				  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  				  	  		if(carrierChargeCodeTemp!=null){
+	  	  			  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			  	  			 }
+	  	  				  	  		 }
+	  	  				  	  		else{
+	  	  				  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  				  	  	        if(carrierChargeCodeTemp!=null){
+	  	  			 	  			        rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			 	  			    } 
+	  	  				  	  	        else{
+	  	  				 	  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.HOLD_FOR_PICKUP_CHARGE_CODE,order.getCustomerId());
+	  	  			 	  	  		   if(carrierChargeCodeTemp!=null){
+	  	  			 	  			          rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  			 	  			       }
+	  	  				  	  		    }
+	  	  				  	  	    }
 	  	  	  }
 	  	  	  //Dangerous goods
 	  	  	  if(order.getDangerousGoods()!=null && order.getDangerousGoods()>0){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
 	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
-	  	  		  }
+	  	  		  }*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  	    if(carrierChargeCodeTemp!=null){
+	  	  			  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		 			 }
+	  	  			  	  		}
+	  	  			  	  		else{
+	  	  			  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  	        if(carrierChargeCodeTemp!=null){
+	  	  					        rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  					        }
+	  	  			  	  	        else{
+	  	  			  		  	  		carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.DANGEROUS_GOODS_CHARGE_CODE,order.getCustomerId());
+	  	  			  		  	  	    if(carrierChargeCodeTemp!=null){
+	  	  						           rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  						        }
+	  	  			  	  		    }
+	  	  			  	  	    }
 	  	  	  }
 	  	  	  if(order.getToAddress()!=null && order.getToAddress().isResidential()){
-	  	  		  carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  		  /*carrierChargesList=this.markupDAO.getChargesByChargeCodeAndCarrier(ShiplinxConstants.CARRIER_GENERIC, ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
 	  	  		  if(carrierChargesList!=null && carrierChargesList.size()>0){
-	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));
+	  	  			  rating.getCharges().add(applyAdditionalToCharges(carrierChargesList.get(0)));*/
+	  	  		if(rating.getCarrierId()==rating.getSlaveCarrierId()){
+	  	  			  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		   if(carrierChargeCodeTemp!=null){
+	  	  		  	  			    rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  		  	  			   }
+	  	  			  	  		}
+	  	  			  	  		else{
+	  	  			  	  		    carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getSlaveCarrierId(), ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			  	  		    if(carrierChargeCodeTemp!=null){
+	  	  					        rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  				        }
+	  	  			  	  		    else{
+	  	  			 	  	  		   carrierChargeCodeTemp=this.markupDAO.getChargesByChargeCodeAndCarrier(rating.getCarrierId(), ShiplinxConstants.RESIDENTIAL_DELIVERY_CHARGE_CODE,order.getCustomerId());
+	  	  			 	  	  		   if(carrierChargeCodeTemp!=null){
+	  	  						        rating.getCharges().add(applyAdditionalToCharges(carrierChargeCodeTemp));
+	  	  						        }
+	  	  			  	  		    }
 	  	  		  }
 	  	  	  }
 	  	  	  return rating;
 	  	    }
+	  	  	  
 	  	  	  	    
 	  	  	  	    private Charge applyAdditionalToCharges(CarrierChargeCode carrierCharge){
 	  	  	  	  	  	  Charge charge=new Charge();
@@ -755,6 +924,7 @@ public class GenericCarrierAPI implements CarrierService {
 	  	  	    	  	  charge.setCharge(carrierCharge.getCarrierCharge());
 	  	  	  	  	  	  charge.setCost(carrierCharge.getCarrierCost());
 	  	  	  	  	  	  charge.setName(carrierCharge.getChargeDesc());
+	  	  	  	  	  	  charge.setCarrierId(carrierCharge.getCarrierId());
 	  	  	  	  	  	  charge.setChargeGroupId((int) (long)carrierCharge.getGroupId());
 	  	  	  	  	  	  charge.setChargeCodeLevel2(carrierCharge.getChargeCodeLevel2());
 	  	  	  	    	  charge.setTariffRate(carrierCharge.getCarrierCharge());
@@ -1003,6 +1173,7 @@ public class GenericCarrierAPI implements CarrierService {
     //Written By Mohan R
     c.setChargeGroupId(3);
     //END
+    c.setName(ShiplinxConstants.FUEL_SURCHARGE);
 
     // c.setTariffRate(tariff_rate * f.getValue()/100);
     log.debug("Fuel Charge");
