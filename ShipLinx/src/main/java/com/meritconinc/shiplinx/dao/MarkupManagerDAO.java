@@ -97,4 +97,5 @@ public interface MarkupManagerDAO {
 
 	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(
 			Markup markup);
+	public boolean isMarkupDisabled(long businessId);
 }

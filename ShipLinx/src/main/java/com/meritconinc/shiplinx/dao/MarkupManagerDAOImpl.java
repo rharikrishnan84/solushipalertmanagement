@@ -624,5 +624,13 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 							return 0;
 						}
 					}
+	public boolean isMarkupDisabled(long businessId) {
+				Map<String, Object> paramObj = new HashMap<String, Object>(1);
+			    paramObj.put("businessId", businessId);
+			    Integer count = (Integer) getSqlMapClientTemplate().queryForObject("isMarkupDisabled",
+			        paramObj);
+			    return (count > 0);
+			}
+	
 
 }

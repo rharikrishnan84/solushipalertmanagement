@@ -53,5 +53,5 @@ public interface BusinessDAO{
 										public void addBusinessEmail(BusinessEmail bme);
 										public void deleteBusinessEmailByBMId(long businessEmailId);
 										public void updateBusinessEmail(BusinessEmail be3);
- 
+										public void setCopyMarkupFlag(long businessId);
 }

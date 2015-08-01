@@ -7,7 +7,9 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+
 import com.meritconinc.shiplinx.service.PinBlockManager;
+
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -27,6 +29,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import com.meritconinc.shiplinx.service.MarkupManager;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,6 +57,7 @@ import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Attachment;
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.BusinessFilter;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.Customer;
@@ -71,6 +75,7 @@ import com.meritconinc.shiplinx.service.FuelSurchargeService;
 import com.meritconinc.shiplinx.service.impl.InvoiceManagerImpl;
 import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class GenericCarrierAPI implements CarrierService {
   private static final Logger log = LogManager.getLogger(GenericCarrierAPI.class);
@@ -335,6 +340,9 @@ public class GenericCarrierAPI implements CarrierService {
       LtlSkidRate skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
           shippingOrder.getBusinessId(), s.getId(), fromZone.getZoneName(), toZone.getZoneName());
       LtlSkidRate sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+      if(sr==null){
+	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+	    }
       /*List <LtlSkidRate> sr = new ArrayList<LtlSkidRate>();
       sr = this.markupDAO.getSkidRate(skidRateTobeSearched);*/
       if (sr == null) {
@@ -342,6 +350,9 @@ public class GenericCarrierAPI implements CarrierService {
         skidRateTobeSearched.setCustomerId(0L);
         //sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
         sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+        if(sr==null){
+  	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+  	    }
         //charles 
         //to check the other zones by city
                 List<Rating> ratingList = new ArrayList<Rating>();
@@ -383,9 +394,15 @@ public class GenericCarrierAPI implements CarrierService {
                         toZoneVar.getZoneName());
                     skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
                     sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if(sr==null){
+              	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+              	    }
                     if (sr == null) {
                       skidRateTobeSearched.setCustomerId(0L);
                       sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                      if(sr==null){
+                	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+                	    }
                     }
                     if (sr != null) {
                         rate = ltlSkidRate(sr, s, shippingOrder);
@@ -443,9 +460,15 @@ public class GenericCarrierAPI implements CarrierService {
                       shippingOrder.getBusinessId(), service.getId(), fromZone.getZoneName(),
                       toZone.getZoneName());
                   sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                  if(sr==null){
+            	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+            	    }
                   if (sr == null) {
                     skidRateTobeSearched.setCustomerId(0L);
                     sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if(sr==null){
+              	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+              	    }
                   }
                   if (sr == null) {
                     Zone fromZones = getZone(service.getZoneStructureId(),
@@ -456,9 +479,15 @@ public class GenericCarrierAPI implements CarrierService {
                         toZones.getZoneName());
                     skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
                     sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if(sr==null){
+              	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+              	    }
                     if (sr == null) {
                       skidRateTobeSearched.setCustomerId(0L);
                       sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                      if(sr==null){
+                	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+                	    }
                     }
                   }
                  /* if(sr!=null && sr.size()>0){
@@ -482,9 +511,15 @@ public class GenericCarrierAPI implements CarrierService {
                     shippingOrder.getBusinessId(), service.getId(), fromZone.getZoneName(),
                     toZone.getZoneName());
                 sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                if(sr==null){
+          	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+          	    }
                 if (sr == null) {
                   skidRateTobeSearched.setCustomerId(0L);
                   sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                  if(sr==null){
+            	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+            	    }
                 }
                 if (sr != null) {
                     rate = ltlSkidRate(sr, s, shippingOrder);
@@ -524,9 +559,15 @@ public class GenericCarrierAPI implements CarrierService {
                       toZoneVar.getZoneName());
                   skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
                   sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                  if(sr==null){
+            	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+            	    }
                   if (sr == null) {
                     skidRateTobeSearched.setCustomerId(0L);
                     sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                    if(sr==null){
+              	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+              	    }
                   }
                   if (sr != null) {
                       rate = ltlSkidRate(sr, s, shippingOrder);
@@ -962,12 +1003,18 @@ public class GenericCarrierAPI implements CarrierService {
 	              fromZone.getZoneName(), toZone.getZoneName(), fClass);
 	          LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
 	              shippingOrder.getTotalWeight());
+	          if(pr==null){
+  	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+  	          }
 	          Double totWeight = null;
 	          if (pr == null) {
 	            // Customer Rate did not found, try retrieving default rate
 	            poundRateTobeSearched.setCustomerId(0L);
 
 	            pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+	            if(pr==null){
+	  	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+	  	          }
 	            
 	            ///Written By Mohan R
 	            
@@ -1006,9 +1053,15 @@ public class GenericCarrierAPI implements CarrierService {
 	                    fromZone.getZoneName(), toZone.getZoneName(), fClass);
 
 	                      pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+	                      if(pr==null){
+	            	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+	            	          }
 	                      if (pr == null) {
 	                        poundRateTobeSearched.setCustomerId(0L);
 	                       pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+	                       if(pr==null){
+	             	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+	             	          }
 	                      }
 	                      if (pr == null) {
 	                        Zone fromZones = getZone(service.getZoneStructureId(),
@@ -1019,9 +1072,15 @@ public class GenericCarrierAPI implements CarrierService {
 	                    fromZones.getZoneName(), toZones.getZoneName(), fClass);
 	                        poundRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
 	                        pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+	                        if(pr==null){
+	              	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+	              	          }
 	                       if (pr == null) {
 	                          poundRateTobeSearched.setCustomerId(0L);
 	                          pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+	                          if(pr==null){
+	                	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+	                	          }
 	                        }
 	                      }
 	                      if (pr != null) {
@@ -1090,6 +1149,9 @@ public class GenericCarrierAPI implements CarrierService {
           weightAsRated = pr.getRangeTo().intValue() + 1;
 
           prRatedAs = this.markupDAO.getPoundRate(poundRateTobeSearched, weightAsRated);
+          if(prRatedAs==null){
+        	             	              	              	  prRatedAs=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,weightAsRated);
+        	             	              	    	          }
         }
         Rating rating = new Rating();
         rating.setServiceId(s.getId());
@@ -1542,6 +1604,66 @@ public class GenericCarrierAPI implements CarrierService {
   private void processSkidRateRecord(String[] fields, String[] rowData, Service service,
       long customerId, long busId, boolean isOverwrite) throws Exception {
     LtlSkidRate skidRate = populateSkidRate(fields, rowData, service, customerId, busId);
+    if(skidRate==null){
+     	    	    	Business curBus=businessDAO.getBusiessById(busId);
+     	    			 BusinessFilter bf=new BusinessFilter();
+     	    		  
+     	    		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+     	    						&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+     	    				 
+     	    				 skidRate =populateSkidRate(fields, rowData, service, customerId, busId);
+     	    					    
+     	    				 
+     	    				 
+     	    				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+     	    					
+     	    					bf= BusinessFilterUtil.getBusinessFilterAtPartnerLevel(curBus);
+     	    					if(bf!=null){
+     	    						skidRate =populateSkidRate(fields, rowData, service, customerId, busId);
+     	    		    				    
+     	    					 if((skidRate==null )&& bf.getParentBus() !=null){
+     	    					 skidRate = populateSkidRate(fields, rowData, service, customerId,  bf.getParentBus().getId());
+     	    					 }
+     	    					 
+     	    					}
+     	    					 
+     	    				}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+     	    					
+     	    	
+     	    					bf= BusinessFilterUtil.getBusinessFilterAtNationLevel(curBus);
+     	    					 skidRate =populateSkidRate(fields, rowData, service, customerId,  bf.getNationBus().getId());
+     	    					if(bf!=null){
+     	    				 
+     	    						 if( (skidRate==null )&& bf.getPartnerBus() !=null){
+     	    							 skidRate =populateSkidRate(fields, rowData, service, customerId, bf.getPartnerBus().getId());
+     	    						 }
+     	    						 if( (skidRate==null )&& bf.getParentBus() !=null){
+     	    							 skidRate =populateSkidRate(fields, rowData, service, customerId,  bf.getParentBus().getId());
+     	    						 }
+     	    						 
+     	    						}
+     	    					 
+     	    					 
+     	    					
+     	    				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+     	    	
+     	    					bf= BusinessFilterUtil.getBusinessFilterAtBranchLevel(curBus);
+     	    					 
+     	    					 skidRate =populateSkidRate(fields, rowData, service, customerId, busId);
+     	    					if(bf!=null){
+     	    						 if((skidRate==null )&& bf.getNationBus() !=null){
+     	    							 skidRate =populateSkidRate(fields, rowData, service, customerId,  bf.getNationBus().getId());
+     	    						 }
+     	    						 if((skidRate==null  )&& bf.getPartnerBus() !=null){
+     	    							 skidRate =populateSkidRate(fields, rowData, service, customerId,  bf.getPartnerBus().getId());
+     	    						 }
+     	    						 if((skidRate==null  )&& bf.getParentBus() !=null){
+     	    							 skidRate =populateSkidRate(fields, rowData, service, customerId,  bf.getParentBus().getId());
+     	    						 }
+     	    						 
+     	    						}
+     	    				}
+     	    	    }
     if (skidRate != null) {
       if (isOverwrite)
         this.markupDAO.deleteSkidRateRecord(skidRate); // if it already
@@ -1642,13 +1764,97 @@ public class GenericCarrierAPI implements CarrierService {
       long customerId, long busId, boolean isOverwrite) throws Exception {
     ArrayList<LtlPoundRate> poundRates = populatePoundRates(fields, rowData, service, customerId,
         busId);
+    if(poundRates==null || poundRates.size()==0){
+    	    	    	Business curBus=businessDAO.getBusiessById(busId);
+    	    	    	
+    	    	    	
+    	    	    	 
+    	    	    		 
+    	    	    		 BusinessFilter bf=new BusinessFilter();
+    	    	    	  
+    	    	    		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+    	    	    					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+    	    	    			 
+    	    	    			 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	    				        busId);
+    	    	    				    
+    	    	    			 
+    	    	    			 
+    	    	    			}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+    	    	    				
+    	    	    				bf= BusinessFilterUtil.getBusinessFilterAtPartnerLevel(curBus);
+    	    	    				if(bf!=null){
+    	    	    					 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	    	    				        busId);
+    	    	    	    				    
+    	    	    				 if((poundRates==null || poundRates.size()==0)&& bf.getParentBus() !=null){
+    	    	    					 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	    							 bf.getParentBus().getId());
+    	    	    				 }
+    	    	    				 
+    	    	    				}
+    	    	    				 
+    	    	    			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+    	    	    				
+    	    	
+    	    	    				bf= BusinessFilterUtil.getBusinessFilterAtNationLevel(curBus);
+    	    	    				poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	    				        busId);
+    	    	    				if(bf!=null){
+    	    	    			 
+    	    	    					 if( (poundRates==null || poundRates.size()==0)&& bf.getPartnerBus() !=null){
+    	    	    						 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	        							 bf.getPartnerBus().getId());
+    	    	    					 }
+    	    	    					 if( (poundRates==null || poundRates.size()==0)&& bf.getParentBus() !=null){
+    	    	    						 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	        							 bf.getParentBus().getId());
+    	    	    					 }
+    	    	    					 
+    	    	    					}
+    	    	    				 
+    	    	    				 
+    	    	    				
+    	    	    			}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+    	    	
+    	    	    				bf= BusinessFilterUtil.getBusinessFilterAtBranchLevel(curBus);
+    	    	    				 
+    	    	    				poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	    				        busId);
+    	    	    			 
+    	    	    				if(bf!=null){
+    	    	    					 if((poundRates==null || poundRates.size()==0)&& bf.getNationBus() !=null){
+    	    	    						 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	        							 bf.getNationBus().getId());
+    	    	    					 }
+    	    	    					 if((poundRates==null || poundRates.size()==0)&& bf.getPartnerBus() !=null){
+    	    	    						 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	        							 bf.getPartnerBus().getId());
+    	    	    					 }
+    	    	    					 if((poundRates==null || poundRates.size()==0)&& bf.getParentBus() !=null){
+    	    	    						 poundRates = populatePoundRates(fields, rowData, service, customerId,
+    	    	        							 bf.getParentBus().getId());
+    	    	    					 }
+    	    	    					 
+    	    	    					}
+    	    	    			 
+    	    	    			}
+    	    	    				
+    	    	    		
+    	    	    	 
+    	    	    	 
+    	    	    	
+    	    	    }
     if (poundRates != null && poundRates.size() > 0) {
       for (LtlPoundRate poundRate : poundRates) {
         if (isOverwrite)
           this.markupDAO.deletePoundRateRecord(poundRate); // if it
         // already
         // exists
-        if (this.markupDAO.getPoundRate(poundRate) == null)
+       // if (this.markupDAO.getPoundRate(poundRate) == null)
+        LtlPoundRate ltlpr=this.markupDAO.getPoundRate(poundRate);
+                               
+                  if (ltlpr == null)
           this.markupDAO.addPoundRateRecord(poundRate);
       }
 
@@ -1783,6 +1989,9 @@ public class GenericCarrierAPI implements CarrierService {
               fromZone.getZoneName(), toZone.getZoneName(), fClass);
           LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
               shippingOrder.getTotalWeight());
+          if(pr==null){
+            	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+            }
           Double totWeight = null;
           if (pr != null) {
             if (pr.getDimFactor() != null && pr.getDimFactor().signum() != 0) {
@@ -1807,6 +2016,9 @@ public class GenericCarrierAPI implements CarrierService {
             poundRateTobeSearched.setCustomerId(0L);
 
             pr = this.markupDAO.getPoundRate(poundRateTobeSearched, shippingOrder.getTotalWeight());
+            if(pr==null){
+            	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,shippingOrder.getTotalWeight());
+            }
 
             if (shippingOrder != null
                 && pr != null

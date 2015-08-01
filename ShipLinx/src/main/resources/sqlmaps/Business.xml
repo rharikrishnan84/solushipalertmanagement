@@ -61,6 +61,7 @@
 			<result property="branchLevel" column="isBranch"/>
 			<result property="contactPath" column="contact_path"/>
 			<result property="feedbackPath" column="feedback_path"/>
+			<result property="copyMarkup" column="isCopy_markup"/>
 	</resultMap>
 	
 	<resultMap class="com.meritconinc.shiplinx.model.UserBusiness" id="userBusinessMap">
@@ -321,7 +322,10 @@ from pins where business_id=#oldBusinessId#
    </update>
    <update id="updateEmailResources">
        update resourcebundle set msg_content=#htmlContent# where msg_id=#msgId#    
-   </update>  
+   </update> 
+    <update id="setCopyMarkupFlag">
+   		update business set isCopy_markup = !isCopy_markup where business_id=#businessId#
+   </update> 
  
   <!--end of business filter  -->
 </sqlMap>

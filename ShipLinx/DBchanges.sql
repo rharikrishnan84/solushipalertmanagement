@@ -4165,3 +4165,17 @@ ALTER TABLE charges
 ADD COLUMN `commissionable` BIT NOT NULL DEFAULT 1 AFTER `calculate_tax`;
 
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ghead.commissonable', 'Commissionable', 'en_CA', 1);
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`) VALUES ('copyParent.markup', '161', 1, 'Copy Parent Markup');
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1084');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1084');
+
+
+alter table business add isCopy_markup bit(1) default b'0';
+
+
+insert into resourcebundle (msg_id, msg_content, locale, is_fmk)
+values ('label.btn.copy.parent', 'COPY PARENT MARKUP', 'en_CA', 1);
+.......................................End of Live server commit.......................................

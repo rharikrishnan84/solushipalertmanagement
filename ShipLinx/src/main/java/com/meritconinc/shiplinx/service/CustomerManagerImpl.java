@@ -238,7 +238,7 @@ public class CustomerManagerImpl implements CustomerManager {
 												businessFilterDAO.addCustomerBusiness(customerbus);
 			List<CustomerTier> lstCustomerTier = new ArrayList<CustomerTier>();
 			lstCustomerTier = customerDAO.getCustomerByTier(customer);
-			if (lstCustomerTier.size() > 0) { // If it returns a row matching
+			/*if (lstCustomerTier.size() > 0) { // If it returns a row matching
 												// the Spend criteria.
 				// Copy markups from source customer to target customer
 				markupManagerService.copyCustomerMarkup(lstCustomerTier.get(0)
@@ -250,7 +250,7 @@ public class CustomerManagerImpl implements CustomerManager {
 				// copy markups from default to this customer
 				markupManagerService.copyCustomerMarkup(new Long(0),
 						customerId, business.getId());
-
+*/
 			// put the customer id in the address
 			customer.getAddress().setCustomerId(customerId);
 			addressDAO.edit(customer.getAddress());
@@ -847,6 +847,9 @@ public class CustomerManagerImpl implements CustomerManager {
 
 		List<Carrier> carriersForBusiness = carrierServiceDAO
 				.getCarriersForBusiness(customer.getBusinessId());
+		if((carriersForBusiness==null || carriersForBusiness.size()==0) && customer!=null){
+												   carriersForBusiness=BusinessFilterUtil.getCarriersForBusinessByBusinessLevel(customer.getBusinessId());
+											}
 		List<Carrier> carriersToEnable = customer.getCustomerSelectedCarriers();
 		List<Carrier> carriersToDisable = new ArrayList<Carrier>();
 		Business business = businessDAO

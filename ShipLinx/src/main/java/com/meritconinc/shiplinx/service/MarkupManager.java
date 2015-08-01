@@ -84,4 +84,5 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public List<CarrierChargeCode> getChargesByCarrierIdAndGroupCode(long carrierId, long chargeGroupId);
   /*public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);*/
   public  CarrierChargeCode getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);
+  public boolean isAllLevelMarkupDisabled(long businessId);
 }

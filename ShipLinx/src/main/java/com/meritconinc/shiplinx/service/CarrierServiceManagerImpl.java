@@ -287,7 +287,14 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       markup.setCustomerId(order.getCustomerId());
       markup.setDisabled(0);
       boolean flagCarrierList;
+      boolean flagm = false;
+      List<Markup> myMarkups1;
       List<Markup> myMarkups=markupManagerService.getAllMarkupsForCustomer(order.getCustomerId(),order.getBusinessId());
+    	  	long cus = order.getCustomerId();
+          	  order.setCustomerId(0l);
+          	  myMarkups1=BusinessFilterUtil.getAllMarkupsForCustomer(markupManagerService,order.getCustomerId(),order.getBusinessId());
+          	  myMarkups.addAll(myMarkups1);
+          	  order.setCustomerId(cus);
       customerCarriers = carrierServiceDAO.getCutomerCarrier(order.getCustomerId());
       for(Carrier carrier:carriersForBusiness){
     	  List<Markup> localMarkup=new ArrayList<Markup>();
@@ -483,9 +490,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       if(orderThread.getFromRatingList()!=null && orderThread.getToRatingList()!=null){
     	  findCheapestRate(ratingList, orderThread);	         	
       }
-      if(upsShippingOrderThread!=null && upsShippingOrderThread.getToRatingList()==null &&  upsShippingOrderThread.getFromRatingList() !=null && upsShippingOrderThread.getFromRatingList().size()>0){
+      if(upsShippingOrderThread!=null && upsShippingOrderThread.getToRatingList()!=null && upsShippingOrderThread.getToRatingList().size() == 0 &&  upsShippingOrderThread.getFromRatingList() !=null && upsShippingOrderThread.getFromRatingList().size()>0){
     	  ratingList.addAll(upsShippingOrderThread.getFromRatingList());
-      }else if(upsShippingOrderThread!=null && upsShippingOrderThread.getFromRatingList()==null &&  upsShippingOrderThread.getToRatingList() !=null && upsShippingOrderThread.getToRatingList().size()>0){
+      }else if(upsShippingOrderThread!=null && upsShippingOrderThread.getFromRatingList()!=null && upsShippingOrderThread.getFromRatingList().size() == 0 && upsShippingOrderThread.getToRatingList() !=null && upsShippingOrderThread.getToRatingList().size()>0){
     	  ratingList.addAll(upsShippingOrderThread.getToRatingList());
       }
       setRateListThread(rateListThread);
@@ -674,8 +681,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       e.printStackTrace();
     }
     boolean flagRate = false;
-    if(ratingList.size()>0)
-     flagRate = markupManagerService.isCustomerMarkupByDisabled(UserUtil.getMmrUser().getCustomerId());
+    if(ratingList.size()>0){
+    	        flagRate = markupManagerService.isCustomerMarkupByDisabled(UserUtil.getMmrUser().getCustomerId());
+    	        if(!flagRate){
+    	        	flagRate = markupManagerService.isAllLevelMarkupDisabled(UserUtil.getMmrUser().getBusinessId());
+    	        }
+    	    }
     if(!flagRate)                       // restricting rates for    
      ratingList.clear();                // direct new customer
     List<Rating> rateL = new ArrayList<Rating>();
@@ -1383,7 +1394,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   }
 
   public List<Carrier> getCarriersForBusiness(long businessId) {
-    return getCarrierServiceDAO().getCarriersForBusiness(businessId);
+	  List<Carrier> carriers=getCarrierServiceDAO().getCarriersForBusiness(businessId);
+	  	  if((carriers==null || carriers.size()==0) &&  businessId>0){
+	  		  carriers=BusinessFilterUtil.getCarriersForBusinessByBusinessLevel(businessId);
+	  	  }
+	      return carriers;
   }
 
   public CustomerCarrier getOrderCutomerCarrier(Long orderId) {
@@ -2070,6 +2085,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
       shippingService.applyAdditionalHandling(order, rate, ShiplinxConstants.CHARGE_TYPE_QUOTED);
      rate.setMarkupPercentage(markup.getMarkupPercentage());
+     rate.setMarkupFlat(markup.getMarkupFlat());
       rate.setMarkupTypeText(markup.getTypeText());
       rate.setMarkupType(markup.getType());
       /*if (markup != null) {
@@ -2100,10 +2116,20 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
       rate.setTotal(0);
       rate.setTotalCost(0);
-      if (StringUtil.isEmpty(rate.getCarrierName()))
+      /*if (StringUtil.isEmpty(rate.getCarrierName()))
         rate.setCarrierName(this.carrierServiceDAO.getCarrierByBusiness(rate.getCarrierId(),
             order.getBusinessId()).getName());
-
+*/
+      
+      if (StringUtil.isEmpty(rate.getCarrierName())){
+    	      	      	      	  Carrier carrier=this.carrierServiceDAO.getCarrierByBusiness(rate.getCarrierId(),
+    	      	      	      	            order.getBusinessId());
+    	      	      	      	  if(carrier==null){
+    	      	      	      		carrier=BusinessFilterUtil.getCarrierByBusinessFromSuperBusiness(rate.getCarrierId(), order.getBusinessId()); 
+    	      	      	      	  }
+    	      	      	          rate.setCarrierName(carrier.getName());
+    	      	      	        }
+    	   
       if (StringUtil.isEmpty(rate.getServiceName()))
         rate.setServiceName(shippingService.getServiceById(rate.getServiceId()).getName());
       order.setServiceId(rate.getServiceId());
@@ -2152,6 +2178,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           // String typeText=rate.getMarkupTypeText();
         	order.setBilledWeight((float)rate.getBillWeight());
           c.setCharge(markupManagerService.applyMarkup(order, c, false));
+          if(rate.getMarkupFlat() > 0 && (rate.getMarkupPercentage() == null 
+        		          		  || rate.getMarkupPercentage() == 0)){
+        		  	          double ch = c.getCharge() + rate.getMarkupFlat();
+        		  	          c.setCharge(ch);
+        		            }
           /*Markup searchMarkup = markupManagerService.getMarkupObj(order);
                     if(searchMarkup!=null && rate.getCarrierId()==ShiplinxConstants.CARRIER_GENERIC){
                         searchMarkup.setServiceId(service.getMasterServiceId());  
@@ -4685,10 +4716,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                        toZone.getZoneName(), fClass);
 		                    LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
 		                        order.getTotalWeight());
+		                    if(pr==null){
+		        	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,order.getTotalWeight());
+		        	          }
 		                    if (pr == null) {
 		                      poundRateTobeSearched.setCustomerId(0L);
 		                      pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
 		                          order.getTotalWeight());
+		                      if(pr==null){
+			        	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,order.getTotalWeight());
+			        	          }
 		                   // if no rates present set the error message
 		                      if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
 		                        rateError = true;
@@ -4716,10 +4753,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                            fromZone.getZoneName(), toZone.getZoneName(), fClass);
 		                        LtlPoundRate pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
 		                            order.getTotalWeight());
+		                        if(pr==null){
+			        	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,order.getTotalWeight());
+			        	          }
 		                        if (pr == null) {
 		                          poundRateTobeSearched.setCustomerId(0L);
 		                         pr = this.markupDAO.getPoundRate(poundRateTobeSearched,
 		                             order.getTotalWeight());
+		                         if(pr==null){
+				        	          	pr=BusinessFilterUtil.getPoundRate(markupDAO,poundRateTobeSearched,order.getTotalWeight());
+				        	          }
 		                         // if no rates present set the error message
 		                         if (pr == null || pr.getRate() == 0 && pr.getMinimum() == 0) {
 		                            poundChildRateError = true;
@@ -4740,12 +4783,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                      order.getBusinessId(), carrierServicesList.get(serviceSlice).getId(),
 		                      fromZone.getZoneName(), toZone.getZoneName());
 		                  LtlSkidRate pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
-				                 /* List <LtlSkidRate> pr = new ArrayList<LtlSkidRate>();
+		                  if(pr==null){
+		                	  pr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+    	  		          }
+ /* List <LtlSkidRate> pr = new ArrayList<LtlSkidRate>();
 				                 	                  pr = this.markupDAO.getSkidRate(skidRateTobeSearched);*/
 		                  // if pr is null for the customer id then set the customer to zero.
 		                  if (pr == null) {
 		                    skidRateTobeSearched.setCustomerId(0L);
 		                    pr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+		                    if(pr==null){
+			                	  pr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+	    	  		          }
 		                    if (pr == null) {
 		                  	  rateError = true;
 		                      repitive = true;
@@ -4790,11 +4839,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		                          order.getBusinessId(), skidService.getId(), fromZoneVar.getZoneName(),
 		                          toZoneVar.getZoneName());
 		                      pr = this.markupDAO.getSkidRate(childServiceSkid);
+		                      if(pr==null){
+			                	  pr=  BusinessFilterUtil.getSkidRate(markupDAO,childServiceSkid);
+	    	  		          }
 		                      boolean skidChildRateError = false;
 		                      // if pr is null for the customer id then set the customer to zero.
 		                      if (pr == null) {
 		                        childServiceSkid.setCustomerId(0L);
 		                        pr = this.markupDAO.getSkidRate(childServiceSkid);
+		                        if(pr==null){
+				                	  pr=  BusinessFilterUtil.getSkidRate(markupDAO,childServiceSkid);
+		    	  		          }
 		                        if (pr == null) {
 		                          rateError = true;
 		                          repitive = true;

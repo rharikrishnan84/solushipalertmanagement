@@ -17,6 +17,8 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.meritconinc.shiplinx.service.ShippingService;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.dao.MarkupManagerDAOImpl;
 import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
 import com.meritconinc.mmr.exception.MarkupAlreadyExistsException;
 import com.meritconinc.mmr.model.common.CountryVO;
@@ -24,6 +26,7 @@ import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
+import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -242,106 +245,165 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
   }
 
   public String init() throws Exception {
-    try {
-      Markup markup = this.getMarkup();
-      List<Customer> customers = (List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
-                        
-                        Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
-                        Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
-                        Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
-                        Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
-                     List<Long> customerIds = new ArrayList<Long>();
-                     /*  if(customers!=null && customers.size()>0){
-                      	for(Customer customer : customers){
-                      		customerIds.add(customer.getId());
-                      	}*/
-                        
-                      	  customerIds.add(0L);
-                     
-            
-      if (markup == null) {
-        markup = new Markup();
-        markup.setCustomerIds(customerIds);
-                               if(businessId!=null){
-                                	markup.setBusinessId(businessId);
-                                }else{
-                                	markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-                               }
-                        
-                           markup.setBusinessIds(BusinessFilterUtil.getBusIdParentId(markup.getBusinessId()));
-                               // markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-        markup.setCustomerId(0L);
-        markup.setDisabledFlag(false);
-        markup.setCustomerBusName("Default");
-        // markup.setType(ShiplinxConstants.TYPE_MARKUP);
-        this.setMarkup(markup);
-      } else {
-        if (markup.getFromCountryCode() != null && markup.getFromCountryCode().isEmpty())
-          markup.setFromCountryCode(null);
-        if (markup.getToCountryCode() != null && markup.getToCountryCode().isEmpty())
-          markup.setToCountryCode(null);
-        if (markup.getServiceId() != null && markup.getServiceId().equals(-1L))
-          markup.setServiceId(null);
+	    try {
+	      Markup markup = this.getMarkup();
+	      List<Customer> customers = (List<Customer>)getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	                        
+	                        /*Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	                        Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
+	                        Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
+	                        Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
+	                     */
+	                     /*  if(customers!=null && customers.size()>0){
+	                      	for(Customer customer : customers){
+	                      		customerIds.add(customer.getId());
+	                      	}*/
+	                        
+	                      	 // customerIds.add(0L);
+	                     
+	            
+	      if (markup == null) {
+	        markup = new Markup();
+	        //markup.setCustomerIds(customerIds);
+	                               /*if(businessId!=null){
+	                                	markup.setBusinessId(businessId);
+	                                }else{
+	                                	markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	                               }
+	                        
+	                           markup.setBusinessIds(BusinessFilterUtil.getBusIdParentId(markup.getBusinessId()));
+	                              */ // markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	        
+	        String sCustomerId = request.getParameter("customerId");
+	                                if(sCustomerId!=null){
+	                                Long customerId=Long.parseLong(sCustomerId);
+	                                if(customerId!=null && customerId>0){
+	                                	Customer c=customerService.getCustomerInfoByCustomerId(customerId);
+	                                	if(c!=null){
+	                                	markup.setBusinessId(c.getBusinessId());
+	                                	}
+	                                }
+	                                }else{
+	                                	Long userLevelBusId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	                                	if(userLevelBusId!=null && userLevelBusId>0){
+	                            		markup.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+	                                	}else{
+	                                		markup.setBusinessId(UserUtil.getMmrUser().getBusinessId());
+	                                	}
+	                                }
+	                
+	                markup.setCustomerId(0L);
+	        markup.setDisabledFlag(false);
+	        markup.setCustomerBusName("Default");
+	        // markup.setType(ShiplinxConstants.TYPE_MARKUP);
+	        this.setMarkup(markup);
+	      } else {
+	        if (markup.getFromCountryCode() != null && markup.getFromCountryCode().isEmpty())
+	          markup.setFromCountryCode(null);
+	        if (markup.getToCountryCode() != null && markup.getToCountryCode().isEmpty())
+	          markup.setToCountryCode(null);
+	        if (markup.getServiceId() != null && markup.getServiceId().equals(-1L))
+	          markup.setServiceId(null);
 
-        if (!validateWeightParameters(markup)) {
-          addActionError(getText("error.markup.invalid.weight"));
-          return INPUT;
-        }
+	        if (!validateWeightParameters(markup)) {
+	          addActionError(getText("error.markup.invalid.weight"));
+	          return INPUT;
+	        }
 
-      }
-      String sCustomerId = request.getParameter("customerId");
-      if (sCustomerId != null) {
-        markup.setCustomerId(Long.parseLong(sCustomerId));
-        customerIds.clear();
-                customerIds.add(Long.parseLong(sCustomerId));
-                markup.setCustomerIds(customerIds);
-        if (markup.getCustomerId() == 0)
-          markup.setCustomerBusName("Default");
-        else
-          markup.setCustomerBusName(customerService.getCustomerInfoByCustomerId(
-        		  Long.parseLong(sCustomerId)).getName());
-      }
+	      }
+	      String sCustomerId = request.getParameter("customerId");
+	      if (sCustomerId != null) {
+	    	  Long customerId=Long.parseLong(sCustomerId);
+	    	            if(customerId!=null && customerId>0){
+	    	            	Customer c=customerService.getCustomerInfoByCustomerId(customerId);
+	    	            	if(c!=null){
+	    	            	markup.setBusinessId(c.getBusinessId());
+	    	            	}
+	    	            }
+	        markup.setCustomerId(Long.parseLong(sCustomerId));	
+	        /*customerIds.clear();
+	                customerIds.add(Long.parseLong(sCustomerId));
+	                markup.setCustomerIds(customerIds);*/
+	        if (markup.getCustomerId() == 0)
+	          markup.setCustomerBusName("Default");
+	        else
+	          markup.setCustomerBusName(customerService.getCustomerInfoByCustomerId(
+	        		  Long.parseLong(sCustomerId)).getName());
+	      }
 
-      initWeightList();
+	      initWeightList();
 
-      if (this.markupManagerService != null) {
-        markupList = this.markupManagerService.getMarkupListForCustomer(markup);
-        if (markupList != null)
-          getSession().put("MARKUPLIST", markupList);
+	      if (this.markupManagerService != null) {
+	        /*markupList = this.markupManagerService.getMarkupListForCustomer(markup);
+	        if (markupList != null)
+	          getSession().put("MARKUPLIST", markupList);*/
+	    	  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	    	      		  long busId = BusinessFilterUtil.setBusinessIdbyUserLevel();
+	    	      		  Business bus = businessDAO.getBusiessById(busId);
+	    	      		  if(!bus.isCopyMarkup() && (sCustomerId == null || markup.getCustomerId() == 0)){
+	    	      			  markupList = this.markupManagerService.getMarkupListForCustomer(markup);
+	    	      		  }
+	    	      		  
+	    	      	if(sCustomerId != null && markup.getCustomerId() > 0){
+	    	      		Customer cus = customerService.getCustomerInfoByCustomerId(markup.getCustomerId());
+	    	      			markupList = this.markupManagerService.getMarkupListForCustomer(markup);
+	    	      			bus.setCopyMarkup(false);
+	    	      	}
+	    	          if (markupList != null && !markupList.isEmpty()){
+	    	          	getSession().put("MARKUPLIST", markupList);
+	    	          }
+	    	          
+	    	          if(sCustomerId != null && (markupList == null || markupList.isEmpty()) ){
+	    	          	getSession().put("CopyDisable", "copy");
+	    	          }
 
-        setFlatMarkups(this.markupManagerService.getFlatMarkups());
+	        setFlatMarkups(this.markupManagerService.getFlatMarkups());
 
-        setPercentageMarkups(this.markupManagerService.getPercentageMarkups());
+	        setPercentageMarkups(this.markupManagerService.getPercentageMarkups());
 
-        countries = MessageUtil.getCountriesList();
-        getSession().put("COUNTRIES", countries);
+	        countries = MessageUtil.getCountriesList();
+	        getSession().put("COUNTRIES", countries);
 
-        populateCountryNamesInMarkupList();
-        this.populateCustomersList();
-        if (this.carrierServiceManager != null) {
-          if (getSession().get("CARRIERS") == null) {
-        	  if(businessId!=null){
-        		          		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(businessId);
-        		          		          		                }else{
-        		         		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser()
-        		          		          		                			.getBusinessId());
-        		          		          		                }
-            getSession().put("CARRIERS", carriers);
-            setCarrierId(1L);
-          }
-          if (getSession().get("SERVICES") == null) {
-            services = getMarkupServices(1L);
-            getSession().put("SERVICES", services);
-          }
-        }
+	        populateCountryNamesInMarkupList();
+	        this.populateCustomersList();
+	        if (this.carrierServiceManager != null) {
+	          if (getSession().get("CARRIERS") == null) {
+	        	  /*if(businessId!=null){
+	        		          		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(businessId);
+	        		          		          		                }else{
+	        		         		          		                	carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser()
+	        		          		          		                			.getBusinessId());
+	        		          		          		                }*/
+	        	  long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	        	          	          	          	 if(businessId>0){
+	        	          	          	          	 carriers = this.carrierServiceManager.getCarriersForBusiness(businessId);
+	        	          	          	          	 }else{
+	        	          	          	          		 carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+	        	          	          	          	 }
+	            getSession().put("CARRIERS", carriers);
+	            setCarrierId(1L);
+	          }
+	          if (getSession().get("SERVICES") == null) {
+	            services = getMarkupServices(1L);
+	            getSession().put("SERVICES", services);
+	          }
+	        }
 
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      addActionError(getText("content.error.unexpected"));
-    }
-    return SUCCESS;
-  }
+	      }
+	      if(sCustomerId == null || sCustomerId.isEmpty() || markup.getCustomerId() == 0){
+	    	  	      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	    	  	      long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	    	  	      Business bus = businessDAO.getBusiessById(businessId);
+	    	  	      getSession().put("MarkupCopyCheck", bus.isCopyMarkup());
+	    	  	     //long id = (Long)
+	    	  	      getSession().put("ParentIdAvailable", bus.getParentBusinessId());
+	    	        }
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	      addActionError(getText("content.error.unexpected"));
+	    }
+	    return SUCCESS;
+	  }
 
   private void initWeightList() {
     // TODO Auto-generated method stub
@@ -916,6 +978,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  
 	  public String saveMarkupList() throws Exception {
 	  		try {
+	  			long busId = BusinessFilterUtil.setBusinessIdbyUserLevel();
 	  		Boolean eshipCarrierUpdated=false;
 	  			shippingService = (ShippingService) MmrBeanLocator.getInstance()
 	  					.findBean("shippingService");
@@ -964,7 +1027,9 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  			for (int i1 = 0; i1 < item.length; i1++) {
 	  				if (!item[i1].equalsIgnoreCase("")) {
 	  					// for (int i = 0; i < this.getMarkupList().size(); i++) {
-	  					Markup m = this.getMarkupList().get(Integer.parseInt(item[i1]));					int p = Integer.parseInt(mPs[i1]);
+	  					Markup m = this.getMarkupList().get(Integer.parseInt(item[i1]));
+	  					m.setBusinessId(busId);
+	  					int p = Integer.parseInt(mPs[i1]);
 	  					double f = Double.parseDouble(mFs[i1]);
 	  				boolean d = convertStringToBoolean(mDs[i1]);
 	  					int v = Integer.parseInt(mVs[i1]);
@@ -1014,4 +1079,84 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  public void setEshipCarrierList(List<EshipplusCarrierFilter> eshipCarrierList) {
 	  	this.eshipCarrierList = eshipCarrierList;
 	  }
+	  
+	//Method to Copy Parent Markup to child
+	  	  public String copyParentMarkup(){
+	  		  long customerId = Long.parseLong(request.getParameter("customerId"));
+	  		  long businessId = BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  		  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  		MarkupManagerDAOImpl markupDAO = (MarkupManagerDAOImpl)MmrBeanLocator.getInstance().findBean("markupManagerDAO");
+	  		  Business bus = businessDAO.getBusiessById(businessId);
+	  		  
+	  		  
+	  		  try{
+	  			  if(customerId == 0 ){
+	  		  //
+	  				  if(bus!=null && !bus.isPartnerLevel() && !bus.isNationLevel() && !bus.isBranchLevel() && bus.getPartnerId()==0 
+	  							&& bus.getParentBusinessId()==0 && bus.getBranchId()==0 && bus.getCountryPartnerId()==0){
+	  					 
+	  					  long i = markupDAO.ismarkupavailable(1);
+	  					  if(i > 0){
+	  						  markupDAO.insertCustomerMarkupByBusiness(businessId, 1);
+	  						  businessDAO.setCopyMarkupFlag(businessId);
+	  						  addActionMessage("Default markup of parent business added successfully");
+	  					  } else {
+	  						  addActionError("No markup available to copy");
+	  						  return INPUT;
+	  					  }
+	  					 
+	  					}else if(bus!=null && bus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+	  						
+	  						copyParentMarkup(bus.getId());
+	  						
+	  					}else if(bus!=null&&bus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+	  						
+	  						copyParentMarkup(bus.getId());
+	  						 
+	  					}else if(bus!=null&&bus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	  		
+	  						copyParentMarkup(bus.getId());
+	  					}
+	  				  
+	  				  init();
+	  			  }
+	  		  }catch(Exception e){
+	  			  e.printStackTrace();
+	  		  }
+	  			
+	  		  return SUCCESS;
+	  	  }  
+	  	  
+	  	  // Recursive method to copy available parent markup to child based on customer and business
+	  	  public void copyParentMarkup(long businessId){
+	  		  long businessId1 = BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  		  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	  		  MarkupManagerDAOImpl markupDAO = (MarkupManagerDAOImpl)MmrBeanLocator.getInstance().findBean("markupManagerDAO");
+	  		  Business bus = businessDAO.getBusiessById(businessId);
+	  		  long i=0;
+	  		  if(bus.getParentBusinessId() > 0){
+	  			 i = markupDAO.ismarkupavailable(bus.getParentBusinessId());
+	  			if(i > 0){
+	  					markupDAO.insertCustomerMarkupByBusiness(businessId1, bus.getParentBusinessId());
+	  					businessDAO.setCopyMarkupFlag(businessId1);
+	  					addActionMessage("Default markup of parent business added successfully");
+	  					return;
+	  				
+	  			}else{
+	  					 businessId = bus.getParentBusinessId();
+	  					 copyParentMarkup(businessId);
+	  			}
+	  		  }else{
+	  				i = markupDAO.ismarkupavailable(1);
+	  				if(i > 0){
+	  					markupDAO.insertCustomerMarkupByBusiness(businessId1, 1);
+	  					businessDAO.setCopyMarkupFlag(businessId1);
+	  					addActionMessage("Default markup of parent business added successfully");
+	  					return;
+	  				}else{
+	  					addActionError("No markup available to copy");
+	  				}
+	  		  }
+	  	  }
+	  	  
 }

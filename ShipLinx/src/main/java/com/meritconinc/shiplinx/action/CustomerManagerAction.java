@@ -680,9 +680,6 @@ public String execute() throws Exception {
   					   getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getBranchLevelCustomers(businessId, partnerId, countryPartnerId, branchId));
   				   }
   			}
-  			if(customer.getId() > 0 && customer.getBusinessId()  > 0){
-  				  				  				customermanagerDAO.setCopyCustomerMarkupFlag(customer.getId(), customer.getBusinessId());
-  				  				  			}
 	      sendAddCustomerEmailNotification();
 	    } catch (UsernameAlreadyTakenException ue) {
 	      addActionError(getText("error.username.taken"));

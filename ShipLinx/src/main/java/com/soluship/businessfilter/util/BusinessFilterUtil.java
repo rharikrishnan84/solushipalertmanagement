@@ -33,22 +33,36 @@ import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
+import com.meritconinc.shiplinx.dao.MarkupManagerDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Business;
+
 import org.acegisecurity.userdetails.UserDetails;
+
 import com.meritconinc.mmr.service.acegi.CustomUser;
+import com.meritconinc.shiplinx.model.BusinessFilter;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CountryPartner;
 import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.model.LtlPoundRate;
+import com.meritconinc.shiplinx.model.LtlSkidRate;
+import com.meritconinc.shiplinx.model.Markup;
 import com.meritconinc.shiplinx.model.Partner;
 import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.service.CustomerManager;
+import com.meritconinc.shiplinx.service.MarkupManager;
 import com.meritconinc.shiplinx.utils.BusinessDefaultLoaderDaoImpl;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import org.apache.axis2.databinding.types.soapencoding.Array;
+
 import javax.imageio.ImageIO;
+
 import com.meritconinc.mmr.dao.MessageDAO;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.shiplinx.model.BusinessEmail;
@@ -850,11 +864,16 @@ public void run() {
    
 public void loadDefaultPropertyForBusiness(List<Long> businessIds){
 	
-	
+	int count = 0;
 	BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 	if(businessIds!=null && businessIds.size()>0){
 	for(Long businessId:businessIds){
-	addDefaultBusinessLoaders(businessId);
+		count=count+1;
+						if(count > 1){
+							addDefaultBusinessLoaders(businessId);
+						}else{
+							addDefaultBusinessLoaders1(businessId);
+						}
 	
     businessDAO.addDefaultCustomerCarrier(businessId);
 	System.out.println("......  customer carrier added for business......."+businessId);
@@ -864,8 +883,30 @@ public void loadDefaultPropertyForBusiness(List<Long> businessIds){
 	}
 }
 
+public static void loadDefaultProperty(long businessId){
+	
+	BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	if(businessId > 0){
+	addDefaultLoaders(businessId);
+    businessDAO.addDefaultCustomerCarrier(businessId);
+	System.out.println("......  customer carrier added for business......."+businessId);
+    businessDAO.addDefaultPinsToBusiness(businessId);
+	System.out.println("......  pins carrier added for business......."+businessId);
+	 
+	}
+}
 
-private void addDefaultBusinessLoaders(long businessId) {
+private static void addDefaultLoaders(long businessId) {
+	// TODO Auto-generated method stub
+	 BusinessDefaultLoaderDaoImpl defLoader=new BusinessDefaultLoaderDaoImpl(businessId, 1);
+	 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	 if(businessId>0){
+		 defLoader.loadAll();
+		 businessDAO.setCopyMarkupFlag(businessId);
+	 }
+	
+}
+private void addDefaultBusinessLoaders1(long businessId) {
 	// TODO Auto-generated method stub
 	 BusinessDefaultLoaderDaoImpl defLoader=new BusinessDefaultLoaderDaoImpl(businessId, 1);
 	 if(businessId>0){
@@ -882,7 +923,7 @@ private void addDefaultBusinessLoaders(long businessId) {
 		
 	}
 	if(toUpdateLoader.size()==7){
-		defLoader.loadAll();
+		defLoader.loadAll1();
 		System.out.println("...... All defualt loaders added for business ......."+businessId);
 	}else if(toUpdateLoader.size()>0){
 		
@@ -917,6 +958,61 @@ private void addDefaultBusinessLoaders(long businessId) {
 	
 }
 
+
+private void addDefaultBusinessLoaders(long businessId) {
+//TODO Auto-generated method stub
+	 BusinessDefaultLoaderDaoImpl defLoader=new BusinessDefaultLoaderDaoImpl(businessId, 1);
+	 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	 if(businessId>0){
+    List<Integer> toUpdateLoader =new ArrayList<Integer>();
+	 if(getSelect()!=null && getSelect().size()>0){
+		
+		   
+				 for(int i=0;i<getSelect().size();i++){
+					 if(getSelect().get(i)){
+					 toUpdateLoader.add(i+1);
+					 }
+					 					 
+				 }
+		
+	}
+	if(toUpdateLoader.size()==7){
+		defLoader.loadAll();
+		System.out.println("...... All defualt loaders added for business ......."+businessId);
+	}else if(toUpdateLoader.size()>0){
+		
+		for(Integer i:toUpdateLoader){
+			if(i==1){
+				defLoader.loadBusinessCarrier();
+				System.out.println("...... business carrier added for business ......."+businessId);
+			}else if(i==2){
+				defLoader.loadBusinessMenu();
+				System.out.println("...... menus added for business ......."+businessId);
+			}/*else if(i==3){
+				defLoader.loadCustomerMarkUp();
+				System.out.println("......customer_markups added for business ......."+businessId);
+			}*/else if(i==4){
+				defLoader.loadEdiInfo();
+				System.out.println("...... edi info added for business ......."+businessId);
+			}/*else if(i==5){
+				defLoader.loadPoundRate();
+				System.out.println("...... pound rate added for business ......."+businessId);
+			}else if(i==6){
+				defLoader.loadSkidRate();
+				System.out.println("...... skid rate added for business ......."+businessId);
+			}*/else if(i==7){
+				defLoader.loadMerchantAccount();
+				System.out.println("...... loadMerchantAccount added for business ......."+businessId);
+			}
+		}
+		
+	}
+	businessDAO.setCopyMarkupFlag(businessId);
+	
+	
+	 }
+	
+}
 public List<Boolean> getSelect() {
 	return select;
 }
@@ -1130,6 +1226,946 @@ public static List<File> getCSSFileList(File dir) {
 	      }
 	      
 		return body;
+	}
+	
+	/*Function get the business_carrier
+	 * from their parent_level business 
+	 * if not found at parent_level
+	 * it will get that from super parent business
+	 * @param carrierId,businessId
+	 */
+	
+	public static Carrier getCarrierByBusinessFromSuperBusiness(Long carrierId, Long businessId){
+		 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		 CarrierServiceDAO carrierServiceDAO=(CarrierServiceDAO) MmrBeanLocator.getInstance().findBean("carrierServiceDAO");
+		 Business curBus=businessDAO.getBusiessById(businessId);
+		 Carrier c=new Carrier();
+	   BusinessFilter bf=new BusinessFilter();
+		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+			 
+				   c=carrierServiceDAO.getCarrierByBusiness(carrierId,businessId);
+				return c;
+			}else if(curBus!=null&&curBus.isPartnerLevel()){  //partner level business  to get the business objects  of child business under the tree
+			
+				bf= getBusinessFilterAtPartnerLevel(curBus);
+				c=carrierServiceDAO.getCarrierByBusiness(carrierId,businessId);
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getParentBus().getId());
+				}
+				return c;
+				
+			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+				
+				bf= getBusinessFilterAtNationLevel(curBus);
+				c=carrierServiceDAO.getCarrierByBusiness(carrierId,businessId);
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getPartnerBus().getId());
+			} 
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getParentBus().getId());
+				}
+				return c;
+				
+			}else if(curBus!=null&&curBus.isBranchLevel()){    //branch level business  to get the business objects  of child business under the tree
+				
+				bf= getBusinessFilterAtBranchLevel(curBus);
+				c=carrierServiceDAO.getCarrierByBusiness(carrierId,businessId);
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getNationBus().getId());
+				} 
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getPartnerBus().getId());
+				}
+				if(c==null && bf!=null){
+					c=carrierServiceDAO.getCarrierByBusiness(carrierId,bf.getParentBus().getId());
+				}
+				return c;
+			}
+		return null;
+	}
+	
+	
+	
+	
+	
+	 
+	 /*
+	  * parent level business  to get the business objects  of child business under the tree
+	  * @param curBus
+	  * @return
+	  */
+	public static BusinessFilter getBusinessFilterAtBranchLevel(Business curBus) {
+		// TODO Auto-generated method stub
+		
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		BusinessFilter bf=new BusinessFilter();
+		
+		if(curBus!=null){
+			bf.setBranchBus(curBus);
+			Business nationBus=businessDAO.getBusiessById(curBus.getParentBusinessId());
+			Business partnerBus=businessDAO.getBusiessById(nationBus.getParentBusinessId());
+			Business parentBus=businessDAO.getBusiessById(partnerBus.getParentBusinessId());
+			if(nationBus!=null){
+				bf.setNationBus(nationBus);
+			}
+			if(partnerBus!=null){
+				bf.setPartnerBus(partnerBus);
+			}
+			if(parentBus!=null){
+				bf.setParentBus(parentBus);
+			}
+			return bf;
+		}
+		
+		
+		return null;
+	}
+	
+	public static BusinessFilter getBusinessFilterAtNationLevel(Business curBus) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		if(curBus!=null){
+		BusinessFilter bf=new BusinessFilter();
+		bf.setNationBus(curBus);
+		Business partnerBus=businessDAO.getBusiessById(curBus.getParentBusinessId());
+		Business parentBus=businessDAO.getBusiessById(partnerBus.getParentBusinessId());
+		if(parentBus!=null){
+			bf.setParentBus(parentBus);
+		}
+	    if(partnerBus!=null){
+	    	bf.setPartnerBus(partnerBus);
+	    }
+	     
+			List<Business> branchLevBusList=new ArrayList<Business>();
+			  
+					List<Business> busList=businessDAO.getBranchBuisness(curBus.getPartnerId(),curBus.getCountryPartnerId());
+		    		if(busList!=null  && busList.size()>0){
+		    			branchLevBusList.addAll(branchLevBusList);
+		    		}
+				
+		 
+			if(branchLevBusList!=null && branchLevBusList.size()>0){
+				bf.setBranchBusList(branchLevBusList);
+			}
+		
+			return bf;
+		}
+		return null;
+	}
+	
+	
+	public static BusinessFilter getBusinessFilterAtPartnerLevel(Business curBus) {
+		// TODO Auto-generated method stub
+		
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		BusinessFilter bf=new BusinessFilter();
+		if(curBus!=null){
+		Business parentBus=businessDAO.getBusiessById(curBus.getParentBusinessId());
+		Business partnerBus=businessDAO.getBusiessById(curBus.getId());
+		if(parentBus!=null){
+			bf.setParentBus(parentBus);	
+		}
+		if(partnerBus!=null){
+			bf.setPartnerBus(partnerBus);
+		}
+	     
+		 List<Business> nationBusList=new ArrayList<Business>();
+		    if(partnerBus!=null){
+	    		List<Business> busList=businessDAO.getCountryBusiness(partnerBus.getId());
+	    		if(busList!=null  && busList.size()>0){
+	   		
+	    			nationBusList.addAll(busList);
+	    		}
+		    	if(nationBusList!=null && nationBusList.size()>0){
+		    		List<Business> branchLevBusList=new ArrayList<Business>();
+		    		for(Business nation:nationBusList){
+		    			if(nation!=null){
+		    				 busList=businessDAO.getBranchBuisness(nation.getPartnerId(),nation.getCountryPartnerId());
+		    	    		if(busList!=null  && busList.size()>0){
+		    	    			branchLevBusList.addAll(branchLevBusList);
+		    	    		}
+	    			}
+	    		}
+		    		bf.setNationBusList(nationBusList);
+		    		if(branchLevBusList!=null && branchLevBusList.size()>0){
+		    			bf.setBranchBusList(branchLevBusList);
+		    		}
+		    	}
+		    	
+		    }
+		return bf;
+		}
+		
+		return null;
+	}
+	
+	private static BusinessFilter getBusinessFilterAtParentLevel(Business curBus) {
+		// TODO Auto-generated method stub
+		 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		if(curBus!=null){ 
+			BusinessFilter bf=new BusinessFilter();
+		    bf.setParentBus(curBus);
+		    List<Business> partnerBusiness=businessDAO.getPartnerBusiness(curBus.getId());
+		    List<Business> nationBusList=new ArrayList<Business>();
+		    if(partnerBusiness!=null && partnerBusiness.size()>0){
+		    	bf.setParentBusList(partnerBusiness);
+		    	for(Business partner :partnerBusiness){
+		    		if(partner!=null){
+			    		List<Business> busList=businessDAO.getCountryBusiness(partner.getId());
+			    		if(busList!=null  && busList.size()>0){
+			    		
+			    			nationBusList.addAll(busList);
+			    		}
+		    		}
+		    	}
+		    	bf.setParentBusList(partnerBusiness);
+		    	if(nationBusList!=null && nationBusList.size()>0){
+		    		
+		    		List<Business> branchLevBusList=new ArrayList<Business>();
+		    		
+		    		for(Business nation:nationBusList){
+		    		
+		    			if(nation!=null){
+		    				List<Business> busList=businessDAO.getBranchBuisness(nation.getPartnerId(),nation.getCountryPartnerId());
+		    	    		if(busList!=null  && busList.size()>0){
+		    	    			branchLevBusList.addAll(branchLevBusList);
+		    	    		}
+		    			}
+		    		}
+		    		bf.setNationBusList(nationBusList);
+		    	
+		    		
+		    		if(branchLevBusList!=null && branchLevBusList.size()>0){
+		    			bf.setBranchBusList(branchLevBusList);
+		    		}
+	    	}
+	    	
+		    	
+	    }
+		    
+		    return bf;
+		}
+	    
+	    
+	    
+		return null;
+	}
+	public static List<Carrier> getCarriersForBusinessByBusinessLevel(
+			long businessId) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		 CarrierServiceDAO carrierServiceDAO=(CarrierServiceDAO) MmrBeanLocator.getInstance().findBean("carrierServiceDAO");
+		 Business curBus=businessDAO.getBusiessById(businessId);
+		 List<Carrier> carriers=carrierServiceDAO.getCarriersForBusiness(businessId);
+	   BusinessFilter bf=new BusinessFilter();
+		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+			 
+			 carriers=carrierServiceDAO.getCarriersForBusiness(businessId);
+				return carriers;
+			}else if(curBus!=null&&curBus.isPartnerLevel()){  //partner level business  to get the business objects  of child business under the tree
+				
+				bf= getBusinessFilterAtPartnerLevel(curBus);
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getParentBus().getId());
+				}
+				return carriers;
+				
+		}else if(curBus!=null&& curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+				
+	
+				bf= getBusinessFilterAtNationLevel(curBus);
+				
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getPartnerBus().getId());
+				}
+				
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getParentBus().getId());
+				}
+				return carriers;
+				
+				
+			}else if(curBus!=null&&curBus.isBranchLevel()){    //branch level business  to get the business objects  of child business under the tree
+	
+				bf= getBusinessFilterAtBranchLevel(curBus);
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getNationBus().getId());
+				}
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getPartnerBus().getId());
+				}
+				
+				if((carriers==null||carriers.size()==0)&& bf!=null){
+					 carriers=carrierServiceDAO.getCarriersForBusiness(bf.getParentBus().getId());
+				}
+				
+			
+				return carriers;
+				
+			}
+	
+		
+		return null;
+	}
+	public static Markup getMarkupByBusinessLevel(Markup markup) {
+		// TODO Auto-generated method stub
+		
+		return markup;
+	}
+	public static List<Markup> getMarkupListForCustomer(MarkupManagerDAO markupDAO,
+			Markup markup) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		long oldbus = markup.getBusinessId();
+		long busId;
+		 if(markup!=null){
+			 Business curBus=businessDAO.getBusiessById(markup.getBusinessId());
+			 BusinessFilter bf=new BusinessFilter();
+			 List<Markup> mList=new ArrayList<Markup>();
+			 
+			 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+				 
+				 mList= markupDAO.getMarkupListForCustomer(markup);
+				 if(mList == null || mList.size() == 0 || mList.isEmpty()){
+					 busId = 1;
+					 markup.setBusinessId(busId);
+					 mList= markupDAO.getMarkupListForCustomer(markup);
+				 }
+				 markup.setBusinessId(oldbus);
+				 return mList;
+				 
+				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+					
+					bf= getBusinessFilterAtPartnerLevel(curBus);
+					if(bf!=null){
+					 mList= markupDAO.getMarkupListForCustomer(markup);
+					 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+						 markup.setBusinessId(bf.getParentBus().getId());
+						 mList= markupDAO.getMarkupListForCustomer(markup);
+					 }
+					 
+					}
+					markup.setBusinessId(oldbus);
+					return mList;
+					
+			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+					
+	
+				bf= getBusinessFilterAtNationLevel(curBus);
+					
+					if(bf!=null){
+						 mList= markupDAO.getMarkupListForCustomer(markup);
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupListForCustomer(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     mList= markupDAO.getMarkupListForCustomer(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(oldbus);
+						return mList;
+					 
+					
+				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+					bf= getBusinessFilterAtBranchLevel(curBus);
+					 
+		   
+					
+					mList= markupDAO.getMarkupListForCustomer(markup);
+					if(bf!=null){
+						 if((mList==null || mList.size()==0)&& bf.getNationBus() !=null){
+						 markup.setBusinessId(bf.getNationBus().getId());
+							 mList= markupDAO.getMarkupListForCustomer(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupListForCustomer(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     mList= markupDAO.getMarkupListForCustomer(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(oldbus);
+					 return mList;
+				}
+					
+			
+		 }
+	
+		return null;
+	}
+	public static List<Markup> getMarkupList(MarkupManagerDAO markupDAO,
+			Markup markup) {
+		// TODO Auto-generated method stub
+		
+	BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	long busId = markup.getBusinessId();
+		 if(markup!=null){
+			 Business curBus=businessDAO.getBusiessById(markup.getBusinessId());
+			 BusinessFilter bf=new BusinessFilter();
+			 List<Markup> mList=new ArrayList<Markup>();
+			 
+			 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+						&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+				 
+				 mList= markupDAO.getMarkupList(markup);
+				 markup.setBusinessId(busId);
+				 return mList;
+				 
+				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+					
+					bf= getBusinessFilterAtPartnerLevel(curBus);
+					if(bf!=null){
+					 mList= markupDAO.getMarkupList(markup);
+					 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+						 markup.setBusinessId(bf.getParentBus().getId());
+						 mList= markupDAO.getMarkupList(markup);
+					 }
+					 
+					}
+					 markup.setBusinessId(busId);
+					return mList;
+					
+				}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+					
+	
+					bf= getBusinessFilterAtNationLevel(curBus);
+					
+					if(bf!=null){
+						 mList= markupDAO.getMarkupList(markup);
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupList(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     mList= markupDAO.getMarkupList(markup);
+						 }
+						 
+						}
+					 markup.setBusinessId(busId);
+						return mList;
+					 
+					
+				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+					bf= getBusinessFilterAtBranchLevel(curBus);
+					 
+		   
+					
+					mList= markupDAO.getMarkupList(markup);
+					if(bf!=null){
+						 if((mList==null || mList.size()==0)&& bf.getNationBus() !=null){
+							 markup.setBusinessId(bf.getNationBus().getId());
+							 mList= markupDAO.getMarkupList(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupList(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     mList= markupDAO.getMarkupList(markup);
+						 }
+						 
+						}
+					 markup.setBusinessId(busId);
+					 return mList;
+				}
+					
+			
+		 }
+		return null;
+	}
+	public static List<Markup> getMarkupListForUniqueMarkup(
+			MarkupManagerDAO markupDAO, Markup markup) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		long busId = markup.getBusinessId();
+		
+		 if(markup!=null){
+			 Business curBus=businessDAO.getBusiessById(markup.getBusinessId());
+			 BusinessFilter bf=new BusinessFilter();
+			 List<Markup> mList=new ArrayList<Markup>();
+			 
+			 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+						&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+				 
+				 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+				 
+				 markup.setBusinessId(busId);
+				 return mList;
+				 
+				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+					
+					bf= getBusinessFilterAtPartnerLevel(curBus);
+					if(bf!=null){
+					 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+					 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+						 markup.setBusinessId(bf.getParentBus().getId());
+						 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+					 }
+					 
+					}
+					markup.setBusinessId(busId);
+					return mList;
+					
+				}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+					
+	
+					bf= getBusinessFilterAtNationLevel(curBus);
+					
+					if(bf!=null){
+						 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(busId);
+						return mList;
+					 
+					
+				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+					bf= getBusinessFilterAtBranchLevel(curBus);
+					 
+		   
+					
+					mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+					if(bf!=null){
+						 if((mList==null || mList.size()==0)&& bf.getNationBus() !=null){
+							 markup.setBusinessId(bf.getNationBus().getId());
+							 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+							 mList= markupDAO.getMarkupListForUniqueMarkup(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(busId);
+					 return mList;
+				}
+				
+			
+		 }
+		return null;
+	}
+	public static Markup findBaseMarkup(MarkupManagerDAO markupDAO, Markup markup) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		long busId = markup.getBusinessId();
+		 if(markup!=null){
+			 Business curBus=businessDAO.getBusiessById(markup.getBusinessId());
+			 BusinessFilter bf=new BusinessFilter();
+			Markup m=new  Markup();
+			 
+			 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+						&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+				 
+				 m= markupDAO.findBaseMarkup(markup);
+				 markup.setBusinessId(busId);
+				 return m;
+				 
+				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+					
+					bf= getBusinessFilterAtPartnerLevel(curBus);
+					if(bf!=null){
+					 m= markupDAO.findBaseMarkup(markup);
+					 if((m==null)&& bf.getParentBus() !=null){
+						 markup.setBusinessId(bf.getParentBus().getId());
+						 m= markupDAO.findBaseMarkup(markup);
+					 }
+					 
+					}
+					markup.setBusinessId(busId);
+					return m;
+					
+				}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+					
+	
+					bf= getBusinessFilterAtNationLevel(curBus);
+					
+					if(bf!=null){
+						 m= markupDAO.findBaseMarkup(markup);
+						 if((m==null)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 m= markupDAO.findBaseMarkup(markup);
+						 }
+						 if((m==null)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     m= markupDAO.findBaseMarkup(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(busId);
+						return m;
+					 
+					
+				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+					bf= getBusinessFilterAtBranchLevel(curBus);
+					 
+		   
+					
+					m= markupDAO.findBaseMarkup(markup);
+					if(bf!=null){
+						 if((m==null)&& bf.getNationBus() !=null){
+							 markup.setBusinessId(bf.getNationBus().getId());
+							 m= markupDAO.findBaseMarkup(markup);
+						 }
+						 if((m==null)&& bf.getPartnerBus() !=null){
+							 markup.setBusinessId(bf.getPartnerBus().getId());
+							 m= markupDAO.findBaseMarkup(markup);
+						 }
+						 if((m==null)&& bf.getParentBus() !=null){
+							 markup.setBusinessId(bf.getParentBus().getId());
+						     m= markupDAO.findBaseMarkup(markup);
+						 }
+						 
+						}
+					markup.setBusinessId(busId);
+					 return m;
+				}
+					
+			
+		 }
+		 
+		return null;
+	}
+	
+	
+	public static List<Markup> getAllMarkupsForCustomer(
+			MarkupManager markupManagerService, Long customerId, long businessId2) {
+		// TODO Auto-generated method stub
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		long busId = businessId2;
+		 
+			 Business curBus=businessDAO.getBusiessById(businessId2);
+			 BusinessFilter bf=new BusinessFilter();
+			 List<Markup> mList=new ArrayList<Markup>();
+			 
+			 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+						&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+				 
+				 mList= markupManagerService.getAllMarkupsForCustomer(customerId,businessId2);
+				 businessId2 = busId;
+				 return mList;
+				 
+				}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+					
+					bf= getBusinessFilterAtPartnerLevel(curBus);
+					if(bf!=null){
+						 mList= markupManagerService.getAllMarkupsForCustomer(customerId,businessId2);
+					 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+						 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getParentBus().getId());
+					 }
+					 
+					}
+					 businessId2 = busId;
+
+					return mList;
+					
+				}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+					
+	
+					bf= getBusinessFilterAtNationLevel(curBus);
+					
+					if(bf!=null){
+						 mList= markupManagerService.getAllMarkupsForCustomer(customerId,businessId2);
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getPartnerBus().getId());
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getParentBus().getId());
+						 }
+						 
+						}
+					 businessId2 = busId;
+
+						return mList;
+					 
+					
+				}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+					bf= getBusinessFilterAtBranchLevel(curBus);
+					 
+		   
+					
+					 mList= markupManagerService.getAllMarkupsForCustomer(customerId,businessId2);
+					if(bf!=null){
+						 if((mList==null || mList.size()==0)&& bf.getNationBus() !=null){
+							 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getNationBus().getId());
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getPartnerBus() !=null){
+							 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getPartnerBus().getId());
+						 }
+						 if((mList==null || mList.size()==0)&& bf.getParentBus() !=null){
+							 mList= markupManagerService.getAllMarkupsForCustomer(customerId,bf.getParentBus().getId());
+						 }
+						 
+						}
+					 businessId2 = busId;
+
+					 return mList;
+				}
+					
+			
+		 
+		return null;
+	}
+	public static LtlPoundRate getPoundRate(MarkupManagerDAO markupDAO,
+			LtlPoundRate poundRateTobeSearched, Double totWeight) {
+		// TODO Auto-generated method stub
+		
+		
+		
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		if(poundRateTobeSearched!=null){
+		 long busId = poundRateTobeSearched.getBusinessId();
+		 Business curBus=businessDAO.getBusiessById(poundRateTobeSearched.getBusinessId());
+		 BusinessFilter bf=new BusinessFilter();
+		 LtlPoundRate ltpr=null;
+		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+			 
+			 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+			 poundRateTobeSearched.setBusinessId(busId);
+			 return ltpr;
+			 
+			}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+				
+				bf= getBusinessFilterAtPartnerLevel(curBus);
+				if(bf!=null){
+					 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 if((ltpr==null )&& bf.getParentBus() !=null){
+						 poundRateTobeSearched.setBusinessId(bf.getParentBus().getId());
+						 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 }
+				}
+				poundRateTobeSearched.setBusinessId(busId);
+				return ltpr;
+				
+			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+				
+	
+				bf= getBusinessFilterAtNationLevel(curBus);
+				
+				if(bf!=null){
+					ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 if((ltpr==null )&& bf.getPartnerBus() !=null){
+						 poundRateTobeSearched.setBusinessId(bf.getPartnerBus().getId());
+						 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 }
+					}
+				poundRateTobeSearched.setBusinessId(busId);
+					return ltpr;
+				 
+				
+			}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+				bf= getBusinessFilterAtBranchLevel(curBus);
+				 
+	  
+				
+				ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+				if(bf!=null){
+					 if((ltpr==null )&& bf.getNationBus() !=null){
+						 poundRateTobeSearched.setBusinessId(bf.getNationBus().getId());
+						 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 }
+					 if((ltpr==null )&& bf.getPartnerBus() !=null){
+						 poundRateTobeSearched.setBusinessId(bf.getPartnerBus().getId());
+						 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 }
+					 if((ltpr==null )&& bf.getParentBus() !=null){
+						 poundRateTobeSearched.setBusinessId(bf.getParentBus().getId());
+						 ltpr= markupDAO.getPoundRate(poundRateTobeSearched,totWeight);
+					 }
+					 
+				}
+				poundRateTobeSearched.setBusinessId(busId);
+				 return ltpr;
+			}
+				
+		
+	}
+		
+		
+		
+		return null;
+	}
+	public static LtlSkidRate getSkidRate(MarkupManagerDAO markupDAO,
+			LtlSkidRate skidRateTobeSearched) {
+		// TODO Auto-generated method stub
+		if(skidRateTobeSearched!=null){
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		long busId = skidRateTobeSearched.getBusinessId();
+		Business curBus=businessDAO.getBusiessById(skidRateTobeSearched.getBusinessId());
+		
+		
+		LtlSkidRate skidRate=new LtlSkidRate();
+		 
+		 BusinessFilter bf=new BusinessFilter();
+	 
+		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+			 
+			 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+				    
+			 return skidRate;
+			 
+			}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+				
+				bf= BusinessFilterUtil.getBusinessFilterAtPartnerLevel(curBus);
+				if(bf!=null){
+					skidRateTobeSearched.setBusinessId(bf.getParentBus().getId());
+					 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+	   				    
+			 if((skidRate==null )&& bf.getParentBus() !=null){
+					 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 
+				 }
+			 	skidRateTobeSearched.setBusinessId(busId);
+				 return skidRate;
+				}
+				 
+			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+				
+	
+				bf= BusinessFilterUtil.getBusinessFilterAtNationLevel(curBus);
+				 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+				if(bf!=null){
+			 
+					 if( (skidRate==null )&& bf.getPartnerBus() !=null){
+						 skidRateTobeSearched.setBusinessId(bf.getPartnerBus().getId());
+						 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 }
+					 if( (skidRate==null )&& bf.getParentBus() !=null){
+						 skidRateTobeSearched.setBusinessId(bf.getParentBus().getId());
+						 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 }
+					 	skidRateTobeSearched.setBusinessId(busId);
+					 return skidRate;
+					}
+				 
+				 
+				
+			}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+				bf= BusinessFilterUtil.getBusinessFilterAtBranchLevel(curBus);
+				 
+				 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+				if(bf!=null){
+					 if((skidRate==null )&& bf.getNationBus() !=null){
+						 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 }
+					 if((skidRate==null  )&& bf.getPartnerBus() !=null){
+						 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 }
+					 if((skidRate==null  )&& bf.getParentBus() !=null){
+						 skidRate =markupDAO.getSkidRate(skidRateTobeSearched);
+					 }
+					 	skidRateTobeSearched.setBusinessId(busId);
+					 return skidRate;
+					}
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isAllLevelMarkupDisabled(long businessId){
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		MarkupManagerDAO markupDAO=(MarkupManagerDAO)MmrBeanLocator.getInstance().findBean("markupManagerDAO");
+		 long busId = businessId;
+		 Business curBus=businessDAO.getBusiessById(businessId);
+		 BusinessFilter bf=new BusinessFilter();
+		 boolean flagrate = false;
+		 if(curBus!=null && !curBus.isPartnerLevel() && !curBus.isNationLevel() && !curBus.isBranchLevel() && curBus.getPartnerId()==0 
+					&& curBus.getParentBusinessId()==0 && curBus.getBranchId()==0 && curBus.getCountryPartnerId()==0){
+			 
+			 flagrate = markupDAO.isMarkupDisabled(busId);
+			 
+			 return flagrate;
+			 
+			}else if(curBus!=null && curBus.isPartnerLevel()  ){  //partner level business  to get the business objects  of child business under the tree
+				
+				bf= getBusinessFilterAtPartnerLevel(curBus);
+				if(bf!=null){
+					flagrate = markupDAO.isMarkupDisabled(busId);
+					 if(!flagrate){
+						 busId = bf.getParentBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+				}
+				
+				return flagrate;
+				
+			}else if(curBus!=null&&curBus.isNationLevel()){   //nation level business  to get the business objects  of child business under the tree
+				
+	
+				bf= getBusinessFilterAtNationLevel(curBus);
+				
+				if(bf!=null){
+					flagrate = markupDAO.isMarkupDisabled(busId);
+					 if(!flagrate){
+						 busId = bf.getPartnerBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+					 if(!flagrate){
+						 busId = bf.getParentBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+					}
+				
+					return flagrate;
+				 
+				
+			}else if(curBus!=null&&curBus.isBranchLevel() ){    //branch level business  to get the business objects  of child business under the tree
+	
+				bf= getBusinessFilterAtBranchLevel(curBus);
+				 
+	  
+				
+				flagrate = markupDAO.isMarkupDisabled(busId);
+				if(bf!=null){
+					 if(!flagrate){
+						 busId = bf.getNationBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+					 if(!flagrate){
+						 busId = bf.getPartnerBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+					 if(!flagrate){
+						 busId = bf.getParentBus().getId();
+						 flagrate = markupDAO.isMarkupDisabled(busId);
+					 }
+					 
+				}
+				
+				 return flagrate;
+			}
+		return flagrate;
 	}
  
     

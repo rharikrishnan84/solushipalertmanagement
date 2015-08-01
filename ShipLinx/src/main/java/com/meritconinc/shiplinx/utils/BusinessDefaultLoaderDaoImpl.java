@@ -22,6 +22,15 @@ public class BusinessDefaultLoaderDaoImpl {
 	public void loadAll(){
 		loadBusinessCarrier();
 		loadBusinessMenu();
+		loadEdiInfo();
+		loadMerchantAccount();
+		loadZones();
+		loadZoneStructure();
+	}
+	
+	public void loadAll1(){
+		loadBusinessCarrier();
+		loadBusinessMenu();
 		loadCustomerMarkUp();
 		loadEdiInfo();
 		loadMerchantAccount();

@@ -30,6 +30,7 @@ import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.model.Zone;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class MarkupManagerImpl implements MarkupManager {
 
@@ -81,17 +82,23 @@ public class MarkupManagerImpl implements MarkupManager {
   // }
   public List<Markup> getMarkupListForCustomer(Markup markup) {
     // TODO Auto-generated method stub
-	  if (markup.getCustomerId() > 0 || (markup.getCustomerIds()!=null && markup.getCustomerIds().size() > 0)) {
-      if (markup.getCustomerId() > 0) {
+	  if (markupDAO != null && markup != null) {
+	  if (markup.getCustomerId() > 0) {
         Long orgCustId = markup.getCustomerId();
         List<Long> custIds = markup.getCustomerIds();
         List<Markup> custMarkupList = markupDAO.getMarkupListForCustomer(markup);
-        if (custMarkupList != null) {
-        	// markup.setCustomerId(0L);
-        	        	        	List<Long> forDefaultCustomer = new ArrayList<Long>();
-        	        	        	          forDefaultCustomer.add(0L);
-        	        	        	          markup.setCustomerIds(forDefaultCustomer);
-          List<Markup> defMarkupList = markupDAO.getMarkupListForCustomer(markup);
+      //if (custMarkupList != null) {
+                if(custMarkupList==null  || custMarkupList.size()==0){
+                	        	        	custMarkupList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,markup);	
+                	        	           }
+             if (custMarkupList != null && !custMarkupList.isEmpty()) {
+                	        	markup.setCustomerId(0L);
+                  List<Markup> defMarkupList = markupDAO.getMarkupListForCustomer(markup);
+                 if(defMarkupList==null  || defMarkupList.size()==0){
+               	          	          	  defMarkupList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,markup);	
+                	          	               }
+        	        	        	         
+          
           for (Markup m : custMarkupList) {
             int n = findMarkup(defMarkupList, m);
             if (n == -1) {
@@ -105,7 +112,7 @@ public class MarkupManagerImpl implements MarkupManager {
           }
           custMarkupList.clear();
           markup.setCustomerId(orgCustId);
-          if(custIds!=null && custIds.size() >0){
+          /*if(custIds!=null && custIds.size() >0){
         	          	          	          	  for(Long custId : custIds){
         	          	          	          		  boolean flag = markupDAO.isCustomerMarkupByDisabled(custId);  
         	          	          	          		  for(Markup m : defMarkupList){                                   
@@ -114,12 +121,32 @@ public class MarkupManagerImpl implements MarkupManager {
         	          	          	          		  }                                                                
         	          	          	          	  }
         	          	          	          	  
-        	          	          	            }                                                              
+        	          	          	            }      */    
+          boolean flag = markupDAO.isCustomerMarkupByDisabled(orgCustId);  
+                                          		  for(Markup m : defMarkupList){                                   
+                                          			  if(!flag && m.getDisabled()==0)       
+                                         				  m.setDisabled(1);            
+                                         		  }  
         	                                                                           
           return defMarkupList;
         }
       }
-      return markupDAO.getMarkupListForCustomer(markup);
+	  if (markup.getCustomerId() > 0){
+		  		  long cus = markup.getCustomerId();
+		  		  markup.setCustomerId(0l);
+		  		  List<Markup> mList=markupDAO.getMarkupListForCustomer(markup);
+		            if(mList==null  || mList.size()==0){
+		                mList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,markup);	
+		              }
+		            markup.setCustomerId(cus);
+		            return mList;
+		  	  }else{
+		  		  List<Markup> mList=markupDAO.getMarkupListForCustomer(markup);
+		            if(mList==null  || mList.size()==0){
+		                mList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,markup);	
+		              }
+		            return mList;
+		  	  }
     }
     return null;
   }
@@ -190,6 +217,9 @@ public class MarkupManagerImpl implements MarkupManager {
           if (c != null) {
             markup.setCustomerId(c.getId());
             List<Markup> mList = markupDAO.getMarkupListForCustomer(markup);
+            if(mList==null  || mList.size()==0){
+            	            	            	             mList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,markup);	
+            	            	            	            }
             if (mList != null && mList.size() > 0) {
               for (Markup m : mList) {
                 if (m != null) {
@@ -258,6 +288,9 @@ public class MarkupManagerImpl implements MarkupManager {
     // TODO Auto-generated method stub
     if (markupDAO != null && markup != null) {
       List<Markup> mList = markupDAO.getMarkupListForUniqueMarkup(markup);
+      if(mList==null  || mList.size()==0){
+    	      	      	            mList=BusinessFilterUtil.getMarkupListForUniqueMarkup(markupDAO,markup);	
+    	      	      	           }
       if (mList != null && mList.size() > 0) {
         return applyRules(mList, markup);
       }
@@ -268,6 +301,9 @@ public class MarkupManagerImpl implements MarkupManager {
 	  	    // TODO Auto-generated method stub
 	  	    if (markupDAO != null && markup != null) {
 	  	      List<Markup> mList = markupDAO.getMarkupList(markup);
+	  	    if(mList==null  || mList.size()==0){
+	  	    		  	    		  	    		  	    	mList=BusinessFilterUtil.getMarkupList(markupDAO,markup);	
+	  	    		  	    		  	    		              }
 	  	      if (mList != null && mList.size() > 0) {
 	  	        return applyRules(mList, markup);
 	  	      }
@@ -365,105 +401,195 @@ public class MarkupManagerImpl implements MarkupManager {
 
   private Markup applyRules(List<Markup> mList, Markup markup) {
     // TODO Auto-generated method stub
-    boolean bCus = false;
-    if (markup.getCustomerId() != null && markup.getCustomerId().longValue() > 0) {
-      // Customer based markup
-      bCus = true;
-    }
-    for (Markup m : mList) {
-      // Rule # 1 - All Fields Match
-      if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
-          && isWeightsMatched(m, markup)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
+	  boolean bCus = false;
+	    if (markup.getCustomerId() != null && markup.getCustomerId().longValue() > 0) {
+	      // Customer based markup
+	      bCus = true;
+	    }
+	    for (Markup m : mList) {
+	    	if(bCus){
+				  // Rule # 1 - All Fields Match
+				  if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
+				      && isWeightsMatched(m, markup)) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 2 - match without Weights
+				  if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
+				      && m.getFromWeight().floatValue() == 0) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 3 - All Fields Match - To Country is "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId())
+				      && m.getFromCountryCode().equals(markup.getFromCountryCode())
+				      && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				      && isWeightsMatched(m, markup)) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 4 - match without Weights and To Country is "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
+				      && m.getFromCountryCode().equals(markup.getFromCountryCode())
+				      && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 5 - All Fields Match - From Country is "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId())
+				      && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				      && m.getToCountryCode().equals(markup.getToCountryCode()) && isWeightsMatched(m, markup)) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 6 - match without Weights - From Country is "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
+				      && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				      && m.getToCountryCode().equals(markup.getToCountryCode())) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 7 - All Fields Match - From Country and To Country both are "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId())
+				      && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				      && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				      && isWeightsMatched(m, markup)) {
+				    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				      return m;
+				    /*if (m.getCustomerId().longValue() == 0)
+				      return m;*/
+				  }
+				
+				  // Rule # 8 - match without Weights - From Country and To Country both are "ANY"
+				  if (m.getServiceId().equals(markup.getServiceId())
+					      && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+					      && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+					      ) {
+					    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+					      return m;
+					    /*if (m.getCustomerId().longValue() == 0)
+					      return m;*/
+					  }
+	      
+	    	}
+	    }
 
-      // Rule # 2 - match without Weights
-      if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
-          && m.getFromWeight().floatValue() == 0) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 3 - All Fields Match - To Country is "ANY"
-      if (m.getServiceId().equals(markup.getServiceId())
-          && m.getFromCountryCode().equals(markup.getFromCountryCode())
-          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && isWeightsMatched(m, markup)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 4 - match without Weights and To Country is "ANY"
-      if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
-          && m.getFromCountryCode().equals(markup.getFromCountryCode())
-          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 5 - All Fields Match - From Country is "ANY"
-      if (m.getServiceId().equals(markup.getServiceId())
-          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && m.getToCountryCode().equals(markup.getToCountryCode()) && isWeightsMatched(m, markup)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 6 - match without Weights - From Country is "ANY"
-      if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
-          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && m.getToCountryCode().equals(markup.getToCountryCode())) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 7 - All Fields Match - From Country and To Country both are "ANY"
-      if (m.getServiceId().equals(markup.getServiceId())
-          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && isWeightsMatched(m, markup)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-
-      // Rule # 8 - match without Weights - From Country and To Country both are "ANY"
-      // if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
-      // &&
-      // m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY) &&
-      // m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
-      // if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-      // return m;
-      // if (m.getCustomerId().longValue() == 0)
-      // return m;
-      // }
-    }
-    // Default
-    for (Markup m : mList) {
-      if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
-          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
-          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
-        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
-          return m;
-        if (m.getCustomerId().longValue() == 0)
-          return m;
-      }
-    }
-    return null;
+	    for (Markup m : mList) {
+	    	
+				      // Rule # 8 - All Fields Match with customerId 0
+				      if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
+				            && isWeightsMatched(m, markup)) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 9 - match without Weights with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)
+				            && m.getFromWeight().floatValue() == 0) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 10 - All Fields Match - To Country is "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId())
+				            && m.getFromCountryCode().equals(markup.getFromCountryCode())
+				            && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				            && isWeightsMatched(m, markup)) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 11 - match without Weights and To Country is "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
+				            && m.getFromCountryCode().equals(markup.getFromCountryCode())
+				            && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 12 - All Fields Match - From Country is "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId())
+				            && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				            && m.getToCountryCode().equals(markup.getToCountryCode()) && isWeightsMatched(m, markup)) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 13 - match without Weights - From Country is "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
+				            && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				            && m.getToCountryCode().equals(markup.getToCountryCode())) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+			
+				        // Rule # 14 - All Fields Match - From Country and To Country both are "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId())
+				            && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				            && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+				            && isWeightsMatched(m, markup)) {
+				          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+				            return m;*/
+				          if (m.getCustomerId().longValue() == 0)
+				            return m;
+				        }
+				        
+				     // Rule # 15 - match without Weights - From Country and To Country both are "ANY" with customerId 0
+				        if (m.getServiceId().equals(markup.getServiceId())
+					            && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+					            && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+					            && isWeightsMatched(m, markup)) {
+					          /*if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+					            return m;*/
+					          if (m.getCustomerId().longValue() == 0)
+					            return m;
+					     }
+				        
+				      
+	    	}
+	    
+	    // Default
+	    for (Markup m : mList) {
+	      if (m.getServiceId().equals(markup.getServiceId()) && m.getFromWeight().floatValue() == 0
+	          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+	          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)) {
+	        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+	          return m;
+	        if (m.getCustomerId().longValue() == 0)
+	          return m;
+	      }
+	    }
+	    return null;
   }
 
   private boolean isCompareCountries(Markup m, Markup markup) {
@@ -513,6 +639,9 @@ public class MarkupManagerImpl implements MarkupManager {
                        srcMarkup.setCustomerIds(tempCutomerIds);
       srcMarkup.setBusinessId(businessId);
       List<Markup> srcMarkupList = markupDAO.getMarkupListForCustomer(srcMarkup);
+      if(srcMarkupList==null  || srcMarkupList.size()==0){
+    	      	      	      	  srcMarkupList=BusinessFilterUtil.getMarkupListForCustomer(markupDAO,srcMarkup);	
+    	      	      	           }
       if (srcMarkupList != null) {
         for (Markup m : srcMarkupList) {
           m.setCustomerId(targetCusId);
@@ -684,9 +813,15 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	         if (markup.getCustomerId() > 0) {
 	          Long orgCustId = markup.getCustomerId();
 	           List<Markup> custMarkupList = markupDAO.getMarkupList(markup);
+	           if(custMarkupList==null  || custMarkupList.size()==0){
+	        	   	        	   	        	   	        	   custMarkupList=BusinessFilterUtil.getMarkupList(markupDAO,markup);	
+	        	   	        	   	        	   	              }
 	           if (custMarkupList != null) {
 	             markup.setCustomerId(0L);
 	             List<Markup> defMarkupList = markupDAO.getMarkupList(markup);
+	             if(defMarkupList==null  || defMarkupList.size()==0){
+	            	 	            	 	            	 	            	 defMarkupList=BusinessFilterUtil.getMarkupList(markupDAO,markup);	
+	            	 	            	 	            	 		              }
 	             for (Markup m : custMarkupList) {
 	               int n = findMarkup(defMarkupList, m);
 	               if (n == -1) {
@@ -703,13 +838,23 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	             return defMarkupList;
 	          }
 	         }
-	         return markupDAO.getMarkupList(markup);
+	         List<Markup> mList=markupDAO.getMarkupList(markup);
+	         	         	         	         if(mList==null  || mList.size()==0){
+	         	         	         	        	 mList=BusinessFilterUtil.getMarkupList(markupDAO,markup);	
+	         	         	         	              }
+	         	         	         	         return  mList;
 	       }
 	       return null;
 	    }
     
     public Markup findBaseMarkup(Markup markup){
-    		  return markupDAO.findBaseMarkup(markup);
+    	Markup markup1= markupDAO.findBaseMarkup(markup);
+    	    	    	    	
+    	    	    	    	if(markup1==null && markupDAO!=null){
+    	    	    	    		markup1=BusinessFilterUtil.findBaseMarkup(markupDAO,markup);
+    	    	    	    				
+    	    	    	    	}
+    	    	    		  return markupDAO.findBaseMarkup(markup1);
     	  }
 
 	@Override
@@ -755,4 +900,7 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 		}
 		return null;
 	}
+	public boolean isAllLevelMarkupDisabled(long businessId){
+				return BusinessFilterUtil.isAllLevelMarkupDisabled(businessId);
+			}
 }

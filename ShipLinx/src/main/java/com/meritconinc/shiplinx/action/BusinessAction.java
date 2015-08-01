@@ -1663,7 +1663,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    long partnerBusinessId=businessDAO.addParterLevelBusienss(business);
 						    String cssText=getCssTextForBusiness(business.getCssVO());
 						     addCSS(cssText, partnerBusinessId);
-						    if(partnerBusinessId>0){
+						     BusinessFilterUtil.loadDefaultProperty(partnerBusinessId);
+						    /*if(partnerBusinessId>0){
 						    	List<Long> busids=new ArrayList<Long>();
 						    	busids.add(partnerBusinessId);
 						    	BusinessFilterUtil bfu=new BusinessFilterUtil(busids,this.select);
@@ -1671,7 +1672,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    	t1.start();
 						    	
 						    	//loadDefaultPropertyForBusiness(partnerBusinessId);
-						    }
+						    }*/
 						    User userPatner = setuserDetails(business.getName(), partnerBusinessId);
 				    	    userPatner.setUsername(business.getName());
 				    	    userPatner.setPartnerLevel(true);
@@ -1803,7 +1804,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus2, business);
 						    long countryBusinessId=businessDAO.addCountryLevelBusienss(business);
-						    if(countryBusinessId>0){
+						    BusinessFilterUtil.loadDefaultProperty(countryBusinessId);
+						   /* if(countryBusinessId>0){
 //						    	loadDefaultPropertyForBusiness(countryBusinessId);
 
 						    	List<Long> busids=new ArrayList<Long>();
@@ -1811,7 +1813,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    	BusinessFilterUtil bfu=new BusinessFilterUtil(busids,this.select);
 						    	Thread t1=new Thread(bfu);
 						    	t1.start();
-						    }
+						    }*/
 						     User usercountry = setuserDetails(business.getName(), countryBusinessId);
 							 usercountry.setUsername(business.getName());
 							 usercountry.setNationLevel(true);
@@ -1827,7 +1829,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 								
 							 
 							Business b=businessDAO.getBusiessById(businessId);
-							addActionMessage("Partner Success Fully Added Under Business :"+b.getName());
+							addActionMessage("Nation Success Fully Added Under Business :"+b.getName());
 							businessList=businessDAO.getCountryBusiness(partnerId);
 					    }
 					}
@@ -1928,14 +1930,15 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						 // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus2, business);
 						    long BranchBusId=businessDAO.addBranchLevelBusiness(business);
-						    if(BranchBusId>0){
+						    BusinessFilterUtil.loadDefaultProperty(BranchBusId);
+						    /*if(BranchBusId>0){
 						    	List<Long> busids=new ArrayList<Long>();
 						    	busids.add(BranchBusId);
 						    	BusinessFilterUtil bfu=new BusinessFilterUtil(busids,this.select);
 						    	Thread t1=new Thread(bfu);
 						    	t1.start();
 						    	//loadDefaultPropertyForBusiness(BranchBusId);
-						    }
+						    }*/
 						     User userBranch = setuserDetails(business.getName(), BranchBusId);
 						     userBranch.setUsername(business.getName() );
 						     userBranch.setBranchLevel(true);
@@ -1954,7 +1957,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    		
 							 
 							Business b=businessDAO.getBusiessById(businessId);
-							addActionMessage("Partner Success Fully Added Under Business :"+b.getName());
+							addActionMessage("Branch Success Fully Added Under Business :"+b.getName());
 							businessList=businessDAO.getBranchBuisness(partnerId, countryParterId);
 					    }
 					}

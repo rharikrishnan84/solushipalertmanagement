@@ -1774,6 +1774,10 @@
         
         
         <!--  Markup Management  -->
+        <action name="copyParent.markup" method="copyParentMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">markup</result>
+            <result type="tiles" name="input">markup</result>
+       	</action>
         <action name="defaultmarkup" method="defaultMarkup" class="markupManagerAction">
             <result type="tiles" name="success">markup</result>
             <result type="tiles" name="input">markup</result>

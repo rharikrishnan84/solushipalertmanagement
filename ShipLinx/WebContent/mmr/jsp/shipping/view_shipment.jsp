@@ -79,11 +79,7 @@ var product_id=0;
 		      return false;
 		     }
 		    }else{
-		    	if (bcurncy == "" || bcurncy == selobj.value){
-		    						      bcurncy = selobj.value;
-		    						     }else{ 
-		    						      return "";
-		    						    }
+		    	bcurncy = "";
 		     //return false;
 		    }
 		   }
