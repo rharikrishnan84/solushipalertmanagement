@@ -597,6 +597,7 @@
        		
         <action name="markup.listService" method="listService" class="markupManagerAction">
             <result name="success">/mmr/jsp/shipping/listService.jsp</result>
+            <result name="success3">/mmr/jsp/shipping/listBusinessService.jsp</result>
              <result name="success2">/mmr/jsp/shipping/listPickupService.jsp</result>
        	</action>  
 
@@ -2103,6 +2104,49 @@
             <result  name="success">/mmr/jsp/admin/autoFreightClassCheck.jsp</result>
         </action>
        	<!-- Logistics plus action END  -->
+       	<!-- Business Markup action START -->
+       	
+       	<action name="businessMarkup" method="businessMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">business.markup</result>
+            <result type="tiles" name="input">business.markup</result>
+       	</action> 
+       	
+       	 	<action name="markup.listCarriers" method="listCarriers" class="markupManagerAction">
+           	<result name="success">/mmr/jsp/shipping/listCarrier.jsp</result>
+          	<result name="success2">/mmr/jsp/shipping/listPickupService.jsp</result>
+       	</action>  
+       	
+       	<!-- <action name="markup.listProvinces" method="listProvinces" class="markupManagerAction">
+           	<result name="success">/mmr/jsp/shipping/listCarrier.jsp</result>
+          	<result name="success2">/mmr/jsp/shipping/listPickupService.jsp</result>
+       	</action>  -->
+       	
+       	<action name="addBusinessMarkup" method="addBusinessMarkup" class="markupManagerAction">
+       		<result type="tiles" name="input">business.markup</result>
+            <result type="tiles" name="success">business.markup</result>
+       	</action>
+       	
+       	<action name="searchBusinessMarkup" method="businessMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">business.markup</result>
+            <result type="tiles" name="input">business.markup</result>
+       	</action>
+       	
+       	<action name="markup.listCustomers" method="listCustomers" class="markupManagerAction">
+           	<result name="success">/mmr/jsp/shipping/listCustomer.jsp</result>
+           	<result name="success1">/mmr/jsp/shipping/listParentBusinessCustomer.jsp</result>
+          	<result name="success2">/mmr/jsp/shipping/listPickupService.jsp</result>
+       	</action>
+       	
+       	<action name="deleteBusinessMarkup" method="deleteBusinessMarkup" class="markupManagerAction">
+            <result type="tiles" name="success">business.markup</result>
+            <result type="tiles" name="input">business.markup</result>
+       	</action>
+       	
+       	<action name="saveBusinessMarkupList" method="saveBusinessMarkupList" class="markupManagerAction">
+       		<result type="tiles" name="input">business.markup</result>
+            <result type="tiles" name="success">business.markup</result>
+       	</action> 
+       	<!-- Business Markup action END -->
 
 </package>
 

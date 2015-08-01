@@ -3633,7 +3633,18 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		//if order created successfully
 		if(carrierServiceManager.getErrorMessages().size() == 0)
 			addActionMessage(getText("shippingOrder.save.successfully"));
-
+		// In order to create duplicate shipment for the business other than IC & customBM is true
+				if(shippingOrder.isCustomBM()){
+				ShippingOrder dupOrder=new ShippingOrder();
+				dupOrder=shippingService.getShippingOrder(shippingOrder.getId());
+				dupOrder.setBusinessId(shippingOrder.getBusinessFromId());
+				dupOrder.setCustomerId(shippingOrder.getBMCustomerId());
+				try {
+					int i=shippingService.saveDuplicateOrder(dupOrder,shippingOrder);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				}
 		return viewShipment();
 	}
 	
@@ -4115,6 +4126,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		          addActionError(MessageUtil.getMessage("cancel.shipment.notification.mail.failure"));
 		        }
 		        addActionMessage(getText("shippingOrder.cancel.successful"));
+		        log.debug("cancelled original order id"+ order_id);
+		        shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
+		        ShippingOrder orginalOrder = shippingDAO.getShippingOrder(order_id);
+		        ShippingOrder duplicateOrder = shippingDAO.getShippingOrder(order_id+1);
+		        if(duplicateOrder!=null){
+		        	if(orginalOrder.getOrderNum().equals(duplicateOrder.getOrderNum())){
+		        		log.debug("duplicate order id is "+ duplicateOrder.getId()+" and it's status is "+duplicateOrder.getStatusId());
+		        		duplicateOrder.setStatusId(orginalOrder.getStatusId());
+		        		shippingDAO.updateShippingOrder(duplicateOrder);
+		        		duplicateOrder = shippingDAO.getShippingOrder(order_id+1);
+		        		log.debug("duplicate order id is "+ duplicateOrder.getId()+" and it's status is "+duplicateOrder.getStatusId());
+		        	}
+		        }
 		      } else
 		        addActionMessage(getText("shippingOrder.cancel.error"));
 
@@ -4471,6 +4495,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		try {			
 			getSession().remove("shipments");
 			getSession().remove("shippingOrder");
+			getSession().remove("customersList");
 			ShippingOrder so = this.getShippingOrder();			
 			//default the date range to a week ago from the current date
 			int month = Calendar.getInstance().get(Calendar.MONTH);

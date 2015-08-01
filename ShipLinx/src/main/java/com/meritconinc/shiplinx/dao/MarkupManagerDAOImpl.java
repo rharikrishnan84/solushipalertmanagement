@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.LtlPoundRate;
@@ -631,6 +632,65 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 			        paramObj);
 			    return (count > 0);
 			}
+	@Override
+		public BusinessMarkup getuniqueBusinessMarkup(
+				BusinessMarkup businessMarkup) {
+			return (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getuniqueBusinessMarkup", businessMarkup);
+		}
+		
+		@Override
+		public List<BusinessMarkup> getAllBusinessMarkupsForCustomer(
+					BusinessMarkup businessMarkup) {
+				return (List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getAllBusinessMarkupsForCustomer", businessMarkup);
+		}
 	
-
+		@Override
+		public void addBusinessMarkup(BusinessMarkup markup) {
+			if (markup != null) {
+				if (markup.getFromCost() == null)
+					markup.setFromCost(0.0);
+				if (markup.getToCost() == null)
+					markup.setToCost(0.0);
+				getSqlMapClientTemplate().insert("addBusinessMarkup", markup);
+			}
+		}
+		
+		@Override
+		public void deleteBusinessMarkup(BusinessMarkup markup) {
+			// TODO Auto-generated method stub
+			if (markup != null) {
+				Map<String, Object> deleteMarkupParamObj = new HashMap<String, Object>(5);
+				deleteMarkupParamObj.put("customerId", markup.getCustomerId());
+				deleteMarkupParamObj.put("serviceId", markup.getServiceId());
+				deleteMarkupParamObj.put("fromCountryCode", markup.getFromCountryCode());
+				deleteMarkupParamObj.put("toCountryCode", markup.getToCountryCode());
+				deleteMarkupParamObj.put("businessId", markup.getBusinessId());
+				deleteMarkupParamObj.put("businessToId", markup.getBusinessToId());
+				getSqlMapClientTemplate().delete("deleteBusinessMarkup", deleteMarkupParamObj);
+			    	}
+			}
+	
+		@Override
+		public void updateBusinessMarkup(BusinessMarkup markup) {
+			if (markup != null) {
+			      Map<String, Object> updateMarkupParamObj = new HashMap<String, Object>(10);
+			      updateMarkupParamObj.put("customerId", markup.getCustomerId());
+			      updateMarkupParamObj.put("serviceId", markup.getServiceId());
+			      updateMarkupParamObj.put("fromCountryCode", markup.getFromCountryCode());
+			      updateMarkupParamObj.put("toCountryCode", markup.getToCountryCode());
+			      updateMarkupParamObj.put("businessId", markup.getBusinessId());
+			      updateMarkupParamObj.put("businessToId", markup.getBusinessToId());
+			      updateMarkupParamObj.put("muPercent", markup.getMarkupPercentage());
+			      updateMarkupParamObj.put("muFlat", markup.getMarkupFlat());
+			      updateMarkupParamObj.put("disabled", markup.getDisabled());
+			      updateMarkupParamObj.put("fromCost", markup.getFromCost());
+			      updateMarkupParamObj.put("toCost", markup.getToCost());
+			      updateMarkupParamObj.put("toVariable", markup.getVariable());
+			      try{
+			      getSqlMapClientTemplate().insert("updateBusinessMarkup", updateMarkupParamObj);
+			    }catch(Exception e){
+			    	e.printStackTrace();
+			    	}
+			    }
+		}
 }

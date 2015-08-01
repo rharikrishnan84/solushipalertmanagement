@@ -257,6 +257,12 @@ public class ShippingOrder implements Serializable {
   private String toAddressLong;
   private String purpose;
   private long linkToOrder;
+  
+  /*For custom business markup-start*/
+  private boolean customBM = false;
+  private long businessFromId;
+  private long BMCustomerId;
+  /*For custom business markup-end*/
   public int getSaveShipmet() {
 	return saveShipmet;
 }
@@ -2224,6 +2230,28 @@ public void setBusinessIds(List<Long> businessIds) {
 	public void setRealContextPath(String realContextPath) {
 		RealContextPath = realContextPath;
 	}
-
+	public boolean isCustomBM() {
+		return customBM;
+	}
+	
+	public void setCustomBM(boolean customBM) {
+		this.customBM = customBM;
+	}
+		
+	public long getBusinessFromId() {
+		return businessFromId;
+	}
+		
+	public void setBusinessFromId(long businessFromId) {
+		this.businessFromId = businessFromId;
+	}
+		
+	public long getBMCustomerId() {
+		return BMCustomerId;
+	}
+	
+	public void setBMCustomerId(long bMCustomerId) {
+		BMCustomerId = bMCustomerId;
+	}
 
 }

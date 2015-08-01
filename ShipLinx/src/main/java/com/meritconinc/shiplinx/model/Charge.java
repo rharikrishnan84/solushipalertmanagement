@@ -46,6 +46,10 @@ public class Charge implements Serializable {
     private String taxName;
     private boolean isCommissonable;
     
+  /* For custom business markup-start */
+  private Double costWithNoBM;
+  private Double chargeWithBM;
+  /* For custom business markup-end */
     public String getShowSubTotal() {
   	  	return showSubTotal;
   	  }
@@ -465,5 +469,19 @@ public void setChargeGroupId(int chargeGroupId) {
 	public void setisCommissonable(boolean isCommissonable) {
 		this.isCommissonable = isCommissonable;
 	}
-
+	public Double getCostWithNoBM() {
+		return costWithNoBM;
+	}
+			
+	public void setCostWithNoBM(Double costWithNoBM) {
+		this.costWithNoBM = costWithNoBM;
+	}
+		
+	public Double getChargeWithBM() {
+		return chargeWithBM;
+	}
+		
+	public void setChargeWithBM(Double chargeWithBM) {
+		this.chargeWithBM = chargeWithBM;
+	}
 }

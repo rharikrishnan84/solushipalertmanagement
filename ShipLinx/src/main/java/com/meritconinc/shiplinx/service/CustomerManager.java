@@ -56,5 +56,6 @@ public interface CustomerManager{
 						public List<Customer> getAllCustomersByBranchLevel(Long businessId,
 								Long partnerId, Long countryPartnerId, long branchId);
 						public List<Customer> getCustomersBySalesUser(String username);
-		
+	public List<Customer> getAllCustomerForBusiness(
+			long parseLong);
 }

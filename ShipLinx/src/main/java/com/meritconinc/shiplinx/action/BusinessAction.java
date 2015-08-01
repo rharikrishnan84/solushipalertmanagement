@@ -37,9 +37,11 @@ import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.Country;
 import com.meritconinc.shiplinx.model.CountryPartner;
+import com.meritconinc.shiplinx.model.Customer;
 import com.meritconinc.shiplinx.model.EdiItem;
 import com.meritconinc.shiplinx.model.Partner;
 import com.meritconinc.shiplinx.model.UserFilter;
+import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.BusinessDefaultLoaderDaoImpl;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -212,6 +214,11 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			loadEmailSettings(1L);
 			getSession().remove("emailRList");
 			getSession().remove("redudant");
+			businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+			List<Business> businesses=businessDAO.getHoleBusinessList();
+			getSession().put("BUSINESS", businesses);
+			List<Customer> customers=new ArrayList<Customer>();
+			getSession().put("CUSTOMERS", customers);
 			loadNewBussinessDepencies();
 		}catch(Exception e){
 			log.error("Error in new business" +e.getMessage());
@@ -2209,11 +2216,21 @@ private List<BusinessEmail> removeListWithBusEmailId(
 	@SuppressWarnings("unchecked")
 	public String editBusiness(){
 		log.debug(" CHECK METHOD IN editBusiness" );
+		businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+		List<Business> businesses=businessDAO.getHoleBusinessList();
+		getSession().put("BUSINESS", businesses);
+		List<Customer> customers=new ArrayList<Customer>();
+		CustomerManager customerService = (CustomerManager) MmrBeanLocator.getInstance()
+									.findBean("customerService");
+		customers=customerService.getAllCustomerForBusiness(Long.parseLong(businessId));
+		getSession().put("CUSTOMERS", customers);
 		System.out.println(businessId);
 		try{
 			long selectedBusinessId = Long.parseLong(businessId);
 			getSession().put("editBusinessId",selectedBusinessId);
 			business = businessDAO.getBusiessById(selectedBusinessId);
+			customers=customerService.getAllCustomerForBusiness(business.getParentMarkupBusinessId());
+						getSession().put("CUSTOMERS", customers);
 			CSSVO cssVo = businessDAO.getCSSDetailsForBusiness(selectedBusinessId);
 									if(cssVo != null){
 									business.setCssVO(cssVo);

@@ -273,4 +273,8 @@ public interface ShippingDAO {
 	public int checkAccessorial(String chargeCode);
 
 	public int getCurrencyIdByCurrencyCode(String currency);
+	
+	public int saveDuplicateOrder(ShippingOrder dupOrder);
+	
+	public int saveDuplicateCharges(List<Charge> charges);
 }

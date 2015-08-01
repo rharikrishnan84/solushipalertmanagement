@@ -3,6 +3,7 @@ package com.meritconinc.shiplinx.dao;
 import java.util.List;
 
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.ChargeGroup;
 import com.meritconinc.shiplinx.model.LtlPoundRate;
@@ -98,4 +99,15 @@ public interface MarkupManagerDAO {
 	public List<Markup> findMarkupListForUniqueMarkupUsingCostRange(
 			Markup markup);
 	public boolean isMarkupDisabled(long businessId);
+	public BusinessMarkup getuniqueBusinessMarkup(
+			BusinessMarkup businessMarkup);
+			
+	public List<BusinessMarkup> getAllBusinessMarkupsForCustomer(
+			BusinessMarkup businessMarkup);
+				
+	public void addBusinessMarkup(BusinessMarkup markup);
+	
+	void deleteBusinessMarkup(BusinessMarkup markup);
+	
+	void updateBusinessMarkup(BusinessMarkup markup);
 }

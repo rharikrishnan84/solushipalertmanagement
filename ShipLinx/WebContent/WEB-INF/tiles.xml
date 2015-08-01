@@ -619,5 +619,12 @@
     <definition name="view.branch"  extends="admin.layout.window">
      <put-attribute name="mainBody" value="/mmr/jsp/admin/viewBranch.jsp"/>
     </definition>
+     <!-- Business Markup START-->
+    
+    <definition name="business.markup" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/businessMarkup.jsp"/>
+    </definition>
+      
+    <!-- Business Markup END -->
 </tiles-definitions>
 

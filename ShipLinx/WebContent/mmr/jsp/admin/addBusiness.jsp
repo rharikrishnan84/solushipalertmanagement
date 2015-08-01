@@ -577,7 +577,20 @@ window.onload = function() {
 		 	 window.scrollTo(0, document.body.scrollHeight);
 		 }
 		 }
-		 	 
+		 function showCustomer() {
+			ajax_Service=ajaxFunction();
+			ajax_Service.onreadystatechange=function(){
+	 		if(ajax_Service.readyState==4){
+	 			reponse=ajax_Service.responseText;
+	 			js_stateid=document.getElementById("customerid");
+	 			js_stateid.innerHTML= reponse;
+	 			}
+	 		}
+	 		firstBox = document.getElementById('parentMarkupBusinessId');
+	 		url="markup.listCustomers.action?value="+firstBox.value+"&method=addBusiness";
+	 		ajax_Service.open("GET",url,true);
+		 	ajax_Service.send(this);
+		 	}	 	 
 	 
 </script> 
 
@@ -841,12 +854,45 @@ window.onload = function() {
 										<s:checkbox key="business.address.sendNotification" name="business.address.sendNotification" cssClass="text_02" />
 									</div>
 									</div>
-								</div>
-								
-							</div>
-						
+								<div class="fields">
+        								<label><mmr:message messageId="label.business.parentBusiness"/> </label>
+         								<div class="controls"><span>:</span>
+           								<s:select listKey="id" listValue="name" name="business.parentMarkupBusinessId" headerValue="" headerKey="-1"  list="#session.BUSINESS" 
+										onchange="javascript:showCustomer();"  id="parentMarkupBusinessId" theme="simple" size="1"  />
+           							</div>
+          							</div>
+          							<div class="fields">
+          							<label><mmr:message messageId="label.heading.customer"/> </label>
+           								<div id="customerid">
+          								<div class="controls"><span>:</span>
+           								<s:select   listKey="id" listValue="name" 
+											name="business.parentCustomerId" headerValue="" headerKey="-1"  list="#session.CUSTOMERS" 
+											 theme="simple" size="1"  />
+           									</div>
+          								 </div>
+         							</div>
+          							<div class="fields">
+										<label><mmr:message messageId="label.business.customMarkup"/> </label>
+										<div class="controls"><span>:</span>
+										<s:textfield  key="business.customMarkup" name="business.customMarkup" />
+									</div>
+									</div>
+									<%-- <div class="fields">
+        								<label><mmr:message messageId="label.business.markupType" /></label>
+       									<div class="controls">
+       									<span>:</span>
+         								<s:radio name="business.markupType" list="#{'0':'perc','1':'Flat'}" value="business.markupType" />
+       									</div>
+       								</div> --%>
+       								<div class="fields1">
+        								<label style="margin-left: 0.5%;">Markup Type</label><span style="margin-left: 7%;">:<s:radio name="business.markupType" list="#{'0':'perc','1':'Flat'}" value="business.markupType" /></span>
+       								</div>
+									</div>
+							
 						</div>
-						<%--
+					
+						</div>
+					<%--
 						17.02 changes removed
 						 <div class="content_table">
 							<div class="content_header">

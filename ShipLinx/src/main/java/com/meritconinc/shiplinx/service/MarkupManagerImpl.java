@@ -18,6 +18,7 @@ import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.MarkupManagerDAO;
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -903,4 +904,51 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 	public boolean isAllLevelMarkupDisabled(long businessId){
 				return BusinessFilterUtil.isAllLevelMarkupDisabled(businessId);
 			}
+	@Override
+	public BusinessMarkup getuniqueBusinessMarkup(BusinessMarkup businessMarkup) {
+			businessMarkup = markupDAO.getuniqueBusinessMarkup(businessMarkup);
+			return businessMarkup;
+		}
+	
+	@Override
+	public List<BusinessMarkup> getBusinessMarkupListForCustomer(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkups=markupDAO.getAllBusinessMarkupsForCustomer(businessMarkup);
+			return businessMarkups;
+		}
+	
+	@Override
+	public BusinessMarkup addBusinessMarkup(BusinessMarkup markup) {
+			List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+			businessMarkupList = getBusinessMarkupListForCustomer(markup);
+			boolean dupFlag = false;
+			if (businessMarkupList != null && businessMarkupList.size()>0){
+				for(BusinessMarkup m:businessMarkupList){
+					if (m.getCustomerId().longValue() == markup.getCustomerId().longValue()
+							&& m.getFromCountryCode().equals(markup.getFromCountryCode())
+							&& m.getToCountryCode().equals(markup.getToCountryCode())
+							&& m.getToCost().doubleValue() == markup.getToCost().doubleValue()
+							&& m.getFromCost().doubleValue() == markup.getFromCost().doubleValue()) {
+						return markup;
+					}
+				}
+				 markupDAO.addBusinessMarkup(markup);
+				}
+			else{
+				 markupDAO.addBusinessMarkup(markup);
+			}
+				return null;
+		}
+	
+	@Override
+	public void deleteBusinessMarkup(BusinessMarkup markup) {
+			if (markupDAO != null && markup != null){
+				markupDAO.deleteBusinessMarkup(markup);
+			}
+		}
+	
+	@Override
+	public void updateBusinessMarkup(BusinessMarkup markup) {
+			if (markup != null && markupDAO != null)
+			      markupDAO.updateBusinessMarkup(markup);
+		}
 }

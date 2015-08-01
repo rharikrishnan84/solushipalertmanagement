@@ -765,8 +765,8 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       }
       so.setPurpose(""); // Clear purpose
       List<ShippingOrder> list = getSqlMapClientTemplate().queryForList(queryId1, so);
-      if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
-          List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
+    	  if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN)) {
+    	  List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
           if(list.size()==0 && so.getId()!=null && so.getId()>0){
           	list2 = getSqlMapClientTemplate().queryForList(queryId2, so);
           }else{
@@ -789,6 +789,26 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
             list.addAll(list_match);
           }
         }
+    	  else if(role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)){
+    		      	  List<ShippingOrder> list2 = new ArrayList<ShippingOrder>();
+    		            list2 = getSqlMapClientTemplate().queryForList("searchOrderBySystemAdmin", so);
+    		            if (list.size() == 0) {
+    		              list.addAll(list2);
+    		            } else {
+    		              for (int i = 0; i < list2.size(); i++) {
+    		                boolean flagDublicate = true;
+    		                for (int j = 0; j < list.size(); j++) {
+    		                	if (list2.get(i).getId().equals(list.get(j).getId())) {
+    		                    flagDublicate = false;
+    		                  }
+    		                }
+    		                if (flagDublicate) {
+    		                  list_match.add(list2.get(i));
+    		                }
+    		              }
+    		              list.addAll(list_match);
+    		            }
+    		        }
       return list;
     } catch (Exception e) {
       e.printStackTrace();
@@ -1729,6 +1749,38 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 						return 1;
 				}
 				}
-
+	@Override
+	public int saveDuplicateOrder(ShippingOrder dupOrder) {
+		//Map<String, Object> paramObj = new HashMap<String, Object>(1);
+		User user = UserUtil.getMmrUser();
+		if (user != null && user.getTimeZone() != null && !user.getTimeZone().isEmpty()) {
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(user.getTimeZone()));
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			dateFormat.setTimeZone(cal.getTimeZone());
+			dupOrder.setDateCreated(Timestamp.valueOf(dateFormat.format(cal.getTime())));  
+		}
+		else {
+			dupOrder.setDateCreated(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+		    }
+		try {
+			getSqlMapClientTemplate().insert("addShippingOrder", dupOrder);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+		return 1;
+	}
+	
+	@Override
+	public int saveDuplicateCharges(List<Charge> charges) {
+		try {
+			for (Charge shippingCharge : charges) {
+				getSqlMapClientTemplate().insert("addCharge", shippingCharge);
+			}
+		} catch (Exception e) {
+			return 0;
+		}
+		return 1;
+	}	
 	
 }

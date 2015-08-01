@@ -52,14 +52,15 @@ public interface CustomerDAO{
 	public double getAvailableCredit(long customerId);
 	
 	public List<Customer> getAllCustomers();
-				public List<Customer> getAllCustomersByBusinessLevel(Long businessId);
-				public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
-					Long partnerId);
-				public List<Customer> getAllCustomersByNationLevel(Long businessId,
-				Long partnerId, Long countryPartnerId);
-				public List<Customer> getAllCustomersByBranchLevel(Long businessId,
-						Long partnerId, Long countryPartnerId, long branchId);
-				public List<Customer> getCustomersBySalesUser(String useName);
-				public void callCommissionStoredProcedure();
-				public void setCopyCustomerMarkupFlag(long customerId, long businessId);
+	public List<Customer> getAllCustomersByBusinessLevel(Long businessId);
+	public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
+			Long partnerId);
+	public List<Customer> getAllCustomersByNationLevel(Long businessId,
+			Long partnerId, Long countryPartnerId);
+	public List<Customer> getAllCustomersByBranchLevel(Long businessId,
+			Long partnerId, Long countryPartnerId, long branchId);
+	public List<Customer> getCustomersBySalesUser(String useName);
+	public void callCommissionStoredProcedure();
+	public void setCopyCustomerMarkupFlag(long customerId, long businessId);
+	public List<Customer> getAllCustomerForBusiness(long businessId);
 }	

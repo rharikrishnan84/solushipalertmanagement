@@ -244,6 +244,18 @@ and cb.partner_id =  #partnerId# and cb.country_partner_id=#countryPartnerId# an
 			select * from customer where customer_id in(
 			select customer_id from customer_sales where sales_user=#userName# )
 	</select>
-	
+	<select id="getAllCustomerForBusiness" resultMap="CustomerMap">
+    	select * from customer where business_id in 
+    	(select business_id from business where parent_business_id in 
+    		(select business_id from business where business_id in
+    			(select business_id from business where parent_business_id in
+    				(select business_id from business where parent_business_id =  #businessId# ))
+                or business_id =  #businessId# )
+        or business_id in 
+        (select business_id from business where business_id in 
+        	(select  business_id from business where parent_business_id in
+        		(select business_id from business where parent_business_id =  #businessId# ))
+        or business_id =  #businessId# ));
+    </select>
 	
 </sqlMap>

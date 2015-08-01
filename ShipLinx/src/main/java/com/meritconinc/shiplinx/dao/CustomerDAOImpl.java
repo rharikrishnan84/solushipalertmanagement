@@ -439,80 +439,66 @@ public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 	}
 	
 	@Override
-			public List<Customer> getAllCustomers() {
-				// TODO Auto-generated method stub
-				
-				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomers");
-			}
+	public List<Customer> getAllCustomers() {
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomers");
+	}
+	
+	@Override
+	public List<Customer> getAllCustomersByBusinessLevel(Long businessId) {
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBusinessLevel",businessId);
+	}
 			
-			@Override
-			public List<Customer> getAllCustomersByBusinessLevel(Long businessId) {
-				// TODO Auto-generated method stub
-				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBusinessLevel",businessId);
-			}
+	@Override
+	public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
+			Long partnerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("businessId", businessId);
+		paramObj.put("partnerId", partnerId);
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByPartnerLevel",paramObj);
+	}
 			
-			@Override
-			public List<Customer> getAllCustomersByPartnerLevel(Long businessId,
-					Long partnerId) {
-				// TODO Auto-generated method stub
-				Map<String, Object> paramObj = new HashMap<String, Object>();
-			    paramObj.put("businessId", businessId);
-			    paramObj.put("partnerId", partnerId);
-			    
-				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByPartnerLevel",paramObj);
-			}
-			
-			@Override
-			public List<Customer> getAllCustomersByNationLevel(Long businessId,
-					Long partnerId, Long countryPartnerId) {
-				// TODO Auto-generated method stub
-				Map<String, Object> paramObj = new HashMap<String, Object>();
-			    paramObj.put("businessId", businessId);
-			    paramObj.put("partnerId", partnerId);
-			    paramObj.put("countryPartnerId",countryPartnerId);
-				return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByNationLevel",paramObj);
-			}
+	@Override
+	public List<Customer> getAllCustomersByNationLevel(Long businessId,
+			Long partnerId, Long countryPartnerId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("businessId", businessId);
+		paramObj.put("partnerId", partnerId);
+		paramObj.put("countryPartnerId",countryPartnerId);
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByNationLevel",paramObj);
+	}
 		
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<Customer> getAllCustomersByBranchLevel(Long businessId,
-					Long partnerId, Long countryPartnerId, long branchId) {
-				// TODO Auto-generated method stub
-				Map<String, Object> paramObj = new HashMap<String, Object>();
-			    paramObj.put("businessId", businessId);
-			    paramObj.put("partnerId", partnerId);
-		    paramObj.put("countryPartnerId",countryPartnerId);
-		    paramObj.put("branchId", branchId);
-			return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBranchLevel",paramObj);
-			
-			}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Customer> getAllCustomersByBranchLevel(Long businessId,
+		Long partnerId, Long countryPartnerId, long branchId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("businessId", businessId);
+		paramObj.put("partnerId", partnerId);
+		paramObj.put("countryPartnerId",countryPartnerId);
+		paramObj.put("branchId", branchId);
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomersByBranchLevel",paramObj);
+	}
 	
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<Customer> getCustomersBySalesUser(String useName) {
-				// TODO Auto-generated method stub
-				return (List<Customer>) getSqlMapClientTemplate().queryForList("getCustomersBySalesUser",useName);
-				
-				
-			}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Customer> getCustomersBySalesUser(String useName) {
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getCustomersBySalesUser",useName);
+	}
 
-			@Override
-			public void callCommissionStoredProcedure() {
-				// TODO Auto-generated method stub
-				getSqlMapClientTemplate().queryForObject("getcommission");
-			}
+	@Override
+	public void callCommissionStoredProcedure() {
+		getSqlMapClientTemplate().queryForObject("getcommission");
+	}
 			
-			public void setCopyCustomerMarkupFlag(long customerId, long businessId){
-												Map<String, Object> paramObj = new HashMap<String, Object>();
-											    paramObj.put("businessId", businessId);
-											    paramObj.put("customerId", customerId);
-												getSqlMapClientTemplate().update("setCopyCustomerMarkupFlag",
-														paramObj);
-											}
+	public void setCopyCustomerMarkupFlag(long customerId, long businessId){
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("businessId", businessId);
+		paramObj.put("customerId", customerId);
+		getSqlMapClientTemplate().update("setCopyCustomerMarkupFlag",
+				paramObj);
+	}
+	@Override
+	public List<Customer> getAllCustomerForBusiness(long businessId) {
+		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomerForBusiness",businessId);
 		}
-	
-	
-	
-	
-	
-
+}

@@ -275,6 +275,7 @@ public class ShiplinxConstants {
 	public static final String Charge_BaseCharge = "Base Charge";
 	public static final String Charge_Total = "Total";
 	public static final String FREIGHT_STRING = "Freight";
+	public static final String FREIGHT_FUEL_STRING = "FUEL";
 
 	public static final Integer TYPE_MARKUP = 1;
 	public static final Integer TYPE_MARKDOWN = 2;
@@ -359,6 +360,7 @@ public class ShiplinxConstants {
 
 
 	public static final String ADMIN_USER = "ADMIN_USER";
+	public static final String ADMIN_ROLE = "ADMIN_ROLE";
 	public static final String SYSTEM = "SYSTEM";
 
 

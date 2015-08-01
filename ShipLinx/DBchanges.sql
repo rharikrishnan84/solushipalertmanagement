@@ -4178,4 +4178,50 @@ alter table business add isCopy_markup bit(1) default b'0';
 
 insert into resourcebundle (msg_id, msg_content, locale, is_fmk)
 values ('label.btn.copy.parent', 'COPY PARENT MARKUP', 'en_CA', 1);
+ALTER TABLE `business` ADD COLUMN `custom_markup` INT(10) NULL DEFAULT '0' AFTER `feedback_path`;
+
+ALTER TABLE `business` ADD COLUMN `markup_type` INT(10) NULL DEFAULT '0' AFTER `custom_markup`;
+
+ALTER TABLE `business_markup` CHANGE COLUMN `disabled` `disabled` TINYINT(1) NOT NULL DEFAULT '0' ;
+
+ALTER TABLE `business_markup` 
+CHANGE COLUMN `mu_perc` `mu_perc` INT(10) UNSIGNED NOT NULL DEFAULT '0' ,
+CHANGE COLUMN `flat_mu` `flat_mu` FLOAT NOT NULL DEFAULT '0' ;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.customMarkup', 'Business Markup', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.markupType', 'Markup Type', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.admin.businessmarkup', 'Business Markup', 'en_CA', 0);
+INSERT INTO `menu` (`name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`, `image_over`, `help_tag`, `support_tag`) VALUES ('Business Markup', '/admin/businessMarkup.action', '1', 'LEVEL_2', '2', '123', 'menu.admin.businessmarkup', 'N', 'N', '<p>This section is for Help Information</p>', '<p>This section is for Support Information</p>');
+
+INSERT INTO `role_menu` (`menu_id`, `role`) VALUES ('442', 'sysadmin');
+
+INSERT INTO `business_menu` (`business_id`, `menu_id`) VALUES ('1', '442');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('markup.listCarriers', '161', 1, 'Search Carrier for Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1086');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('addBusinessMarkup', '161', 1, 'Add Business Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1087');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('searchBusinessMarkup', '161', 1, 'Search Business Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1088');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('markup.listCustomers', '161', 1, 'Search Customer for Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1089');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('deleteBusinessMarkup', '161', 1, 'Search Customer for Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1090');
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('saveBusinessMarkupList', '161', 1, 'Save Business Markup List', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1091');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.heading.businessmarkup', 'Business Markups', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.parentBusiness', 'Parent Markup Business', 'en_CA', 1);
+
+ALTER TABLE `business` 
+ADD COLUMN `parent_markup_business_id` INT(10) NOT NULL AFTER `markup_type`;
+
+ALTER TABLE `business` 
+ADD COLUMN `parent_customer_id` INT(10) NULL DEFAULT '0' AFTER `parent_markup_business_id`;
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('businessMarkup', '161', 1, 'Business Markup page', 1, '');
+INSERT INTO `solushipbusmark`.`role_action` (`role`, `action_id`) VALUES ('sysadmin', '1083');
 .......................................End of Live server commit.......................................
+
+

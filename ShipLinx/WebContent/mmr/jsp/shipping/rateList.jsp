@@ -1153,12 +1153,13 @@ function submitShipment(){
 														id="popup_<s:property value="%{#index}"/>">
 														<s:iterator value="charges">
 														
-															<s:property value="%{name}" /> :<s:label name="curr"
+															<s:property value="%{name}" />:
+															<s:if test="%{#session.ADMIN_ROLE.contains('sysadmin')}"><s:label name="curr"
 																value="%{#session.LocalCurrencySymbol}" />
 															<s:text name="format.customMoney">
 																<br />
 																<s:param name="value" value="%{tariffInLocalCurrency}" />
-															</s:text> :<s:label name="curr"
+															</s:text> :</s:if><s:label name="curr"
 																value="%{#session.LocalCurrencySymbol}" />
 															<s:text name="format.customMoney">
 																<br />

@@ -61,6 +61,10 @@
 			<result property="branchLevel" column="isBranch"/>
 			<result property="contactPath" column="contact_path"/>
 			<result property="feedbackPath" column="feedback_path"/>
+			<result property="customMarkup" column="custom_markup"/>
+			<result property="markupType" column="markup_type"/>
+			<result property="parentMarkupBusinessId" column="parent_markup_business_id"/>
+			<result property="parentCustomerId" column="parent_customer_id"/>
 			<result property="copyMarkup" column="isCopy_markup"/>
 	</resultMap>
 	
@@ -113,9 +117,9 @@
 	</select>
 	
 	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-			   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port,contact_path,feedback_path) 
-			  values              (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#, #contactPath#, #feedbackPath#)
-			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+	   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port,contact_path,feedback_path,custom_markup,markup_type,parent_markup_business_id,parent_customer_id) 
+		values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#, #contactPath#, #feedbackPath# ,#customMarkup#,#markupType#,#parentMarkupBusinessId#,#parentCustomerId#)
+	<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
 	
@@ -165,6 +169,10 @@
 		default_credit_limit = #defaultCreditLimit#,
 		header_key = #headerKey#,
 		US_address_id = #usAddressId#,
+		custom_markup = #customMarkup#,
+		markup_type=#markupType#,
+		parent_markup_business_id = #parentMarkupBusinessId#,
+		parent_customer_id = #parentCustomerId#,
 		active = #active#
 		<dynamic>
 		<isNotNull prepend=","  property="contactPath">
@@ -201,23 +209,23 @@ from pins where business_id=#oldBusinessId#
   </select>
    
   <insert id="addParterLevelBusienss" parameterClass="com.meritconinc.shiplinx.model.Business">
-      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isPartner,parent_business_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject) values
-			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#partnerLevel#,#parentBusinessId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#)
-      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+     insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isPartner,parent_business_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject,parent_markup_business_id,parent_customer_id) values
+			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#partnerLevel#,#parentBusinessId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#,#parentMarkupBusinessId#,#parentCustomerId#)
+       <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	  </selectKey>
   </insert>
   
   <insert id="addCountryLevelBusienss" parameterClass="com.meritconinc.shiplinx.model.Business">
-      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isNation,parent_business_id,partner_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject) values
-			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#nationLevel#,#parentBusinessId#,#partnerId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#)
-      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isNation,parent_business_id,partner_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject,parent_markup_business_id,parent_customer_id) values
+			  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#nationLevel#,#parentBusinessId#,#partnerId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#,#parentMarkupBusinessId#,#parentCustomerId#)
+       <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	  </selectKey>
   </insert>
   
     <insert id="addBranchLevelBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isBranch,parent_business_id,partner_id,country_partner_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject) values
-		  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#branchLevel#,#parentBusinessId#,#partnerId#,#countryPartnerId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#)
-      <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
+      insert into business(name,short_code,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port, address_id, date_created, active, default_net_terms, default_credit_limit,header_key,US_address_id,isBranch,parent_business_id,partner_id,country_partner_id,logo_file_name,logohires_file_name,tax_info,finance_email,warehouse_email,invoice_notification_body,customer_notification_body,customer_notification_subject,rates_notification_body,add_customer_notification_body,add_customer_notification_subject,ltl_email,report_path,report_pathinvoice,warehouse_order_customer_notification_body,ship_order_notification_body,ship_order_notification_subject,parent_markup_business_id,parent_customer_id) values
+		  ( #name#, #shortCode#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#,#addressId#, #dateCreated#, #active#, #defaultNetTerms#, #defaultCreditLimit#, #headerKey#, #usAddressId#,#branchLevel#,#parentBusinessId#,#partnerId#,#countryPartnerId#,#logoFileName#,#logoHiResFileName#,#taxInfo#,#financeEmail#,#warehouseEmail#,#invoiceNotificationBody#,#customerNotificationBody#,#customerNotificationSubject#,#ratesNotificationBody#,#addCustomerNotificationBody#,#addCustomerNotificationSubject#,#ltlEmail#,#reportPath#,#reportPathInvoice#,#orderNotificationBody#,#shipOrderNotificationBody#,#shipOrderNotificationSubject#,#parentMarkupBusinessId#,#parentCustomerId#)
+       <selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	  </selectKey>
   </insert>
  

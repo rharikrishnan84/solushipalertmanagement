@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -85,4 +86,14 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   /*public List<CarrierChargeCode> getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);*/
   public  CarrierChargeCode getChargesByChargeCodeAndCarrier(long carrierId, String chargeCode,long customerId);
   public boolean isAllLevelMarkupDisabled(long businessId);
+  public BusinessMarkup getuniqueBusinessMarkup(
+		  		BusinessMarkup businessMarkup);
+  public List<BusinessMarkup> getBusinessMarkupListForCustomer(
+		  		BusinessMarkup businessMarkup);
+  
+  public BusinessMarkup addBusinessMarkup(BusinessMarkup markup);
+  
+  public void deleteBusinessMarkup(BusinessMarkup markup);
+  
+  public void updateBusinessMarkup(BusinessMarkup m);
 }

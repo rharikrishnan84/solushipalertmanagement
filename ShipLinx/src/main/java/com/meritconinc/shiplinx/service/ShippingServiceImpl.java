@@ -2385,4 +2385,28 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 		this.shippingService = shippingService;
 	}
 
+	@Override
+	public int saveDuplicateOrder(ShippingOrder dupOrder,ShippingOrder order) {
+			long fromAddId = addressDAO.add(order.getFromAddress());
+		    long toAddId = addressDAO.add(order.getToAddress());
+		    if(fromAddId!=0 && toAddId!=0){
+		    	dupOrder.setShipFromId(fromAddId);
+		    	dupOrder.setShipToId(toAddId);
+		    }
+			int i=this.shippingDAO.saveDuplicateOrder(dupOrder);
+			if(i==1){
+				for(Charge charge:order.getCharges()){
+					charge.setOrderId(charge.getOrderId()+1);
+					if(charge.getCostWithNoBM()!=null)
+						charge.setCost(charge.getCostWithNoBM());
+					if(charge.getChargeWithBM()!=null)
+						charge.setCharge(charge.getChargeWithBM());
+					charge.setStatus(ShiplinxConstants.CHARGE_PENDING_RELEASE);
+				}
+				 i=this.shippingDAO.saveDuplicateCharges(order.getCharges());
+			}
+			return i;
+	}
+	
+
 }

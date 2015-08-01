@@ -580,6 +580,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware ,Serv
 		
 		String currentUser = UserUtil.getMmrUser().getUsername();
 		String customerId = request.getParameter("id");
+		String adminRole= UserUtil.getMmrUser().getUserRole();
 		
 		//UserSearchCriteria criteria = new UserSearchCriteria();
 		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
@@ -646,6 +647,7 @@ public class LogonAction extends BaseAction implements ServletRequestAware ,Serv
 		
 		ActionContext.getContext().getSession().put("username", firstUserFound.getUsername()+"*");
 		getSession().put(ShiplinxConstants.ADMIN_USER, currentUser);
+		getSession().put(ShiplinxConstants.ADMIN_ROLE, adminRole);
 		//to get the customerId from the user logged in.
 		getSession().put("uCustomerId", firstUserFound.getCustomerId());
 		if(request.getParameter("username") != null && !request.getParameter("username").isEmpty()){

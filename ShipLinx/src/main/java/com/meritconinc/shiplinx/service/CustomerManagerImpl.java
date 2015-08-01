@@ -1037,4 +1037,8 @@ public class CustomerManagerImpl implements CustomerManager {
 									// TODO Auto-generated method stub
 									return customerDAO.getCustomersBySalesUser(usename);
 								}
+	@Override
+	public List<Customer> getAllCustomerForBusiness(long businessId) {
+		return customerDAO.getAllCustomerForBusiness(businessId);
+	}
 }

@@ -1744,6 +1744,12 @@
 	and 	ad1.address_id=o.ship_from_id 
 	and 	ad2.address_id=o.ship_to_id 
 	and 	os.status_id = o.status_id
+	and
+	<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				 o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+	</isNotNull> 
 	</select>
 	<select id="findShipmentsAdminById1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
 	select * from shipping_order where order_id=#id# and
@@ -1997,5 +2003,98 @@
 	<procedure id="getcommission">
   { call insert_commission_amount() }
  </procedure>
+ 
+<select id="searchOrderBySystemAdmin" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult1">
+       select distinct o.*, COALESCE(ci.id,0) as customs_invoice_id, cu.name as customer_name, 
+			sr.name as service_name, cr.name as master_carrier_name,
+			REPLACE(cr.tracking_url, '*trackingnum', master_tracking_num) as tracking_url1,
+			concat(COALESCE(ad1.abbreviation_name,''),',', COALESCE(ad1.address1,''),',', COALESCE(ad1.address2,''),',', COALESCE(ad1.city,''),',', COALESCE(ad1.postal_code,''),',', COALESCE(ad1.province_code,'')) as from_address_long,
+			concat(COALESCE(ad2.abbreviation_name,''),',', COALESCE(ad2.address1,''),',', COALESCE(ad2.address2,''),',', COALESCE(ad2.city,''),',', COALESCE(ad2.postal_code,''),',', COALESCE(ad2.province_code,'')) as to_address_long,
+			os.name as status_name 
+	   from order_status os, address ad1, address ad2, shipping_order o 
+	   left join charges c on(c.order_id=o.order_id) 
+	   left join package p on (o.order_id=p.order_id) 
+	   left join customer cu on (o.customer_id = cu.customer_id)
+	   left join customer_sales cs on (o.customer_id = cs.customer_id)
+	   left join customs_invoice ci on (ci.order_id = o.order_id)
+	   left join service sr on (sr.service_id = o.service_id)
+	   left join carrier cr on (cr.carrier_id = sr.master_carrier_id)
+      <dynamic prepend="where">
+          c.order_id&gt;0 and ad1.address_id=o.ship_from_id and ad2.address_id=o.ship_to_id and os.status_id = o.status_id
+          <isNotNull  property="id">
+                and o.order_id=#id#
+           </isNotNull>    
+         <isNotNull  property="batchId">
+               <isNotEmpty property="batchId">
+                   and o.batch_id=#batchId#
+               </isNotEmpty>
+          </isNotNull>    
+          <isNotNull  property="statusId">
+              <isNotEmpty property="statusId">
+                 and o.status_id=#statusId#
+              </isNotEmpty>
+          </isNotNull>
+          <isNull  property="statusId">
+              <isNotNull property="cancelledShipments">
+                  <isEqual property="cancelledShipments" compareValue="N">
+                       and (o.status_id != 40 or o.status_id is null)
+                   </isEqual>
+              </isNotNull>
+           </isNull>
+          <isNotNull  property="orderNum">
+               <isNotEmpty property="orderNum">
+               and o.order_num=#orderNum#
+               </isNotEmpty>
+           </isNotNull>            
+           <isNotNull property="customerId">
+               and o.customer_id=#customerId#
+           </isNotNull>    
+           <isNotNull  property="carrierId">
+                and c.carrier_id=#carrierId#
+           </isNotNull>            
+          <isNotNull  property="serviceId">
+                and o.service_id=#serviceId#
+           </isNotNull>
+           <isNotNull property="masterTrackingNum">
+              and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#)
+          </isNotNull>
+          <isNotNull property="fromDateTime">
+              <![CDATA[and scheduled_ship_date >= #fromDateTime#]]>
+          </isNotNull>
+          <isNotNull property="toDateTime">
+               <![CDATA[and scheduled_ship_date <= #toDateTime#]]>
+           </isNotNull>
+           <isGreaterEqual property="billingStatus" compareValue="0">
+               and o.billing_status=#billingStatus#
+           </isGreaterEqual>   
+           <isNotNull property="ediInvoiceNumber">
+               <isNotEmpty property="ediInvoiceNumber">
+                   and c.edi_invoice_number=#ediInvoiceNumber#
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="referenceCode">
+               <isNotEmpty property="referenceCode">
+                  and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="salesAgentUsername">
+               <isNotEmpty property="salesAgentUsername">
+               and (cs.sales_user=#salesAgentUsername#)
+              </isNotEmpty>
+
+           </isNotNull>
+          <isNotNull property="createdBy">
+               <isNotEmpty property="createdBy">
+               and (o.created_by=#createdBy#)
+               </isNotEmpty>
+           </isNotNull>    
+           <isNotNull property="branch">
+               <isNotEmpty property="branch">
+               and (cs.branch=#branch#)
+               </isNotEmpty>
+           </isNotNull>
+       </dynamic> 
+           order by $orderBy$ $order$ 
+   </select>
 </sqlMap>
 

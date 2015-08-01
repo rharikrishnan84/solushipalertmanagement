@@ -27,6 +27,7 @@ import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -224,6 +225,8 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
     }
     if (request.getParameter("pickup") != null)
       strReturn = "success2";
+    else if(request.getParameter("call")!=null)
+      strReturn = "success3";
     else
       strReturn = "success";
     return strReturn;
@@ -1078,6 +1081,8 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  
 	  
 	   private List<EshipplusCarrierFilter> eshipCarrierList;
+	   private List<BusinessMarkup> businessMarkupList;
+	private BusinessDAO businessDAO;
 	  public List<EshipplusCarrierFilter> getEshipCarrierList() {
 	  
 	  	return eshipCarrierList;
@@ -1167,4 +1172,355 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  		  }
 	  	  }
 	  	  
+	  	  
+	  	//code for Business Markup starts here 
+	  		  public BusinessMarkup getBusinessMarkup() {
+	  				return (BusinessMarkup) getSession().get("businessMarkup");
+	  			}
+	  	
+	  			@SuppressWarnings("unchecked")
+	  			public void setBusinessMarkup(BusinessMarkup markup) {
+	  				getSession().put("businessMarkup", markup);
+	  			}
+	  		@SuppressWarnings("unchecked")
+	  		public String businessMarkup() {
+	  			User user = UserUtil.getMmrUser();
+	  			BusinessMarkup businessMarkup=(BusinessMarkup) getSession().get("businessMarkup");
+	  			request.getSession().removeAttribute("businessMarkup");
+	  			businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+	  			List<Business> businesses=businessDAO.getAllBusiness();
+	  			/*HashSet<Business> toBusList = new HashSet<Business>();
+	  			toBusList.addAll(businesses);*/
+	  			getSession().put("BUSINESS", businesses);
+	  			countries = MessageUtil.getCountriesList();
+	  			getSession().put("COUNTRIES", countries);
+	  			if(request.getParameter("call")==null && !("search").equalsIgnoreCase(request.getParameter("call"))){
+	  			List<Customer> customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+	  			getSession().put("CUSTOMERS", customers);
+	  			}
+	  			/*List<String> toProvince =new ArrayList<String>();
+	  			toProvince.add("ON");
+	  			toProvince.add("NW");
+	  			List<String> fromProvince =new ArrayList<String>();
+	  			fromProvince.add("ON");
+	  			fromProvince.add("NW");
+	  		    getSession().put("TO_PROVINCE",toProvince);
+	  			getSession().put("FROM_PROVINCE",fromProvince);*/
+	  			if(request.getParameter("call")!=null && request.getParameter("call").equalsIgnoreCase("search")){
+	  				setBusinessMarkup(businessMarkup);
+	  				if(businessMarkup.getFromCountryCode().equalsIgnoreCase("ANY"))
+	  					businessMarkup.setFromCountryCode(null);
+	  				if(businessMarkup.getToCountryCode().equalsIgnoreCase("ANY"))
+	  					businessMarkup.setToCountryCode(null);
+	  				}
+	  			else {
+	  				businessMarkup=new BusinessMarkup();
+	  				businessMarkup.setBusinessId(user.getBusinessId());
+	  			}
+	  			List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+	  			if (this.markupManagerService != null) {
+	  				businessMarkupList = this.markupManagerService
+	  						.getBusinessMarkupListForCustomer(businessMarkup);
+	  			}
+	  				if (businessMarkupList != null && businessMarkupList.size()>0)
+	  					getSession().put("MARKUPLIST", businessMarkupList);
+	  				else
+	  					getSession().put("MARKUPLIST", businessMarkupList);
+	  			return SUCCESS;
+	  		}
+	  		
+	  		  public String listCarriers() throws Exception {
+	  			    String strReturn = null;
+	  			    try {
+	  			      String CustomerId = request.getParameter("value");
+	  			      User user = UserUtil.getMmrUser();
+	  			      if (CustomerId != null && !CustomerId.isEmpty()) {
+	  			        if (user != null && user.getUserRole().equalsIgnoreCase("BusAdmin")) {
+	  			          carriers =getCarriers();
+	  			          getSession().put("CARRIERS", carriers);
+	  			        }
+	  			      }
+	  			    } catch (Exception e) {
+	  			      e.printStackTrace();
+	  			      addActionError(getText("content.error.unexpected"));
+	  			    }
+	  			    if (request.getParameter("pickup") != null)
+	  			      strReturn = "success2";
+	  			    else
+	  			      strReturn = "success";
+	  			    return strReturn;
+	  			  }
+	  		  
+	  		public String listCustomers() throws Exception {
+	  			String strReturn = null;
+	  			try {
+	  				String businessId = request.getParameter("value");
+	  				List<Customer> customers=new ArrayList<Customer>();
+	  				customers=customerService.getAllCustomerForBusiness(Long.parseLong(businessId));
+	  				getSession().put("CUSTOMERS", customers);
+	  			} catch (Exception e) {
+	  				e.printStackTrace();
+	  				addActionError(getText("content.error.unexpected"));
+	  			}
+	  			if (request.getParameter("pickup") != null)
+	  				strReturn = "success2";
+	  			else if(request.getParameter("method") != null)
+	  				strReturn = "success1";
+	  			else
+	  				strReturn = "success";
+	  			return strReturn;
+	  		}
+	  	
+	  	/*	public String listProvinces() throws Exception {
+	  			String callFor = request.getParameter("for");
+	  			String countryCode = request.getParameter("value");
+	  			List<String> province =new ArrayList<String>();
+	  			province.add("ON");
+	  			province.add("NW");
+	  			if(callFor!=null && ("toCountry").equals(callFor))
+	  				getSession().put("TO_PROVINCE", province);
+	  			else
+	  			getSession().put("FROM_PROVINCE", province);
+	  			return SUCCESS;
+	  		}
+	  	*/
+	  		public String addBusinessMarkup() throws Exception {
+	  			try {
+	  				User user = UserUtil.getMmrUser();
+	  				BusinessMarkup markup = this.getBusinessMarkup();
+	  				markup.setBusinessId(user.getBusinessId());
+	  				if(markup.getMarkupPercentage()==null){
+	  					markup.setMarkupPercentage(0);
+	  				}
+	  				if(markup.getMarkupFlat()==null){
+	  					markup.setMarkupFlat(0.0);
+	  				}
+	  				if(markup.getType()==null){
+	  					markup.setType(1);
+	  				}
+	  				if(markup.getFromCost()==null){
+	  					markup.setFromCost(0.0);
+	  				}
+	  				if(markup.getToCost()==null){
+	  					markup.setToCost(0.0);
+	  				}
+	  				if(markup.getCustomerId()<0){
+	  					markup.setCustomerId(0L);
+	  				}
+	  				if(markup.getBusinessToId()<0){
+	  					addActionError("Please select business for which you are applying markup");
+	  					return INPUT;
+	  				}
+	  				if(markup.getCarrierId()<0){
+	  					addActionError("Please select carrier and its service");
+	  					return INPUT;
+	  				}
+	  				if(markup.getMarkupPercentage()==0 && markup.getMarkupFlat()==0){
+	  					addActionError("Please give value > 0 for flat or markuppercentage");
+	  					return INPUT;
+	  				}
+	  				
+	  				if (markup != null && this.markupManagerService != null
+	  						&& markup.getFromCountryCode() != null
+	  						&& (!markup.getFromCountryCode().isEmpty())
+	  						&& markup.getToCountryCode() != null
+	  						&& (!markup.getToCountryCode().isEmpty())
+	  						&& markup.getServiceId() != null
+	  						&& (!markup.getServiceId().equals(-1L))) {
+	  	
+	  					/*if (!validateWeightParameters(markup)) {
+	  						addActionError(getText("error.markup.invalid.weight"));
+	  						return INPUT;
+	  					}*/
+	  					BusinessMarkup m = this.markupManagerService.addBusinessMarkup(markup);
+	  					if (m != null) {
+	  						// this.getMarkupList().add(0, m);
+	  						throw new MarkupAlreadyExistsException(
+	  								"Markup already exists - " + m.toString());
+	  					}
+	  					List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+	  					if (this.markupManagerService != null) {
+	  						businessMarkupList = this.markupManagerService
+	  								.getBusinessMarkupListForCustomer(markup);
+	  					}
+	  						if (businessMarkupList != null && businessMarkupList.size()>0)
+	  							getSession().put("MARKUPLIST", businessMarkupList);
+	  						else
+	  							getSession().put("MARKUPLIST", businessMarkupList);
+	  				}
+	  			} catch (MarkupAlreadyExistsException ue) {
+	  				addActionError(getText("error.markup.exists") + " - "
+	  						+ ue.getMessage());
+	  				return INPUT;
+	  			} catch (Exception e) {
+	  				e.printStackTrace();
+	  				addActionError(getText("content.error.unexpected"));
+	  				return INPUT;
+	  			}
+	  			addActionMessage("successfull inserted");
+	  			return SUCCESS;
+	  		}
+	  	
+	  		public String deleteBusinessMarkup() throws Exception {
+	  			try {
+	  				loadBusinessMarkupLists();
+	  				String serString = request.getParameter("serviceId");
+	  				Long serviceId = 0L;
+	  				if (serString != null)
+	  					serviceId = Long.parseLong(serString);
+	  				String busString1 = request.getParameter("businessId");
+	  				Long busId = 0L;
+	  				if (busString1 != null)
+	  					busId=Long.parseLong(busString1);
+	  				String busString2 = request.getParameter("businessToId");
+	  				Long busToId = 0L;
+	  				if (busString2 != null)
+	  					busToId=Long.parseLong(busString2);
+	  				BusinessMarkup markup = this.getBusinessMarkup();
+	  				if (markup.getFromCountryCode() == null
+	  						|| markup.getFromCountryCode().length() == 0)
+	  					markup.setFromCountryCode("ANY");
+	  				if (markup.getToCountryCode() == null
+	  						|| markup.getToCountryCode().length() == 0)
+	  					markup.setToCountryCode("ANY");
+	  				if (markup.getFromCountryProvince() == null
+	  						|| markup.getFromCountryProvince().length() == 0)
+	  					markup.setFromCountryProvince("ANY");
+	  				if (markup.getToCountryProvince() == null
+	  						|| markup.getToCountryProvince().length() == 0)
+	  					markup.setToCountryProvince("ANY");
+	  				if(markup.getCustomerId()<0)
+	  					markup.setCustomerId(0L);
+	  				if(markup.getBusinessId()!=null)
+	  					markup.setBusinessId(1L);
+	  				if(markup.getBusinessToId()!=null)
+	  					markup.setBusinessToId(0L);
+	  				String fromCountryCode = request.getParameter("fromCountryCode");
+	  				String toCountryCode = request.getParameter("toCountryCode");
+	  				markup = findBusinessMarkup(serviceId, fromCountryCode,
+	  						toCountryCode,busString1,busString2);
+	  				if (markup != null)
+	  					this.markupManagerService.deleteBusinessMarkup(markup);
+	  			} catch (Exception e) {
+	  				e.printStackTrace();
+	  				addActionError(getText("content.error.unexpected"));
+	  			}
+	  			return businessMarkup();
+	  		}
+	  		
+	  		private BusinessMarkup findBusinessMarkup(Long serviceId,
+	  				String fromCountryCode, String toCountryCode, String busString1,
+	  				String busString2) {
+	  			// TODO Auto-generated method stub
+	  			if (this.businessMarkupList != null) {
+	  				for (BusinessMarkup m : this.businessMarkupList) {
+	  					if (m.getServiceId().equals(serviceId)
+	  							&& m.getFromCountryCode().equals(fromCountryCode)
+	  							&& m.getToCountryCode().equals(toCountryCode)) {
+	  						if (m.getBusinessId()==Long.parseLong(busString1) && m.getBusinessToId()==Long.parseLong(busString2)) {
+	  							return m;
+	  						}
+	  					}
+	  				}
+	  			}
+	  			return null;
+	  		}
+	  	
+	  		 private void loadBusinessMarkupLists() {
+	  			    if (this.businessMarkupList == null)
+	  			      this.businessMarkupList = (List<BusinessMarkup>) getSession().get("MARKUPLIST");
+	  			  }
+	  		 public String saveBusinessMarkupList() throws Exception {
+	  		  		try {
+	  		  		Boolean eshipCarrierUpdated=false;
+	  		  			shippingService = (ShippingService) MmrBeanLocator.getInstance()
+	  		  					.findBean("shippingService");
+	  		  			loadBusinessMarkupLists();
+	  		  			User user = UserUtil.getMmrUser();
+	  		  			String carrierId = request.getParameter("carrierId");
+	  		  		if (carrierId != null) {
+	  		  				if (carrierId.equalsIgnoreCase("6")) {
+	  		  				EshipplusCarrierFilter eshipplusCarrierFilter = new EshipplusCarrierFilter();
+	  		  					String carrierName = request.getParameter("carrierName");
+	  		  					carrierName=carrierName.replace('~', '&');
+	  		  					String carrierInactive = request.getParameter("carrierInactive");
+	  		  					String eshipCarLt[] = carrierName.split(",");
+	  		  					String eshipCarInAc[] = carrierInactive.split(",");
+	  		  				for (int i1 = 0; i1 < eshipCarLt.length; i1++) {
+	  		  						if(eshipCarInAc[i1] !=null && !eshipCarInAc[i1].equalsIgnoreCase("undefined")){
+	  		  							eshipplusCarrierFilter
+	  		  							.setCarrierDisabledFlag(convertStringToBoolean(eshipCarInAc[i1]));
+	  		  							eshipplusCarrierFilter
+	  		  						.setEshipCarrierName(eshipCarLt[i1]);
+	  		  							shippingService.updateEshipCarrierFilter(
+	  	  									eshipplusCarrierFilter, String.valueOf(this
+	  		  											.getMarkup().getCustomerId()));
+	  		  						eshipCarrierUpdated=true;
+	  		  						}
+	  		  
+	  		  					}
+	  		  				}
+	  		  		}
+	  		  			if(eshipCarrierUpdated!=null && eshipCarrierUpdated){
+	  		  				addActionMessage("Carrier Updated Successfully");
+	  		  			}
+	  		  			String selectedItem = request.getParameter("selectedItem");
+	  		  			String percentage = request.getParameter("percentage");
+	  		  		String flat = request.getParameter("flat");
+	  		  			String disabledFlag = request.getParameter("disabledFlag");
+	  		  			String variable = request.getParameter("variable");
+	  		  			String item[] = selectedItem.split(",");
+	  		  			String mPs[] = percentage.split(",");
+	  		  			String mFs[] = flat.split(",");
+	  		  			String mDs[] = disabledFlag.split(",");
+	  		  			String mVs[] = variable.split(",");
+	  		  			// if (this.getMarkupList().size() != item.length)
+	  		  			for (int i1 = 0; i1 < item.length; i1++) {
+	  		  				if (!item[i1].equalsIgnoreCase("")) {
+	  		  					// for (int i = 0; i < this.getMarkupList().size(); i++) {
+	  		  					BusinessMarkup m = this.businessMarkupList.get(Integer.parseInt(item[i1]));					int p = Integer.parseInt(mPs[i1]);
+	  		  					double f = Double.parseDouble(mFs[i1]);
+	  		  				boolean d = convertStringToBoolean(mDs[i1]);
+	  		  					int v = Integer.parseInt(mVs[i1]);
+	  		  					if (isBusinessMarkupDirty(m, p, f, d, v)) {
+	  		  						m.setMarkupPercentage(p);
+	  		  					m.setMarkupFlat(f);
+	  		  						m.setDisabledFlag(d);
+	  		  						m.setVariable(v);
+	  		  						// If user is in Customer Markup and modified default
+	  		  					// markup
+	  		  						// it should be added as a new record customer specific
+	  		  						// markup
+	  		  						if (m.getCustomerId().longValue() == 0
+	  		  							&& getMarkup().getCustomerId().longValue() != 0) {
+	  		  							m.setCustomerId(getMarkup().getCustomerId());
+	  		  							this.markupManagerService.addBusinessMarkup(m);
+	  		  							addActionMessage("Added Successfully");
+	  		  						} else {
+	  		  						this.markupManagerService.updateBusinessMarkup(m);
+	  		  							addActionMessage("Updated Successfully");
+	  		  						}
+	  		  				}
+	  		  				}
+	  		  			}
+	  		  			eshipCarrierList = shippingService
+	  		  					.getEshipPlusCarrierByCustomerId(this
+	  		  							.getMarkup().getCustomerId());
+	  		  			session.put("eshipCustomerCarrier", eshipCarrierList);
+	  		  			this.setEshipCarrierList(eshipCarrierList);
+	  		  		} catch (Exception e) {
+	  		  			e.printStackTrace();
+	  		  		addActionError(getText("content.error.unexpected"));
+	  		  			return INPUT;
+	  		  		}
+	  		  		return SUCCESS;
+	  		  	}
+	  		 private boolean isBusinessMarkupDirty(BusinessMarkup m, int p, double f, boolean d, int v) {
+	  			 if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
+	  					 || m.getDisabledFlag() != d || m.getVariable() != v){
+	  				 return true;
+	  			 }
+	  			 return false;
+	  		 }
+	  	 
 }
