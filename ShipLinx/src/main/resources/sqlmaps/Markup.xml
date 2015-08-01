@@ -281,7 +281,7 @@
 		<dynamic prepend="where">
 			m.service_id=s.service_id and s.carrier_id=c.carrier_id and 
 			(m.customer_id=#customerId# or m.customer_id=0)   and 
-			m.business_id = #businessId#
+			m.business_id = #businessId# and m.disabled = 0
 			<isNotNull  property="serviceId">
 				 and m.service_id=#serviceId#
 			</isNotNull>

@@ -979,7 +979,12 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  public String saveMarkupList() throws Exception {
 	  		try {
 	  			long busId = BusinessFilterUtil.setBusinessIdbyUserLevel();
-	  		Boolean eshipCarrierUpdated=false;
+	  			long businessId = 0;
+	  			if(this.getMarkup().getCustomerId() > 0 ){
+	  				Customer cus = customerService.getCustomerInfoByCustomerId(this.getMarkup().getCustomerId());
+	  				 businessId = cus.getBusinessId();
+	  			}
+	  			Boolean eshipCarrierUpdated=false;
 	  			shippingService = (ShippingService) MmrBeanLocator.getInstance()
 	  					.findBean("shippingService");
 	  		loadListsFromSession();
@@ -1048,6 +1053,9 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  							this.markupManagerService.addMarkup(m);
 	  							addActionMessage("Added Successfully");
 	  						} else {
+	  							if(businessId > 0){
+	  								m.setBusinessId(businessId);
+	  							}
 	  						this.markupManagerService.updateMarkup(m);
 	  							addActionMessage("Updated Successfully");
 	  						}
