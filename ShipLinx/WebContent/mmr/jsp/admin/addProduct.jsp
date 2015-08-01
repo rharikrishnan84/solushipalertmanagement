@@ -1,8 +1,6 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib prefix="sx" uri="/struts-dojo-tags" %>
-
-
 <head>
 <sx:head/>
 </head>
