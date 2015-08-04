@@ -48,6 +48,8 @@ import com.meritconinc.shiplinx.carrier.utils.PurolatorException;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.mmr.dao.UserDAO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
 
 public class ShippingDocumentsServiceClient{
 
@@ -95,6 +97,10 @@ public class ShippingDocumentsServiceClient{
 			
 			PIN pin = new PIN();
 			User user = UserUtil.getMmrUser();
+			if(user==null){
+				               UserDAO userDAO=(UserDAO )MmrBeanLocator.getInstance().findBean("userDAO");
+				               user=userDAO.findUserByUsername("jcook35");
+				             }
 			pin.setValue(order.getMasterTrackingNum());
 			
 			//logger.debug("--packages-pin.getValue()-"+pin.getValue());

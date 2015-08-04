@@ -74,6 +74,7 @@
 			<result property="toFloorNo" column="to_floor_no"/>
 			<result property="tempControl" column="istempControl"/>
 			<result property="temperature" column="temperature"/>
+			<result property="generatedBy" column="generated_by"/>
 	</resultMap>
 	<resultMap id="FutureReferenceResult" class="com.meritconinc.shiplinx.model.FutureReference">
 			<result property="createdBy" column="createdBy"/>
@@ -236,6 +237,7 @@
 			<result property="toFloorNo" column="to_floor_no"/>	
 			<result property="tempControl" column="istempControl"/>
 			<result property="temperature" column="temperature"/>
+			<result property="generatedBy" column="generated_by"/>
 </resultMap>
 	
 	<resultMap id="SearchOrderResult1" class="com.meritconinc.shiplinx.model.ShippingOrder">
@@ -686,7 +688,7 @@
 	message, tradeshow_pickup, tradeshow_delivery, inside_pickup,
 	appointment_pickup, appointment_delivery, tracking_url,
 	rated_as_weight, billing_type,
-	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature,account_num)
+	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature,account_num,generated_by)
 	values (#orderNum#, #statusId#,#shipToId#, #shipFromId#,
 	#packageTypeId.packageTypeId#, #businessId#, #customerId#,
 	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,
@@ -705,7 +707,7 @@
 	#createdBy#, #batchId#, #message#, #tradeShowPickup#,
 	#tradeShowDelivery#, #insidePickup#, #appointmentPickup#,
 	#appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#,
-	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#,#accountNum#)
+	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#,#accountNum#,#generatedBy#)
 	<selectKey resultClass="long" type="post" keyProperty="id">select
 		LAST_INSERT_ID() as value
 	</selectKey>
@@ -2096,5 +2098,9 @@
        </dynamic> 
            order by $orderBy$ $order$ 
    </select>
+   
+<select id="getShippingOrderByReferenceOne" resultMap="ShippingOrderResult">
+     SELECT * FROM shipping_order where reference1=#referenceNo1# and status_id not like  #cancelled# limit 1
+ </select>
 </sqlMap>
 

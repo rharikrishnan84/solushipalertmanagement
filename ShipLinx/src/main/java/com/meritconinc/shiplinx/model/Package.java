@@ -2,6 +2,7 @@ package com.meritconinc.shiplinx.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 public class Package implements Serializable {
 	private long packageId;
@@ -34,6 +35,24 @@ public class Package implements Serializable {
 	private String packageType;
 	private String packageQuantity;
 
+	
+
+ //for shopify package
+ private List<Long> varientIds;
+ private int varientQuantity;
+ 
+ public int getVarientQuantity() {
+       return varientQuantity;
+     }
+     public void setVarientQuantity(int varientQuantity) {
+       this.varientQuantity = varientQuantity;
+     }
+     public List<Long> getVarientIds() {
+       return varientIds;
+     }
+     public void setVarientIds(List<Long> varientIds) {
+       this.varientIds = varientIds;
+     }
 	public String getPackageQuantity() {
 		return packageQuantity;
 	}

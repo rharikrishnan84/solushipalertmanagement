@@ -30,6 +30,10 @@ import com.meritconinc.shiplinx.utils.TimeZonesFactory;
 import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
 
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.Business;
+
 public class CustomerManagerBaseAction extends BaseAction implements Preparable,ServletRequestAware {
 	private static final long serialVersionUID	= 2509200786001L;
 
@@ -146,14 +150,24 @@ public class CustomerManagerBaseAction extends BaseAction implements Preparable,
 
 	@SuppressWarnings("unchecked")
 	protected void initialize() {
+		
+		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		       Business cusBus=null;
+		       if(UserUtil.getMmrUser()!=null){
+		         cusBus=UserUtil.getMmrUser().getBusiness();
+		       }else{
+		         cusBus=businessDAO.getBusiessById(BusinessFilterUtil.setBusinessIdbyUserLevel());
+		       }
 		if (this.getCustomer() == null) {
 			Customer customer = new Customer();
-			customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-			customer.getAddress().setCountryCode(UserUtil.getMmrUser().getBusiness().getAddress().getCountryCode());
-			customer.getAddress().setProvinceCode(UserUtil.getMmrUser().getBusiness().getAddress().getProvinceCode());
-			customer.setTimeZone(UserUtil.getMmrUser().getBusiness().getTimeZone());
+			
+			customer.setBusinessId(cusBus.getId());
+            customer.getAddress().setCountryCode(cusBus.getAddress().getCountryCode());
+            customer.getAddress().setProvinceCode(cusBus.getAddress().getProvinceCode());
+            customer.setTimeZone(cusBus.getTimeZone());
+			
 			if(customer.getCreditLimit().doubleValue()== 0){
-				customer.setCreditLimit(new BigDecimal(UserUtil.getMmrUser().getBusiness().getDefaultCreditLimit()).setScale(2));
+				customer.setCreditLimit(new BigDecimal(cusBus.getDefaultCreditLimit()).setScale(2));
 				customer.getCreditLimit().setScale(2,BigDecimal.ROUND_HALF_UP);
 			}
 			if(customer.getHoldTerms() == 0){
@@ -168,10 +182,10 @@ public class CustomerManagerBaseAction extends BaseAction implements Preparable,
 			String method = this.request.getParameter("method");
 			if (method != null && method.equals("reset")) {
 				Customer customer = new Customer();
-				customer.getAddress().setCountryCode(UserUtil.getMmrUser().getBusiness().getAddress().getCountryCode());
-				customer.getAddress().setProvinceCode(UserUtil.getMmrUser().getBusiness().getAddress().getProvinceCode());
-				customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-				customer.setTimeZone(UserUtil.getMmrUser().getBusiness().getTimeZone());
+				 customer.getAddress().setCountryCode(cusBus.getAddress().getCountryCode());
+				 customer.getAddress().setProvinceCode(cusBus.getAddress().getProvinceCode());
+				 customer.setBusinessId(cusBus.getId());
+				 customer.setTimeZone(cusBus.getTimeZone());
 				this.setCustomer(customer);				
 			}
 		}
@@ -189,7 +203,7 @@ public class CustomerManagerBaseAction extends BaseAction implements Preparable,
 			timeZoneList =(List<TimeZoneBean>) TimeZonesFactory.getSupportedTimeZones();
 			getSession().put("timeZones", timeZoneList);
 		}
-		carriers = this.carrierServiceManager.getCarriersForBusiness(UserUtil.getMmrUser().getBusinessId());
+	    carriers = this.carrierServiceManager.getCarriersForBusiness(cusBus.getId());
 		getSession().put("CARRIERS", carriers);
 		
 		//get the sales users for this business

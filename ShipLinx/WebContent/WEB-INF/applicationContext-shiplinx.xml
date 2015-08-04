@@ -26,6 +26,37 @@
 		<property name="sqlMapClient" ref="sqlMapClient"/>
 	</bean>
 
+	
+	<!-- E-commerce Action -->
+    
+    <bean id="eCommerceManagerAction" scope="prototype" class="com.meritconinc.mmr.action.admin.EcommerceManagerAction">
+     <property name="eCommerceDAO" ref="eCommerceDAO"/>
+       <!--  <property name="businessDAO" ref="businessDAO"/>
+   <property name="addressDAO" ref="addressDAO"/> -->
+   <property name="customerService" ref="customerService"/>  
+   </bean>
+   
+ <bean id="eCommerceDAO" class="com.meritconinc.mmr.dao.ibatis.EcommerceDAOImpl">
+   <property name="sqlMapClient" ref="sqlMapClient"/>
+ </bean>
+ 
+    <bean id="createShipmentController" scope="prototype" parent="baseTransactionProxy">
+        <property name="target">
+          <bean class="com.meritconinc.shiplinx.api.controller.CreateShipmentController">
+           <property name="carrierServices">
+         <list>
+           <ref bean="fedexService"/>
+           <ref bean="upsService"/>
+           <ref bean="dhlService"/>
+           <ref bean="loomisService"/>
+           <ref bean="purolatorService"/>    
+           <ref bean="midlandService"/>      
+         </list>
+       </property>   
+       
+            </bean>
+       </property>       
+ </bean>
 
 	<!-- Address book management -->
 	<bean id="AddressbookAction" scope="prototype" class="com.meritconinc.shiplinx.action.AddressbookAction">

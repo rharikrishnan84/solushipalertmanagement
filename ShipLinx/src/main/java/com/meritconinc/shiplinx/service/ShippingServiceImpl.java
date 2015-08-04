@@ -861,22 +861,24 @@ public class ShippingServiceImpl implements ShippingService {
 
     try {
       // check if addtl handling was already applied
-      for (Charge charge : order.getCharges()) {
-        try { // putting the below code in block, in case charge does
-          // not have values such as code, code level2, name etc
-          if (charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.CHARGE_CODE_UPS_ACC)
-              && charge.getChargeCodeLevel2().equalsIgnoreCase(
-                  ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH)
-              && charge.getName().equalsIgnoreCase(
-                  ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING)
-              && charge.getType() == chargeType) {
-            log.info("Additional Handling was already added to this order!");
-            return;
-          }
-        } catch (Exception e) {
-        }
-
-      }
+    	if(order.getCharges()!=null){
+    		                 for (Charge charge : order.getCharges()) {
+    		                   try { // putting the below code in block, in case charge does
+    		                     // not have values such as code, code level2, name etc
+    		                     if (charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.CHARGE_CODE_UPS_ACC)
+    		                         && charge.getChargeCodeLevel2().equalsIgnoreCase(
+    		                             ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH)
+    		                         && charge.getName().equalsIgnoreCase(
+    		                             ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING)
+    		                         && charge.getType() == chargeType) {
+    		                       log.info("Additional Handling was already added to this order!");
+    		                       return;
+    		                     }
+    		                   } catch (Exception e) {
+    		                   }
+    		           
+    		                 }
+    		           }
 
       if (order.getCustomerId() == null || order.getCustomerId() == 0) {
         return;

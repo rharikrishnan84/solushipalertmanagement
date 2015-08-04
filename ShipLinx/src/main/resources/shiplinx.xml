@@ -605,7 +605,24 @@
 		<action name="*" class="com.meritconinc.mmr.action.common.GenericAction">
             <result type="tiles" name="success">unavailable</result>
         </action>
-        
+         <!--  start of Ecommerce   -->
+     <action name="ecomSignup" method="ecomSignup" class="CustomerManagerAction">
+     <!-- <result name="success">/mmr/jsp/welcome/ecomSignup.jsp</result> -->
+     <result name="success" type="redirect">${ecomRediectUrl}</result>
+   </action>
+   <action name="ecomPrintLabel" method="ecomPrintLabel" class="shipmentAction">
+   <result name="success" type="stream">
+     <param name="contentDisposition">attachment;filename=${uploadFileName}</param>
+     <param name="contentType">application/pdf</param>
+     <param name="inputName">inputStream</param>
+     <param name="bufferSize">1024</param>
+   </result>
+   </action>
+   <action name="installShopify" method="installShopify" class="CustomerManagerAction">
+     <result name="success" type="redirect">${ecomRediectUrl}</result>
+   </action>
+    
+    <!-- End fo Ecommerce  -->
     
 
 	</package>
@@ -1545,9 +1562,29 @@
         <action name="updateProduct" method="addOrUpdateProducts" class="productManagerAction">
         	<result type="tiles">addNewProduct</result>
         </action>
+          <!-- shopify actions -->
+         
+        <action name="synchShopifyProduct" method="synchShopifyProduct" class="productManagerAction">
+           <!--  <result type="redirectAction" name="success">invoiceBreakdown</result> -->
+             <result name="success">/mmr/jsp/admin/ajax_syncProduct.jsp</result>
+        </action>
+        <action name="packageMap" method="packageMap" class="productManagerAction">
+            <result type="tiles">packageMap</result>
+        </action>
         
-        <!-- End : Product Management -->
-        
+        <action name="addPackageMap" method="addPackageMap" class="productManagerAction">
+             <result type="redirectAction" name="success">packageMap</result>
+              <result type="tiles" name="input">packageMap</result>
+        </action>
+        <action name="edit.packageMap" method="editPackageMap" class="productManagerAction">
+            <result type="tiles" name="success">packageMap</result>
+        </action>
+        <action name="delete.packageMap" method="deletePackageMap" class="productManagerAction">
+            <result type="tiles" name="success">packageMap</result>
+        </action>
+       
+       <!-- End : Product Management -->
+       
         <!-- Start: Package Management -->
         <action name="search.packages" method="listPackages" class="productManagerAction">
        		<result type="tiles" name="success">searchPackage</result>
@@ -2084,6 +2121,45 @@
          </action>
        	<!-- END  -->
       	
+       <!-- start of E-commerce Configuration -->
+ 
+ <action name="listEcom.store" method="listStore" class="eCommerceManagerAction">
+   <result type="tiles" name="success">list.store</result>
+ </action>
+ <action name="newEcom.store" method="newStore" class="eCommerceManagerAction">
+   <result type="tiles" name="success">add.store</result>
+ </action>
+ <action name="saveEcom.store" method="saveStore" class="eCommerceManagerAction">
+   <result type="tiles" name="success">list.store</result>
+   <result type="tiles" name="input">add.store</result>
+ </action>
+ <action name="editEcom.store" method="editStore" class="eCommerceManagerAction">
+   <result type="tiles" name="success">add.store</result>
+ </action>
+ 
+ <action name="deleteEcom.store" method="deleteStore" class="eCommerceManagerAction">
+   <result type="tiles" name="success">list.store</result>
+ </action>
+ 
+ 
+ <action name="listEcom.config" method="listConfig" class="eCommerceManagerAction">
+   <result type="tiles" name="success">listEcommerceConfig</result>
+ </action>
+  <action name="newEcom.config" method="newConfig" class="eCommerceManagerAction">
+ <result type="tiles" name="success">addEcommerceConfig</result>
+ </action>
+ <action name="saveEcom.config" method="saveConfig" class="eCommerceManagerAction">
+   <result type="tiles" name="success">listEcommerceConfig</result>
+ </action>
+ <action name="editEcom.config" method="editConfig" class="eCommerceManagerAction">
+   <result type="tiles" name="success">addEcommerceConfig</result>
+ </action>
+ <action name="deleteEcom.config" method="deleteConfig" class="eCommerceManagerAction">
+   <result type="tiles" name="success">listEcommerceConfig</result>
+ </action>
+ 
+ <!-- end of E-commerce Configuration -->
+     	
       	<!-- Logistics plus action  -->
 		<action name="menu.listTopMenu" method="loadMenuLevel" class="menuAction">
             <result name="success">/mmr/jsp/admin/loadTopMenu.jsp</result>

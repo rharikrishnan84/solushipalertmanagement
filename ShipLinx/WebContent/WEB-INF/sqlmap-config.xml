@@ -39,6 +39,7 @@
 	<sqlMap resource="sqlmaps/PackageTypes.xml"/>
 	<sqlMap resource="sqlmaps/Warehouse.xml"/>
 	<sqlMap resource="sqlmaps/BusinessFilter.xml"/>
+	<sqlMap resource="sqlmaps/Ecommerce.xml"/>
 
 	<!-- sqlMap resource="sqlmaps/SampleUserExtension.xml"/ -->
 	<!--Developers should add their definitions in the following section.-->

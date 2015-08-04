@@ -2,6 +2,7 @@ package com.meritconinc.shiplinx.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -492,19 +493,36 @@ public class Customer {
 						this.holdTerms = holdTerms;
 					}
 					
+					
 					public int hashCode(){
-											        return (int) this.id;
-											    }
-											     
-											 public boolean equals(Object o){
-												    if(o == null)                return false;
-												    if(!(o instanceof Customer)) return false;
+						               return (int) this.id;
+						           }
+						            
+						        public boolean equals(Object o){
+						             if(o == null)                return false;
+						             if(!(o instanceof Customer)) return false;
 						
-												    Customer c = (Customer) o;
-												    if(this.id != c.getId())      return false;
-												 
-												    return true;
-												  }
+						             Customer c = (Customer) o;
+						             if(this.id != c.getId())      return false;
+						          
+						             return true;
+						           }
+						        
+						        @SuppressWarnings("rawtypes")
+						       public static Comparator customerSort = new Comparator() {
+						             public int compare(Object arg0, Object arg1) {
+						               long cus1 = ((Customer) arg0).getId();
+						               long cus2 = ((Customer) arg1).getId();
+						               if (cus1 > cus2)
+						                 return 1;
+						               else if (cus1 < cus2)
+						                 return -1;
+						               else
+						                 return 0;
+						
+						             }
+						           };
+					
 
 											public boolean isCopyCustomerMarkup() {
 												return copyCustomerMarkup;

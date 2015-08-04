@@ -74,6 +74,17 @@ import com.meritconinc.mmr.dao.BusinessFilterDAO;
 import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.model.UserFilter;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import java.io.InputStreamReader;
+import com.meritconinc.mmr.dao.PropertyDAO;
+import org.apache.struts2.ServletActionContext;
+import com.meritconinc.mmr.model.admin.EcommerceConfig;
+import com.meritconinc.mmr.model.admin.EcommerceStore;
+import com.meritconinc.mmr.model.common.PropertyVO;
+import com.meritconinc.shiplinx.api.Constant.EcommerceAPIConstant;
+import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+import com.meritconinc.shiplinx.api.controller.ShopifyController;
+import com.meritconinc.shiplinx.service.PinBlockManager;
+import com.meritconinc.mmr.dao.EcommerceDAO;
 
 
 /**
@@ -102,6 +113,12 @@ public class CustomerManagerAction extends CustomerManagerBaseAction implements 
   private String role;
   private ShippingDAO shippingDAO;
   private List<CurrencySymbol> currencyList;
+  
+  
+//shopify stuffs
+  private String ecomRediectUrl;
+  private EcommerceStore ecomStore;
+  private Customer ecomCustomer;
 
   private CustomerSalesUser custSalesUser;
   public CustomerSalesUser getCustSalesUser() {
@@ -314,7 +331,7 @@ public String execute() throws Exception {
 	      	      	    	Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
 	      	      	    	Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
 	      	      
-	      	      	    	if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId==null ){
+	      	      	    if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) && businessId==null ){
 	      	      	    		
 	      	      	    		addActionMessage("Please Select Any business to Add Customer");
 	      	      	    		return "fail";
@@ -324,7 +341,11 @@ public String execute() throws Exception {
 	      // getSession().remove("edit");
 	      // String country = "US";
 	      request.setAttribute("add", "true");
-	      role = UserUtil.getMmrUser().getUserRole();
+	      if(UserUtil.getMmrUser()!=null){
+	    	              role = UserUtil.getMmrUser().getUserRole();
+	    	          }
+	      
+	      
 	    } catch (Exception e) {
 	      addActionError(getText("error.timeZones"));
 	    }
@@ -547,10 +568,10 @@ public String execute() throws Exception {
 	     	      customer.setUsername(username[0]);
 	      carrierListSelected = new ArrayList<Carrier>(); // list to capture only selected carriers.
 	      carrierList = (List<Carrier>) getSession().get("CARRIERS");
+	      if(select!=null){
 	      for (int i = 0; i < select.size(); i++) {
 	        // If this checkbox was selected:
 	    	  
-	    	  if(select!=null){
 	        if (select.get(i) != null && select.get(i)) {
 	          carrierListSelected.add(carrierList.get(i)); // Add only the selected carriers by the
 	                                                       // customer.
@@ -561,7 +582,7 @@ public String execute() throws Exception {
 	      customer.setCustomerSelectedCarriers(carrierListSelected);
 
 	      // if the user belongs to a branch, then the customer being created goes into that branch
-	      if (!StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
+	      if (UserUtil.getMmrUser()!=null && !StringUtil.isEmpty(UserUtil.getMmrUser().getBranch()))
 	        customer.setBranch(UserUtil.getMmrUser().getBranch());
 	      if (StringUtil.isEmpty(customer.getDefaultCurrency()))
 	        customer.setDefaultCurrency("");
@@ -571,96 +592,26 @@ public String execute() throws Exception {
   			Long partnerId=(Long) ActionContext.getContext().getSession().get(Constants.PARTNER_ID_SESSION);
   			Long countryPartnerId=(Long) ActionContext.getContext().getSession().get(Constants.NATION_ID_SESSION);
   			Long branchId=(Long) ActionContext.getContext().getSession().get(Constants.BRANCH_ID_SESSION);
-  			Long loginBusId=UserUtil.getMmrUser().getBusinessId();
+  			
+  			 Long loginBusId=0L;
+  			               if(UserUtil.getMmrUser()!=null){
+  			                 
+  			                 loginBusId=UserUtil.getMmrUser().getBusinessId();
+  			               }
+  			               else{
+  			                 loginBusId=customer.getBusinessId();
+  			               }
+  			
+  			
   			if((businessId ==null) &&(partnerId==null) && (countryPartnerId==null) 
-  					&& (branchId==null)  && loginBusId==null){	
+  					&& (branchId==null)  && loginBusId==null && customer.getBusinessId()==0){ 
   	          	 addActionError(getText("please select any business"));
   			      return INPUT;
   			}else{
-  				//setting the selected business in to the business when login user is sysadmin
-  				User sysAdminUser = UserUtil.getMmrUser();
-  			    if(sysAdminUser.getUserRole()!=null && sysAdminUser.getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
-  			     // customer.setBusinessId(businessId);
-  			    }
-  			    
-  			    if(UserUtil.getMmrUser().getUserRole().equals(Constants.SYS_ADMIN_ROLE_CODE)){
-  			     
-  			  if(businessId !=null &&(partnerId==null)
-      					&& (countryPartnerId==null )
-      					&& (branchId==null)){
-  				  customer.setBusinessId(businessId);
-      				   }else if(businessId !=null &&(partnerId!=null)
-      							&& (countryPartnerId==null )
-      							&& (branchId==null)){
-      				      
-      				      customer.setBusinessId(partnerId);
-      			   }else if(businessId !=null &&(partnerId!=null)
-      							&& (countryPartnerId!=null )
-      							&& (branchId==null)){
-      					 customer.setBusinessId(countryPartnerId);
-      				   }else if(businessId !=null &&(partnerId!=null)
-      							&& (countryPartnerId!=null )
-  							&& (branchId!=null)){
-      					   customer.setBusinessId(branchId);
-      				   }
-      			
-  			    }else if(UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
-  			    	
-  			    	Business bs=businessDAO.getBusiessById(UserUtil.getMmrUser().getBusinessId());
-  			         User logInuser=UserUtil.getMmrUser();
-  			        if(UserUtil.getMmrUser().isBusinessLevel() && partnerId==null && countryPartnerId==null && branchId==null ){
-  			        	
-			        	customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-			        	
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() )&& partnerId!=null && countryPartnerId==null && branchId==null)){
-  			        	
-  			        customer.setBusinessId(partnerId);
-  			        	
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			       	|| UserUtil.getMmrUser().isNationLevel()) && partnerId!=null && countryPartnerId!=null && branchId==null)){
-  			        
-  			        	customer.setBusinessId(countryPartnerId);
-  			        	
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()) && partnerId!=null && countryPartnerId!=null && branchId!=null)){
-  			        	
-  			        	customer.setBusinessId(branchId);
-  			        	
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
-  			            	&& partnerId==null && countryPartnerId==null && branchId==null	
-  			        		){
-  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
-  			    
-  			        		customer.setBusinessId(UserUtil.getMmrUser().getBusinessId());
-  			        	}
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
-  			            	&& partnerId==null && countryPartnerId!=null && branchId==null	
-  			        		){
-  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN) ){  
-  			        		
-  			        		customer.setBusinessId(countryPartnerId);
-  			        	
-  			        	}
-  			        }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel())  )
-  			            	&& partnerId==null && countryPartnerId!=null && branchId!=null	
-  			        		){
-  			        	if(!UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){  
-  			        		customer.setBusinessId(branchId);
-  			        	}
-  			       }else if(((UserUtil.getMmrUser().isBusinessLevel() || UserUtil.getMmrUser().isPartnerLevel() 
-  			            	|| UserUtil.getMmrUser().isNationLevel()|| UserUtil.getMmrUser().isBranchLevel()))
-  			            	&& partnerId==null && countryPartnerId==null && branchId!=null){
-  			    	 customer.setBusinessId(branchId);
-  			         }
-  			    	
-  			    	
-  			    	
-  			    }
-  			   
-  			    
+  			  if(customer.getBusinessId()==0){
+  				         customer.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+  				 }
+  			    			    
   				   getService().add(customer, null);
   				   if(businessId !=null &&(partnerId==null)
   					&& (countryPartnerId==null )
@@ -1021,8 +972,18 @@ public String execute() throws Exception {
 
     List<Customer> customers = getService().search(c);
 
-    for (Customer cust : customers) {
-      customerSearchResult.put(cust.getName(), cust.getId());
+    
+    @SuppressWarnings("unchecked")
+         List<Customer> businesFilterCustomers=((List<Customer>) ActionContext.getContext().getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID));
+            if(businesFilterCustomers!=null && businesFilterCustomers.size()>0){
+             for (Customer cust : businesFilterCustomers) {
+               customerSearchResult.put(cust.getName(), cust.getId());
+             }
+           }else{
+             for (Customer cust : customers) {
+                 customerSearchResult.put(cust.getName(), cust.getId());
+               }
+    
     }
 
     return SUCCESS;
@@ -1041,8 +1002,17 @@ public String execute() throws Exception {
     // First record is empty
     customerSearchResult.put("ORPHAN", 0L);
 
-    for (Customer cust : customers) {
-      customerSearchResult.put(cust.getName(), cust.getId());
+    
+    @SuppressWarnings("unchecked")
+         List<Customer> businesFilterCustomers=((List<Customer>) ActionContext.getContext().getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID));
+            if(businesFilterCustomers!=null && businesFilterCustomers.size()>0){
+             for (Customer cust : businesFilterCustomers) {
+               customerSearchResult.put(cust.getName(), cust.getId());
+             }
+           }else{
+             for (Customer cust : customers) {
+                 customerSearchResult.put(cust.getName(), cust.getId());
+               }
     }
 
     return SUCCESS;
@@ -1598,5 +1568,113 @@ public String execute() throws Exception {
 					public void setShippingDAO(ShippingDAO shippingDAO) {
 						this.shippingDAO = shippingDAO;
 					}
-
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					 
+	 public String ecomSignup() {
+	
+	   PropertyDAO propertyDAO = (PropertyDAO) MmrBeanLocator.getInstance()
+	       .findBean("propertyDAO");
+	    String contactUsUrl=propertyDAO.readProperty("SHOPIFY","SOLUSHIP_CONTACT_US_URL");
+	     
+	     
+	   try {
+	
+	     String code = request.getParameter("code");
+	     String shop = request.getParameter("shop");
+	
+	     if (shop != null && code != null) {
+	       ecomRediectUrl = "https://" + shop + "/admin/apps";
+	       String url = "https://" + shop;
+	       if (isValidUrl(url)) {
+	         ShopifyController shopify = new ShopifyController(shop,
+	             code);
+	         shopify.setCustomerId(null);
+	         Thread t1 = new Thread(shopify);// Thread will setup
+	                         // Ecommerce Shop setting to
+	                         // Soluship APi
+	         t1.start();
+	       } else {
+	         ecomRediectUrl = contactUsUrl;
+	       }
+	     } else {
+	       ecomRediectUrl = contactUsUrl;
+	     }
+	
+	   } catch (Exception e) {
+	     // TODO Auto-generated catch block
+	     e.printStackTrace();
+	   }
+	   return SUCCESS;
+	 }
+	
+	 private boolean isValidUrl(String ecomRediectUrl2) {
+	   // TODO Auto-generated method stub
+	
+	   EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator.getInstance()
+	       .findBean("eCommerceDAO");
+	   EcommerceStore store = eCommerceDAO
+	       .getEcomStorebyStoreUrl(ecomRediectUrl2);
+	   if (store != null) {
+	     return true;
+	   }
+	   return false;
+	 }
+	
+	 public String installShopify() {
+	
+	   String shop =request.getParameter("shop");
+	   
+	     System.out.println(response);
+	   EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator.getInstance()
+	       .findBean("eCommerceDAO");
+	   EcommerceStore store =eCommerceDAO.getEcomStorebyStoreUrl("https://"+shop);
+	   PropertyDAO propertyDAO = (PropertyDAO) MmrBeanLocator.getInstance()
+	       .findBean("propertyDAO");
+	     String contactUsUrl=propertyDAO.readProperty("SHOPIFY","SOLUSHIP_CONTACT_US_URL");
+	     
+	   if(store!=null){
+	   String url = "https://" + shop + "/admin/oauth/authorize?client_id="
+	       + store.getApiKey()+ "&scope="
+	       + store.getScopes() + "&redirect_uri="
+	       + store.getInstallUrl();
+	   this.ecomRediectUrl = url;
+	   }else{
+	      
+	     this.ecomRediectUrl =contactUsUrl;
+	   }
+	   return SUCCESS;
+	 }
+	         
+	 public String getEcomRediectUrl() {
+	           return ecomRediectUrl;
+	         }
+	
+	         public void setEcomRediectUrl(String ecomRediectUrl) {
+	           this.ecomRediectUrl = ecomRediectUrl;
+	         }
+	
+	         public EcommerceStore getEcomStore() {
+	           return ecomStore;
+	         }
+	
+	         public void setEcomStore(EcommerceStore ecomStore) {
+	           this.ecomStore = ecomStore;
+	         }
+	
+	         public Customer getEcomCustomer() {
+	           return ecomCustomer;
+	         }
+	
+	         public void setEcomCustomer(Customer ecomCustomer) {
+	           this.ecomCustomer = ecomCustomer;
+	         }
 }

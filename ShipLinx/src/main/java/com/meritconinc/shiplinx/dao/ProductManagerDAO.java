@@ -5,6 +5,10 @@ import java.util.List;
 import com.meritconinc.shiplinx.model.PackageTypes;
 import com.meritconinc.shiplinx.model.ProductLine;
 import com.meritconinc.shiplinx.model.Products;
+import java.sql.SQLException;
+
+import com.meritconinc.shiplinx.model.ProductPackageMap;
+
 
 public interface ProductManagerDAO {
 	
@@ -37,4 +41,31 @@ public interface ProductManagerDAO {
 	public List<PackageTypes> fetchAPackageById(long packageTypeId);
 	
 	public boolean deletePackageType(long packageTypeId);
+	 public Products getProductBySKUorRef1(String skuId, String reference1, Long long1);
+	 
+	   
+	  public void sycnProductsInBatch(List<Products> ptsListtoAdd,
+	      List<Products> ptsListtoUpdate, List<Long> productIdsd) throws SQLException;
+	 
+	  public List<ProductPackageMap> searchProductPackageMap(
+	      ProductPackageMap packagemap);
+	 
+	  public void addPackageMap(ProductPackageMap productPackageMap);
+	 
+	  
+	  public Long getMaximumQunaityOfPackageType(long packageTypeId, long l, Long customerId);
+	 
+	  public List<ProductPackageMap> getPackageMapListByPackageId(
+	      Long packageTypesId, Long customerId);
+	 
+	  public PackageTypes findPackageTypesByProductId(long productId,
+	    Long customerId);
+	  
+	  public Products searchUniuqeProduct(Products p);
+	 
+	  public ProductPackageMap getProductPackageMapById(long parseLong);
+	 
+	  public void updateProductPackageMap(ProductPackageMap productPackageMap);
+	  
+	 public void deleteProductPackageMap(long parseLong);
 }

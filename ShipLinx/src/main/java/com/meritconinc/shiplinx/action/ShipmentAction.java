@@ -142,6 +142,14 @@ import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+
+import java.io.SequenceInputStream;
+import java.util.Vector;
+import com.lowagie.text.DocumentException;
+import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+import java.io.SequenceInputStream;
+
+
 /**
  * @author Rahul
  *
@@ -3504,6 +3512,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        }
 	      }
 
+			 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 			String orderId=(String)getSession().get("EDIT_ORDER_ID");
 			if(orderId!=null){
 				ShippingOrder shippingOrderDelete=shippingService.getShippingOrder(Long.parseLong(orderId));
@@ -3522,7 +3531,25 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					shippingOrder.getCharges().removeAll(shippingOrder.getCharges());
 				carrierServiceManager.shipOrder(shippingOrder,  r);
 				if(shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()){
-					if(shippingService.sendShipmentNotificationMail(shippingOrder,UserUtil.getMmrUser().getBusiness()))
+					
+					 /**
+					                    * Make sure Business is not null while calling from API
+					                    * UserUtil.getMmrUser() will be null while calling from API.
+					                    */
+					                   Business shippingBusiness=null;
+					                   if((shippingOrder.getBusinessId()==0 || shippingOrder.getBusiness()==null) && shippingOrder.getCustomer()!=null){
+					                     shippingBusiness=businessDAO.getBusiessById(shippingOrder.getCustomer().getBusinessId());
+					                     
+					                   }else if(shippingOrder.getBusinessId()>0 && shippingOrder.getBusiness()==null){
+					                     shippingBusiness=businessDAO.getBusiessById(shippingOrder.getBusinessId());
+					                   }
+					                   if(shippingBusiness==null && UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getBusiness()!=null){
+					                     shippingBusiness=UserUtil.getMmrUser().getBusiness();
+					                   }
+					                   
+					                   
+					                   if(shippingService.sendShipmentNotificationMail(shippingOrder,shippingBusiness))
+					
 						addActionMessage(MessageUtil.getMessage("shipment.notification.mail.success"));
 					else
 						ActionContext.getContext().getSession().put("actionError", MessageUtil.getMessage("shipment.notification.mail.failure"));
@@ -5027,6 +5054,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		fromAddress = addressService.findDefaultFromAddressForCustomer(pickup.getCustomerId());
 		if(fromAddress!=null)
 			pickup.setAddress(fromAddress);
+		getSession().put("CountryList", MessageUtil.getCountriesList()); 
 		//setting the destination country
 		getSession().put("CountryList", MessageUtil.getCountriesList());
 		pickup.setDestinationCountryCode(UserUtil.getMmrUser().getBusiness().getAddress().getCountryCode());
@@ -7375,10 +7403,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		loggedEvent.setEntityType(ShiplinxConstants.ENTITY_TYPE_ORDER_VALUE); //Entity - Warehouse Order
 		loggedEvent.setEntityId(OrderId);//Order ID
 		loggedEvent.setEventDateTime(new Date()); //Current Date
+		if(UserUtil.getMmrUser()!=null)
 		loggedEvent.setEventUsername(UserUtil.getMmrUser().getUsername()); //Current User
 		String systemLog = MessageUtil.getMessage("label.system.log.docs.accessed");
 		loggedEvent.setSystemLog(systemLog); //System generated Message Log
-		if(UserUtil.getMmrUser().getUserRole().equals("busadmin")||UserUtil.getMmrUser().getUserRole().equals("solutions_manager"))
+		
+		 if(UserUtil.getMmrUser()!=null && (UserUtil.getMmrUser().getUserRole().equals("busadmin")||UserUtil.getMmrUser().getUserRole().equals("solutions_manager")))
+		
 			loggedEvent.setPrivateMessage(true);
 		else
 			loggedEvent.setPrivateMessage(false);
@@ -8953,6 +8984,46 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return "success";
 	}
 
+
+     // ================== API PRINT LABEL===============//
+ public String ecomPrintLabel() {
+   String[] ids = request.getParameterValues("ids[]");
+        if(ids==null){
+         ids=new String[1];
+         ids[0]=request.getParameter("id");
+         }
+ ShippingDAO shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance()
+       .findBean("shippingDAO");
+   List<String> shopifyIds = new ArrayList<String>();
+     shopifyIds = Arrays.asList(ids);
+     List<String> orderList=new ArrayList<String>();
+     for(String id:shopifyIds){
+   ShippingOrder so = shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(id),ShiplinxConstants.SHIPMENT_CANCELLED);
+   if(so!=null && so.getStatusId()!=40){
+     orderList.add(so.getId().toString());
+   }
+    }
+     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     carrierServiceManager.getShippingLabels(orderList, baos, 1, 1);
+  ByteArrayInputStream bis=new ByteArrayInputStream(baos.toByteArray());
+  this.inputStream=bis;
+  String date = new SimpleDateFormat("MM-dd-yyyy HH-mm-ss").format(new Date());
+  date = date.replaceAll("\\s", "_");
+  uploadFileName = "SOLUSHIP_ORDER_" + date+".pdf";
+  return SUCCESS;
+ }
+ 
+ public Address findAddressSuggest(String postalCode,String country) throws Exception {
+   String type="to";
+   Address address = new Address();
+   address.setPostalCode(postalCode);
+   address.setCountryCode(country);
+   ServiceAvailabilityWebServiceClient zipCodeValidator = new ServiceAvailabilityWebServiceClient();
+   address = zipCodeValidator.getSuggestedAddress(address);
+   return address;
+} 
+
+	
 	// / ============== End =======================
 
 }

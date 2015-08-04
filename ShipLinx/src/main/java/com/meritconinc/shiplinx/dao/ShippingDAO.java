@@ -277,4 +277,6 @@ public interface ShippingDAO {
 	public int saveDuplicateOrder(ShippingOrder dupOrder);
 	
 	public int saveDuplicateCharges(List<Charge> charges);
+	
+	public ShippingOrder getShippingOrderByReferenceOne(long parseLong, String shipmentCancelled);
 }

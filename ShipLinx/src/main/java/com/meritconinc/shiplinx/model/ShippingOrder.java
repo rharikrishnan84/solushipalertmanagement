@@ -263,6 +263,13 @@ public class ShippingOrder implements Serializable {
   private long businessFromId;
   private long BMCustomerId;
   /*For custom business markup-end*/
+  
+  
+//for e-commerce
+ private String generatedBy;
+ 
+ 
+
   public int getSaveShipmet() {
 	return saveShipmet;
 }
@@ -2252,6 +2259,14 @@ public void setBusinessIds(List<Long> businessIds) {
 	
 	public void setBMCustomerId(long bMCustomerId) {
 		BMCustomerId = bMCustomerId;
+	}
+
+	public String getGeneratedBy() {
+		return generatedBy;
+	}
+
+	public void setGeneratedBy(String generatedBy) {
+		this.generatedBy = generatedBy;
 	}
 
 }

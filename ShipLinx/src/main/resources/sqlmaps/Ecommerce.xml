@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ecommerce">
+    
+    <!-- RESULT MAP START -->
+	<resultMap class="com.meritconinc.mmr.model.admin.EcommerceStore"
+		id="EcomStoreMap">
+		<result property="ecommerceStoreId" column="store_ecom_id" />
+ 		<result property="url" column="store_url" />
+		<result property="sharedSceret" column="shared_scret" />
+		<result property="apiKey" column="api_key" />
+		<result property="businessId" column="business_id"/>
+		<result property="customerId" column="customer_id"/>
+		<result property="ecomCustomer" column="customer_id" select="getCustomerInfoByCustomerId"/>
+		<result property="accessKey" column="access_key"/>
+		<result property="scopes" column="scopes"/>
+		<result property="ecommerceDomain" column="ecommerce_domain"/>
+		<result property="chepest" column="chepest"/>
+		<result property="fastest" column="fastest"/>
+		<result property="bothService" column="both_service"/>
+		<result property="createShipmentUrl" column="create_shipment_url"/>
+		<result property="rateServiceUrl" column="rate_service_url"/>
+		<result property="active" column="active"/>
+		<result property="createShipWebhookId" column="webhook_create_shipment"/>
+		<result property="cancelShipWebhookId" column="webhook_cancel_shipment"/>
+		<result property="rateServiceId" column="rate_service_id"/>
+		<result property="cancelShipmentUrl" column="cancel_shipment_url"/>
+		<result property="installUrl" column="installation_url"/>
+		<result property="packageMap" column="package_map"/>
+		<result property="createdBy" column="created_by"/>
+		<result property="createdAt" column="created_at"/>
+		<result property="installedAt" column="installed_at"/>
+		<result property="updatedAt" column="updated_at"/>
+	</resultMap>
+ 
+	 
+	<resultMap class="com.meritconinc.mmr.model.admin.EcommerceLog" id="EcommerceLogMap">
+	    <result property="ecommerceLogId" column="ecom_log_id"/>
+	    <result property="shopifyOrderId" column="shopify_order_id"/>
+	    <result property="customerId" column="customer_id"/>
+	</resultMap>
+ 
+	<!-- RESULT MAP END -->
+	
+	<!-- INSERT START -->
+
+	<insert id="addEcommerceStore" parameterClass="com.meritconinc.mmr.model.admin.EcommerceStore">
+	    INSERT INTO  ecommerce_store  ( `store_url`,`business_id`,`customer_id`,`scopes`,`access_key`,`rate_service_url`,`create_shipment_url`,`api_key`,`shared_scret`,`ecommerce_domain`,`chepest`,`fastest`,`both_service`,cancel_shipment_url,installation_url,active,package_map,created_by)
+	VALUES (#url#,#businessId#,#customerId#,#scopes#,#accessKey#,#rateServiceUrl#,#createShipmentUrl#,#apiKey#,#sharedSceret#,#ecommerceDomain#,#chepest#,#fastest#,#bothService#,#cancelShipmentUrl#,#installUrl#,#active#,#packageMap#,#createdBy#)
+	<selectKey resultClass="long" type="post" keyProperty="ecommerceStoreId" >select LAST_INSERT_ID() as value
+	 		</selectKey>
+	</insert>
+	<insert id="addEcommerceLog" parameterClass="com.meritconinc.mmr.model.admin.EcommerceLog">
+	    INSERT INTO  `ecom_log` (`shopify_order_id`)VALUES (#shopifyOrderId#);
+	</insert>
+	
+	<!-- INSERT END  -->
+	
+	
+	<!-- SELECT START -->
+	<select id="listEcommerceStores" resultMap="EcomStoreMap">
+		SELECT * FROM ecommerce_store
+		<dynamic>
+		    <isNotNull property="customerId" >
+		        where customer_id=#customerId#
+		    </isNotNull>
+		</dynamic>
+	</select>
+	<select id="getEcomStorebyStoreUrl" resultMap="EcomStoreMap">
+	    SELECT * FROM  ecommerce_store where store_url=#storeUrl# 
+	</select>
+ <select id="getEcommerceStoreById" resultMap="EcomStoreMap">
+     SELECT * FROM  ecommerce_store where store_ecom_id=#storeId# 
+ </select>
+ <select id="getEcommrceStoreByCustomer" resultMap="EcomStoreMap">
+     select * from  ecommerce_store where customer_id=#customerId# limit 1
+ </select>
+	<select id="getEcomAccessByShopifyOrderId" resultMap="EcommerceLogMap">
+	    select * from ecom_log where shopify_order_id=#shopifyOrderId#
+	</select>
+	<!-- UPDATE START -->
+	 
+	<update id="UpdateAccessKeyForStore">
+	    update ecommerce_store set access_key=#accessKey# where store_url=#storeurl#
+	</update>
+	<update id="updateEcommerceStore">
+	 UPDATE `ecommerce_store` SET
+	 <dynamic>
+	     <isNotNull property="customerId">
+	         `customer_id` = #customerId#,
+	     </isNotNull>
+	 <isNotNull property="url">
+		`store_url` = #url#,
+	</isNotNull>
+	 <isNotNull property="rateServiceUrl">
+	`rate_service_url` = #rateServiceUrl#,
+	</isNotNull>
+	<isNotNull property="createShipmentUrl">
+	`create_shipment_url` =#createShipmentUrl#,
+	</isNotNull>
+	<isNotNull property="cancelShipmentUrl">
+	cancel_shipment_url=#cancelShipmentUrl#,
+	</isNotNull>
+	<isNotNull property="ecommerceDomain">
+	`ecommerce_domain` =#ecommerceDomain#,
+	</isNotNull>
+	<isNotNull property="chepest">
+	`chepest` =#chepest#,
+	</isNotNull>
+	<isNotNull property="fastest">
+	`fastest` = #fastest#,
+	</isNotNull>
+	<isNotNull property="active">
+	 active=#active#,
+	 </isNotNull>
+	 <isNotNull property="bothService">
+	`both_service` = #bothService#,
+	</isNotNull>
+	<isNotNull property="updatedAt">
+	    updated_at=#updatedAt#,
+	</isNotNull>
+   <isNotNull property="packageMap">
+	 package_map=#packageMap#
+	 </isNotNull>
+	 </dynamic>
+	 WHERE `store_ecom_id` = #ecommerceStoreId#
+	</update>
+	<update id="getUpdateServicesShopify">
+	    UPDATE `ecommerce_store` SET
+	`webhook_create_shipment` =#createShipWebhookId#,
+	`webhook_cancel_shipment` = #cancelShipWebhookId#,
+	`rate_service_id` =#rateServiceId#,
+	 updated_at=#updatedAt#,
+	 <dynamic>
+	     <isNotNull property="installedAt"> 
+	     	 installed_at=#installedAt#,    
+	     </isNotNull>
+	     <isNotNull property="webhookUnistallId">
+	         <isGreaterThan property="webhookUnistallId" compareValue="0">
+	            access_key=#accessKey#,
+	         </isGreaterThan>
+	     </isNotNull>
+	 </dynamic>
+	 active=#active#
+	 WHERE `store_ecom_id` = #ecommerceStoreId#
+	</update>
+	
+	<update id="deleteEcommerceStoreById">
+	    delete from ecommerce_store where  store_ecom_id= #storeId#
+	</update>
+	<!-- UPDATE END  -->
+	
+	<!-- DELETE START -->
+	 
+    <!-- DELETE END  -->  
+	
+</sqlMap>

@@ -430,8 +430,14 @@ public class CustomerManagerImpl implements CustomerManager {
 	public Customer getCustomerInfoByCustomerId(long customerId)
 			throws Exception {
 		try {
-			Customer customer = customerDAO.getCustomerInfoByCustomerId(
-					customerId, UserUtil.getMmrUser().getBusinessId());
+			Customer customer=null;
+			     if(UserUtil.getMmrUser()!=null){
+			       customer = customerDAO.getCustomerInfoByCustomerId(
+			         customerId,UserUtil.getMmrUser().getBusinessId() );
+			     }else{
+			       customer = customerDAO.getCustomerInfoByCustomerId(
+			          customerId,BusinessFilterUtil.setBusinessIdbyUserLevel());
+			     }
 			return customer;
 		} catch (Exception exception) {
 			throw exception;

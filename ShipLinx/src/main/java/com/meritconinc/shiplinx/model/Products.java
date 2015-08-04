@@ -34,6 +34,15 @@ public class Products implements Serializable, Cloneable
 	
 	private long productCustomerId;
 	
+	  //SHOPIFY SHOPIFY
+	     private String skuId;
+	     private String reference1;
+	     private String reference1Name;
+	     private Float length;
+	     private Float width;
+	     private Float height;
+	     private long unitmeasureId;
+	
 	public Products()
 	{
 		//productLine = new ProductLine();
@@ -177,6 +186,62 @@ public class Products implements Serializable, Cloneable
 
 	public void setProductCustomerId(long productCustomerId) {
 		this.productCustomerId = productCustomerId;
+	}
+
+	public String getSkuId() {
+		return skuId;
+	}
+
+	public void setSkuId(String skuId) {
+		this.skuId = skuId;
+	}
+
+	public String getReference1() {
+		return reference1;
+	}
+
+	public void setReference1(String reference1) {
+		this.reference1 = reference1;
+	}
+
+	public String getReference1Name() {
+		return reference1Name;
+	}
+
+	public void setReference1Name(String reference1Name) {
+		this.reference1Name = reference1Name;
+	}
+
+	public Float getLength() {
+		return length;
+	}
+
+	public void setLength(Float length) {
+		this.length = length;
+	}
+
+	public Float getWidth() {
+		return width;
+	}
+
+	public void setWidth(Float width) {
+		this.width = width;
+	}
+
+	public Float getHeight() {
+		return height;
+	}
+
+	public void setHeight(Float height) {
+		this.height = height;
+	}
+
+	public long getUnitmeasureId() {
+		return unitmeasureId;
+	}
+
+	public void setUnitmeasureId(long unitmeasureId) {
+		this.unitmeasureId = unitmeasureId;
 	}
 	
 

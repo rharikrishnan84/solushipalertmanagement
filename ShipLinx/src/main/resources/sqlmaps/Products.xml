@@ -24,8 +24,50 @@
 		<result property="totalCount" column="total_count"/>
 		<result property="productLine" column="product_line_id" select="selectProductLine"/>
 		<result property="primaryLocationId" column="primary_location_id"/>
+		<result property="length" column="length"/>
+   <result property="width" column="width"/>
+   <result property="height" column="height"/>
 	</resultMap> 
 	
+	<resultMap id="ProductsMap1" class="com.meritconinc.shiplinx.model.Products">
+   <result property="productId" column="product_id"/>
+   <result property="productName" column="product_name"/>
+   <result property="productDescription" column="product_description"/>
+   <result property="productHarmonizedCode" column="harmonized_code"/>
+   <result property="unitPrice" column="unit_price"/>
+   <result property="originCountry" column="origin_country"/>
+   <result property="customerId" column="customer_id"/>
+   <result property="productCode" column="product_code"/>
+   <result property="unitCost" column="unit_cost"/>
+   <result property="weight" column="weight"/>
+   <result property="weightUnit" column="weight_unit"/>
+   <result property="productLineId" column="product_line_id"/>
+   <result property="locationCount" column="location_count"/>
+   <result property="wipCount" column="wip_count"/>
+   <result property="quarantineCount" column="quarantine_count"/>
+   <result property="inqueueCount" column="in_queue_count"/>
+   <result property="backOrderCount" column="backorder_count"/>
+   <result property="totalCount" column="total_count"/>
+   <result property="productLine" column="product_line_id" select="selectProductLine"/>
+   <result property="primaryLocationId" column="primary_location_id"/>
+   <result property="skuId" column="sku_id"/>
+   <result property="reference1" column="reference1"/>
+   <result property="reference1Name" column="reference1_name"/>
+   <result property="length" column="length"/>
+   <result property="width" column="width"/>
+   <result property="height" column="height"/>
+ </resultMap> 
+ <resultMap class="com.meritconinc.shiplinx.model.ProductPackageMap" id="ProductPackageMap">
+     
+     <result property="productPackageId" column="product_package_map_id"/>
+     <result property="packageId" column="package_id"/>
+     <result property="productId" column="product_id"/>
+     <result property="quanity" column="quantity"/>
+     <result property="customerId" column="customer_id"/>
+     <result property="packages" column="package_id" select="fetchAPackageById"/>
+     <result property="product" column="product_id" select="selectProductByProductId"/>
+ </resultMap>
+
 	<resultMap class="com.meritconinc.shiplinx.model.ProductLine" id="ProductLineMap">
 		<result property="productLineId" column="product_line_id"/>
 		<result property="lineCode" column="line_code"/>
@@ -88,7 +130,11 @@
 
 	<update id="updateProduct">
 		update products set product_name =#productName#, product_description= #productDescription#, harmonized_code = #productHarmonizedCode#, product_code = #productCode#,
-							unit_price = #unitPrice#, location_count=#locationCount#, wip_count=#wipCount#, quarantine_count=#quarantineCount#, origin_country = #originCountry#, product_line_id=#productLineId#, primary_location_id=#primaryLocationId# ,total_count=(#locationCount#+#wipCount#+#quarantineCount#), backorder_count = #backOrderCount#, in_queue_count= #inqueueCount# where product_id = #productId# and customer_id=#customerId#
+unit_price = #unitPrice#, location_count=#locationCount#, wip_count=#wipCount#, quarantine_count=#quarantineCount#, origin_country = #originCountry#, product_line_id=#productLineId#, primary_location_id=#primaryLocationId# ,total_count=(#locationCount#+#wipCount#+#quarantineCount#),
+     backorder_count = #backOrderCount#, in_queue_count= #inqueueCount#,
+    length=#length#,width=#width#,height=#height#  ,unitmeasure_id=#unitmeasureId#          
+    where product_id = #productId# and customer_id=#customerId#
+							
 	</update>
 	
 	<update id="updateProduct2">
@@ -130,9 +176,10 @@
 	</update>
 
 	<insert id = "createProduct">
-		insert into products (customer_id, product_code, product_name, product_description, harmonized_code, unit_price, origin_country, product_line_id, primary_location_id) 
+		
+	       insert into products (customer_id, product_code, product_name, product_description, harmonized_code, unit_price, origin_country, product_line_id, primary_location_id,length,width,height,unitmeasure_id)  
 			values (#customerId#, #productCode#, #productName#, #productDescription#, #productHarmonizedCode#, IFNULL(#unitPrice#,0), 
-			#originCountry#, #productLineId#, #primaryLocationId#)
+			 #originCountry#, #productLineId#, #primaryLocationId#,#length#,#width#,#height#,#unitmeasureId#)
 	</insert>
 	
 	<select id="getProductLineList" resultMap="ProductLineMap">
@@ -190,7 +237,130 @@
 	</update>
 
 
+	
+<!-- SHOPIFY  start -->
+ 
+<select id="getProductBySKUorRef1" resultMap="ProductsMap1">
+    select * from products where sku_id=#skuId# and reference1=#reference1# and customer_id=#customerId# limit 1
+</select>
+<insert id="addProductsInBatch" parameterClass="com.meritconinc.shiplinx.model.Products">
+    
+    insert into products (customer_id, product_code, product_name, product_description, harmonized_code, unit_price, origin_country, product_line_id, primary_location_id,sku_id,reference1,reference1_name,unitmeasure_id) 
+     values (#customerId#, #productCode#, #productName#, #productDescription#, #productHarmonizedCode#, IFNULL(#unitPrice#,0), 
+     #originCountry#, #productLineId#, #primaryLocationId#,#skuId#,#reference1#,#reference1Name#,#unitmeasureId#)
+</insert>
+<update id="updateProductsInBatch" parameterClass="com.meritconinc.shiplinx.model.Products">
+   update products set 
+       product_name =#productName#,
+       product_description= #productDescription#,
+       weight=#weight#,
+       weight_unit=#weightUnit#,
+       unitmeasure_id=#unitmeasureId#,
+     <isNotNull property="productHarmonizedCode">
+       harmonized_code = #productHarmonizedCode#,
+     </isNotNull>
+     <isNotNull property="productCode">
+       product_code = #productCode#,
+     </isNotNull>
+     <isNotNull property="unitPrice">
+       unit_price = #unitPrice#,
+     </isNotNull>
+     <isNotNull property="locationCount">
+       location_count=#locationCount#,
+     </isNotNull>
+     <isNotNull property="wipCount">
+       wip_count=#wipCount#,
+     </isNotNull>
+     <isNotNull property="quarantineCount">
+       quarantine_count=#quarantineCount#,
+     </isNotNull>
+     <isNotNull property="originCountry">
+       origin_country = #originCountry#,
+     </isNotNull>
+     <isNotNull property="productLineId">
+       product_line_id=#productLineId#,
+     </isNotNull>
+     <isNotNull property="primaryLocationId">
+       primary_location_id=#primaryLocationId#,
+     </isNotNull>
+       reference1_name=#reference1Name#,
+       
+       total_count=(#locationCount#+#wipCount#+#quarantineCount#) where
+       <isNotNull property="skuId">
+        sku_id=#skuId#
+        </isNotNull>
+        and 
+           <isNotNull property="reference1">
+       reference1=#reference1#
+       </isNotNull>
+          and customer_id=#customerId#
+ </update>
+ 
+<update id="deleteProductInBatch">
+    delete from products where product_id=#productId#
+</update>
 
+ <select id="searchProductPackageMap" resultMap="ProductPackageMap">
+    select * from product_package_map where 
+    <dynamic>
+   <isNotNull property="customerId">
+        customer_id=#customerId#  
+    </isNotNull>
+  
+       <isGreaterThan prepend="and" property="productId" compareValue="0">
+     product_id = #productId#
+   </isGreaterThan>  
+    
+   </dynamic>
+</select>
+<select id="getProductPackageMapById" resultMap="ProductPackageMap">
+    select * from product_package_map where  product_package_map_id=#packageMapId#
+</select>
+<select id="selectProductByProductId" resultMap="ProductsMap1">
+    select * from products where product_id=#productId#
+</select>
+
+<insert id="addPackageMap">
+    
+    INSERT INTO  `product_package_map` (`product_id`,`package_id`,`quantity`,`customer_id`)
+   VALUES (#productId#,#packageId#,#quanity#,#customerId#)
+    
+</insert>
+
+<select id="findPackageTypesByProductIdandQuntity" resultClass="long" >
+    
+    select package_id from product_package_map where customer_id=#customerId#
+    and product_id=#productId1# 
+    
+</select>
+<select id="getMaximumQunaityOfPackageType" resultClass="long">
+    select sum(quantity)  from  product_package_map where customer_id=#customerId# and package_id=#packageTypeId# and product_id=#productId#
+</select>
+<select id="getPackageMapListByPackageId" resultMap="ProductPackageMap">
+    select *  from product_package_map where customer_id=#customerId#
+    and package_id=#packageTypeId# 
+</select>
+<select id="searchUniuqeProduct" resultMap="ProductsMap1">
+    select * from products where 
+    <dynamic>
+     <isNotNull>
+         customer_id=#customerId# and
+     </isNotNull>
+        <isNotNull>
+         reference1=#reference1# and
+     </isNotNull>
+     <isNotNull>
+         sku_id=#skuId# 
+     </isNotNull>
+    </dynamic> limit 1
+</select>
+<update id="updateProductPackageMap" parameterClass="com.meritconinc.shiplinx.model.ProductPackageMap">
+    UPDATE  `product_package_map`  SET  `package_id` = #packageId#, `quantity` =#quanity#  WHERE `product_package_map_id` = #productPackageId#
+</update>
+<update id="deleteProductPackageMap">
+    delete from product_package_map where `product_package_map_id` = #productPackageMapId#
+</update>
+<!-- SHOPIFY  end -->
 
 
 </sqlMap>

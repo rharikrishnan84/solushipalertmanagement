@@ -13,7 +13,8 @@ public class PackageTypes implements Serializable{
 	private double packageWeight;
 	private double packageWidth;
 	private long customerId;
-	
+
+   private long unitmeasureId;
 	
 	public String getPackageName() {
 		return packageName;
@@ -62,6 +63,12 @@ public class PackageTypes implements Serializable{
 	}
 	public void setPackageTypeId(long packageTypeId) {
 		this.packageTypeId = packageTypeId;
+	}
+	public long getUnitmeasureId() {
+		return unitmeasureId;
+	}
+	public void setUnitmeasureId(long unitmeasureId) {
+		this.unitmeasureId = unitmeasureId;
 	}
 	
 }

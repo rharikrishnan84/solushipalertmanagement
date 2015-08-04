@@ -21,6 +21,16 @@ import com.meritconinc.shiplinx.model.Products;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 
+import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+import com.meritconinc.shiplinx.api.model.ProductElement;
+import com.meritconinc.shiplinx.api.model.ShopifyProduct;
+import com.meritconinc.shiplinx.api.model.VariantElement;
+import com.meritconinc.shiplinx.dao.AddressDAO;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.model.ProductPackageMap;
+import com.meritconinc.shiplinx.model.Address;
+import java.sql.SQLException;
+
 public class ProductManagerImpl extends BaseAction implements ProductManager {
 	
 	private static final Logger log = LogManager.getLogger(ShippingServiceImpl.class);
@@ -313,5 +323,163 @@ public class ProductManagerImpl extends BaseAction implements ProductManager {
 		loggedEventDAO.addLoggedEventInfo(loggedEvent); //Added Event Log into DB
 		
 	}
+	
+
+ @Override
+ public void sycnShopifyProducts(ShopifyProduct products) {
+   // TODO Auto-generated method stub
+   AddressDAO addressDAO = (AddressDAO) MmrBeanLocator.getInstance()
+       .findBean("addressDAO");
+   Address address=new Address();
+   address.setCustomerId(products.getCustomerId());
+   List<Address> addressList=addressDAO.searchAddresses(address);
+   String country=null;
+   if(addressList!=null && addressList.size()>0){
+     country=addressList.get(0).getCountryName();
+   }
+   List<Products> productsList=new ArrayList<Products>();
+   List<Products> ptsListtoUpdate=new ArrayList<Products>();
+   List<Products> ptsListtoAdd=new ArrayList<Products>();
+   List<Products> ptsListtoDelete=new ArrayList<Products>();
+   List<Long> productIds=new ArrayList<Long>();
+   List<Long> productIdsd=new ArrayList<Long>();
+   List<Products> ptsListForCustomer=new ArrayList<Products>();
+    ptsListForCustomer=getproductsByCustomer(products.getCustomerId());
+   if(products!=null && products.getProducts()!=null&& products.getProducts().size()>0){
+        for(ProductElement pdt:products.getProducts()){
+          Products pt=new Products();
+          pt.setProductName(pdt.getTitle());
+          pt.setProductDescription(pdt.getBody_html());
+          for(VariantElement varient:pdt.getVariants()){
+            pt.setUnitPrice(Double.parseDouble(varient.getPrice()));
+            //pt.setWeightUnit(varient.getWeight_unit());
+            float weight=getWeightFromShopify(varient.getWeight_unit(),varient.getWeight().toString());
+            pt.setUnitmeasureId(1);//defaulted to pounds
+            pt.setWeight(weight);
+            pt.setCustomerId(products.getCustomerId());
+            pt.setSkuId(varient.getSku());
+            pt.setProductCode(pt.getSkuId());
+            pt.setReference1(varient.getId().toString());
+            pt.setReference1Name("SHOPIFY_PRODUCT_ID");
+            pt.setProductCode(pdt.getId().toString());
+            pt.setProductHarmonizedCode(pt.getSkuId());
+            if(country!=null)
+        pt.setOriginCountry(country);
+            productsList.add(pt);
+          }
+        }
+         for(Products pts1:productsList){
+           Products p=productManagerDAO.getProductBySKUorRef1(pts1.getSkuId(),pts1.getReference1(),products.getCustomerId());
+           if(p!=null){
+             ptsListtoUpdate.add(pts1);
+             productIds.add(p.getProductId());
+           }else{
+             ptsListtoAdd.add(pts1);
+           }
+         }
+         for(Products rmp:ptsListForCustomer){
+           productIdsd.add(rmp.getProductId());
+         }
+           productIdsd.removeAll(productIds);
+           //add new products
+         if(productIdsd.size()>0){
+            if(productIdsd.size()==1) 
+           addActionMessage(productIds.size()+" Product Deleted");
+            else
+              addActionMessage(productIds.size()+" Products Deleted");
+         }
+         if(ptsListtoUpdate.size()>0){
+           if(ptsListtoUpdate.size()==1)
+           addActionMessage(ptsListtoUpdate.size()+" Product Updated");
+           addActionMessage(ptsListtoUpdate.size()+" Products Updated");
+              }
+         if(ptsListtoAdd.size()>0){
+           if(ptsListtoAdd.size()==1)
+           addActionMessage(ptsListtoUpdate.size()+" Product Added");
+           addActionMessage(ptsListtoUpdate.size()+" Products Added");
+              }
+          try {
+       sycnProductsInBatch(ptsListtoAdd,ptsListtoUpdate,productIdsd);
+     } catch (SQLException e) {
+       // TODO Auto-generated catch block
+       e.printStackTrace();
+     }
+   
+   }
+   
+ }
+
+ 
+
+ private float getWeightFromShopify(String weight_unit, String weight) {
+   // TODO Auto-generated method stub
+   float wt=0f;
+   if(weight_unit!=null && weight!=null){
+     if(weight_unit.contains("lb")){
+       wt=Float.parseFloat(weight);
+       return wt;
+     }else if(weight_unit.contains("g")){
+     wt=(float) ShopifyUtil.gramToLBS(Double.parseDouble(weight));
+     }else if(weight_unit.contains("kg")){
+       wt=(float) ShopifyUtil.kgsToLBS(Double.parseDouble(weight));
+     }else if(weight_unit.contains("oz")){
+       wt=(float) ShopifyUtil.ozToLBS(Double.parseDouble(weight));
+     }
+     
+   }
+   return wt;
+ }
+
+ private void sycnProductsInBatch(List<Products> ptsListtoAdd,
+     List<Products> ptsListtoUpdate, List<Long> productIdsd) throws SQLException {
+   // TODO Auto-generated method stub
+   productManagerDAO.sycnProductsInBatch(ptsListtoAdd,
+       ptsListtoUpdate,  productIdsd);
+   
+ }
+
+ private List<Products> getproductsByCustomer(Long customerId) {
+   // TODO Auto-generated method stub
+   Products ps=new Products();
+   ps.setCustomerId(customerId);
+   
+   return getProductsList(ps);
+ }
+
+ @Override
+ public List<ProductPackageMap> searchProductPackageMap(
+     ProductPackageMap packagemap) {
+   // TODO Auto-generated method stub
+   
+   List<ProductPackageMap> prpackList= productManagerDAO.searchProductPackageMap(packagemap);
+   return prpackList;
+ }
+
+ @Override
+ public void addPackageMap(ProductPackageMap productPackageMap) {
+   // TODO Auto-generated method stub
+   productManagerDAO.addPackageMap(productPackageMap);
+ }
+
+ @Override
+ public ProductPackageMap getProductPackageMapById(long parseLong) {
+   // TODO Auto-generated method stub
+   ProductPackageMap ppm=productManagerDAO.getProductPackageMapById(parseLong);
+   return ppm;
+ }
+
+ @Override
+ public void updateProductPackageMap(ProductPackageMap productPackageMap) {
+   // TODO Auto-generated method stub
+   productManagerDAO.updateProductPackageMap(productPackageMap);
+ } 
+
+ @Override
+ public void deleteProductPackageMap(long parseLong) {
+   // TODO Auto-generated method stub
+   productManagerDAO.deleteProductPackageMap(parseLong);
+ }
+
+ 
 	
 }

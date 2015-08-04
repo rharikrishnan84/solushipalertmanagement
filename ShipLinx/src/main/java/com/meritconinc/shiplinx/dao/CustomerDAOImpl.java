@@ -25,6 +25,7 @@ import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.CustomerSalesUser;
 import com.meritconinc.shiplinx.model.CustomerTier;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerDAO {
   private static final Logger log = LogManager.getLogger(CustomerDAOImpl.class);
@@ -207,7 +208,7 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
     long customerId;
     Map<String, Object> paramObj = new HashMap<String, Object>(2);
     paramObj.put("username", username);
-    paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());
+    paramObj.put("businessId", BusinessFilterUtil.setBusinessIdbyUserLevel());
 
     customerId = (Long) getSqlMapClientTemplate().queryForObject("getCustomerIdByUserName",
         paramObj);
@@ -231,7 +232,7 @@ public class CustomerDAOImpl extends SqlMapClientDaoSupport implements CustomerD
     CustomerCarrier customerCarrier;
     Map<String, Object> paramObj = new HashMap<String, Object>(1);
     paramObj.put("customerId", customerId);
-    paramObj.put("businessId", UserUtil.getMmrUser().getBusinessId());
+    paramObj.put("businessId", BusinessFilterUtil.setBusinessIdbyUserLevel());
 
     customerCarrier = (CustomerCarrier) getSqlMapClientTemplate().queryForObject(
         "getCustomerCarrier", paramObj);

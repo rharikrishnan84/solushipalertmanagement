@@ -53,6 +53,17 @@ import com.meritconinc.shiplinx.service.ProductManager;
 import com.meritconinc.shiplinx.utils.PDFRenderer;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
+import java.util.Collections;
+import com.meritconinc.mmr.dao.EcommerceDAO;
+import com.meritconinc.mmr.dao.UserDAO;
+import com.meritconinc.mmr.model.admin.EcommerceStore;
+import com.meritconinc.mmr.model.security.User;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+import com.meritconinc.shiplinx.api.model.ShopifyProduct;
+import com.meritconinc.shiplinx.model.ProductPackageMap;
+import com.meritconinc.shiplinx.model.UnitOfMeasure;
+
 
 import javax.servlet.http.HttpServletResponse;
 public class ProductManagerAction extends BaseAction implements Preparable,ServletRequestAware,ServletResponseAware
@@ -81,6 +92,10 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 	//private Map<String, String> productPopulateResult = new HashMap<String, String>();
 	
 	public Map session = (Map) ActionContext.getContext().get("session");
+	
+	private List<ProductPackageMap> productPackageMapList;
+	 
+	private ProductPackageMap productPackageMap;
 	
 	 public void setServletResponse(HttpServletResponse httpServletResponse) {
 	    	this.response = httpServletResponse;     
@@ -164,6 +179,7 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 		} catch (Exception e) {
 			log.debug("---------------Exception in ListProducts()..."+e);
 		}
+		getSession().put("CountryList", MessageUtil.getCountriesList());
 		return SUCCESS;
 			
 		}
@@ -219,9 +235,23 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 			String CustomerId = String.valueOf(UserUtil.getMmrUser().getCustomerId());
 			products.setCustomerId(Long.valueOf(CustomerId));
 			
+			UserDAO  userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
+			               List<UnitOfMeasure> uom = userDAO.unitOfMeasure();
+			               /*User unitofmeasure = userDAO.findunitofmeasure(user1.getUsername());
+			               if (user1 != null && unitofmeasure.getUnitmeasure() == 2) {
+			                 for (int i = 0; i < uom.size(); i++) {
+			                   if (unitofmeasure != null
+			                       && unitofmeasure.getUnitmeasure() == uom.get(i).getUnitOfMeasureId()) {
+			                     Collections.swap(uom, 0, i);
+			                   }
+			                 }
+			               }*/
+			               getSession().put("UOM", uom);
+			
 		} catch (Exception e) {
 			log.debug("---------------Exception in newProduct()..."+e);
 		}
+		getSession().put("CountryList", MessageUtil.getCountriesList());
 		return SUCCESS;
 	}
 	
@@ -681,6 +711,9 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 		log.debug("Inside goToAddNewPackage() method of ProductManagerAction");
 		getSession().remove("packageTypes");
 		getSession().remove("edit");
+		 UserDAO  userDAO = (UserDAO) MmrBeanLocator.getInstance().findBean("userDAO");
+		            List<UnitOfMeasure> uom = userDAO.unitOfMeasure();
+		            getSession().put("UOM", uom);
 		return SUCCESS;
 	}
 	
@@ -1197,5 +1230,104 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
 				path.mkdirs();
 			
 			return tempPath + File.separator + fName + curDateTime.getTime() + ".xls";
-		}	 
+		}
+		
+		
+
+   public String synchShopifyProduct(){
+           EcommerceDAO eCommerceDAO=(EcommerceDAO)MmrBeanLocator.getInstance().findBean("eCommerceDAO");
+         long customerId=0;
+           if(UserUtil.getMmrUser()!=null){
+             customerId=UserUtil.getMmrUser().getCustomerId();
+           } 
+           if(customerId!=0){
+             
+             EcommerceStore store=eCommerceDAO.getEcommrceStoreByCustomer(customerId);
+             if(store!=null){
+               ShopifyProduct products=ShopifyUtil.synchProducts(store.getAccessKey(),store.getUrl());
+               if(products!=null){
+                 products.setCustomerId(customerId);
+                 productManagerService.sycnShopifyProducts(products);
+                 return  listProducts();
+               }
+             }
+           }
+           return SUCCESS;
+         }
+         
+         public String packageMap(){
+         String customerId = String.valueOf(UserUtil.getMmrUser().getCustomerId());
+         if(customerId==null) //don't return any addresses, this should not happen
+             return SUCCESS;
+           Products p = new Products();
+           p.setCustomerId(Long.valueOf(customerId));
+           productList = productManagerService.searchProducts(p,false);
+           PackageTypes pt = new PackageTypes();
+           pt.setCustomerId(Long.valueOf(customerId));
+           packageTypesList = productManagerService.searchPackageTypes(pt);
+           ProductPackageMap Packagemap=new ProductPackageMap();
+           Packagemap.setCustomerId(Long.parseLong(customerId));
+           Packagemap.setProductId(null);
+           productPackageMapList=productManagerService.searchProductPackageMap(Packagemap);
+           return SUCCESS;
+         }
+     
+         public String addPackageMap(){
+           String edit=(String) getSession().get("editPackageMap");  
+           if(edit==null){
+             if(this.productPackageMap!=null){
+               this.productPackageMap.setCustomerId(UserUtil.getMmrUser().getCustomerId());
+                List<ProductPackageMap> ppcMap=productManagerService.searchProductPackageMap(this.productPackageMap);
+                if(ppcMap!=null && ppcMap.size()>0){
+                  packageMap();
+                  addActionError("This product Already Added");
+                  productPackageMap=new ProductPackageMap();
+                  return INPUT;
+                }
+                productManagerService.addPackageMap(productPackageMap);
+             }
+           }else if(edit!=null && edit.equals("true")){
+                Long productPackageId=(Long) getSession().get("packageMapId1");
+                this.productPackageMap.setProductPackageId(productPackageId);
+                productManagerService.updateProductPackageMap(this.productPackageMap);
+              getSession().remove("editPackageMap");
+              getSession().remove("packageMapId1");
+           }
+           return SUCCESS;
+         }
+         public String deletePackageMap(){
+            String packageMapId=request.getParameter("PackageMapId");
+              productManagerService.deleteProductPackageMap(Long.parseLong(packageMapId));
+            packageMap();
+            addActionMessage("Package Map Deleted SuccessFully.");
+           return SUCCESS;
+         }
+         @SuppressWarnings("unchecked")
+         public String editPackageMap(){
+           
+                 String packageMapId=request.getParameter("PackageMapId");
+                 getSession().put("packageMapId1",Long.parseLong(packageMapId));
+                 packageMap();
+                 this.productPackageMap=productManagerService.getProductPackageMapById(Long.parseLong(packageMapId));
+                 getSession().put("editPackageMap", "true");
+           return SUCCESS;
+         }
+         public List<ProductPackageMap> getProductPackageMapList() {
+           return productPackageMapList;
+         }
+     
+         public void setProductPackageMapList(List<ProductPackageMap> productPackageMapList) {
+           this.productPackageMapList = productPackageMapList;
+         }
+     
+         public ProductPackageMap getProductPackageMap() {
+           return productPackageMap;
+         }
+     
+         public void setProductPackageMap(ProductPackageMap productPackageMap) {
+           this.productPackageMap = productPackageMap;
+         }
+       
+   
+
 }

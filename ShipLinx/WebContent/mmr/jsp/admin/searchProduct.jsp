@@ -45,6 +45,9 @@
     <title><s:text name="customer.search.title"/></title> 
 </head> 
 <body> 
+<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div></div>
 <SCRIPT language="JavaScript">
 
 var vkey = "";
@@ -250,8 +253,36 @@ var vkey = "";
 	dojo.event.topic.subscribe("/value_name", function(value, key, text, widget){
 		vkey = key;		
 		});
-		
-</SCRIPT>
+	
+	
+	 function syncThread(){
+		          $('#loader').css('display','block');
+		          $('#loaderImg').css('display','block');
+		          ajax_Carrier=ajaxFunction();
+		          ajax_Carrier.onreadystatechange=function()
+		            {    
+		             
+		           
+		               if(ajax_Carrier.readyState==4)
+		              {
+		                reponse=ajax_Carrier.responseText;
+		                chargeCodeElement = document.getElementById("ajaxTable");
+		                  chargeCodeElement.innerHTML= reponse;
+		                location.reload();
+		                $('#loader').css('display','none');
+		              $('#loaderImg').css('display','none');
+		              }
+		              
+		           
+		           };
+		          url="synchShopifyProduct.action";
+		          ajax_Carrier.open("GET",url,true);
+		          ajax_Carrier.send(this);
+		          
+		        }
+		        
+		    
+		</SCRIPT>
 		<script>
 	$(document).ready(function(){
 	
@@ -320,6 +351,7 @@ var vkey = "";
 		</div>
 		<div id="rslt_stmnt">
 			<div class="form_buttons" style="float:right;">
+			 <a href="#" onclick="syncThread()" > <mmr:message messageId="menu.product.sych"/></a>
 			<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
 			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action" /> </p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
 			<ul id="actionmenu">
@@ -344,12 +376,12 @@ var vkey = "";
 			<th style="width: 115px;!important"><mmr:message messageId="label.product.unitprice"/> </th>
 		</tr>
     </thead>
-<tbody>	
+<tbody id="ajaxTable"> 	
 		<s:iterator id="product"  status="rowstatus" value="productList">	
 			<tr>	
 			<s:hidden name="products.pId" value="%{products.productId}"/>
 			<s:hidden name="products.cid" value="%{products.customerId}"/>
-			<td><input  class="dataTable-checkbox" type="checkbox" name="searchProductCheckBox"  value="<s:property value="productId"/>" </td>
+			<td><input  class="dataTable-checkbox" type="checkbox" name="searchProductCheckBox"  value="<s:property value="productId"/>"/> </td>
 			<td><s:property value="productName"/></td>
 			<td title="<s:property value="productDescription"/>"><div style="width:380px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="productDescription"/></div></td>
 			<td><s:property value="productHarmonizedCode"/></td>

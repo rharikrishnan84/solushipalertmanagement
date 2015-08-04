@@ -252,8 +252,39 @@
 											<s:select id="new_productOrigin"    listKey="countryCode" listValue="countryName" name="products.originCountry" list="#session.CountryList" headerKey="-1"  theme="simple"/>
 											</div>
 										</div>
-										
-									</div>
+										<%-- <div class="fields">
+                     <label>SKU Id </label>
+                     <div class="controls"><span>:</span>
+                     <s:textfield id="skuId"  key="searchproduct.skuId" name="products.skuId"  />
+                     </div>
+                   </div> --%>
+                   <div class="fields">
+                     <label>Length </label>
+                     <div class="controls"><span>:</span>
+                     <s:textfield id="length"  key="searchproduct.length" name="products.length"  />
+                     </div>
+                   </div>
+                     <div class="fields">
+                     <label>Width </label>
+                     <div class="controls"><span>:</span>
+                     <s:textfield id="width"  key="searchproduct.width" name="products.width"  />
+                     </div>
+                   </div>
+                     <div class="fields">
+                   <label>Height </label>
+                     <div class="controls"><span>:</span>
+                     <s:textfield id="height"  key="searchproduct.height" name="products.height"  />
+                     </div>
+                   </div>
+							<div class="fields">
+                   <label><mmr:message messageId="label.package.unitmeasure"/></label>
+                          <div class="controls"><span>:</span>
+                          <s:select id="measure" name="products.unitmeasureId"  list="#session.UOM" listKey="unitOfMeasureId" listValue="unitOfMeasure" disabled="false" cssStyle="height :25px;"/>
+                          </div>
+                  </div>
+                  
+               </div>
+								</div>
 									
 								
 							</div>

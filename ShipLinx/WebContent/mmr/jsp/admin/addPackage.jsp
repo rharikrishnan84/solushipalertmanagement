@@ -219,7 +219,13 @@
 											</div>
 										</div>
 								
-									
+									 <div class="fields">
+                   <label><mmr:message messageId="label.package.unitmeasure"/></label>
+                          <div class="controls"><span>:</span>
+                          <s:select id="measure" name="packageTypes.unitmeasureId"  list="#session.UOM" listKey="unitOfMeasureId" listValue="unitOfMeasure" disabled="false" cssStyle="height :25px;"/>
+                         </div>
+                   </div>
+                  
 										<div class="fields">
 											<label><mmr:message messageId="label.package.desc"/></label>
 											<div class="controls"><span>:</span><s:textfield name="packageTypes.packageDesc" id="pgdes"  /></div>

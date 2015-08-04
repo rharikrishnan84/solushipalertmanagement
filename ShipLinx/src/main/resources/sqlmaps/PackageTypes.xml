@@ -23,13 +23,18 @@
 	</select> 
 	
 	<insert id="addPackageTypes" parameterClass="com.meritconinc.shiplinx.model.PackageTypes">
-			  insert into package_types (package_name,package_description,length, height, weight,width, customer_id) values (#packageName#,#packageDesc#,#packageLength#, #packageHeight#, #packageWeight#, #packageWidth#, #customerId#)
+		insert into package_types (package_name,package_description,length, height, weight,width, customer_id,unitmeasure_id) values (#packageName#,#packageDesc#,#packageLength#, #packageHeight#, #packageWeight#, #packageWidth#, #customerId#,#unitmeasureId#)	  
+	    
+	    
 			<selectKey resultClass="long" type="post" keyProperty="packageTypeId" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
 	
 	<update id = 'editPackageTypes' parameterClass="com.meritconinc.shiplinx.model.PackageTypes">
-		update package_types set package_name=#packageName#, package_description=#packageDesc#, length=#packageLength#, height=#packageHeight#, weight=#packageWeight#,width=#packageWidth# 
+		
+	    update package_types set package_name=#packageName#, package_description=#packageDesc#, length=#packageLength#, height=#packageHeight#, weight=#packageWeight#,width=#packageWidth#, 
+   unitmeasure_id=#unitmeasureId#
+	    
 		where package_id=#packageTypeId#
 	</update>
 	

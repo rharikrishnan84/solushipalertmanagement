@@ -689,9 +689,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     }
     boolean flagRate = false;
     if(ratingList.size()>0){
-    	        flagRate = markupManagerService.isCustomerMarkupByDisabled(UserUtil.getMmrUser().getCustomerId());
+    	flagRate = markupManagerService.isCustomerMarkupByDisabled(order.getCustomerId());
     	        if(!flagRate){
-    	        	flagRate = markupManagerService.isAllLevelMarkupDisabled(UserUtil.getMmrUser().getBusinessId());
+    	        	flagRate = markupManagerService.isAllLevelMarkupDisabled(order.getBusinessId());
     	        }
     	    }
     if(!flagRate)                       // restricting rates for    
@@ -1758,6 +1758,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    	          		              		      if (folderPathc1.isDirectory()) {
           		    	          		             			   	  File[] fList = folderPathc1.listFiles();
           		    	          		              			    	  if(fList!=null){
+          		    	          		              			    	 if( UserUtil.getMmrUser()!=null)
           		    	          		              			    		BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
           		    	          		              			    	        		    	User user1 = UserUtil.getMmrUser();
           		    	          		              			    		  for(File file:fList){
@@ -1780,9 +1781,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    	          		              			    		  }
           		    	          		             			    	  }
           		    	          		              		      }if(flag2==false){
+          		    	          		              		    if(UserUtil.getMmrUser()!=null)
           		    	          		              		    	BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
           		    	          		              		    	User user1 = UserUtil.getMmrUser();
-          		    	          		              		    		if(user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
+          		    	          		              		        if(user1!=null && user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
           		    	          		              		    		  if (getSummaryLabel(shippingOrder,summaryPDF,outputStream,user1)) {
           		    	          		             		    			  srcList.add(summaryPDF);
           		    	          		              		    			summaryLabel=true;

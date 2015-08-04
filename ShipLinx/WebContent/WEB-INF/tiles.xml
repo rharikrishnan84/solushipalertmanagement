@@ -624,7 +624,26 @@
     <definition name="business.markup" extends="admin.layout.window">
         <put-attribute name="mainBody" value="/mmr/jsp/admin/businessMarkup.jsp"/>
     </definition>
+    
       
     <!-- Business Markup END -->
+    
+    
+      <!-- E-commerce Views-->
+    <definition name="list.store" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listStores.jsp"/>
+    </definition>
+      <definition name="add.store" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addStore.jsp"/>
+    </definition>
+   <definition name="listEcommerceConfig" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/listEcommStoreConfig.jsp"/>
+    </definition>
+  <definition name="addEcommerceConfig" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/addEcommerceConfig.jsp"/>
+    </definition>
+      <definition name="packageMap" extends="admin.layout.window">
+        <put-attribute name="mainBody" value="/mmr/jsp/admin/packageMap.jsp"/>
+    </definition>
 </tiles-definitions>
 

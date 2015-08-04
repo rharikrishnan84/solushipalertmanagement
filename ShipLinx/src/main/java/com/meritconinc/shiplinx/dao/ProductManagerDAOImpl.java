@@ -10,6 +10,11 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.shiplinx.model.PackageTypes;
 import com.meritconinc.shiplinx.model.ProductLine;
 import com.meritconinc.shiplinx.model.Products;
+import java.sql.SQLException;
+import org.apache.poi.hssf.record.formula.Ptg;
+import com.ibatis.sqlmap.client.SqlMapClient;
+import com.meritconinc.mmr.utilities.MmrBeanLocator;
+import com.meritconinc.shiplinx.model.ProductPackageMap;
 
 public class ProductManagerDAOImpl extends SqlMapClientDaoSupport implements ProductManagerDAO 
 {
@@ -188,4 +193,139 @@ public class ProductManagerDAOImpl extends SqlMapClientDaoSupport implements Pro
 		}
 		return retval;
 	}
+	
+	
+
+ @Override
+ public Products getProductBySKUorRef1(String skuId, String reference1,Long customerId) {
+   // TODO Auto-generated method stub
+   Map<String, Object> paramObj = new HashMap<String, Object>();
+   paramObj.put("skuId",skuId);
+   paramObj.put("reference1", reference1);
+   paramObj.put("customerId", customerId);
+   Products products=(Products)getSqlMapClientTemplate().queryForObject("getProductBySKUorRef1",paramObj);
+   return products;
+ }
+
+  
+  
+ @Override
+ public void sycnProductsInBatch(List<Products> ptsListtoAdd,
+     List<Products> ptsListtoUpdate, List<Long> productIdsd) throws SQLException {
+   // TODO Auto-generated method stub
+   SqlMapClient sqlmapClinet=getSqlMapClient();
+   try {
+     sqlmapClinet.startBatch();
+     sqlmapClinet.startTransaction();
+     //delete product
+     if(productIdsd!=null && productIdsd.size()>0){
+       for(Long productId:productIdsd){
+         sqlmapClinet.insert("deleteProductInBatch", productId);
+       }
+     }
+     //add new products
+     if(ptsListtoAdd!=null && ptsListtoAdd.size()>0){
+       for(Products pt:ptsListtoAdd){
+         sqlmapClinet.insert("addProductsInBatch", pt);
+       }
+     }
+     
+     if(ptsListtoUpdate!=null && ptsListtoUpdate.size()>0){
+       for(Products pt:ptsListtoUpdate){
+         sqlmapClinet.update("updateProductsInBatch",pt);
+       }
+     }
+   sqlmapClinet.executeBatch();
+     sqlmapClinet.commitTransaction();
+   } catch (SQLException e) {
+   // TODO Auto-generated catch block
+     
+ e.printStackTrace();
+   } finally {
+      
+     sqlmapClinet.endTransaction();
+      
+   }
+   
+}
+
+ @SuppressWarnings("unchecked")
+ @Override
+ public List<ProductPackageMap> searchProductPackageMap(
+     ProductPackageMap packagemap) {
+   // TODO Auto-generated method stub
+   List<ProductPackageMap> prducPackList=(List<ProductPackageMap>)getSqlMapClientTemplate().queryForList("searchProductPackageMap",packagemap);
+   return prducPackList;
+ }
+
+ @Override
+ public void addPackageMap(ProductPackageMap productPackageMap) {
+   // TODO Auto-generated method stub
+   getSqlMapClientTemplate().insert("addPackageMap",productPackageMap);
+ }
+
+ 
+ @Override
+ public Long getMaximumQunaityOfPackageType(long packageTypeId,long  productId, Long customerId) {
+   // TODO Auto-generated method stub
+   Map<String, Object> paramObj = new HashMap<String, Object>();
+   paramObj.put("packageTypeId", packageTypeId);
+   paramObj.put("productId", productId);
+   paramObj.put("customerId", customerId);
+   Long maxquantity=(Long)getSqlMapClientTemplate().queryForObject("getMaximumQunaityOfPackageType",paramObj);
+   return maxquantity;
+ }
+
+ @Override
+ public List<ProductPackageMap> getPackageMapListByPackageId(
+     Long packageTypesId, Long customerId) {
+   // TODO Auto-generated method stub
+   Map<String, Object> paramObj = new HashMap<String, Object>();
+   paramObj.put("packageTypeId", packageTypesId);
+     paramObj.put("customerId", customerId);
+     List<ProductPackageMap> ppmap=getSqlMapClientTemplate().queryForList("getPackageMapListByPackageId",paramObj);
+   return ppmap;
+ }
+
+ @Override
+ public PackageTypes findPackageTypesByProductId(long productId,
+     Long customerId) {
+   // TODO Auto-generated method stub
+   Map<String, Object> paramObj = new HashMap<String, Object>();
+     paramObj.put("productId1", productId);
+   paramObj.put("customerId", customerId);
+   Long packageTypeId=(Long)getSqlMapClientTemplate().queryForObject("findPackageTypesByProductIdandQuntity",paramObj);
+   List<PackageTypes> ptypes=(List<PackageTypes> ) getSqlMapClientTemplate().queryForList("fetchAPackageById",packageTypeId);
+   if(ptypes!=null && ptypes.size()>0){
+     return ptypes.get(0);
+   }
+   return null;
+   }
+
+ @Override
+ public Products searchUniuqeProduct(Products p) {
+   // TODO Auto-generated method stub
+   Products pr=(Products)getSqlMapClientTemplate().queryForObject("searchUniuqeProduct",p);
+   return pr;
+ }
+
+ @Override
+   // TODO Auto-generated method stub
+ public ProductPackageMap getProductPackageMapById(long packageMapId) {
+   ProductPackageMap ppm=(ProductPackageMap)getSqlMapClientTemplate().queryForObject("getProductPackageMapById",packageMapId);
+   return ppm;
+ }
+
+ @Override
+ public void updateProductPackageMap(ProductPackageMap productPackageMap) {
+   // TODO Auto-generated method stub
+   getSqlMapClientTemplate().update("updateProductPackageMap",productPackageMap);
+ }
+
+  @Override
+ public void deleteProductPackageMap(long productPackageMapId) {
+   // TODO Auto-generated method stub
+   getSqlMapClientTemplate().update("deleteProductPackageMap",productPackageMapId);
+ }
+
 }

@@ -453,7 +453,10 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     // in the carrier_charge_code table for carrier id 5
     if (carrierId == ShiplinxConstants.CARRIER_UPS_USA)
       carrierId = ShiplinxConstants.CARRIER_UPS;
-    long customerid=UserUtil.getMmrUser().getCustomerId();
+    long customerid=0;
+    if(UserUtil.getMmrUser()!=null){
+      customerid=UserUtil.getMmrUser().getCustomerId();
+    }
     List<CarrierChargeCode> searchResult = this.getChargeListByCarrierAndCodes(carrierId,
         chargeCode, chargeCodeLevel2);
     /*if (searchResult == null || searchResult.size() == 0)
@@ -471,6 +474,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     	    	    }	
     	    }
     	    }
+    
             return null;
   }
 
@@ -1782,5 +1786,18 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
 		}
 		return 1;
 	}	
+
+   /**
+    * Only return not cancelled shipments
+    */
+     @Override 
+   public ShippingOrder getShippingOrderByReferenceOne(long referenceNo1,String cancelled) {
+   // TODO Auto-generated method stub
+   Map<String, Object> paramObj = new HashMap<String, Object>();
+   paramObj.put("referenceNo1", referenceNo1);
+   paramObj.put("cancelled", cancelled);
+   ShippingOrder so=(ShippingOrder) getSqlMapClientTemplate().queryForObject("getShippingOrderByReferenceOne",paramObj);
+   return so;
+   }
 	
 }
