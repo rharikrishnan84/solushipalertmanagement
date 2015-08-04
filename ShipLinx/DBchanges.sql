@@ -4178,6 +4178,9 @@ alter table business add isCopy_markup bit(1) default b'0';
 
 insert into resourcebundle (msg_id, msg_content, locale, is_fmk)
 values ('label.btn.copy.parent', 'COPY PARENT MARKUP', 'en_CA', 1);
+
+
+
 ALTER TABLE `business` ADD COLUMN `custom_markup` INT(10) NULL DEFAULT '0' AFTER `feedback_path`;
 
 ALTER TABLE `business` ADD COLUMN `markup_type` INT(10) NULL DEFAULT '0' AFTER `custom_markup`;
@@ -4222,6 +4225,235 @@ ADD COLUMN `parent_customer_id` INT(10) NULL DEFAULT '0' AFTER `parent_markup_bu
 
 INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('businessMarkup', '161', 1, 'Business Markup page', 1, '');
 INSERT INTO `solushipbusmark`.`role_action` (`role`, `action_id`) VALUES ('sysadmin', '1083');
+
+#Shopify sql
+
+
+#Level 1 E-commerce MENU
+INSERT INTO   `menu` (`id`, `name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`, `image_over`, `help_tag`) VALUES ('443', 'E-commerce', '/admin/listEcom.store.action', '6', 'LEVEL_1', '1', '111', 'menu.ecommerce', 'N', 'N', '');
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.ecommerce', 'E-COMMERCE', 'en_CA', 1);
+INSERT INTO   `business_menu` (`business_id`, `menu_id` ) VALUES ('1', '443');
+INSERT INTO   `role_menu` (`menu_id`, `role` ) VALUES ('443', 'sysadmin');
+INSERT INTO   `role_menu` (`menu_id`, `role` ) VALUES ('443', 'busadmin');
+INSERT INTO   `role_menu` (`menu_id`, `role` ) VALUES ('443', 'customer_admin');
+
+#Level 2 Store MENU
+
+INSERT INTO   `menu` (`id`, `name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`, `image_over`, `help_tag`) VALUES ('444', 'Store', '/admin/listEcom.store.action', '1', 'LEVEL_2', '2', '443', 'menu.ecom.store', 'N', 'N', '');
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk` ) VALUES ('menu.ecom.store', 'Stores', 'en_CA', 1 );
+INSERT INTO   `business_menu` (`business_id`, `menu_id`) VALUES ('1', '444');
+INSERT INTO   `role_menu` (`menu_id`, `role` ) VALUES ('444', 'sysadmin');
+INSERT INTO   `role_menu` (`menu_id`, `role`) VALUES ('444', 'busadmin');
+INSERT INTO   `role_menu` (`menu_id`, `role`) VALUES ('444', 'customer_admin');
+
+
+
+
+
+#MENU
+INSERT INTO `menu` (`id`, `name`, `url`, `display_order`, `level`, `level_no`, `parent_id`, `label_id`, `image`, `image_over`) VALUES ('445', 'Product-Package Map', '/admin/packageMap.action', '7', 'LEVEL_1', '1', '111', 'menu.product.pack.map', 'N', 'N');
+INSERT INTO    `role_menu` (`menu_id`, `role`) VALUES ('445', 'customer_admin');
+INSERT INTO    `business_menu` (`business_id`, `menu_id`) VALUES ('1', '445');
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.product.pack.map', 'PACKAGE MAP', 'en_CA', 1);
+
+
+
+
+#Ecommerce Actions
+
+
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('listEcom.store', '443', 0, 'List Ecommerce', 1, '1099'  );
+INSERT INTO   `role_action` (`role`, `action_id` ) VALUES ('sysadmin', '1099'  );
+INSERT INTO   `role_action` (`role`, `action_id` ) VALUES ('busadmin', '1099'  );
+INSERT INTO  `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1099');
+
+
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('newEcom.store', '444', 0, 'Add stores', 1, '1100');
+INSERT INTO   `role_action` (`role`, `action_id` ) VALUES ('sysadmin', '1100');
+INSERT INTO   `role_action` (`role`, `action_id` ) VALUES ('busadmin', '1100');
+INSERT INTO  `role_action` (`role`, `action_id`  ) VALUES ('customer_admin', '1100');
+
+#....................................................
+
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('saveEcom.store', '444', 1, 'Save the store', 1, '1101');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('sysadmin', '1101' );
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('busadmin', '1101');
+INSERT INTO  `role_action` (`role`, `action_id` ) VALUES ('customer_admin', '1101');
+
+
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('editEcom.store', '444', 1, 'edit the store', 1, '1102');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('sysadmin', '1102');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('busadmin', '1102');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1102');
+
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('deleteEcom.store', '444', 1, 'delete the store', 1, '1103');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('sysadmin', '1103');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('busadmin', '1103');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1103');
+
+
+ 
+INSERT INTO   `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('editEcom.config', '444', 1, 'edit Ecommerfce configration', 1, '1104');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('sysadmin', '1104');
+INSERT INTO   `role_action` (`role`, `action_id`   ) VALUES ('busadmin', '1104');
+
+ 
+#=================================================
+#SHOPIFY PRODUCT SYNC
+
+INSERT INTO  `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('synchShopifyProduct', '404', 1, 'synch shopify product', 1,'1105');
+INSERT INTO `role_action` (`role`, `action_id` ) VALUES ('sysadmin', '1105');
+INSERT INTO  `role_action` (`role`, `action_id` ) VALUES ('busadmin', '1105');
+INSERT INTO  `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1105');
+
+
+
+
+
+INSERT INTO    `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('packageMap', '445', 1, 'prodcut package map', 1, '1106');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1106');
+
+
+
+INSERT INTO    `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('addPackageMap', '445', 1, 'addPackageMap', 1, '1107');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1107');
+
+#delete.packageMap
+INSERT INTO    `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('delete.packageMap', '445', 1, 'delete.packageMap', 1, '1108');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1108');
+
+#edit.packageMap
+INSERT INTO    `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`, `id`) VALUES ('edit.packageMap', '445', 1, 'edit.packageMap', 1, '1109');
+INSERT INTO    `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1109');
+
+
+
+
+
+
+#resource bundles
+
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.list.EcommerceStores', 'E-Commerce Store List', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`   ) VALUES ('label.add.ecom.store', 'ADD STORE', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.name', 'Store Name', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.url', 'Store URL', 'en_CA', 1);INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.username', 'Store User', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.username', 'Store User', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.add', 'Add Store', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.edit', 'Edit Store', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.apiKey', 'API Key', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`   ) VALUES ('label.ecom.store.sharedkey', 'shared secret key', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`   ) VALUES ('label.ecom.store.password', 'Store Password', 'en_CA', 1);
+INSERT INTO   `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ecom.store.username', 'Store User Name', 'en_CA', 1);
+
+
+
+
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.ship.customize', 'E-commerce  Shipment Customisation', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.customer', 'E-commerce Customer', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.rate.url', 'Rate Service URL', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.createship.url', 'Create Shipment URL', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.cancelship.url', 'Cancel Shipment URL', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.domain', 'E-Commerce Domain', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('package.products', 'Products', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('product.package.map.list', 'PRODUCT PACKAGE MAP LIST', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('product.package.map', 'PRODUCT PACKAGE MAP', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('shipping.service', 'Shipping Service', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('ecommerce.cancelship.url', 'Cancel Shipment URL', 'en_CA', 1);
+INSERT INTO    `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('menu.product.sych', 'SYNC PRODUCTS', 'en_CA', 1);
+
+
+
+
+
+#=============================================================
+#ALTER TABLE IN PROUDCTS TABEL
+
+ALTER TABLE `products` 
+ADD COLUMN `sku_id` VARCHAR(45) NULL AFTER `total_count`,
+ADD COLUMN `reference1` VARCHAR(45) NULL AFTER `sku_id`,
+ADD COLUMN `reference1_name` VARCHAR(45) NULL AFTER `reference1`;
+ALTER TABLE  `products` 
+CHANGE COLUMN `product_description` `product_description` TEXT NULL DEFAULT NULL ;
+
+ ALTER TABLE `products` 
+ADD COLUMN `length` DOUBLE NULL AFTER `reference1_name`,
+ADD COLUMN `width` DOUBLE NULL AFTER `length`,
+ADD COLUMN `height` DOUBLE NULL AFTER `width`;
+
+
+ALTER TABLE  `package_types` 
+ADD COLUMN `unitmeasure_id` INT(10) NULL AFTER `customer_id`;
+
+ALTER TABLE `products` 
+ADD COLUMN `unitmeasure_id` INT(10) NULL AFTER `height`;
+
+ALTER TABLE `shipping_order` 
+ADD COLUMN `generated_by` VARCHAR(45) NULL AFTER `link_to_order`;
+
+
+
+
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SHOPIFY_SOLUHSIP_API_NAME', 'SOLUSHIP SHIPPING API');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SHOPIFY_API_KEY', 'a76d9d5646b2eb37a2fdb9e781c1ffdc');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SHOPIFY_SHARED_SCRECT', 'cdf05280b09cc480740a967fb265e0dc');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SHOPIFY_REDIRECT_URL', 'https://soluship.com/ecomSignup.action');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SOLUSHIP_CONTACT_US_URL', 'https://soluship.com/solutions/visitor/index.php?/LiveChat/Chat/Request/_sessionID=3fqxtvus07lqnvwu81rosvypi1dwfw0o/_proactive=0/_filterDepartmentID=/_randomNumber=59/_fullName=/_email=/_promptType=chat');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'SHOPIFY_REQUEST_SCOPES', 'read_products, write_products,read_customers ,read_orders,write_shipping,read_fulfillments, write_fulfillments');
+INSERT INTO     `property` (`scope`, `name`, `value`) VALUES ('SHOPIFY', 'WEBHOOK_UNINSTALL_NOTIFY_URL', 'https://soluship.com/api/v1/uninstallShopify');
+
+ 
+
+ CREATE TABLE `ecommerce_store` (
+  `store_ecom_id` int(11) NOT NULL AUTO_INCREMENT,
+  `store_url` varchar(150) DEFAULT NULL,
+  `business_id` int(10) DEFAULT NULL,
+  `customer_id` int(10) DEFAULT NULL,
+  `scopes` varchar(500) DEFAULT NULL,
+  `access_key` varchar(45) DEFAULT NULL,
+  `rate_service_url` varchar(150) DEFAULT NULL,
+  `create_shipment_url` varchar(150) DEFAULT NULL,
+  `api_key` varchar(45) DEFAULT NULL,
+  `shared_scret` varchar(45) DEFAULT NULL,
+  `ecommerce_domain` varchar(45) DEFAULT NULL,
+  `chepest` bit(1) DEFAULT b'0',
+  `fastest` bit(1) DEFAULT b'0',
+  `both_service` bit(1) DEFAULT b'0',
+  `cancel_shipment_url` varchar(150) DEFAULT NULL,
+  `webhook_create_shipment` varchar(45) DEFAULT NULL,
+  `webhook_cancel_shipment` varchar(45) DEFAULT NULL,
+  `rate_service_id` varchar(45) DEFAULT NULL,
+  `active` bit(1) DEFAULT b'0',
+  `installation_url` varchar(200) DEFAULT NULL,
+  `package_map` bit(1) DEFAULT b'0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` varchar(45) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `installed_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`store_ecom_id`),
+  UNIQUE KEY `store_url_UNIQUE` (`store_url`)
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `product_package_map` (
+  `product_package_map_id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(10) DEFAULT NULL,
+  `package_id` int(10) DEFAULT NULL,
+  `quantity` int(10) DEFAULT NULL,
+  `customer_id` int(10) DEFAULT NULL,
+  PRIMARY KEY (`product_package_map_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `ecom_log` (
+  `ecom_log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `shopify_order_id` varchar(45) DEFAULT '0',
+  `customer_id` int(10) DEFAULT '0',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ecom_log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+
+#end of shoipfy query
 .......................................End of Live server commit.......................................
 
 
