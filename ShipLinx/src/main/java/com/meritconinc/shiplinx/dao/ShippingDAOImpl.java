@@ -454,8 +454,14 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     if (carrierId == ShiplinxConstants.CARRIER_UPS_USA)
       carrierId = ShiplinxConstants.CARRIER_UPS;
     long customerid=0;
+    try{
     if(UserUtil.getMmrUser()!=null){
       customerid=UserUtil.getMmrUser().getCustomerId();
+    }
+    }catch(Exception e){
+    	log.debug("Error occured while retriving customer from UserUtil.getMmrUser()");
+    	e.printStackTrace();
+    	customerid=0;
     }
     List<CarrierChargeCode> searchResult = this.getChargeListByCarrierAndCodes(carrierId,
         chargeCode, chargeCodeLevel2);

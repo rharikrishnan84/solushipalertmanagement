@@ -98,8 +98,9 @@
 	    {
 	 		if(aa[i].checked == true)
 	 		{
-	 			var hidden_id = "searchform_selectedShipments_"+i+"__id";
-	 			var oid = document.getElementById(hidden_id).value;
+	 			/* var hidden_id = "searchform_selectedShipments_"+i+"__id";
+	 			var oid = document.getElementById(hidden_id).value; */
+	 			var oid=aa[i].value;
 	 			arrOrders[i] = oid;
 	      		count ++;
 	      	}

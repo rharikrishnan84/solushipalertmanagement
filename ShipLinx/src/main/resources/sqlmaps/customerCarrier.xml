@@ -260,7 +260,7 @@
 		select * from carrier c 
 	</select>
 	<select id="getAllCarrierForBusiness"  resultMap="CarrierResult2">
-		select c.*, b.business_carrier_discount, b.display_name from carrier c left join business_carrier b on (c.carrier_id=b.carrier_id) where b.business_id=#businessId# 
+		select c.*, b.business_carrier_discount, b.display_name from carrier c left join business_carrier b on (c.carrier_id=b.carrier_id) where b.business_id=#businessId#  order by name asc
 	</select>
 
 	<update id = 'editCustomerCarrier'>

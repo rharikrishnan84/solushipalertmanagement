@@ -203,7 +203,8 @@ public class EShipPlusAPI implements CarrierService,Job{
 					tempEventObj.setEntityType(10);
 					tempEventObj.setEventUsername("admin");
 					tempEventObj.setEventDateTime(new Timestamp(date.getTime()));
-					tempEventObj.setMessage("Shipping order status updated ! Status Received: "+statusResponse.getStatus().name());
+					//tempEventObj.setMessage("Shipping order status updated ! Status Received: "+statusResponse.getStatus().name());
+					tempEventObj.setMessage("Shipping order status updated ! Status Received: "+statusResponse.getStatus().name()+"\n"+"Actual Delivery Date :"+statusResponse.getActualDeliveryDate()+"\n"+"Actual Pickup Date :"+statusResponse.getActualPickupDate()+"\n"+"Estimate Delivery Date :"+statusResponse.getEstimateDeliveryDate()+"\n"+"Estimate pickup date :"+statusResponse.getEstimatePickupDate()+"\n"+"Mode :"+statusResponse.getMode()+"\n"+"Shipment Number :"+statusResponse.getShipmentNumber()+"\n"+"ventor key :"+statusResponse.getVendorKey()+"\n"+"ventor Name :"+statusResponse.getVendorName()+"\n"+"ventor scac :"+statusResponse.getVendorScac());
 					tempEventObj.setPrivateMessage(false);
 					tempEventObj.setDeletedMessage(false);
 					tempEventObj.setSystemLog("Order status Updated by automatic timer trigger");

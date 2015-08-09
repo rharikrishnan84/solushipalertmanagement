@@ -306,6 +306,13 @@ var count=parseInt(prevQuantity);
 						} */
 		var myParam = location.search.split('customsinvoice=')[1];
 		var carrier = document.getElementById("firstBoxCarrier").value;
+		var accNumber = document.getElementById("billToANumber");
+		var billType = document.getElementById("billToType");
+		var selectedBillType = billType.options[billType.selectedIndex].value;
+		
+		if(carrier != -1 && accNumber.value == "" && selectedBillType != "Soluship Acct"){
+				alert("Please enter in a Collect/Third party Account number to continue");
+		}else{
 		var emailNotify = "false";
 		var emailNotify2 = "false";
 		if (document
@@ -385,6 +392,7 @@ var count=parseInt(prevQuantity);
 			document.userform.submit();
 			$('#loader').css('display', 'block');
 			$('#loaderImg').css('display', 'block');
+		}
 		}
 	}
 	function quickShip() {
@@ -1191,11 +1199,13 @@ var count=parseInt(prevQuantity);
 					<div class="form_buttons id="img_save_shipment" style=" padding-right:3px; padding-bottom:5px;">
 						<%-- <a href="javascript:updateShipment()"> <mmr:message messageId="btn.save.shipment"/></a> --%>
 						<a href="javascript:updateShipment()">
-						<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}"> 
-						<mmr:message messageId="btn.save.shipment"/>
+						<%-- <s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))}"> --%>
+						<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')|| #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager'))}"> 
+						<mmr:message messageId="label.add.button.save.shipment"/>
 						</s:if>
 						<s:else>
-						<mmr:message messageId="label.add.button.save.shipment"/>
+						
+						<mmr:message messageId="btn.save.shipment"/>
 						</s:else>
 						</a>
 					</div>
@@ -1221,11 +1231,13 @@ var count=parseInt(prevQuantity);
 			<div class="form_buttons" id="img_get_rates" style=" width:auto; margin-right:20px; float:right !important;">
 				<%-- <div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div> --%>
 				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">
-				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
-				<mmr:message messageId="btn.save.shipment"/>
+				<%-- <s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}"> --%>
+				<s:if test="%{(#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin')|| #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager'))}">
+				
+				<mmr:message messageId="label.add.button.save.shipment"/>
 				</s:if>
 				<s:else>
-				<mmr:message messageId="label.add.button.save.shipment"/>
+				<mmr:message messageId="btn.save.shipment"/>
 				</s:else>
 				</a></div>
 				<div align="left" style="float:left !important;" id="get_rates_td"><a id="getratesBtn" href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>

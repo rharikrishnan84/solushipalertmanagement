@@ -2156,6 +2156,18 @@ public class ShippingServiceImpl implements ShippingService {
       } else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
       }
+      if(so.getTrackingURL()==null && so.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+    	      	   if(so.getMasterTrackingNum()!=null){
+    	      	  body = new String(body.replaceAll("%TRACKINGURL", so.getMasterTrackingNum()));
+    	      	   } else {
+    	      	   body = new String(body.replaceAll("%TRACKINGURL", ""));
+    	      	   }
+    	      	   }
+    	      	   if (so.getPickup() != null && so.getPickup().getConfirmationNum() !=null && !so.getPickup().getConfirmationNum().isEmpty()) {
+    	      	   body = new String(body.replaceAll("%PICKUPCONFIRMATION",so.getPickup().getConfirmationNum()));
+    	      	   } else {
+    	      	   body = new String(body.replaceAll("%PICKUPCONFIRMATION", ""));
+    	      	   }
       String fromAddress = null;
       if (so.getFromAddress() != null && so.getFromAddress().getEmailAddress() != null) {
         fromAddress = so.getFromAddress().getEmailAddress();
@@ -2172,13 +2184,29 @@ public class ShippingServiceImpl implements ShippingService {
     	            business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
     	            business.getAddress().getEmailAddress(), bccAddress, subject, body, null, true);
       }else if (so.getService() != null && so.getService().getEmailType().equalsIgnoreCase("SPD")) {
-        retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
-            business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
-            business.getAddress().getEmailAddress(), null, subject, body, null, true);
+    	  if(so.getCarrierId()!=null && so.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+    		      		   List<String> bccAddress = new ArrayList<String>();
+    		      		   bccAddress.add(business.getCancelPurolatorFreightEmail());
+    		      		   retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+    		      		   business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
+    		      		   business.getAddress().getEmailAddress(), bccAddress, subject, body, null, true);
+    		      		   }else{
+    		      		   retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+    		      		   business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
+    		      		   business.getAddress().getEmailAddress(), null, subject, body, null, true);
+    		      		   }
       }else {
-        retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
-            business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
-            business.getLtlEmail(), null, subject, body, null, true);
+    	  if(so.getCarrierId()!=null && so.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+    		      		   List<String> bccAddress = new ArrayList<String>();
+    		      		   bccAddress.add(business.getCancelPurolatorFreightEmail());
+    		      		   retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+    		      		   business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
+    		      		   business.getLtlEmail(), bccAddress, subject, body, null, true);
+    		      		   }else{
+    		      		   retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
+    		      		   business.getSmtpPassword(), business.getName(), business.getSmtpPort(), fromAddress,
+    		     		   business.getLtlEmail(), null, subject, body, null, true);
+    		      		   }
       }
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);

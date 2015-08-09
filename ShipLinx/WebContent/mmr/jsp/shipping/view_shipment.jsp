@@ -1843,18 +1843,20 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
  								</s:if>
 
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.charge"/> </strong></td>
-								<s:if test="%{(#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
+								<%-- <s:if test="%{(#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}"> --%>
+								<s:if test="%{(#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin'))}">
                                <td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.cur"/> </strong></td>
                                <td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.exrate"/> </strong></td>
                                </s:if>
 								<td class="ordrdtl_title_hdng" ><strong><mmr:message messageId="label.ghead.status"/> </strong></td>
 								<td class="ordrdtl_title_hdng" ><strong style="width:80px; float:left;"><mmr:message messageId="label.ghead.invoice"/> #</strong></td>
 								<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
-									<td class="ordrdtl_title_hdng" ><strong>&nbsp;<mmr:message messageId="label.ghead.edi"/> #</strong></td>
+									<%-- <td class="ordrdtl_title_hdng" ><strong>&nbsp;<mmr:message messageId="label.ghead.edi"/> #</strong></td> --%>
+									<td class="ordrdtl_title_hdng" ><strong style="width:102px !important; float:left;">&nbsp;<mmr:message messageId="label.add.edi.number"/> #</strong></td>
 								</s:if>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
-								<td class="ordrdtl_title_hdng" >&nbsp;</td>
-								<td class="ordrdtl_title_hdng" >&nbsp;</td>
+								<!-- <td class="ordrdtl_title_hdng" >&nbsp;</td>
+								<td class="ordrdtl_title_hdng" >&nbsp;</td> -->
 								<td class="ordrdtl_title_hdng" ><strong style="width:100px; float:left;"><mmr:message messageId="label.ghead.commissonable"/> </strong></td>
 
 							</tr>

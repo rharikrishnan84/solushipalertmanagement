@@ -1017,6 +1017,11 @@
         	<result name="input" type="tiles">createpickup</result>
         </action>
         
+           <action name="createOrderPickup" method="createOrderPickup" class="shipmentAction">
+ 		<result name="success" type="tiles">searchShipment</result>
+ 		<result name="input" type="tiles">searchShipment</result>
+ 		</action>
+
          <action name="cancelPickup" method="cancelPickup" class="shipmentAction">
         	<result name="success" type="tiles">searchpickups</result>
         </action>    

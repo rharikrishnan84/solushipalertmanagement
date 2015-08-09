@@ -83,7 +83,8 @@ function removeCustomAlert1(v) {
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>	
 <style>
-.total_label{ position:relative;}
+/* .total_label{ position:relative;} */
+.total_label{ position:relative; width:105%;}
 .popup_text{display:none; position:absolute;  height:auto; padding:5px 10px 5px 5px  ; width:'auto'; left:-30px; color:#000;	 background-color:#fff; border:1px solid #999; z-index:1000;  }
 
 </style>
@@ -1092,7 +1093,8 @@ function submitShipment(){
 					<th style="display:none">BT</th>
 					</s:if>
 					<s:else>
-						<s:if test="%{#session.ADMIN_USER != null}"> 
+						<%-- <s:if test="%{#session.ADMIN_USER != null}">  --%>
+						<s:if test="%{#session.ADMIN_USER != null  || #session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}"> 
 						<th><mmr:message messageId="label.ghead.totalcost"/></th>
 						<th style="display:none">TC</th>
 						</s:if>
@@ -1140,7 +1142,8 @@ function submitShipment(){
 				<td style="display:none"><s:property value="%{#request.BillToType}"/></td>
 				</s:if>
 				<s:else>
-				<s:if test="%{#session.ADMIN_USER != null}"> 
+				<%-- <s:if test="%{#session.ADMIN_USER != null}">  --%>
+				<s:if test="%{#session.ADMIN_USER != null || #session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}"> 
 					<td style="position:relative;"> 
 					<div style="position:relative;" class="popup_div">
 						<div class="total_label" index="<s:property value="%{#index}"/>" id="top_<s:property value="%{#index}"/>"><b><label><mmr:message messageId="label.ratelist.total"/> :</label> 
@@ -1235,7 +1238,8 @@ function submitShipment(){
 				</s:else>		  		  
 					
 				</s:else>
-				<td> 
+				<!-- <td> --> 
+				<td style="white-space: nowrap"> 
      				<s:if test="%{totalCost==0}" >
       					<a style="text-decoration:none; color:red; size:12px; font-weight:bold" href="javascript: sendCustomerEmail()" title="Email Quote">Request Quote</a>
      				</s:if>

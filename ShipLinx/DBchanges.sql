@@ -4454,6 +4454,159 @@ CREATE TABLE `ecom_log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
 
 #end of shoipfy query
+
+#start of purolator freight query
+
+insert into carrier values('21', 'Purolator Frieght', 'http://www.purolatorfreight.com/scripts/cgiip.exe/boldetail.htm?wbtn=PRO&wpro1=*trackingnum&seskey=&nav=side&language=english', 'purolatorFreightService', '18', NULL, NULL, '1', NULL)
+
+
+
+insert into service values('4100', 'Expedited LTL', '21', '21', NULL, 'Expedited LTL', 'Expedited LTL', '202', NULL, '1', '0', NULL, '0', '48', '48', '96', '10000', 'LTL', '0', '0', '0', '0', '0', '0')
+
+INSERT INTO `business_carrier` (`business_id`, `carrier_id`, `business_carrier_discount`, `display_name`) VALUES ('1', '21', '0', 'Purolator Frieght');
+
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`) VALUES ('21', 'FRT', 'FRT', 'Freight', 'Freight', '1', '0', '0');
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`) VALUES ('21', 'FSC', 'FSC', 'Fuel', 'Fuel', '3', '0', '0');
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`) VALUES ('21', 'TAX', 'GST', 'GST', 'GST', '11', '0', '0');
+INSERT INTO `carrier_charge_code` (`carrier_id`, `charge_code`, `charge_code_level_2`, `charge_name`, `charge_desc`, `charge_group_id`, `charge`, `cost`, `customer_id`) VALUES ('21', 'FSC', 'FSC', 'Fuel', 'Fuel', '3', '0', '0', '0');
+
+
+update resourcebundle set msg_content='<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>Integrated Carriers SoluShip&trade;</title>
+ <style type="text/css">
+ <!--
+ body {
+ font: 100% Verdana, Arial, Helvetica, sans-serif;
+ background: #fff;
+ margin: 0;
+ padding: 0;
+ text-align: center;
+ color: #000000;
+ }
+ .oneColElsCtr #container {
+ width: 550px;
+ background: #FFFFFF;
+ margin: 0 auto;
+ border: 1px solid #000000;
+ text-align: left;
+ height:auto;
+ }
+ .oneColElsCtr #mainContent {
+ padding: 10px 10px 10px 10px;
+ font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+ font-size: 12px;
+ }
+ .oneColElsCtr #mainContent h1 {
+ padding: 5px 0px 0px 0px;
+ font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+ font-size: 18px;
+ color:#990000;
+ }
+ .oneColElsCtr #mainFooter {
+ padding: 5px 0px 0px 10px;
+ font-family: "lucida grande",tahoma,verdana,arial,sans-serif;
+ font-size: 10px;
+ color:#fff;
+ background-color:#000000;
+ height:35px;
+ }
+ #mainContent p{
+ text-align: left;
+ margin-left: 30px;
+ }
+ ul{
+ text-align: left;
+ }
+ -->
+ </style>
+ </head>
+
+ <body class="oneColElsCtr">
+
+ <div id="container">
+ <img src="http://www.soluship.com/mmr/images/ic-header.jpg" includeContext="true" />
+ <div id="mainContent">
+ <h1>Integrated Carriers SoluShip&trade;</h1>
+ <p>A shipment has been cancelled. Details are as follows.</p>
+ <p>This e-mail confirms receipt of your shipment request for %ShipDate.</p>
+ <p>
+ <b>Ship From:</b><br/>
+ Company: %SFROMCOMPANY<br/>
+ Address: %SFROMADDRESS1, %SFROMADDRESS2%<br/>
+ City: %SFROMCITY<br/>
+ Zip/Postal Code: %SFROMZIP<br/>
+ Province: %SFROMPROVINCE<br/>
+ Country: %SFROMCOUNTRY<br/>
+ </p>
+ <p>
+ <b>Ship To:</b><br/>
+ Company: %STOCOMPANY<br/>
+ Address: %STOADDRESS1, %STOADDRESS2%<br/>
+ City: %STOCITY<br/>
+ Zip/Postal Code: %STOZIP<br/>
+ Province: %STOPROVINCE<br/>
+ Country: %STOCOUNTRY<br/>
+ </p>
+ <p><b>Carrier and Service:</b> %CARRIERSERVICE</p>
+ <p><b>Total Pieces:</b> %TOTALPIECES<br/>
+ <b>Total Weight:</b> %TOTALWEIGHT</p>
+ <p><b>Tracking Details:</b>%TRACKINGURL</br>
+ </p>
+ <p><b>Pickup Confirmation Number:</b>%PICKUPCONFIRMATION</br>
+ </p>
+ <p>Did you know you can create and track shipments and get estimates and transit times online at <a href="https://www.integratedcarriers.com/?page_id=143">www.integratedcarriers.com?</a> Visit our website today and learn how our online services can benefit you.</br>
+ </p>
+ <p>Thank you for choosing Integrated Carriers.</p>
+
+
+ <br/>
+
+ <!-- end #mainContent -->
+ </div>
+ <div id="mainFooter">
+ &copy; 2013 Integrated Carriers
+ <!-- end #mainFooter -->
+ </div>
+ <!-- end #container -->
+ </div>
+ </body>
+ </html>' where msg_id='mail.cancel.shipment.notification.body';
+
+ALTER TABLE `business`
+ADD COLUMN `send_cancel_purolator_freight_email` VARCHAR(255) NULL AFTER `ltl_email`;
+
+UPDATE `business` SET `send_cancel_purolator_freight_email`='PurolatorFreightCustserv@purolator.com ' WHERE `business_id`='1';
+UPDATE `business` SET `send_cancel_purolator_freight_email`='PurolatorFreightCustserv@purolator.com ' WHERE `business_id`='2';
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('cancel.spdPurolatorFreightShipment.notification.mail.success', 'Cancelled Shipment Notification has been sent to save@integratedcarriers.com as well as PurolatorFreightCustserv@purolator.com ', 'en_CA', 0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk` VALUES ('cancel.ltlPurolatorFreightShipment.notification.mail.success', 'Cancelled Shipment Notification has been sent to saveltl@integratedcarriers.com as well as PurolatorFreightCustserv@purolator.com', 'en_CA', 0);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.subject.cancel.pickup.notification', 'Pickup Cancel Notification', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('mail.cancel.pickup.notification.body', '<html>\n<head>\n <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n <title>Integrated Carriers SoluShip&trade;</title>\n <style type=\"text/css\">\n <!--\n body {\n font: 100% Verdana, Arial, Helvetica, sans-serif;\n background: #fff;\n margin: 0;\n padding: 0;\n text-align: center;\n color: #000000;\n }\n .oneColElsCtr #container {\n width: 550px;\n background: #FFFFFF;\n margin: 0 auto;\n border: 1px solid #000000;\n text-align: left;\n height:auto;\n }\n .oneColElsCtr #mainContent {\n padding: 10px 10px 10px 10px;\n font-family: \"lucida grande\",tahoma,verdana,arial,sans-serif;\n font-size: 12px;\n }\n .oneColElsCtr #mainContent h1 {\n padding: 5px 0px 0px 0px;\n font-family: \"lucida grande\",tahoma,verdana,arial,sans-serif;\n font-size: 18px;\n color:#990000;\n }\n .oneColElsCtr #mainFooter {\n padding: 5px 0px 0px 10px;\n font-family: \"lucida grande\",tahoma,verdana,arial,sans-serif;\n font-size: 10px;\n color:#fff;\n background-color:#000000;\n height:35px;\n }\n #mainContent p{\n text-align: left;\n margin-left: 30px;\n }\n ul{\n text-align: left;\n }\n -->\n </style>\n </head>\n \n <body class=\"oneColElsCtr\">\n \n <div id=\"container\">\n <img src=\"http://www.soluship.com/mmr/images/ic-header.jpg\" includeContext=\"true\" />\n <div id=\"mainContent\">\n <h1>Integrated Carriers SoluShip&trade;</h1>\n <p>A Pickup has been cancelled. Details are as follows.</p>\n <p>This e-mail confirms receipt of your Pickup Cancellation request for %PickupDate.</p>\n <p>\n <b>Pickup Details:</b><br/>\n Company: %PICKUPABBREVIATION<br/>\n Address: %PICKUPADDRESS1, %PICKUPADDRESS2<br/>\n City: %PICKUPCITY<br/>\n Zip/Postal Code: %PICKUPZIP<br/>\n Province: %PICKUPPROVINCE<br/>\n Country: %PICKUPCOUNTRY<br/>\n </p>\n\n <p><b>Pickup Confirmation Number:</b>%PICKUPCONFIRMATION</br>\n </p>\n <p><b>Pickup Location:</b>%PICKUPLOCATION</br>\n </p>\n <p><b>Pickup Reference:</b>%PICKUPREFERENCE</br>\n </p>\n <p><b>Pickup Carrier Name:</b>%CARRIER</br>\n </p>\n\n <p>Did you know you can create and track shipments and get estimates and transit times online at <a href=\"https://www.integratedcarriers.com/?page_id=143\">www.integratedcarriers.com?</a> Visit our website today and learn how our online services can benefit you.</br> \n </p>\n <p>Thank you for choosing Integrated Carriers.</p> \n \n \n <br/>\n \n <!-- end #mainContent -->\n </div>\n <div id=\"mainFooter\">\n &copy; 2013 Integrated Carriers\n <!-- end #mainFooter -->\n </div>\n <!-- end #container -->\n </div>\n </body>\n </html>', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.pickup', 'Pickup', 'en_CA', 1);
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('createOrderPickup', '271', 1, 'Order Pickup', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_admin', '1020', NULL);
+INSERT INTO `newsoluship`.`role_action` (`role`, `action_id`, `role_action_id`) VALUES ('busadmin', '1020', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('sales', '1020', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_shipper', '1020', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('customer_base', '1020', NULL);
+INSERT INTO `role_action` (`role`, `action_id`, `role_action_id`) VALUES ('solutions_manager', '1020', NULL);
+
+
+ALTER TABLE `logged_event` 
+CHANGE COLUMN `message` `message` VARCHAR(3000) NULL DEFAULT NULL ;
+ INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.add.edi.number', 'Edi Number', 'en_CA', 1);
+
+
+#end od purolator freight query
 .......................................End of Live server commit.......................................
 
 

@@ -582,6 +582,9 @@ public class LogonAction extends BaseAction implements ServletRequestAware ,Serv
 		String customerId = request.getParameter("id");
 		String adminRole= UserUtil.getMmrUser().getUserRole();
 		
+		String menu = "Shipping";
+				getSession().remove("HighLightMenu");
+				getSession().put("HighLightMenu",menu);
 		//UserSearchCriteria criteria = new UserSearchCriteria();
 		Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
 		BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");

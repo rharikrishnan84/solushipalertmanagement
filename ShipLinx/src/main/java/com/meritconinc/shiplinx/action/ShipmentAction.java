@@ -4131,20 +4131,40 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        			        }
 		        			        if (shippingService.sendCancelShipmentNotificationMail(this.getShippingOrder(), UserUtil
 		        			            .getMmrUser().getBusiness())) {
+		        			        	 if(this.getShippingOrder().getCarrierId()==null){
+		        			        		 	 this.getShippingOrder().setCarrierId(shippingService.getShippingOrder(order_id).getCarrierId());
+		        			        		 }
+		        			        	 
 		        			        	if(this.getShippingOrder().getService() !=null){
 		        	 		        	if (this.getShippingOrder().getService().getEmailType().equals("LTL")) {
+		        	 		        		 if(this.getShippingOrder().getCarrierId()!=null && this.getShippingOrder().getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+		        	 		        					        	 		        			 addActionMessage(MessageUtil.getMessage("cancel.ltlPurolatorFreightShipment.notification.mail.success"));
+		        	 		        					        	 		        			 }else{
 		        	                         addActionMessage(MessageUtil.getMessage("cancel.ltlshipment.notification.mail.success"));
+		        	 		        					        	 		        			 }
 		        	                       } else {
+		        	                    	   if(this.getShippingOrder().getCarrierId()!=null && this.getShippingOrder().getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+		        	                    		   		        	                    		    addActionMessage(MessageUtil.getMessage("cancel.ltlPurolatorFreightShipment.notification.mail.success"));
+		        	                    		   		        	                    		    }else{
 		        	                        addActionMessage(MessageUtil.getMessage("cancel.spdshipment.notification.mail.success"));
+		        	                    		   }
 		        	                       }
 		        			        	}else{
 		        			        		shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 		        			        		ShippingOrder shippingOrder = shippingDAO.getShippingOrder(order_id);
 		        			        		if(shippingOrder.getService() !=null){
 		        					        	if (shippingOrder.getService().getEmailType().equals("LTL")) {
+		        					        		 if(this.getShippingOrder().getCarrierId()!=null && this.getShippingOrder().getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+		        					        			 		        					        			 addActionMessage(MessageUtil.getMessage("cancel.spdPurolatorFreightShipment.notification.mail.success"));
+		        					        			 		        					        			 }else{
 		        			                        addActionMessage(MessageUtil.getMessage("cancel.ltlshipment.notification.mail.success"));
+		        					        			 }
 		        			                      } else {
+		        			                    	  if(this.getShippingOrder().getCarrierId()!=null && this.getShippingOrder().getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+		        			                    		  		        			                    		   addActionMessage(MessageUtil.getMessage("cancel.spdPurolatorFreightShipment.notification.mail.success"));
+		        			                    		  		        			                    		   }else{
 		        			                       addActionMessage(MessageUtil.getMessage("cancel.spdshipment.notification.mail.success"));
+		        			                    		  }
 		        			                      }
 		        					        	}
 		        			        	}
@@ -4234,6 +4254,47 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		    return SUCCESS;
 		  }
 
+	
+	 public String createOrderPickup() {
+		 	 log.debug("Test");
+		 	 String orderId=request.getParameter("orderId");
+		 	 String readyHour=request.getParameter("readyHour");
+		 	 String readyMin=request.getParameter("readyMin");
+		 	 String closeHour=request.getParameter("closeHour");
+		 	 String closeMin=request.getParameter("closeMin");
+		 	 String pickupLocation=request.getParameter("pickupLocation");
+		 	 String pickupReference=request.getParameter("pickupReference");
+		 	 String instructions=request.getParameter("instructions");
+		 	 Pickup pickup = new Pickup();
+		 	 pickup.setOrderId(Long.valueOf(orderId));
+		 	 pickup.setReadyHour(readyHour);
+		 	 pickup.setReadyMin(readyMin);
+		 	 pickup.setCloseHour(closeHour);
+		 	 pickup.setCloseMin(closeMin);
+		 	 pickup.setPickupLocation(pickupLocation);
+		 	 pickup.setPickupReference(pickupReference);
+		 	 pickup.setInstructions(instructions);
+		 	 long pickupresId;
+		 	 try {
+		 	 pickupresId = carrierServiceManager.createPickup(pickup);
+		 	 if(pickupresId > 0){
+		 	 StringBuilder stb = new StringBuilder(getText("pickup.success"));
+		 	 if(!StringUtil.isEmpty(pickup.getConfirmationNum()))
+		 	 stb.append(" Conf #: " + pickup.getConfirmationNum());
+		 	 addActionMessage(stb.toString());
+		 	 }
+		 	 } catch (Exception e) {
+		 	 log.error("Error occured in creating a pickup",e);
+		 	 addActionError(getText("error.pickup.fail"));
+		 	 for(CarrierErrorMessage carrierErrorMessage :carrierServiceManager.getErrorMessages()){
+		 	 addActionError(carrierErrorMessage.getMessage());
+		 	 }
+		 	 return INPUT;
+		 	 }
+		 	 return SUCCESS;
+		 	 }
+		 	
+		 
 
 	public String getConsigneeName() {
 		return consigneeName;
@@ -8839,6 +8900,15 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 																	    }
 																	    order.setToFloorNo(order.getToAddressCheckList().getFloorNo());
 																	   }
+																	   
+																	/**
+																	 * Below coding is for the checking protect from freeze checkbox
+																	 * if protect from freeze check box is checked then change tempControl as true
+																	 */
+																	   if(order.getProtectFreeze()!=null && order.getProtectFreeze()==true){
+																		   order.setTempControl(true);
+																	   }
+																	   
 																	   return order;
 																	  } catch (Exception e) {
 																	   e.printStackTrace();

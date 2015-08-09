@@ -197,6 +197,7 @@ public class ShiplinxConstants {
 	public static final int ENTITY_TYPE_ORDER_VALUE = 10;
 	
 	public static final int ENTITY_TYPE_PRODUCT_VALUE = 20;
+	public static final int CARRIER_PUROLATOR_FREIGHT=21;	
 	
 	//
 	public static final String XML_VERSION = "3.1.0";

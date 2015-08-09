@@ -92,6 +92,7 @@ import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.MarkupManager;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+import com.meritconinc.shiplinx.model.Package;
 
 
 public class EstimatingServiceClient {
@@ -401,24 +402,35 @@ public class EstimatingServiceClient {
 						logger.debug("OptionPrices not available");
 					}
 					rate.setServiceName(shiplinxService.getName());
-					boolean HWFlag = false;
-										 Charge c = new Charge();
-										for(Charge charge : rate.getCharges()){
-										if(charge.getChargeCode().equals("RESI") && rate.getBillWeight() > ShiplinxConstants.PUROLATOR_ADDITIONALHANDLING_WEIGHT){
-								    		  
-								    	      c.setName(ShiplinxConstants.CHARGE_NAME_ADDITIONAL_HANDLING1);
-								    	      c.setChargeCode(CHARGE_CODE_FOR_HEAVY_WEIGHT);
-								    	      c.setCharge(PUROLATOR_ADDTIONALHANDLING_CHARGE);
-								    	      c.setCost(PUROLATOR_ADDTIONALHANDLING_CHARGE);
-								    	      c.setTariffRate(PUROLATOR_ADDTIONALHANDLING_CHARGE);
-								    	      c.setCurrency("CAD");
-								    	      HWFlag = true;
-								    	      break;
-								    	  }
-										}
-										if(HWFlag){
-											rate.getCharges().add(c);
-										}
+							              boolean HWFlag = false;
+					                      boolean breakFlag = false;
+					                      List<Package> packagesList = order.getPackages();
+					                      for(int pack = 0; pack < packagesList.size(); pack++)
+					                      {
+					                          if(packagesList.get(pack).getWeight().longValue() > 69){
+					                              Charge c = new Charge();
+					                              for(Charge charge : rate.getCharges()){                              
+					                                  if(charge.getChargeCode().equals("RESI")){
+					                                      c.setName("Heavy Weight Charge");
+					                                      c.setChargeCode(CHARGE_CODE_FOR_HEAVY_WEIGHT);
+					                                      c.setCharge(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+					                                      c.setCost(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+					                                      c.setTariffRate(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+					                                      c.setCurrency("CAD");
+					                                      HWFlag = true;
+					                                      break;
+					                                  }
+					                              }
+					
+					                              if(HWFlag)
+					                              {
+					                                  rate.getCharges().add(c);
+					                                  breakFlag = true;
+					                              }
+					                          }
+					                          if(breakFlag)
+					                              break;
+					                      }
 					ratingList.add(rate);
 
 				}

@@ -48,6 +48,7 @@
 			<result property="addCustomerNotificationSubject" column="add_customer_notification_subject"/>
 			<result property="addCustomerNotificationBody" column="add_customer_notification_body"/>
 			<result property="ltlEmail" column="ltl_email"/>
+			<result property="cancelPurolatorFreightEmail" column="send_cancel_purolator_freight_email"/>
 			<result property="reportPath" column="report_path"/>
 			<result property="reportPathInvoice" column="report_pathinvoice"/>
 			<result property="defaultHoldTerms" column="default_hold_terms"/> 

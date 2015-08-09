@@ -187,6 +187,7 @@ public class ShippingOrder implements Serializable {
   private boolean insidePickup;
   private boolean appointmentPickup;
   private boolean appointmentDelivery;
+  private Boolean protectFreeze=false;
 
   // web only
   private String scheduledShipDate_web;
@@ -2267,6 +2268,14 @@ public void setBusinessIds(List<Long> businessIds) {
 
 	public void setGeneratedBy(String generatedBy) {
 		this.generatedBy = generatedBy;
+	}
+
+	public Boolean getProtectFreeze() {
+		return protectFreeze;
+	}
+
+	public void setProtectFreeze(Boolean protectFreeze) {
+		this.protectFreeze = protectFreeze;
 	}
 
 }

@@ -791,10 +791,28 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       pickup.setServiceCode(service.getCode());
       CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
       if(pickup.getCarrierAccount() == null){
-      CustomerCarrier customerCarrier = getCarrierAccount(pickup.getCustomerId(),
+    	  CustomerCarrier customerCarrier = new CustomerCarrier();
+    	      	   if(pickup.getOrderId()>0){
+    	      	   ShippingOrder shippingOrder = shippingService.getShippingOrder(pickup.getOrderId());
+    	      	   pickup.setCarrierId(shippingOrder.getCarrierId());
+    	      	   pickup.setServiceId(shippingOrder.getServiceId());
+    	      	   pickup.setAddress(shippingOrder.getFromAddress());
+    	      	   pickup.setBusinessId(shippingOrder.getBusinessId());
+    	      	   pickup.setCustomerId(shippingOrder.getCustomerId());
+    	      	   pickup.setDestinationCountryCode(shippingOrder.getToAddress().getCountryCode());
+    	      	   pickup.setPickupDate(shippingOrder.getScheduledShipDate());
+    	      	   pickup.setPickupRequired(true);
+    	      	   pickup.setQuantity(shippingOrder.getQuantity());
+    	      	   pickup.setTotalWeight(shippingOrder.getBilledWeight().doubleValue());
+    	      	   pickup.setWeightUnit(shippingOrder.getBilledWeightUOM());
+    	      	   customerCarrier = getCarrierAccount(shippingOrder.getCustomerId(),
+    	      	   shippingOrder.getBusinessId(), shippingOrder.getCarrierId(), shippingOrder.getFromAddress().getCountryCode(),
+    	      	   shippingOrder.getToAddress().getCountryCode());
+    	      	   }else{
+    	      	   customerCarrier = getCarrierAccount(pickup.getCustomerId(),
           pickup.getBusinessId(), pickup.getCarrierId(), pickup.getAddress().getCountryCode(),
           pickup.getDestinationCountryCode());
-
+    	      	 }
       pickup.setCarrierAccount(customerCarrier);
       }
       carrierService.requestPickup(pickup);
@@ -2139,10 +2157,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	      	      	          rate.setCarrierName(carrier.getName());
     	      	      	        }
     	   
+      List<Charge> removeCharge = new ArrayList<Charge>();
       if (StringUtil.isEmpty(rate.getServiceName()))
         rate.setServiceName(shippingService.getServiceById(rate.getServiceId()).getName());
       order.setServiceId(rate.getServiceId());
       for (Charge c : rate.getCharges()) {
+    	  if (order.getFromAddress().getCountryCode().equalsIgnoreCase(ShiplinxConstants.CANADA)
+    			      			   && order.getToAddress().getCountryCode().equalsIgnoreCase(ShiplinxConstants.CANADA) && c.getChargeCode().equalsIgnoreCase(ShiplinxConstants.TAX_TAX) && rate.getCarrierId()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+    			      			   removeCharge.add(c);
+    			      			   continue;
+    			      			   }
         c.setStatus(ShiplinxConstants.CHARGE_QUOTED);
         // log.info("Looking up charge for carrier/code/code2: " +
         // rate.getCarrierId() + " / " + c.getChargeCode() + " / " +
@@ -2230,7 +2254,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                        }*/
         } else {
           if (!(PurolatorAPI.SPECIAL_HANDLING_CODE).equals(c.getChargeCode())) {
-            if (c.getTariffRate() != null)
+        	  if (c.getTariffRate() != null && c.getTariffRate()>0)
               c.setCharge(c.getTariffRate());
             else
               c.setCharge(c.getCost());
@@ -2301,6 +2325,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         }
       }
 
+      if(removeCharge.size()>0){
+    	      	   for(int i=0;i<removeCharge.size(); i++)
+    	      	   rate.getCharges().remove(removeCharge.get(i));
+    	      	   }
       Service findIcPoundService = carrierServiceDAO.getService(rate.getServiceId());
       if (findIcPoundService.getServiceType() == SERVICE_TYPE_LTL_POUND
           && findIcPoundService.getCarrierId().intValue() == ShiplinxConstants.CARRIER_GENERIC) {
@@ -2975,6 +3003,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     order.getPickup().setPackageTypeId(order.getPackageTypeId().getPackageTypeId());
     order.getPickup().setTotalWeight(order.getTotalWeight());
     order.getPickup().setTotalActualWeight(order.getTotalActualWeight());
+    order.getPickup().setOrderId(order.getId());
   }
 
   private CarrierService getCarrierServiceBean(String implementingClass) {
@@ -4071,9 +4100,21 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
   public void groupingServicesPoundRate(List<Rating> ratingList, ShippingOrder order) {
     int i, x, j;
+    double icTotalCost = 0,purolatorFriTotalCost = 0;
+    int removeIndex=0;
     for (i = 0; i < ratingList.size(); i++) {
       long serviceId = ratingList.get(i).getServiceId();
       Service service = getService(serviceId);
+      if(serviceId==1005 && ratingList.get(i).getCarrierId()==ShiplinxConstants.CARRIER_GENERIC){
+          // double total=ratingList.get(i).getTotal();
+            icTotalCost=ratingList.get(i).getTotalCost();
+           
+          }
+          if(serviceId==4100 && ratingList.get(i).getCarrierId()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
+              // double total=ratingList.get(i).getTotal();
+                purolatorFriTotalCost=ratingList.get(i).getTotalCost();
+                removeIndex=i;
+              }
       if (service != null && service.getServiceType() == SERVICE_TYPE_LTL_POUND) {
         List<LtlPoundRate> groupLtlPoundRate = new ArrayList<LtlPoundRate>();
         LtlPoundRate ltlPoundRate = null;
@@ -4269,6 +4310,9 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
       }
     }
+    if(icTotalCost !=0 && icTotalCost<purolatorFriTotalCost){
+        ratingList.remove(removeIndex);
+       }
   }
 
   public Rating setDefaultIC() {

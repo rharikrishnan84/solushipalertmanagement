@@ -718,4 +718,9 @@
 		<property name="carrierServiceDAO" ref="carrierServiceDAO" />
 		<property name="customerService" ref="customerService" />
 	</bean>
+	<bean id="purolatorFreightService" scope="prototype" class="com.meritconinc.shiplinx.carrier.purolatorFreight.PurolatorFreightAPI">
+ <property name="carrierServiceDAO" ref="carrierServiceDAO"/>
+ <property name="shippingDAO" ref="shippingDAO"/>
+ </bean>
+ 
 </beans>

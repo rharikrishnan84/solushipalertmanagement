@@ -147,7 +147,8 @@
 					</s:if>
 				 
 				</td>
-				   <td style="text-align: left;"><s:property value="message"/></td>
+				   <%-- <td style="text-align: left;"><s:property value="message"/></td> --%>
+				   <td style="text-align: left;"><pre><s:property value="message"/></pre></td>
 				      <td style="text-align: left;"><s:property value="systemLog"/></td>
 					  	<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 					   <td style="text-align: left;"><s:property value="eventUsername"/></td>

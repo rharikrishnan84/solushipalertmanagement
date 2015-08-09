@@ -96,6 +96,13 @@ public class Business {
 	
 	/* For custom business markup start*/
 		private int customMarkup;
+		 private String cancelPurolatorFreightEmail;
+		 	 public String getCancelPurolatorFreightEmail() {
+		 	 return cancelPurolatorFreightEmail;
+		 	 }
+		 	 public void setCancelPurolatorFreightEmail(String cancelPurolatorFreightEmail) {
+		 	 this.cancelPurolatorFreightEmail = cancelPurolatorFreightEmail;
+		 	 }
 		public int getCustomMarkup() {
 			return customMarkup;
 		}

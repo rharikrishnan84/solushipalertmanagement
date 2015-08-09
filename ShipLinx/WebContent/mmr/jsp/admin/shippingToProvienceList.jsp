@@ -1,5 +1,13 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <html>
+<script type="text/javascript">
+ $(document).ready(function() {
+		var form = document.userform;
+		var code = form.elements['shippingOrder.toAddress.postalCode'].value;
+		if(code != "" && code != null)
+		getAddressSuggestTo();
+	});
+</script> 
 <body>
 	<s:hidden name="ssss" id="aaa" value="%{#session.shippingOrder.toAddress.countryCode}"/>
 	<s:set name="cName" value="%{#session.shippingOrder.toAddress.countryCode}"/>

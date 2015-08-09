@@ -1396,7 +1396,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 		 }
 		 
 		 if(business.getSubdomain().equals("")){
-			 addActionError(getText("Sub Domail  is Required"));
+			// addActionError(getText("Sub Domail  is Required"));
+			 addActionError(getText("Sub Domain  is Required"));
 			 i++;
 		 }else if(business.getSubdomain().length()>200){
 			 addActionError(getText("subdomain  length is too high must be less than  200 "));

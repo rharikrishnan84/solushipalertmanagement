@@ -1054,11 +1054,13 @@ var count=parseInt(prevQuantity);
 		<div class="form_buttons id="img_save_shipment">
 			<%-- <a href="javascript:updateShipment()"> <mmr:message messageId="label.btn.save.shipment"/></a> --%>
 			<a href="javascript:updateShipment()"> 
-			<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
-			<mmr:message messageId="label.btn.save.shipment"/>
+			<%-- <s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}"> --%>
+			<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin')|| #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager'))}">
+			<mmr:message messageId="label.add.button.save.shipment"/>
 			</s:if>
 			<s:else>
-			<mmr:message messageId="label.add.button.save.shipment"/>
+			<mmr:message messageId="label.btn.save.shipment"/>
+			
 			</s:else>
 			
 			</a>
@@ -1071,11 +1073,13 @@ var count=parseInt(prevQuantity);
 			<div class="form_buttons id="img_get_rates" style=" width:206px; float:right !important;">
 				<%-- <div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()"><mmr:message messageId="btn.save.shipment"/></a></div> --%>
 				<div align="right" style="float:left !important;"><a href="javascript:saveCurrentShipment()">
-				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}">
-				<mmr:message messageId="btn.save.shipment"/>
+				<%-- <s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin'))}"> --%>
+				<s:if test="%{(#session.ROLE.contains('busadmin') || #session.ROLE.contains('sysadmin')|| #session.ROLE.contains('sales')||#session.ROLE.contains('solutions_manager'))}">
+				
+				<mmr:message messageId="label.add.button.save.shipment"/>
 				</s:if>
 				<s:else>
-				<mmr:message messageId="label.add.button.save.shipment"/>
+				<mmr:message messageId="btn.save.shipment"/>
 				</s:else>
 				</a></div>
 				<div align="left" style="float:left !important;" id="get_rates_td"><a href="javascript:getRates()" onclick="return (validateOrder(3,1))"><mmr:message messageId="btn.getrates"/></a></div>
