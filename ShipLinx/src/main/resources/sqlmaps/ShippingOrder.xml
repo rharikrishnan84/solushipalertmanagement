@@ -747,8 +747,8 @@
 	 		</selectKey>			
 	</insert>
 	<insert id="addCharge" parameterClass="com.meritconinc.shiplinx.model.Charge"> 
-			  insert into charges(charge_id,order_id, name,   cost,   charge,     currency,   discount_amount,    edi_invoice_number, status,     charge_code,    charge_code_level_2,tariff_rate,  type, carrier_id,  carrier_name,quote_charge_id,cost_currency,charge_currency,exchange_rate,charge_group_id) 
-              values ((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),  #orderId#,  #name#, #cost#, #charge#,   #currency#, #discountAmount#,   #ediInvoiceNumber#, #status#,   #chargeCode#,   #chargeCodeLevel2#, #tariffRate#, #type#, #carrierId#, #carrierName#,#quoteChargeId#,#costcurrency#,#chargecurrency#,#exchangerate#,#chargeGroupId#)
+			  insert into charges(charge_id,order_id, name,   cost,   charge,     currency,   discount_amount,    edi_invoice_number, status,     charge_code,    charge_code_level_2,tariff_rate,  type, carrier_id,  carrier_name,quote_charge_id,cost_currency,charge_currency,exchange_rate,charge_group_id,commissionable) 
+              values ((select ct.charge_id from charge_type ct where ct.charge_name=#name# limit 1),  #orderId#,  #name#, #cost#, #charge#,   #currency#, #discountAmount#,   #ediInvoiceNumber#, #status#,   #chargeCode#,   #chargeCodeLevel2#, #tariffRate#, #type#, #carrierId#, #carrierName#,#quoteChargeId#,#costcurrency#,#chargecurrency#,#exchangerate#,#chargeGroupId#,#isCommissonable#)
   			<selectKey resultClass="long" type="post" keyProperty="chargeId" >select LAST_INSERT_ID() as value
  
   	 		</selectKey>			

@@ -1971,8 +1971,14 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												</span>
 											</td>
 											<td style="width:30px !important; text-align:center;">
+											<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')}">
 												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
 												<s:hidden name="commissionableHid" value="" />
+												</s:if>
+												<s:else>
+												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
+												<s:hidden name="commissionableHid" value="" />
+												</s:else>
 										   </td>
 										</s:if>
 										<s:else>
@@ -2041,8 +2047,14 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
  											</s:if>
 											<td></td>
 											<td style="width:30px !important; text-align:center;">
+											<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')}">
 												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
 												<s:hidden name="commissionableHid" value="" />
+												</s:if>
+												<s:else>
+												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
+												<s:hidden name="commissionableHid" value="" />
+												</s:else>
 										   </td>
 											
 										</s:else>

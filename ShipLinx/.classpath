@@ -101,9 +101,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail-1.4.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_45"/>
-	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.37/lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.37/lib/servlet-api.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/Opta2000.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jersey-bundle-1.8.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activation.jar"/>
@@ -140,5 +138,16 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.ext.xml.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.43/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.43/lib/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="D:/apache-tomcat-6.0.43/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/antlr-runtime-3.5.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jstyleparser-1.20.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/nekohtml-1.9.21.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.7.7.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/unbescape-1.1.0.RELEASE.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xercesImpl-2.11.0.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

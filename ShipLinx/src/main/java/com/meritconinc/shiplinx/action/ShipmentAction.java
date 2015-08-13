@@ -5822,6 +5822,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			          carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance().findBean(
 			              "carrierServiceDAO");
 			          Carrier chargeCarrier = carrierServiceDAO.getCarrier(newCharge.getCarrierId());
+			          
+			          if(newCharge.getChargeCode()!=null&&newCharge.getChargeCode().equalsIgnoreCase("TAX")) {
+			        	 newCharge.setisCommissonable(false);
+			          } else{
+			        	  	newCharge.setisCommissonable(true);
+			        	    }
 			          newCharge.setCarrierName(chargeCarrier.getName());
 			          newCharge.setChargeCode(carrierCharge.getChargeCode());
 			          newCharge.setOrderId(this.getSelectedOrder().getId());
@@ -5918,6 +5924,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			              newCharge.setStatusText(ShiplinxConstants.CHARGE_STATUS_TEXT[2]);
 			            else
 			              newCharge.setStatusText(chargeStatusText);
+			            
+			            if(c.getChargeCode()!=null&&c.getChargeCode().equalsIgnoreCase("TAX")) {
+			            				            	newCharge.setisCommissonable(false);
+			            				            }
+			            				            else{
+			            				            	newCharge.setisCommissonable(true);
+			            				            }
 			            newCharge.setCost(c.getCost());
 			            newCharge.setCharge(c.getCharge());
 			            newCharge.setDiscountAmount(c.getDiscountAmount());
