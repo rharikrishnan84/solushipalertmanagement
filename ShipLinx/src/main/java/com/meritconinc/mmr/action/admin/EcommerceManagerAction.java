@@ -36,6 +36,7 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import sun.org.mozilla.javascript.internal.EcmaError;
 
 
 public class EcommerceManagerAction extends BaseAction implements  
@@ -52,6 +53,15 @@ ServletRequestAware, ServletResponseAware {
 	private CustomerManager customerService;
 	private int shipCustomerFlag;
 	private int packageMapFlag;
+	
+	
+	private String freeShipLable;
+	private String markupLable;
+	private Customer customer;
+	
+	
+	
+	
 	@Override
 	public void setServletResponse(HttpServletResponse arg0) {
 		// TODO Auto-generated method stub
@@ -120,6 +130,16 @@ ServletRequestAware, ServletResponseAware {
 		}else if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
 			st.setCustomerId(UserUtil.getMmrUser().getCustomerId());
 			ecommerceStoreList=eCommerceDAO.listEcommerceStores(st);
+			if(ecommerceStoreList!=null && UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN) 
+												&& ecommerceStoreList.size()>0){
+											this.ecommerceStore=ecommerceStoreList.get(0);
+											Long storeId=ecommerceStore.getEcommerceStoreId();
+											getSession().put("storeId",storeId.toString());
+									if(storeId!=null){
+										 editStore();
+										 return "success1";
+									}
+								}
 		}
 		return SUCCESS;
 	}
@@ -215,6 +235,32 @@ ServletRequestAware, ServletResponseAware {
 		 Timestamp updatedAt = new Timestamp(new Date().getTime()); 
  		 ecommerceStore.setUpdatedAt(updatedAt);
 		eCommerceDAO.updateEcommerceStore(ecommerceStore);
+		
+		if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
+								boolean b=validateCustomerStore(store);
+								if(b){
+								 //add free ship details:
+									
+									 if(store.isFreeshipRequired() && store.getFreeShipType()!=null && store.getFreeShipType()==1){
+										 store.setWeight(store.getFlatRate());
+										 store.setFlatRate(null);
+									 }
+									 if(store.getMarkupLevel()!=null && store.getMarkupLevel()==2){
+										 store.setMarkupPerc(store.getFlatMarkup());
+										 store.setFlatMarkup(null); 
+									 }
+								
+									 store.setEcommerceStoreId(ecommerceStore.getEcommerceStoreId());
+									eCommerceDAO.updateFreeShiping(store);
+								}else{
+									ecommerceStore=store;
+									//getSession().remove("edit");
+									return INPUT;
+								}
+						 }
+					
+		
+		
 	    if(UserUtil.getMmrUser()!=null &&eCommerceDAO.getEcommerceStoreById(ecommerceStore.getEcommerceStoreId()).getAccessKey()!=null 
 	    		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
 	    	UpdateEcommerceService(ecommerceStore.getEcommerceStoreId());
@@ -227,6 +273,73 @@ ServletRequestAware, ServletResponseAware {
 		return SUCCESS;
 	}
 
+	
+	
+	
+	
+
+	private boolean validateCustomerStore(EcommerceStore ecommerceStore2) {
+				// TODO Auto-generated method stub
+				int i=0;
+		 			if(ecommerceStore2!=null){
+		 				if(ecommerceStore2.isFreeshipRequired()){
+					if(ecommerceStore2.getFlatRate()!=null && ecommerceStore2.getFlatRate()<0  && ecommerceStore2.getFreeShipType()==1){
+						freeShipLable="Weight(lb)";
+						addActionError("Invalid Value for Weight(lb).");
+						i++;
+					}else if(ecommerceStore2.getFlatRate()!=null && ecommerceStore2.getFlatRate()<0   && ecommerceStore2.getFreeShipType()==2){
+						freeShipLable="Cost ($)";
+						addActionError("Invalid Value for Cost ($).");
+						i++;
+					}  
+					
+					if(ecommerceStore2.getFlatRate()==null && ecommerceStore2.getFlatRate()<0  && ecommerceStore2.getFreeShipType()!=null &&ecommerceStore2.getFreeShipType()==1){
+						freeShipLable="Weight (lb)";
+						addActionError("Please Enter  Value for Weight (lb).");
+						i++;
+					}else if(ecommerceStore2.getFlatRate()==null && ecommerceStore2.getFlatRate()<0  &&ecommerceStore2.getFreeShipType()!=null && ecommerceStore2.getFreeShipType()==1){
+						freeShipLable="Cost ($)";
+						addActionError("Please Enter  Value for Cost ($).");
+						i++;
+					} 
+					
+					
+					
+		 		}
+					if(ecommerceStore2.getFlatMarkup()!=null && ecommerceStore2.getFlatMarkup()<0  && ecommerceStore2.getMarkupLevel()==1){
+						addActionError("Enter invalid Value for Flat Rate ($).");
+						i++;
+					}else if(ecommerceStore2.getFlatMarkup() !=null && ecommerceStore2.getFlatMarkup()<0   && ecommerceStore2.getMarkupLevel()==2){
+						addActionError("Enter invalid Value for Percentage (%).");
+						i++;
+					}
+					
+					if(ecommerceStore2.getFlatMarkup()==null && ecommerceStore2.getFlatMarkup()<0  &&  ecommerceStore2.getMarkupLevel()==1){
+						addActionError("Please Enter invalid Value for FlatRate ($).");
+						i++;
+					}else if(ecommerceStore2.getFlatMarkup()==null && ecommerceStore2.getFlatMarkup()<0  &&  ecommerceStore2.getMarkupLevel()==2){
+						addActionError("Please Enter invalid Value for Percentage (%).");
+						i++;
+					}
+				}
+				if(i==0){
+					return true;
+				}
+				
+				if(ecommerceStore2.getMarkupLevel()==1){
+					markupLable="Flat Rate ($)";
+					
+				}else{
+					markupLable="Percentage (%)";
+				}
+				return false;
+		 	}
+
+
+
+
+	
+	
 	/**
 	 * validate store details
 	 * @param ecommerceStore2
@@ -339,6 +452,9 @@ ServletRequestAware, ServletResponseAware {
 	public String editStore(){
 		
 		String storeId=request.getParameter("storeId");
+		if(storeId==null){
+									storeId=(String) getSession().get("storeId");
+								}
 		getSession().put("edit","true");
 		getSession().put("storeId",storeId);
 		if(storeId!=null){
@@ -359,7 +475,33 @@ ServletRequestAware, ServletResponseAware {
 				}else{
 					packageMapFlag=2;
 				}
-				 
+				
+
+			}
+						if(ecommerceStore.getFreeShipType()!=null && ecommerceStore.getFreeShipType()==2){
+							freeShipLable="Cost $";
+						}else{
+						freeShipLable="Weight (lb)";
+						}
+						if(ecommerceStore.getMarkupLevel()!=null && ecommerceStore.getMarkupLevel()==2){
+							
+							markupLable="Percentage (%)";	
+						}else{
+							markupLable="Flat Rate ($)";
+						}
+						 if(ecommerceStore.getFlatRate()==null && ecommerceStore.getWeight()!=null){
+								ecommerceStore.setFlatRate(ecommerceStore.getWeight());
+								
+					     }
+						 if(ecommerceStore.getFlatMarkup()==null &&  ecommerceStore.getMarkupPerc()!=null){
+							 ecommerceStore.setFlatMarkup(ecommerceStore.getMarkupPerc());
+						 }
+						 try {
+							customer=customerService.getCustomerInfoByCustomerId(ecommerceStore.getCustomerId());
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+			 
+			 
 				
 			}
 		}
@@ -406,5 +548,32 @@ ServletRequestAware, ServletResponseAware {
 	public void setPackageMapFlag(int packageMapFlag) {
 		this.packageMapFlag = packageMapFlag;
 	}
+	
+
+	public String getFreeShipLable() {
+		return freeShipLable;
+	}
+
+	public void setFreeShipLable(String freeShipLable) {
+		this.freeShipLable = freeShipLable;
+	}
+
+	public String getMarkupLable() {
+		return markupLable;
+	}
+
+	public void setMarkupLable(String markupLable) {
+		this.markupLable = markupLable;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+	
 
 }

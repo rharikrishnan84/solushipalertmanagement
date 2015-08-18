@@ -1578,7 +1578,7 @@
         </action>
         
         <action name="addPackageMap" method="addPackageMap" class="productManagerAction">
-             <result type="redirectAction" name="success">packageMap</result>
+            <result type="tiles" name="success">packageMap</result>
               <result type="tiles" name="input">packageMap</result>
         </action>
         <action name="edit.packageMap" method="editPackageMap" class="productManagerAction">
@@ -2130,6 +2130,7 @@
  
  <action name="listEcom.store" method="listStore" class="eCommerceManagerAction">
    <result type="tiles" name="success">list.store</result>
+   <result type="tiles" name="success1">add.store</result>
  </action>
  <action name="newEcom.store" method="newStore" class="eCommerceManagerAction">
    <result type="tiles" name="success">add.store</result>
@@ -2137,6 +2138,7 @@
  <action name="saveEcom.store" method="saveStore" class="eCommerceManagerAction">
    <result type="tiles" name="success">list.store</result>
    <result type="tiles" name="input">add.store</result>
+    <result type="tiles" name="success1">add.store</result>
  </action>
  <action name="editEcom.store" method="editStore" class="eCommerceManagerAction">
    <result type="tiles" name="success">add.store</result>

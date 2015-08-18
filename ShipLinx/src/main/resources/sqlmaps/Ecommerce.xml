@@ -32,6 +32,17 @@
 		<result property="createdAt" column="created_at"/>
 		<result property="installedAt" column="installed_at"/>
 		<result property="updatedAt" column="updated_at"/>
+		
+		<result property="flatRate" column="flat_rate"/>
+		<result property="weight" column="weight"/>
+ 		<result property="compareFreeship" column="compare_free_ship"/>
+ 		<result property="freeShipType" column="free_ship_type"/>
+		<result property="markupType" column="markup_type"/>
+		<result property="markupPerc" column="markup_perc"/>
+		<result property="flatMarkup" column="flat_markup"/>
+		<result property="markupLevel" column="markup_level"/>
+		<result property="freeshipRequired" column="enable_freeship"/>
+		
 	</resultMap>
  
 	 
@@ -149,6 +160,35 @@
 	<update id="deleteEcommerceStoreById">
 	    delete from ecommerce_store where  store_ecom_id= #storeId#
 	</update>
+	
+	
+	
+	<update id="updateFreeShiping">
+	    
+	    update ecommerce_store set
+ 
+	            flat_rate=#flatRate#,
+ 
+	            weight=#weight#,
+	 
+	            markup_perc=#markupPerc#,
+	       
+                 flat_markup=#flatMarkup#,
+	      
+		            free_ship_type=#freeShipType#,
+		            
+	            markup_type=#markupType#,
+	   
+	   			markup_level=#markupLevel#,
+	   			
+ 	            compare_free_ship=#compareFreeship#,
+ 	            
+ 	            enable_freeship=#freeshipRequired#
+	     
+	    where store_ecom_id=#ecommerceStoreId#
+</update>
+	
+	
 	<!-- UPDATE END  -->
 	
 	<!-- DELETE START -->

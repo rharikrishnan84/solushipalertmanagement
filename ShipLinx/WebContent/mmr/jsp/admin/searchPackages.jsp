@@ -250,10 +250,17 @@
 	<th style="width: 341px;!important"><mmr:message messageId="label.ghead.packagename" /> </th>
 	
 	<th style="width: 250px;!important" ><mmr:message messageId="label.ghead.packagedesc" /> </th>
-	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.length" /> </th>
+	<%-- <th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.length" /> </th>
 	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.width" /> </th>
 	<th style="width: 100px;!important; text-align:right; padding-right:10px;"><mmr:message messageId="label.ghead.height" /> </th>
-	<th style="width: 110px;!important; text-align:right; padding-right:10px;" ><mmr:message messageId="label.ghead.weight" /> (INT)</strong></th>
+	
+		<th style="width: 110px;!important; text-align:right; padding-right:10px;" ><mmr:message messageId="label.ghead.weight" /> (INT)</strong></th> --%>
+	<th style="width: 100px;!important; text-align:left; padding-right:10px;"><mmr:message messageId="label.ghead.length" /> </th>
+	<th style="width: 100px;!important; text-align:left; padding-right:10px;"><mmr:message messageId="label.ghead.width" /> </th>
+	<th style="width: 100px;!important; text-align:left; padding-right:10px;"><mmr:message messageId="label.ghead.height" /> </th>
+	<th style="width: 110px;!important; text-align:left; padding-right:10px;" ><mmr:message messageId="label.ghead.weight" /> (INT)</strong></th>
+	
+ 	
 	
 	</tr>
 	</thead>
@@ -264,20 +271,23 @@
             <s:if test="#rowstatus.even1 == true">
 	        	<td class="even1" width="1%"><input class="dataTable-checkbox" type="checkbox" name="searchPackageCheckBox" value="<s:property value='packageTypeId'/>"/></td>
 	            <td style="text-align: left;"><s:property value="packageName"/></td>
-				<td style="text-align: left;" <span title="<s:property value="packageDesc"/>"></span><div style="width:250px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="packageDesc"/></div></td>
-	            <td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageLength"/></fmt:formatNumber>  </td>
-	            <td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWidth"/></fmt:formatNumber></td>
-				<td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageHeight"/></fmt:formatNumber></td>
-				<td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWeight"/></fmt:formatNumber></td>
+				<td style="text-align: left;" <span title="<s:property value="packageDesc"/>"></span><div style="width:250px !important;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="packageDesc"/></div>></td>
+	            <td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageLength"/></fmt:formatNumber>  </td>
+            <td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWidth"/></fmt:formatNumber></td>
+				<td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageHeight"/></fmt:formatNumber></td>
+				<td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWeight"/></fmt:formatNumber></td>
+ 			
 			</s:if>
 			<s:else>
 				 <td class="odd1" width="1%"><input class="dataTable-checkbox" type="checkbox" name="searchPackageCheckBox" value="<s:property value='packageTypeId'/>"/></td>
 	            <td style="text-align: left;"><s:property value="packageName"/></td>
-				<td style="text-align: left;"<span title="<s:property value="packageDesc"/>"></span><div style="width:350px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="packageDesc"/></div></td>
-	            <td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageLength"/></fmt:formatNumber>  </td>
-	            <td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWidth"/></fmt:formatNumber></td>
-				<td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageHeight"/></fmt:formatNumber></td>
-				<td style="text-align: right;"><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWeight"/></fmt:formatNumber></td>
+			 	<td style="text-align: left;"<span title="<s:property value="packageDesc"/>"></span><div style="width:350px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="packageDesc"/></div></td>
+ 	          	<td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageLength"/></fmt:formatNumber>  </td>
+	            <td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWidth"/></fmt:formatNumber></td>
+				<td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageHeight"/></fmt:formatNumber></td>
+				<td ><fmt:formatNumber pattern="###.##" minFractionDigits="2" maxFractionDigits="2"><s:property value="packageWeight"/></fmt:formatNumber></td>
+ 			
+			
 			</s:else>
 
             </tr>

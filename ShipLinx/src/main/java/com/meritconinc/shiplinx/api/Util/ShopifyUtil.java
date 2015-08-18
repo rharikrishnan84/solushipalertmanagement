@@ -133,12 +133,18 @@ public class ShopifyUtil /*implements Runnable */ {
 	public static double getTotalCharge(List<Charge> charges) {
 		// TODO Auto-generated method stub
 		double tt=0;
-		for(Charge ch:charges){
-			tt+=ch.getCharge();
+		if(charges!=null && charges.size()>0){
+									
+									for(Charge ch:charges){
+										tt+=ch.getCharge();
+									}
+									return tt*100;
+								}else{
+									return 0.0d;// free shipping
 		}
-		return tt*100;
 	}
-
+	
+	
 	public static String getmaxDeliveryDate(int transitDays) {
 		// TODO Auto-generated method stub
 

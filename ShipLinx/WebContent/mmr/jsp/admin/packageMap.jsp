@@ -284,9 +284,13 @@ function deletePackageMap(){
     <thead>
 	 <tr>
 			<th><input id="check_all" type="checkbox" /></th>
-			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.product.name"/></span></th>
+			<%-- <th><span style="width:250px !important; float:left;"><mmr:message messageId="label.product.name"/></span></th>
 			<th><span style="width:250px !important; float:left;"><mmr:message messageId="label.package.name"/></span></th>
-			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.pieces.number"/></span></th>
+			<th><span style="width:120px !important; float:left;"><mmr:message messageId="label.pieces.number"/></span></th> --%>
+			<th><span style="width:250px !important; float:left;text-align: left;"><mmr:message messageId="label.product.name"/></span></th>
+			<th><span style="width:250px !important; float:left;text-align: left;"><mmr:message messageId="label.package.name"/></span></th>
+			<th><span style="width:120px !important; float:left;text-align: left;"><mmr:message messageId="label.pieces.number"/></span></th>
+			
 			
 		</tr>
 	</thead>	
@@ -300,9 +304,15 @@ function deletePackageMap(){
 			 <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="productPackageId"/>"/> 
 	             </td>
 			  
-			   <td ><s:property value="product.productName"/></td>
+			   <%-- 	   <td ><s:property value="product.productName"/></td>
 				<td><s:property value="packages.packageName"/></td>
-	            <td><s:property value="quanity"/></td>
+	            
+	            <td><s:property value="quanity"/></td> --%>
+	             <td><s:property value="quanity"/></td> --%>
+	            <td style="padding-left: 3px;"><s:property value="product.productName"/></td>
+				<td style="padding-left: 3px;"><s:property value="packages.packageName"/></td>
+	            <td style="padding-left: 3px;"><s:property value="quanity"/></td>
+ 	            
 	            
 	            </s:if>
 			<s:else>
@@ -310,9 +320,14 @@ function deletePackageMap(){
 		        <input  class="dataTable-checkbox" type="checkbox" name="searchUserCheckBox" value="<s:property value="productPackageId"/>"/> 
 	             </td>
 			  
-			   <td ><s:property value="product.productName"/></td>
+			   		 <%--   <td ><s:property value="product.productName"/></td>	
 				<td><s:property value="packages.packageName"/></td>
-	            <td><s:property value="quanity"/></td>
+	            <td><s:property value="quanity"/></td> --%>
+	             <td><s:property value="quanity"/></td> --%>
+	            <td style="padding-left: 3px;"><s:property value="product.productName"/></td>
+				<td style="padding-left: 3px;"><s:property value="packages.packageName"/></td>
+	            <td style="padding-left: 3px;"><s:property value="quanity"/></td>
+ 	            
 	            
 			</s:else>
             </tr>			

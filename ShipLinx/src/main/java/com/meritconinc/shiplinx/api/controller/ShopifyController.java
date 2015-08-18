@@ -59,6 +59,15 @@ import com.meritconinc.shiplinx.service.ProductManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import com.google.gson.Gson;
+import com.meritconinc.shiplinx.model.Charge;
+ 
+
+
 public class ShopifyController implements Runnable {
 
 	private static final Logger log = LogManager
@@ -114,44 +123,52 @@ public class ShopifyController implements Runnable {
 	 * @throws JSONException
 	 */
 	public String castResponceForShopify(List<Rating> ratingList,
-			ShippingOrder order, String storeurl)
+			ShippingOrder order, String storeurl, EcommerceStore store2, ShopifyRateRequest shopifyRateRequest2)
 			throws org.json.JSONException, JSONException {
 		// TODO Auto-generated method stub
 		List<ShopifyRateResponce> shopifyResponceList = new ArrayList<ShopifyRateResponce>();
 		List<Rating> filtedRate = getFilteredRate(ratingList, storeurl);
-		if (ratingList != null && filtedRate.size() > 0) {
+				filtedRate=this.applyFreeShipMarkup(filtedRate,store2,order,shopifyRateRequest2);
+		 		if (filtedRate != null && filtedRate.size() > 0) {
+
 			for (Rating rate : filtedRate) {
 
 				ShopifyRateResponce shopifyresponce = new ShopifyRateResponce();
 				shopifyresponce.setCurrency(order.getCurrency());
 				shopifyresponce.setService_code(Long.toString(rate
 						.getServiceId()));
-				shopifyresponce.setTotal_price(ShopifyUtil.getTotalCharge(rate
-						.getCharges()));
-				shopifyresponce.setService_name(rate.getCarrierName() + "-"
-						+ rate.getServiceName());
-				shopifyresponce.setMax_delivery_date(ShopifyUtil
-						.getminDeliveryDate(rate.getTransitDays()));
-				/*
-				 * shopifyresponce.setMin_delivery_date(getminDeliveryDate(rate
-				 * .getTransitDaysMin()));
-				 */
-				shopifyresponce.setMin_delivery_date(shopifyresponce
-						.getMax_delivery_date());
+				shopifyresponce.setTotal_price(rate.getTotalChargeLocalCurrency());
+												if(rate.getTransitDays()!=0 && rate.getTransitDays()>1){
+													shopifyresponce.setService_name(rate.getServiceName()  +" -  "+rate.getTransitDays() +" Days ");
+												}else if(rate.getTransitDays()==1){
+													shopifyresponce.setService_name(rate.getServiceName()  +" -  "+rate.getTransitDays() +" Day ");
+												}else{
+													shopifyresponce.setService_name(rate.getServiceName());
+												}
 				shopifyResponceList.add(shopifyresponce);
 				System.out.println(shopifyresponce.getService_name() + "====>"
 						+ shopifyresponce.getTotal_price() + "/- "
 						+ shopifyresponce.getCurrency());
 			}
 		}
-		JSONObject jsonresponce = new JSONObject();
-		jsonresponce.put("rates", shopifyResponceList);
+
+		 		
+				JSONObject jsonresponce = new JSONObject(shopifyResponceList);
+								 String jsonresString=jsonresponce.toString();
+								
+								Gson gs=new Gson();
+								
+								String js=gs.toJson(shopifyResponceList);
+				
 		Long ss = (Long) ActionContext.getContext().getSession()
 				.get("startTime");
 		Long dd = System.currentTimeMillis();
 		double ddd = (dd - ss) * 0.001d;
 		log.debug(ddd + " Seconds");
-		return jsonresponce.toString();
+		String jsons="{ \"rates\":"+js+"}";
+						System.out.println(jsons);
+						return jsons;
+	
 	}
 
 	/**
@@ -1129,6 +1146,207 @@ public class ShopifyController implements Runnable {
 
 	public void setPackageMap(boolean packageMap) {
 		this.packageMap = packageMap;
+	}
+	
+	
+	
+	
+	
+
+	public List<Rating> applyFreeShipMarkup(List<Rating> ratingList, EcommerceStore store, ShippingOrder order, ShopifyRateRequest shopifyRateRequest2) {
+		// TODO Auto-generated method stub
+		//free ship setting
+		
+		List<Rating> rates=null;
+		if(order!=null && store!=null    && ratingList!=null && ratingList.size()>0){
+			
+			ratingList=setFinalRates(ratingList);
+			rates=ratingList;
+			if(rates!=null && rates.size()>0){
+			
+			
+				if(store.getMarkupLevel()!=null && store.getMarkupType()!=null && store.getMarkupLevel()==1){
+					if(store.getMarkupType()==1){
+						ratingList=applyMarkpByFlatRate(store.getFlatMarkup(),true,ratingList);
+					}else if(store.getMarkupType()==2){
+						ratingList=applyMarkpByFlatRate(store.getFlatMarkup(),false,ratingList);
+					}
+					
+				}else if(store.getMarkupLevel()!=null && store.getMarkupType()!=null && store.getMarkupLevel()==2){
+					if(store.getMarkupType()==1){
+						ratingList=applyMarkupByPerc(store.getMarkupPerc(),true,ratingList);
+					}else if(store.getMarkupType()==2){
+						ratingList=applyMarkupByPerc(store.getMarkupPerc(),false,ratingList);
+					}
+				}
+					rates=ratingList;
+				
+		}
+			
+			if(store.isFreeshipRequired()){
+				//free shipping
+				if(store.getCompareFreeship()!=null && store.getFreeShipType()!=null 
+						&& store.getWeight()!=null && store.getFreeShipType()==1){ // weight based
+				 
+					
+			    double totalWeight=getTotalWeightFromOrder(shopifyRateRequest2.getItems());	
+			      if(store.getCompareFreeship()==2 && totalWeight>store.getWeight()){ 
+			    	   rates=applyFreeRates(ratingList,store);
+			      }else if(store.getCompareFreeship()==1 && totalWeight<store.getWeight()){
+			    	  rates=applyFreeRates(ratingList,store);
+			      }
+			    	
+			    }else if(store.getFreeShipType()!=null && store.getFlatRate()!=null && store.getFreeShipType()==2){ // cost based 
+			    	double totalCost=getTotalCostFromRequest(shopifyRateRequest2);
+		    	 if(store.getCompareFreeship()!=null && store.getFlatRate()!=null
+		    			 && store.getCompareFreeship()==2 && totalCost>store.getFlatRate()){ 
+			    	   rates=applyFreeRates(ratingList,store);
+				      }else if(store.getCompareFreeship()!=null && store.getFlatRate()!=null
+				    		  && store.getCompareFreeship()==1 && totalCost<store.getFlatRate()){
+				    	  rates=applyFreeRates(ratingList,store);
+				      }
+			    }else{
+					rates=ratingList;
+				}
+			    	
+			}
+			
+			
+		}
+		return rates;
+	}
+
+	/**
+	 * Markup or down by perc
+	 * @param markupPerc
+	 * @param b
+	 * @param ratingList
+	 * @return
+	 */
+	private List<Rating> applyMarkupByPerc(Double markupPerc, boolean b, List<Rating> ratingList) {
+		// TODO Auto-generated method stub
+		if(ratingList!=null && ratingList.size()>0 && b){ //markup 
+			for(Rating rate:ratingList){
+				double totalcharge=rate.getTotalChargeLocalCurrency();	
+				if(markupPerc!=null && markupPerc>0){
+					double value=markupPerc/100;
+					value=value*totalcharge;
+					totalcharge+=value;
+				}
+				rate.setTotalChargeLocalCurrency(totalcharge);
+			}
+		}else if(ratingList!=null && ratingList.size()>0){ //markdown
+			for(Rating rate:ratingList){
+				double totalcharge=rate.getTotalChargeLocalCurrency();	
+				System.out.println("total :"+totalcharge);
+				if(markupPerc!=null && markupPerc>0){
+					double value=markupPerc/100;
+					value=value*totalcharge;
+					totalcharge-=value;
+				}
+				rate.setTotalChargeLocalCurrency(totalcharge);
+			}
+		}
+		return ratingList;
+	}
+
+	private List<Rating> applyMarkpByFlatRate(Double flatMarkup, boolean b, List<Rating> ratingList) {
+		// TODO Auto-generated method stub
+
+		if(ratingList!=null && ratingList.size()>0 && b){ //markup 
+		for(Rating rate:ratingList){
+				double totalcharge=rate.getTotalChargeLocalCurrency();	
+				if(flatMarkup!=null && flatMarkup>0){
+					double d=flatMarkup*100;
+					totalcharge+=d;
+				}
+				rate.setTotalChargeLocalCurrency(totalcharge);
+			}
+		}else if(ratingList!=null && ratingList.size()>0){ //markdown
+			for(Rating rate:ratingList){
+				double totalcharge=rate.getTotalChargeLocalCurrency();	
+				System.out.println("total :"+totalcharge);
+				if(flatMarkup!=null && flatMarkup>0){
+					double d=flatMarkup*100;
+					totalcharge-=d;
+				}
+				rate.setTotalChargeLocalCurrency(totalcharge);
+			}
+		}
+		return ratingList;
+	}
+
+	private List<Rating> setFinalRates(List<Rating> ratingList) {
+		// TODO Auto-generated method stub
+		if(ratingList!=null && ratingList.size()>0){
+			for(Rating rate :ratingList){
+				double totalCharge=ShopifyUtil.getTotalCharge(rate.getCharges());
+				rate.setTotalChargeLocalCurrency(totalCharge);
+			}
+		}
+		return ratingList;
+	}
+
+	/**
+	 * Appling Free shipping
+	 * @param ratingList
+	 * @param store 
+	 * @return
+	 */
+	private List<Rating> applyFreeRates(List<Rating> ratingList, EcommerceStore store) {
+		// TODO Auto-generated method stub
+		if(!store.isBothService()){
+			if(ratingList!=null && ratingList.size()>0){
+				for(Rating rate:ratingList){
+					log.debug("Free shipment of "+rate.getTotalChargeLocalCurrency());
+					rate.setCharges(new ArrayList<Charge>());
+					rate.setTotalChargeLocalCurrency(0.0d);
+				}
+			}
+		}else if(ratingList!=null && ratingList.size()>0){
+		List<Rating>	cheptest = ShopifyUtil.getChepestRate(ratingList);
+			if(cheptest!=null && cheptest.size()>0){
+				for(Rating rate:cheptest){
+					log.debug("Free shipment of "+rate.getTotalChargeLocalCurrency());
+					rate.setCharges(new ArrayList<Charge>());
+					rate.setTotalChargeLocalCurrency(0.0d);
+				}
+		}
+		}
+		
+		return ratingList;
+	}
+
+	private double getTotalCostFromRequest(
+			ShopifyRateRequest shopifyRateRequest2) {
+		// TODO Auto-generated method stub
+		double totalcost=0.0d;
+		if(shopifyRateRequest2!=null && shopifyRateRequest2.getItems()!=null && 
+				shopifyRateRequest2.getItems().size()>0){
+		for(Item item:shopifyRateRequest2.getItems()){
+				 double d=Double.parseDouble(item.getPrice());
+				 d=d*Long.parseLong(item.getQuantity());
+				 d=d/100;
+				 totalcost+=d;
+			}
+	     }
+		log.debug("Total cost spend :"+totalcost);
+		return totalcost;
+	}
+
+	private double getTotalWeightFromOrder(List<Item> list) {
+		// TODO Auto-generated method stub
+		double totweight=0.0d;
+		
+	if(list!=null && list.size()>0){
+	for(Item pack:list){
+			   double w=ShopifyUtil.gramToLBS(Double.parseDouble(pack.getGrams()));
+			    w=w*Long.parseLong(pack.getQuantity());
+				totweight+=w;
+			}
+		}
+		log.debug("Total package Weight :"+totweight);
+		return totweight;
 	}
 
 }

@@ -49,6 +49,88 @@ public class EcommerceStore {
 	 private String uninstallUrl;
 	 private Long webhookUnistallId;
 	 
+	 
+
+	 //free shipping and markup
+ 	 private Double flatRate;
+ 	 private Double weight;
+ 	 private String compareRate;
+ 	 private String compareWeight;
+ 	 private Long compareFreeship; //1 less than ; 2 greater than
+ 	 private Double markupPerc;
+ 	 private Double flatMarkup;
+ 	 private Long freeShipType; // 1 weight ; 2 cost $
+ 	 private Long markupType; // 1  mark up ; 2 mark down
+ 	 private Long markupLevel; //1 : markup by flat rate ; 2 markup by percentage;
+	 private boolean freeshipRequired;	 
+ 	 
+	 
+	public Double getFlatRate() {
+		return flatRate;
+	}
+	public void setFlatRate(Double flatRate) {
+		this.flatRate = flatRate;
+	}
+	public Double getWeight() {
+		return weight;
+	}
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+	public String getCompareRate() {
+		return compareRate;
+	}
+	public void setCompareRate(String compareRate) {
+		this.compareRate = compareRate;
+	}
+	public String getCompareWeight() {
+		return compareWeight;
+	}
+	public void setCompareWeight(String compareWeight) {
+		this.compareWeight = compareWeight;
+	}
+	public Long getCompareFreeship() {
+		return compareFreeship;
+	}
+	public void setCompareFreeship(Long compareFreeship) {
+		this.compareFreeship = compareFreeship;
+	}
+	public Double getMarkupPerc() {
+		return markupPerc;
+	}
+	public void setMarkupPerc(Double markupPerc) {
+		this.markupPerc = markupPerc;
+	}
+	public Double getFlatMarkup() {
+		return flatMarkup;
+	}
+	public void setFlatMarkup(Double flatMarkup) {
+		this.flatMarkup = flatMarkup;
+	}
+	public Long getFreeShipType() {
+		return freeShipType;
+	}
+	public void setFreeShipType(Long freeShipType) {
+		this.freeShipType = freeShipType;
+	}
+	public Long getMarkupType() {
+		return markupType;
+	}
+	public void setMarkupType(Long markupType) {
+		this.markupType = markupType;
+	}
+	public Long getMarkupLevel() {
+		return markupLevel;
+	}
+	public void setMarkupLevel(Long markupLevel) {
+		this.markupLevel = markupLevel;
+	}
+	public boolean isFreeshipRequired() {
+		return freeshipRequired;
+	}
+	public void setFreeshipRequired(boolean freeshipRequired) {
+		this.freeshipRequired = freeshipRequired;
+	}
 	public String getUrl() {
 		return url;
 	}

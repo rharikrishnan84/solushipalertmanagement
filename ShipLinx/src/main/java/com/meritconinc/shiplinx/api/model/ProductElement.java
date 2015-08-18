@@ -120,15 +120,7 @@ public class ProductElement {
 		return images;
 	}
 
-	private java.lang.Integer id;
-
- 	public void setId(java.lang.Integer id) {
-		this.id = id;
-	}
-
-	public java.lang.Integer getId() {
-		return id;
-	}
+	private Long id;
 
 	private java.lang.String updated_at;
 
@@ -166,6 +158,14 @@ public class ProductElement {
 
 	public void setVariants(List<VariantElement> variants) {
 		this.variants = variants;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }

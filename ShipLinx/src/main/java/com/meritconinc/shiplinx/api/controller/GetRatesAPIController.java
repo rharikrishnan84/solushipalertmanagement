@@ -127,7 +127,7 @@ public class GetRatesAPIController extends GenericRestServerResource implements
 						String storeurl = "https://"
 								+ shopifyRateRequest.getStoreName();
 						rateJson = shopifyShop.castResponceForShopify(
-								ratingList, order, storeurl);
+								ratingList, order, storeurl, store,shopifyRateRequest);
 					} catch (org.apache.struts2.json.JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

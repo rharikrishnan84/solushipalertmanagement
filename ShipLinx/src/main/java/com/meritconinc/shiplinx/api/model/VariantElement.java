@@ -64,16 +64,8 @@ public class VariantElement {
 		return position;
 	}
 
-	private java.lang.Integer weight;
-
- 	public void setWeight(java.lang.Integer weight) {
-		this.weight = weight;
-	}
-
-	public java.lang.Integer getWeight() {
-		return weight;
-	}
-
+	private Double weight;
+	
 	private java.lang.Object image_id;
 
  	public void setImage_id(java.lang.Object image_id) {
@@ -242,6 +234,14 @@ public class VariantElement {
 
 	public java.lang.Integer getOld_inventory_quantity() {
 		return old_inventory_quantity;
+	}
+
+	public Double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
 	}
 
 }

@@ -37,4 +37,6 @@ public interface EcommerceDAO {
     List<EcommerceLog> getEcommerceLogs(Long shopifyOrderId);
 
 	void UpdateServices(EcommerceStore store);
+	
+	void updateFreeShiping(EcommerceStore ecommerceStore);
 }

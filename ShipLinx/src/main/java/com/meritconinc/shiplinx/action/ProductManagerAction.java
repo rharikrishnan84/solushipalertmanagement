@@ -1284,15 +1284,18 @@ public class ProductManagerAction extends BaseAction implements Preparable,Servl
                   productPackageMap=new ProductPackageMap();
                   return INPUT;
                 }
+                addActionMessage(MessageUtil.getMessage("packageMap.save.successfully"));
                 productManagerService.addPackageMap(productPackageMap);
              }
            }else if(edit!=null && edit.equals("true")){
                 Long productPackageId=(Long) getSession().get("packageMapId1");
                 this.productPackageMap.setProductPackageId(productPackageId);
+                addActionMessage(MessageUtil.getMessage("packageMap.update.successfully"));
                 productManagerService.updateProductPackageMap(this.productPackageMap);
               getSession().remove("editPackageMap");
               getSession().remove("packageMapId1");
            }
+           packageMap();
            return SUCCESS;
          }
          public String deletePackageMap(){

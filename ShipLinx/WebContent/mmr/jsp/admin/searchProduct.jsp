@@ -386,7 +386,9 @@ var vkey = "";
 			<td title="<s:property value="productDescription"/>"><div style="width:380px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="productDescription"/></div></td>
 			<td><s:property value="productHarmonizedCode"/></td>
 			<td><s:property value="originCountry"/></td>
-			<td style="text-align: right;"><s:property value="unitPrice"/></td>
+			
+			<%-- <td style="text-align: right;"><s:property value="unitPrice"/></td> --%>
+ 			<td><s:property value="unitPrice"/></td>
 			
 		</tr>
 		</s:iterator>

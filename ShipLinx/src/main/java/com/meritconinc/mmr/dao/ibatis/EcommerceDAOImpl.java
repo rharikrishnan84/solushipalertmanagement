@@ -108,5 +108,12 @@ public class EcommerceDAOImpl extends SqlMapClientDaoSupport implements Ecommerc
 		
 		getSqlMapClientTemplate().update("getUpdateServicesShopify",store);
 	}
+	
+
+	@Override
+		public void updateFreeShiping(EcommerceStore ecommerceStore) {
+			// TODO Auto-generated method stub
+			getSqlMapClientTemplate().update("updateFreeShiping",ecommerceStore);
+		}
 
 }

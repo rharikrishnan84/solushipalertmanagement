@@ -174,8 +174,11 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 									+ order2.getFromAddress().getPhoneNo());
 							
 							log.debug("CREATING ORDER ");
+
+							order2.getToAddress().setEmailAddress(shopifyOrder.getEmail());
+							log.debug(order2.getToAddress().getEmailAddress());
 							carrierServiceManager.shipOrder(order2, orderRate);
-						    order2=shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(order2.getReferenceOne()),ShiplinxConstants.SHIPMENT_CANCELLED);
+							order2=shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(order2.getReferenceOne()),ShiplinxConstants.SHIPMENT_CANCELLED);
 							addLoggedEvent(order2,shopifyOrder);
 
 						}

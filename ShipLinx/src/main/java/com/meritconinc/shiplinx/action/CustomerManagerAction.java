@@ -608,9 +608,8 @@ public String execute() throws Exception {
   	          	 addActionError(getText("please select any business"));
   			      return INPUT;
   			}else{
-  			  if(customer.getBusinessId()==0){
-  				         customer.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
-  				 }
+   				         customer.setBusinessId(BusinessFilterUtil.setBusinessIdbyUserLevel());
+  				 
   			    			    
   				   getService().add(customer, null);
   				   if(businessId !=null &&(partnerId==null)

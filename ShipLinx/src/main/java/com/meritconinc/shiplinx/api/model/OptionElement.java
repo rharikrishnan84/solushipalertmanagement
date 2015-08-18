@@ -4,16 +4,8 @@
 package com.meritconinc.shiplinx.api.model;
 
 public class OptionElement {
-	private java.lang.Integer id;
-
- 	public void setId(java.lang.Integer id) {
-		this.id = id;
-	}
-
-	public java.lang.Integer getId() {
-		return id;
-	}
-
+	 
+	private Long id;
 	private java.lang.Integer position;
 
  	public void setPosition(java.lang.Integer position) {
@@ -52,6 +44,14 @@ public class OptionElement {
 
 	public java.lang.String getName() {
 		return name;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }
