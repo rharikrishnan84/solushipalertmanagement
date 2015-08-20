@@ -4104,6 +4104,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					 return ERROR;
 				 }
 		}
+		boolean isCancel=false;
 		    String orderId = request.getParameter("orderId");
 		    if (orderId != null && orderId.length() > 0) {
 		      long order_id = Long.parseLong(orderId);
@@ -4173,6 +4174,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		          addActionError(MessageUtil.getMessage("cancel.shipment.notification.mail.failure"));
 		        }
 		        addActionMessage(getText("shippingOrder.cancel.successful"));
+		        isCancel=true;
 		        log.debug("cancelled original order id"+ order_id);
 		        shippingDAO = (ShippingDAO) MmrBeanLocator.getInstance().findBean("shippingDAO");
 		        ShippingOrder orginalOrder = shippingDAO.getShippingOrder(order_id);
@@ -4187,10 +4189,15 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        	}
 		        }
 		      } else
+		      {
+		    	  	    	  isCancel=false;
 		        addActionMessage(getText("shippingOrder.cancel.error"));
+		      }
 
 		      setSelectedOrder(shippingService.getShippingOrder(order_id));
 		    }
+		    if(isCancel){
+
 		    shippingService.deleteLabel(Long.parseLong(orderId));
 		    String clientIP = request.getParameter("ip");
 		    if(clientIP!=null&&!clientIP.equalsIgnoreCase("error"))
@@ -4234,6 +4241,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		      loggedList = loggedEventService.getLoggedEventInfo(loggedEvent, false);
 		    } else {
 		      loggedList = loggedEventService.getLoggedEventInfo(loggedEvent, true);
+		    }
 		    }
 		    try {
 		      boolean boolresult = false;

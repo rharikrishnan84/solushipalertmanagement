@@ -1857,8 +1857,9 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
 								<!-- <td class="ordrdtl_title_hdng" >&nbsp;</td>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td> -->
+								<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')}">
 								<td class="ordrdtl_title_hdng" ><strong style="width:100px; float:left;"><mmr:message messageId="label.ghead.commissonable"/> </strong></td>
-
+								</s:if>
 							</tr>
 							<tr>
 								<td valign="top">
@@ -1975,10 +1976,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
 												<s:hidden name="commissionableHid" value="" />
 												</s:if>
-												<s:else>
-												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
-												<s:hidden name="commissionableHid" value="" />
-												</s:else>
+												<%--<s:else>
+												 <s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
+												<s:hidden name="commissionableHid" value="" /> 
+												</s:else>--%>
 										   </td>
 										</s:if>
 										<s:else>
@@ -2051,10 +2052,10 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
 												<s:hidden name="commissionableHid" value="" />
 												</s:if>
-												<s:else>
-												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
-												<s:hidden name="commissionableHid" value="" />
-												</s:else>
+												<%--<s:else>
+												 <s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" onclick="return false"/>
+												<s:hidden name="commissionableHid" value="" /> 
+												</s:else>--%>
 										   </td>
 											
 										</s:else>

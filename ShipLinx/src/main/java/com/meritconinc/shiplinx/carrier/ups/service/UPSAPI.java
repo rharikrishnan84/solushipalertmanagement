@@ -194,6 +194,10 @@ public class UPSAPI implements CarrierService {
 //		if(order.getPackageTypeId().getPackageTypeId()==ShiplinxConstants.PACKAGE_TYPE_PALLET){
 //			return null;
 //		}
+		
+		if(customerCarrier.getCarrierId() != null){
+			carrierId = customerCarrier.getCarrierId();
+		}
 		ShiplinxConstants.setServices(services);
 		order.setFromRatingList(new ArrayList<Rating>());
 		order.setToRatingList(new ArrayList<Rating>());
@@ -724,7 +728,8 @@ public class UPSAPI implements CarrierService {
 		f.setCarrierId(rates.get(0).getCarrierId());
 		f.setType(SERVICE_TYPE_AIR);
 		f.setFromCountry(order.getFromAddress().getCountryCode());
-		List<FuelSurcharge> fuelsurcharges = fuelSurchargeService.getFuelSurcharge(f);		
+		List<FuelSurcharge> fuelsurcharges = fuelSurchargeService.getFuelSurcharge(f);
+		if(fuelsurcharges != null && fuelsurcharges.size() > 0)
 		air = fuelsurcharges.get(0);
 		
 		f.setType(SERVICE_TYPE_GROUND);
@@ -765,8 +770,10 @@ public class UPSAPI implements CarrierService {
 				try{
 					log.debug("service.getMode()---"+service.getMode());
 					if(service.getMode()!= null && service.getMode() == ShiplinxConstants.MODE_TRANSPORT_AIR_VALUE){
-						fuel_perc = air.getValue();
-					}else{
+						if(air.getValue() > 0){
+							fuel_perc = air.getValue();
+						}
+					}else if(ground.getValue() > 0){
 						fuel_perc = ground.getValue();
 					}
 				}catch (Exception e) {

@@ -198,7 +198,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         isOrderCanceled = true;
 
       // we need to refund the $$ back to the customer
-      if (isOrderCanceled || isAdmin) {
+     // if (isOrderCanceled || isAdmin) {
+      if (isOrderCanceled || (isOrderCanceled&&isAdmin)) {
         order.setStatusId((long) ShiplinxConstants.STATUS_CANCELLED);
         if (order.getCcTransactions() != null) {
 
@@ -369,7 +370,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         		String toCountryCode;
         		ArrayList groupingThreadList = new ArrayList();
                 if(!(order.getFromAddress().getCountryCode().equalsIgnoreCase(order.getToAddress()
-                        .getCountryCode())) && carrier.getId()==2){
+                        .getCountryCode())) &&  (carrier.getId()==2 || carrier.getId() == 5)){
                 	fromCountryCode=order.getFromAddress().getCountryCode();
                	toCountryCode=order.getToAddress().getCountryCode();
                 
@@ -482,7 +483,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       while(upsIterator.hasNext()){
     	  Map.Entry threadOrder = (Map.Entry)upsIterator.next();
     	  String key=(String) threadOrder.getKey();
-    	  if(key!=null && key.equals(Long.toString(ShiplinxConstants.CARRIER_UPS))){
+    	  if(key!=null && (key.equals(Long.toString(ShiplinxConstants.CARRIER_UPS)) || key.equals(Long.toString(ShiplinxConstants.CARRIER_UPS_USA)))){
     		  orderThread=(ShippingOrder) threadOrder.getValue();
     		  break;
     	  }
@@ -961,16 +962,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         fromCountryCode, null);
     if (carrierAccount != null)
       return carrierAccount;
-    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || carrierId !=2 ){
-    carrierAccount = carrierServiceDAO.getCarrierAccount(customerId, businessId, carrierId,
-        toCountryCode, null);
-    if (carrierAccount != null)
-      return carrierAccount;
+    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || (carrierId !=2 && carrierId != 5)){
+    	if(fromCountryCode == ShiplinxConstants.CANADA || (carrierId !=2 && carrierId != 5)){
+    		carrierAccount = carrierServiceDAO.getCarrierAccount(customerId, businessId, carrierId,
+    		        toCountryCode, null);
+    		    if (carrierAccount != null)
+    		      return carrierAccount;
 
-    carrierAccount = carrierServiceDAO.getCarrierAccount(customerId, businessId, carrierId, null,
-        null);
-    if (carrierAccount != null)
-      return carrierAccount;
+    		    carrierAccount = carrierServiceDAO.getCarrierAccount(customerId, businessId, carrierId, null,
+    		        null);
+    		    if (carrierAccount != null)
+    		      return carrierAccount;
+    	}
     }
     // Check the defaults now
     carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId,
@@ -982,16 +985,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         fromCountryCode, null);
     if (carrierAccount != null)
       return carrierAccount;
-    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || carrierId !=2 ){
-    carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId,
-        toCountryCode, null);
-    if (carrierAccount != null)
-      return carrierAccount;
+    if(carrierId==2 && fromCountryCode.equalsIgnoreCase(toCountryCode) || (carrierId !=2 && carrierId != 5)){
+    	if(fromCountryCode == ShiplinxConstants.CANADA || (carrierId !=2 && carrierId != 5)){
+    		carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId,
+    		        toCountryCode, null);
+    		    if (carrierAccount != null)
+    		      return carrierAccount;
 
-    carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId, null,
-        null);
-    if (carrierAccount != null)
-      return carrierAccount;
+    		    carrierAccount = carrierServiceDAO.getCarrierAccount(new Long(0), businessId, carrierId, null,
+    		        null);
+    		    if (carrierAccount != null)
+    		      return carrierAccount;
+    	}
     }
     return carrierAccount;
   }
@@ -3031,7 +3036,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         for(Rating rating : ratesThread){
         	       rating.setAccountCountry(customerCarrierThread.getCountry());
         	        }
-        if(!(orderThread.getFromAddress().getCountryCode().equals(orderThread.getToAddress().getCountryCode()))&&carrierServiceThread.getCarrierId()==2){
+        if(!(orderThread.getFromAddress().getCountryCode().equals(orderThread.getToAddress().getCountryCode()))&&(carrierServiceThread.getCarrierId()==2 || carrierServiceThread.getCarrierId()==5)){
         	        	if(customerCarrierThread.getCount()==0){ 
         	        	  	for (int x = 0; x < ratesThread.size(); x++) {
         	        	  			 fromRatingList.add(ratesThread.get(x));
