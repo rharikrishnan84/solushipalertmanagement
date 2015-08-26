@@ -200,7 +200,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
       String carrierId = request.getParameter("value");
       User user = UserUtil.getMmrUser();
       if (carrierId != null && !carrierId.isEmpty()) {
-        if (user != null && user.getUserRole().equalsIgnoreCase("BusAdmin")) {
+        if (user != null && user.getUserRole().equalsIgnoreCase("BusAdmin") || user.getUserRole().equalsIgnoreCase("SysAdmin")) {
           services = getMarkupServices(Long.parseLong(carrierId));
         } else {
           long carrierLongId = 0L;
