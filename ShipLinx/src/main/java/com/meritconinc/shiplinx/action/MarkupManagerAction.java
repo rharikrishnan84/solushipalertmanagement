@@ -524,8 +524,12 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
     return init();
   }
 
+  /*public String addMarkup() throws Exception {*/
+  @SuppressWarnings("deprecation")
   public String addMarkup() throws Exception {
     try {
+    	//vivek hide
+    	//boolean addmarkup=false;
       Markup markup = this.getMarkup();
       if (markup.getFromCountryCode() == null || markup.getFromCountryCode().length() == 0)
         markup.setFromCountryCode("ANY");
@@ -541,21 +545,34 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
           addActionError(getText("error.markup.invalid.weight"));
           return INPUT;
         }
-
+//vivek hide
+       /* addmarkup=true;
+              request.getSession().putValue("addMarkup", addmarkup);*/
         Markup m = this.markupManagerService.addMarkup(markup);
+        //vivek hide
+       // request.getSession().removeValue("addMarkup");
         if (m != null) {
           // this.getMarkupList().add(0, m);
+        	//vivek hide
+        	//request.getSession().removeValue("addMarkup");
+        	//vivek hide end
           throw new MarkupAlreadyExistsException("Markup already exists - " + m.toString());
         }
       }
     } catch (MarkupAlreadyExistsException ue) {
+    	//vivek hide
+    	//request.getSession().removeValue("addMarkup");
       addActionError(getText("error.markup.exists") + " - " + ue.getMessage());
       return INPUT;
     } catch (Exception e) {
+    	//vivek hide
+    	//request.getSession().removeValue("addMarkup");
       e.printStackTrace();
       addActionError(getText("content.error.unexpected"));
       return INPUT;
     }
+    //vivek hide
+    //request.getSession().removeValue("addMarkup");
     return init();
   }
 
@@ -623,10 +640,11 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
     return init();
   }
 */
-  private boolean isMarkupDirty(Markup m, int p, double f, boolean d, int v) {
+  /*private boolean isMarkupDirty(Markup m, int p, double f, boolean d, int v) {*/
+  private boolean isMarkupDirty(Markup m, int p, double f, boolean d, int v,double fWt,double tWt) {
     // TODO Auto-generated method stub
     if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
-    		|| m.getDisabledFlag() != d || m.getVariable() != v)
+    		|| m.getDisabledFlag() != d || m.getVariable() != v||m.getFromWeight()!=fWt||m.getToWeight()!=tWt)
       return true;
     return false;
   }
@@ -1023,6 +1041,8 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  			}
 	  			String selectedItem = request.getParameter("selectedItem");
 	  			String percentage = request.getParameter("percentage");
+	  			String fromWeight=request.getParameter("fromWeight");
+	  			  			String toWeight=request.getParameter("toWeight");
 	  		String flat = request.getParameter("flat");
 	  			String disabledFlag = request.getParameter("disabledFlag");
 	  			String variable = request.getParameter("variable");
@@ -1031,6 +1051,8 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  			String mFs[] = flat.split(",");
 	  			String mDs[] = disabledFlag.split(",");
 	  			String mVs[] = variable.split(",");
+	  			String mFromWeight[]=fromWeight.split(",");
+	  					String mToWeight[]=toWeight.split(",");
 	  			// if (this.getMarkupList().size() != item.length)
 	  			for (int i1 = 0; i1 < item.length; i1++) {
 	  				if (!item[i1].equalsIgnoreCase("")) {
@@ -1039,13 +1061,18 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  					m.setBusinessId(busId);
 	  					int p = Integer.parseInt(mPs[i1]);
 	  					double f = Double.parseDouble(mFs[i1]);
+	  					double fWt=Double.parseDouble(mFromWeight[i1]);
+	  							double tWt=Double.parseDouble(mToWeight[i1]);
 	  				boolean d = convertStringToBoolean(mDs[i1]);
 	  					int v = Integer.parseInt(mVs[i1]);
-	  					if (isMarkupDirty(m, p, f, d, v)) {
+	  					/*if (isMarkupDirty(m, p, f, d, v)) {*/
+	  					if (isMarkupDirty(m, p, f, d, v,fWt,tWt)) {
 	  						m.setMarkupPercentage(p);
 	  					m.setMarkupFlat(f);
 	  						m.setDisabledFlag(d);
 	  						m.setVariable(v);
+	  						m.setFromWeight(fWt);
+	  										m.setToWeight(tWt);
 	  						// If user is in Customer Markup and modified default
 	  					// markup
 	  						// it should be added as a new record customer specific

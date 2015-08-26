@@ -1857,7 +1857,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								<td class="ordrdtl_title_hdng" >&nbsp;</td>
 								<!-- <td class="ordrdtl_title_hdng" >&nbsp;</td>
 								<td class="ordrdtl_title_hdng" >&nbsp;</td> -->
-								<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')}">
+								<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')  || #session.ROLE.contains('solutions_manager')}">
 								<td class="ordrdtl_title_hdng" ><strong style="width:100px; float:left;"><mmr:message messageId="label.ghead.commissonable"/> </strong></td>
 								</s:if>
 							</tr>
@@ -1972,7 +1972,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												</span>
 											</td>
 											<td style="width:30px !important; text-align:center;">
-											<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')}">
+											<s:if test="%{#session.ROLE.contains('busadmin')|| #session.ROLE.contains('sysadmin')|| #session.ROLE.contains('solutions_manager')}">
 												<s:checkbox name="commissionable"  value="%{isCommissonable}" list="commissonableStatus" id="commissionable" />
 												<s:hidden name="commissionableHid" value="" />
 												</s:if>

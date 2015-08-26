@@ -315,7 +315,7 @@
 			<isNotNull  property="type">
 				 and m.type=#type#
 			</isNotNull>
-				<isNotNull  property="fromWeight">
+				<!-- <isNotNull  property="fromWeight">
 				 <isGreaterThan property="fromWeight" compareValue="0">
 				 <![CDATA[and m.from_weight<=#fromWeight#]]>
 				 
@@ -326,7 +326,7 @@
 				 <![CDATA[and m.to_weight>=#toWeight#]]>
 				 
 				 </isLessThan>
-			</isNotNull>
+			</isNotNull> -->
 		</dynamic>    
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc                                 
 	</select>	
@@ -338,9 +338,11 @@
 	</insert>
 	
 	<update id="updateMarkup">
-		update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled#, variable=#toVariable# 
+		<!-- update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled#, variable=#toVariable# --> 
+		update customer_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled#, variable=#toVariable# ,from_weight=#fromWeight#,to_weight=#toWeight#
 				where 	customer_id=#customerId# and business_id=#businessId# and service_id=#serviceId# and 
-						from_country=#fromCountryCode# and to_country=#toCountryCode# and from_weight=#fromWeight# and to_weight=#toWeight#
+				from_country=#fromCountryCode# and to_country=#toCountryCode# 
+						<!-- from_country=#fromCountryCode# and to_country=#toCountryCode# and from_weight=#fromWeight# and to_weight=#toWeight# -->
 	</update>	
 		
 	<delete id = "deleteMarkup">

@@ -104,6 +104,12 @@
 												<s:select value="%{pickup.weightUnit}" name="pickup.weightUnit" list="{'LBS','KGS'}"  ></s:select>
 											</div>
 										</div>
+										<div class="fields">
+											<label><mmr:message messageId="label.pickup.trackingNumber"/></label>
+											<div class="controls"><span>:</span>
+												<s:textfield  key="pickup.masterTrackingNum" name="pickup.masterTrackingNum"  />
+											</div>
+										</div>
 										<div class="fieldsvvl">
 											<label><mmr:message messageId="label.pickup.instructions"/></label>
 											<div class="controlsvvl"><span>:</span>

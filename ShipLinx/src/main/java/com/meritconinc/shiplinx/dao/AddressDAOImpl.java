@@ -477,4 +477,18 @@ public class AddressDAOImpl extends SqlMapClientDaoSupport implements
        }
 	return  cusId;
  }
+ @Override
+ public List<Address> getAddressByIds(List<Long> addressIds) {
+ 	List<Address> address = new ArrayList<Address>();
+ 	try {
+ 		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		paramObj.put("addressIds", addressIds);
+ 		address = (List<Address>) getSqlMapClientTemplate().queryForList(
+ 				"getAddressByIds", paramObj);
+ 	} catch (Exception e) {
+ 		e.printStackTrace();
+ 	}
+ 	return address;
+ }
+
 }

@@ -1,261 +1,336 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
- 
+
 <sqlMap namespace="customer">
 
 	<resultMap id="CustomerMap" class="com.meritconinc.shiplinx.model.Customer">
-			<result property="id" column="customer_id"/>
-			<result property="name" column="name"/>
-			<result property="active" column="active"/>
-			<result property="dateCreated" column="date_created"/>
-			<result property="invoicingEmail" column="invoice_email"/>
-			<result property="salesAgent" column="sales_agent"/>
-			<result property="salesAgent2" column="sales_agent2"/>
-			<result property="timeZone" column="timeZone"/>
-			<result property="apiUsername" column="api_username"/>
-			<result property="apiPassword" column="api_password"/>
-			<result property="businessId" column="business_id"/>
-			<result property="payableDays" column="payable_days"/>
-			<result property="paymentType" column="payment_type"/>
-			<result property="paymentTypeLevel" column="payment_type_level"/>
-			<result property="addressId" column="address_id"/>
-			<result property="accountNumber" column="account_number"/>
-			<result property="address" column="address_id" select="selectAddress"/>
-			<result property="additionalHandlingCharge" column="additional_handling_charge"/>
-			<result property="creditLimit" column="credit_limit"/>
-			<result property="monthlySpend" column="monthly_spend"/>
-			<result property="warehouseCustomer" column="warehouse_customer"/>
-			<result property="primaryWarehouseId" column="primary_warehouse"/>
-			<result property="creditCardActive" column="customer_id" select="getActiveCreditCardForCustomer"/>
-			<result property="branch" column="branch"/>
-			<result property="defaultCurrency" column="default_currency"/>
-			<result property="chbCustomer" column="chb_customer"/>
-			<result property="holdTerms" column="hold_terms"/>
-			<result property="status" column="status"/>
+		<result property="id" column="customer_id" />
+		<result property="name" column="name" />
+		<result property="active" column="active" />
+		<result property="dateCreated" column="date_created" />
+		<result property="invoicingEmail" column="invoice_email" />
+		<result property="salesAgent" column="sales_agent" />
+		<result property="salesAgent2" column="sales_agent2" />
+		<result property="timeZone" column="timeZone" />
+		<result property="apiUsername" column="api_username" />
+		<result property="apiPassword" column="api_password" />
+		<result property="businessId" column="business_id" />
+		<result property="payableDays" column="payable_days" />
+		<result property="paymentType" column="payment_type" />
+		<result property="paymentTypeLevel" column="payment_type_level" />
+		<result property="addressId" column="address_id" />
+		<result property="accountNumber" column="account_number" />
+		<result property="address" column="address_id" select="selectAddress" />
+		<result property="additionalHandlingCharge" column="additional_handling_charge" />
+		<result property="creditLimit" column="credit_limit" />
+		<result property="monthlySpend" column="monthly_spend" />
+		<result property="warehouseCustomer" column="warehouse_customer" />
+		<result property="primaryWarehouseId" column="primary_warehouse" />
+		<result property="creditCardActive" column="customer_id"
+			select="getActiveCreditCardForCustomer" />
+		<result property="branch" column="branch" />
+		<result property="defaultCurrency" column="default_currency" />
+		<result property="chbCustomer" column="chb_customer" />
+		<result property="holdTerms" column="hold_terms" />
+		<result property="status" column="status" />
 	</resultMap>
-	
+
 	<resultMap id="CustomerId" class="com.meritconinc.shiplinx.model.Customer">
-			<result property="username"/>
+		<result property="username" />
 	</resultMap>
-	
+
 	<resultMap id="CustomerReferenceMap" class="com.meritconinc.shiplinx.model.Customer">
-			<result property="id" column="customer_id"/>
-			<result property="name" column="name"/>
-			<result property="reference" column="show_ref"/>
+		<result property="id" column="customer_id" />
+		<result property="name" column="name" />
+		<result property="reference" column="show_ref" />
 	</resultMap>
-	
-	<resultMap id="CustomerSalesMap" class="com.meritconinc.shiplinx.model.CustomerSalesUser">
-			<result property="id" column="id"/>
-			<result property="customerId" column="customer_id"/>
-			<result property="salesAgent" column="sales_user"/>
-			<result property="commissionPercentage" column="commission_percentage"/>
-			<result property="commissionPercentagePerPalletService" column="comm_perc_PP"/>
-			<result property="commissionPercentagePerSkidService" column="comm_perc_PS"/>
-			<result property="commisionPercentagePerCHB" column="comm_perc_CHB"/>
-			<result property="commisionPercentagePerFWD" column="comm_perc_FWD"/>
-			<result property="commisionPercentagePerFPA" column="comm_perc_FPA"/>
+
+	<resultMap id="CustomerSalesMap"
+		class="com.meritconinc.shiplinx.model.CustomerSalesUser">
+		<result property="id" column="id" />
+		<result property="customerId" column="customer_id" />
+		<result property="salesAgent" column="sales_user" />
+		<result property="commissionPercentage" column="commission_percentage" />
+		<result property="commissionPercentagePerPalletService" column="comm_perc_PP" />
+		<result property="commissionPercentagePerSkidService" column="comm_perc_PS" />
+		<result property="commisionPercentagePerCHB" column="comm_perc_CHB" />
+		<result property="commisionPercentagePerFWD" column="comm_perc_FWD" />
+		<result property="commisionPercentagePerFPA" column="comm_perc_FPA" />
 	</resultMap>
-	
-	<resultMap id="CustomerSalesMapEmail" class="com.meritconinc.shiplinx.model.CustomerSalesUser">	
-			<result property="id" column="id"/>
-			<result property="customerId" column="customer_id"/>
-			<result property="salesAgent" column="sales_user"/>
-			<result property="commissionPercentage" column="commission_percentage"/>
-			<result property="commissionPercentagePerPalletService" column="comm_perc_PP"/>
-			<result property="commissionPercentagePerSkidService" column="comm_perc_PS"/>
-			<result property="email" column="email"/>
+
+	<resultMap id="CustomerSalesMapEmail"
+		class="com.meritconinc.shiplinx.model.CustomerSalesUser">
+		<result property="id" column="id" />
+		<result property="customerId" column="customer_id" />
+		<result property="salesAgent" column="sales_user" />
+		<result property="commissionPercentage" column="commission_percentage" />
+		<result property="commissionPercentagePerPalletService" column="comm_perc_PP" />
+		<result property="commissionPercentagePerSkidService" column="comm_perc_PS" />
+		<result property="email" column="email" />
 	</resultMap>
 
 	<resultMap id="CustomerTierMap" class="com.meritconinc.shiplinx.model.CustomerTier">
-			<result property="businessId" column="business_id"/>
-			<result property="customerId" column="customer_id"/>
-			<result property="fromSpend" column="from_spend"/>
-			<result property="toSpend" column="to_spend"/>
+		<result property="businessId" column="business_id" />
+		<result property="customerId" column="customer_id" />
+		<result property="fromSpend" column="from_spend" />
+		<result property="toSpend" column="to_spend" />
 	</resultMap>
-	
+
 	<resultMap id="billdutyResult" class="com.meritconinc.shiplinx.model.Billduty">
-	  <result property="id" column="id"/>
-	   <result property="code" column="code"/>
-	   <result property="name" column="name"/>
-	    <result property="locale" column="locale"/>
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="locale" column="locale" />
 	</resultMap>
-	
+
 	<select id="isCustomerRegistered" resultClass="int">
-			select count(1) as count from customer where name = #customername# and business_id=#businessId# and customer_id!=#customerId#
+		select count(1) as count from customer where name = #customername# and
+		business_id=#businessId# and customer_id!=#customerId#
 	</select>
 	<insert id="addCustomer" parameterClass="com.meritconinc.shiplinx.model.Customer">
-			 insert into customer(name,active,date_created,timeZone,deleted,api_password, api_username, business_id, address_id, account_number, sales_agent, sales_agent2, payable_days, payment_type, payment_type_level, additional_handling_charge, credit_limit, monthly_spend, branch, default_currency,show_ref,chb_customer, hold_terms) 
-			  values (#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#, #businessId#, #addressId#, #accountNumber#, #salesAgent#, #salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#, #additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#, #defaultCurrency#,#reference#,#chbCustomer#,#holdTerms#)
- 			<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
-	 		</selectKey>			
+		insert into
+		customer(name,active,date_created,timeZone,deleted,api_password,
+		api_username, business_id, address_id, account_number, sales_agent,
+		sales_agent2, payable_days, payment_type, payment_type_level,
+		additional_handling_charge, credit_limit, monthly_spend, branch,
+		default_currency,show_ref,chb_customer, hold_terms)
+		values
+		(#name#,#active#,#dateCreated#,#timeZone#,0,#apiPassword#,#apiUsername#,
+		#businessId#, #addressId#, #accountNumber#, #salesAgent#,
+		#salesAgent2#, #payableDays#, #paymentType#, #paymentTypeLevel#,
+		#additionalHandlingCharge#, #creditLimit#, #monthlySpend#, #branch#,
+		#defaultCurrency#,#reference#,#chbCustomer#,#holdTerms#)
+		<selectKey resultClass="long" type="post" keyProperty="id">select
+			LAST_INSERT_ID() as value
+		</selectKey>
 	</insert>
-	
+
 	<insert id="addCustomerSales" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser">
-			 insert into customer_sales (customer_id,sales_user,comm_perc_ps, comm_perc_pp, comm_perc_chb,comm_perc_FWD,comm_perc_FPA) values (#customerId#,#salesAgent#,#commissionPercentagePerSkidService#, #commissionPercentagePerPalletService#, #commisionPercentagePerCHB#,#commisionPercentagePerFWD#,#commisionPercentagePerFPA#)
-			<selectKey resultClass="long" type="post" keyProperty="customerId" >select LAST_INSERT_ID() as value
-	 		</selectKey>			
+		insert into customer_sales (customer_id,sales_user,comm_perc_ps,
+		comm_perc_pp, comm_perc_chb,comm_perc_FWD,comm_perc_FPA) values
+		(#customerId#,#salesAgent#,#commissionPercentagePerSkidService#,
+		#commissionPercentagePerPalletService#,
+		#commisionPercentagePerCHB#,#commisionPercentagePerFWD#,#commisionPercentagePerFPA#)
+		<selectKey resultClass="long" type="post" keyProperty="customerId">
+			select LAST_INSERT_ID() as value
+		</selectKey>
 	</insert>
-	
-	<select id="getCustomers" parameterClass="com.meritconinc.shiplinx.model.Customer" resultMap="CustomerMap">
-		select distinct c.* from customer c left join address a on (c.address_id=a.address_id) left join customer_carrier cc on (c.customer_id=cc.customer_id) left join customer_sales csu on (c.customer_id=csu.customer_id) where c.business_id = #businessId#
+
+	<select id="getCustomers" parameterClass="com.meritconinc.shiplinx.model.Customer"
+		resultMap="CustomerMap">
+		select distinct c.* from customer c left join address a on
+		(c.address_id=a.address_id) left join customer_carrier cc on
+		(c.customer_id=cc.customer_id) left join customer_sales csu on
+		(c.customer_id=csu.customer_id) where c.business_id = #businessId#
 		<isNotEmpty property="name">
-		  and c.name like '%$name$%'
-	    </isNotEmpty>
-	    <isNotNull property="accountNumber">
+			and c.name like '%$name$%'
+		</isNotEmpty>
+		<isNotNull property="accountNumber">
 			<isNotEmpty property="accountNumber">
-			  and (c.account_number=#accountNumber# or cc.account_number1=#accountNumber# or cc.account_number2=#accountNumber#)
-		    </isNotEmpty>
-	    </isNotNull>
-	     <isNotNull property="salesAgent">
-   			<isNotEmpty property="salesAgent">
-     			and csu.sales_user=#salesAgent#
-      		</isNotEmpty>
-     	</isNotNull>
-     	<isNotNull property="branch">
-     		<isNotEmpty property="branch">
-     			and c.branch=#branch#
-      		</isNotEmpty>
-      	</isNotNull>
-     	<isNotNull property="addressSearchString">
-     		<isNotEmpty property="addressSearchString">
-     			and (a.address1 like '%$addressSearchString$%' or a.address2 like '%$addressSearchString$%'  
-     			or a.city like '%$addressSearchString$%' or a.phone_no like '%$addressSearchString$%' or a.email_address like '%$addressSearchString$%'
-     			or a.contact_name like '%$addressSearchString$%'  or a.postal_code like '%$addressSearchString$%')
-      		</isNotEmpty>
-      	</isNotNull>
-			
-	</select> 
-	
+				and (c.account_number=#accountNumber# or
+				cc.account_number1=#accountNumber# or
+				cc.account_number2=#accountNumber#)
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="salesAgent">
+			<isNotEmpty property="salesAgent">
+				and csu.sales_user=#salesAgent#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="branch">
+			<isNotEmpty property="branch">
+				and c.branch=#branch#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="addressSearchString">
+			<isNotEmpty property="addressSearchString">
+				and (a.address1 like '%$addressSearchString$%' or a.address2 like
+				'%$addressSearchString$%'
+				or a.city like '%$addressSearchString$%' or a.phone_no like
+				'%$addressSearchString$%' or a.email_address like
+				'%$addressSearchString$%'
+				or a.contact_name like '%$addressSearchString$%' or a.postal_code like
+				'%$addressSearchString$%')
+			</isNotEmpty>
+		</isNotNull>
+
+	</select>
+
 	<select id="getCustomerInfoByCustomerId" resultMap="CustomerMap">
-		select * from customer c where c.customer_id = #id# 
+		select * from
+		customer c where c.customer_id = #id#
 	</select>
-	
-	<update id = 'editCustomer' parameterClass="com.meritconinc.shiplinx.model.Customer">
-		update customer set name=#name#, active=#active#, api_username=#apiUsername#,api_password=#apiPassword#,timeZone=#timeZone#, 
-		invoice_email=#invoicingEmail#, account_number=#accountNumber#, sales_agent=#salesAgent#, 
+
+	<update id='editCustomer' parameterClass="com.meritconinc.shiplinx.model.Customer">
+		update customer set
+		name=#name#, active=#active#,
+		api_username=#apiUsername#,api_password=#apiPassword#,timeZone=#timeZone#,
+		invoice_email=#invoicingEmail#, account_number=#accountNumber#,
+		sales_agent=#salesAgent#,
 		payable_days=#payableDays#, payment_type=#paymentType#, payment_type_level=#paymentTypeLevel#,
-		 additional_handling_charge=#additionalHandlingCharge#, credit_limit=#creditLimit#, default_currency = #defaultCurrency#,show_ref=#reference#,chb_customer=#chbCustomer#,
-		 status=#status# ,hold_terms=#holdTerms#
-		where customer_id=#id# and business_id=#businessId#
-	</update>	
-	
-	<select id="getCustomerIdByUserName" resultClass="long">
-	select customer_id from user where username=#username# and business_id=#businessId#
-	</select>
-	
-	<select id="getCustomerIdByName" resultClass="long">
-	select customer_id from customer where name=#name# and business_id=#businessId#
-	</select>
-	
-	<select id="getCustomerByApiInfo" resultMap="CustomerMap">
-		select * from customer c where c.api_username = #apiUserName# and c.api_password=#apiUserPassword#
-	</select>
-	<select id="getCustomerSalesUser" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser" resultMap="CustomerSalesMap">
-		select * from customer_sales cs where cs.customer_id = #customerId# 
-	     <isNotNull property="salesAgent">
-   			<isNotEmpty property="salesAgent">
-     		and cs.sales_user=#salesAgent# 
-      		</isNotEmpty>
-     	</isNotNull>
-	</select>
-		
-	<delete id = "deleteCustomerSalesUser">
-			delete from customer_sales where id = #id#
-	</delete>
-	
-	<update id = "updateCustomerSalesUser" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser">
-		update customer_sales set comm_perc_ps=#commissionPercentagePerSkidService#, comm_perc_pp=#commissionPercentagePerPalletService#, comm_perc_chb=#commisionPercentagePerCHB#,comm_perc_fwd=#commisionPercentagePerFWD#,comm_perc_FPA=#commisionPercentagePerFPA# where id=#id#
+		additional_handling_charge=#additionalHandlingCharge#,
+		credit_limit=#creditLimit#, default_currency =
+		#defaultCurrency#,show_ref=#reference#,chb_customer=#chbCustomer#,
+		status=#status# ,hold_terms=#holdTerms#
+		where customer_id=#id# and
+		business_id=#businessId#
 	</update>
-	
-	<select id="getCustomerTierInfo" parameterClass="com.meritconinc.shiplinx.model.Customer" resultMap="CustomerTierMap">
-		select * from tier_table t where t.business_id= #businessId# and t.from_spend &lt;= #monthlySpend# and t.to_spend &gt;= #monthlySpend# limit 1	
+
+	<select id="getCustomerIdByUserName" resultClass="long">
+		select customer_id from user where username=#username# and
+		business_id=#businessId#
+	</select>
+
+	<select id="getCustomerIdByName" resultClass="long">
+		select customer_id from customer where name=#name# and
+		business_id=#businessId#
+	</select>
+
+	<select id="getCustomerByApiInfo" resultMap="CustomerMap">
+		select * from
+		customer c where c.api_username = #apiUserName# and
+		c.api_password=#apiUserPassword#
+	</select>
+	<select id="getCustomerSalesUser" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser"
+		resultMap="CustomerSalesMap">
+		select * from customer_sales cs where cs.customer_id = #customerId#
+		<isNotNull property="salesAgent">
+			<isNotEmpty property="salesAgent">
+				and cs.sales_user=#salesAgent#
+			</isNotEmpty>
+		</isNotNull>
+	</select>
+
+	<delete id="deleteCustomerSalesUser">
+		delete from customer_sales where id = #id#
+	</delete>
+
+	<update id="updateCustomerSalesUser" parameterClass="com.meritconinc.shiplinx.model.CustomerSalesUser">
+		update
+		customer_sales set comm_perc_ps=#commissionPercentagePerSkidService#,
+		comm_perc_pp=#commissionPercentagePerPalletService#,
+		comm_perc_chb=#commisionPercentagePerCHB#,comm_perc_fwd=#commisionPercentagePerFWD#,comm_perc_FPA=#commisionPercentagePerFPA#
+		where id=#id#
+	</update>
+
+	<select id="getCustomerTierInfo" parameterClass="com.meritconinc.shiplinx.model.Customer"
+		resultMap="CustomerTierMap">
+		select * from tier_table t where t.business_id= #businessId#
+		and t.from_spend &lt;= #monthlySpend# and t.to_spend &gt;=
+		#monthlySpend# limit 1
 	</select>
 
 	<select id="isWarehouseCustomer" resultClass="boolean">
-		select warehouse_customer from customer where customer_id=#customerId#
+		select
+		warehouse_customer from customer where customer_id=#customerId#
 	</select>
-		
-	<select id="getCustomerSalesInformation"  resultMap="CustomerSalesMapEmail">
-		select A.*,B.email from customer_sales A left join user B on A.sales_user = B.username where A.customer_id=#customerId#
+
+	<select id="getCustomerSalesInformation" resultMap="CustomerSalesMapEmail">
+		select
+		A.*,B.email from customer_sales A left join user B on A.sales_user =
+		B.username where A.customer_id=#customerId#
 	</select>
 	<select id="getCustomerSalesUserById" resultMap="CustomerSalesMap">
-		select * from customer_sales cs where cs.id = #id# 
-		</select>
-		
-		<select id="getCustomerReference" resultMap="CustomerReferenceMap">
-		select * from customer c where c.customer_id = #id# 
+		select * from
+		customer_sales cs where cs.id = #id#
+	</select>
+
+	<select id="getCustomerReference" resultMap="CustomerReferenceMap">
+		select * from
+		customer c where c.customer_id = #id#
 	</select>
 	<select id="getBilldutyList" resultMap="billdutyResult">
-		select * from bill_duty where locale=#locale#
+		select * from bill_duty
+		where locale=#locale#
 	</select>
 	<select id="getCustomerCurrencyById" resultClass="String">
-		SELECT default_currency from customer where customer_id=#customerId#;
+		SELECT
+		default_currency from customer where customer_id=#customerId#;
 	</select>
-	
-	<update id = "updateCustomerStatus">
-		update customer set status=#customerStatus# where customer_id=#custId#;
+
+	<update id="updateCustomerStatus">
+		update customer set status=#customerStatus# where
+		customer_id=#custId#;
 	</update>
-	
+
 	<update id="updateAvailableCredit">
-		update customer set available_credit=#availableCredit# where customer_id=#customerId#
+		update customer set
+		available_credit=#availableCredit# where customer_id=#customerId#
 	</update>
-	
+
 	<select id="getAvailableCredit" resultClass="double">
-		select available_credit from customer where customer_id=#customerId#
+		select
+		available_credit from customer where customer_id=#customerId#
 	</select>
-	
-	<select id="findUnpaidInvoiceDuration"  resultClass="int">
-		select count(*) from invoice where payment_status in(10,20)  and customer_id = #customerId# and DATEDIFF(curdate(), due_date) > #holdTerms#
+
+	<select id="findUnpaidInvoiceDuration" resultClass="int">
+		select
+		count(*) from invoice where payment_status in(10,20) and customer_id =
+		#customerId# and DATEDIFF(curdate(), due_date) > #holdTerms#
 	</select>
-	
-		
-	
+
+
+
 	<select id="getAllCustomers" resultMap="CustomerMap">
-    	select * from customer where active=1
-    </select>
-    <select id="getAllCustomersByBusinessLevel" resultMap="CustomerMap">
-    	select c.* from customer c ,customer_business cb 
-		where cb.customer_id = c.customer_id and cb.business_id = #businessId# 
-			and (cb.ispartner_level = 1 
-	||cb.isnation_level = 1 || cb.isbranch_level = 1 || cb.isbusiness_level=1)
-    </select>
-    <select id="getAllCustomersByPartnerLevel" resultMap="CustomerMap">
-    select c.* from customer c ,customer_business cb 
-		where (cb.customer_id = c.customer_id  )  and cb.business_id = #businessId# 
- and cb.partner_id = #partnerId#
-			and (cb.ispartner_level = 1 
-   ||cb.isnation_level = 1 || cb.isbranch_level = 1)
-    </select>
-    <select id="getAllCustomersByNationLevel" resultMap="CustomerMap">
-    	select c.* from customer c ,customer_business cb 
-		where (cb.customer_id = c.customer_id  )  and cb.business_id =  #businessId# 
-and cb.partner_id =  #partnerId# and cb.country_partner_id=#countryPartnerId#
-			and (cb.isnation_level = 1 || cb.isbranch_level = 1)
-    </select>
-    <select id="getAllCustomersByBranchLevel" resultMap="CustomerMap">
-    	select c.* from customer c ,customer_business cb 
-		where (cb.customer_id = c.customer_id  )  and cb.business_id =  #businessId# 
-and cb.partner_id =  #partnerId# and cb.country_partner_id=#countryPartnerId# and cb.branch_id=#branchId#
-			and (cb.isbranch_level = 1)
-    </select>
+		select * from customer where active=1
+	</select>
+	<select id="getAllCustomersByBusinessLevel" resultMap="CustomerMap">
+		select c.* from customer c ,customer_business cb
+		where cb.customer_id = c.customer_id and cb.business_id = #businessId#
+		and (cb.ispartner_level = 1
+		||cb.isnation_level = 1 || cb.isbranch_level = 1 || cb.isbusiness_level=1)
+	</select>
+	<select id="getAllCustomersByPartnerLevel" resultMap="CustomerMap">
+		select c.* from customer c ,customer_business cb
+		where (cb.customer_id = c.customer_id ) and cb.business_id = #businessId#
+		and cb.partner_id = #partnerId#
+		and (cb.ispartner_level = 1
+		||cb.isnation_level = 1 || cb.isbranch_level = 1)
+	</select>
+	<select id="getAllCustomersByNationLevel" resultMap="CustomerMap">
+		select c.* from customer c ,customer_business cb
+		where (cb.customer_id = c.customer_id ) and cb.business_id = #businessId#
+		and cb.partner_id = #partnerId# and
+		cb.country_partner_id=#countryPartnerId#
+		and (cb.isnation_level = 1 || cb.isbranch_level = 1)
+	</select>
+	<select id="getAllCustomersByBranchLevel" resultMap="CustomerMap">
+		select c.* from customer c ,customer_business cb
+		where (cb.customer_id = c.customer_id ) and cb.business_id = #businessId#
+		and cb.partner_id = #partnerId# and
+		cb.country_partner_id=#countryPartnerId# and cb.branch_id=#branchId#
+		and (cb.isbranch_level = 1)
+	</select>
 
 
 	<select id="getCustomersBySalesUser" resultMap="CustomerMap">
-			select * from customer where customer_id in(
-			select customer_id from customer_sales where sales_user=#userName# )
+		select * from customer where customer_id in(
+		select customer_id from customer_sales where sales_user=#userName# )
 	</select>
 	<select id="getAllCustomerForBusiness" resultMap="CustomerMap">
-    	select * from customer where business_id in 
-    	(select business_id from business where parent_business_id in 
-    		(select business_id from business where business_id in
-    			(select business_id from business where parent_business_id in
-    				(select business_id from business where parent_business_id =  #businessId# ))
-                or business_id =  #businessId# )
-        or business_id in 
-        (select business_id from business where business_id in 
-        	(select  business_id from business where parent_business_id in
-        		(select business_id from business where parent_business_id =  #businessId# ))
-        or business_id =  #businessId# ));
-    </select>
-	
+		select * from customer where business_id in
+		(select business_id from business where parent_business_id in
+		(select business_id from business where business_id in
+		(select business_id from business where parent_business_id in
+		(select business_id from business where parent_business_id = #businessId# ))
+		or business_id = #businessId# )
+		or business_id in
+		(select business_id from business where business_id in
+		(select business_id from business where parent_business_id in
+		(select business_id from business where parent_business_id = #businessId# ))
+		or business_id = #businessId# ));
+	</select>
+	<select id="getCustomerByCustomerIds" resultMap="CustomerMap">
+		select * from customer c
+		<dynamic prepend="where">
+			<isNotNull property="customerIds">
+				<isNotEmpty property="customerIds">
+					c.customer_id IN
+					<iterate open="(" close=")" conjunction="," property="customerIds">
+						#customerIds[]#
+					</iterate>
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</select>
 </sqlMap>

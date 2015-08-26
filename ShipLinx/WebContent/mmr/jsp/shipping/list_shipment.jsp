@@ -167,8 +167,9 @@
     var i,statusid,id;
     for (i=0;i<uploadMarkupId.length;i++){
      if(uploadMarkupId[i].checked){
-    	 statusid = document.getElementById("selectedShipments["+i+"].statusId").value;
-      id=uploadMarkupId[i].value;
+    	 id=uploadMarkupId[i].value;
+    	 statusid = document.getElementById("selectedShipments["+id+"].statusId").value;
+      
      }
     }
    
@@ -373,7 +374,7 @@ function loadTrackingURL(url){
 				<td>
 				<s:hidden name="selectedShipments[%{#index}].id" value="%{id}"/>
 					<s:checkbox name="select[%{index}]" fieldValue="%{id}" value="select[%{#index}]" cssClass="check_uncheck_row" />
-					  <s:hidden name="selectedShipments[%{#index}].statusId" id="selectedShipments[%{#index}].statusId" value="%{statusId}"/>
+					  <s:hidden name="selectedShipments[%{#index}].statusId" id="selectedShipments[%{id}].statusId" value="%{statusId}"/>
 					<input type="hidden" type="checkbox" id="customsinvoice${id}" value="<s:property value="customsInvoiceId"/>" />
     <input type="hidden" type="checkbox" id="id_order" value="<s:property value="id"/>" />
 				

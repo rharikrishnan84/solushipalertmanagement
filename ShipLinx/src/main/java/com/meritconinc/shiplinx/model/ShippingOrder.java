@@ -4,15 +4,19 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.text.SimpleDateFormat;
+
 import com.meritconinc.mmr.utilities.StringUtil;
 import com.meritconinc.shiplinx.utils.CarrierErrorMessage;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
+
 import java.util.Calendar;
 import java.util.TimeZone;
+
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.security.UserUtil;
 public class ShippingOrder implements Serializable {
@@ -130,8 +134,8 @@ public class ShippingOrder implements Serializable {
 
   private String fromDate;
   private String toDate;
-  // private Date fromDateTime;
-  // private Date toDateTime;
+  private Date fromDateTime;
+  private Date toDateTime;
 
   private long businessId;
   private Business business;
@@ -269,7 +273,12 @@ public class ShippingOrder implements Serializable {
 //for e-commerce
  private String generatedBy;
  
- 
+  //for track and search
+  private String role;
+  private long ordersCount;
+  private int offsetRange;
+  private List<Long> orderIds;
+
 
   public int getSaveShipmet() {
 	return saveShipmet;
@@ -2278,4 +2287,76 @@ public void setBusinessIds(List<Long> businessIds) {
 		this.protectFreeze = protectFreeze;
 	}
 
+	public void setFromDateTime(Date fromDateTime) {
+		this.fromDateTime = fromDateTime;
+	}
+
+	public void setToDateTime(Date toDateTime) {
+		this.toDateTime = toDateTime;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public long getOrdersCount() {
+		return ordersCount;
+	}
+
+	public void setOrdersCount(long ordersCount) {
+		this.ordersCount = ordersCount;
+	}
+
+	public int getOffsetRange() {
+		return offsetRange;
+	}
+
+	public void setOffsetRange(int offsetRange) {
+		this.offsetRange = offsetRange;
+	}
+
+	public List<Long> getOrderIds() {
+		return orderIds;
+	}
+
+	public void setOrderIds(List<Long> orderIds) {
+		this.orderIds = orderIds;
+	}
+		// Sorting orders in order list based on order id or date	
+		public static Comparator<ShippingOrder> OrderByOrderIdAsc = new Comparator<ShippingOrder>() {
+	
+			public int compare(ShippingOrder order1, ShippingOrder order2) {
+				Long orderId1 = order1.getId();
+				Long orderId2 = order2.getId();
+				return orderId1.compareTo(orderId2);
+			}
+	
+		};
+		public static Comparator<ShippingOrder> OrderByOrderIdDsc = new Comparator<ShippingOrder>() {
+	
+			public int compare(ShippingOrder order1, ShippingOrder order2) {
+				Long orderId1 = order1.getId();
+				Long orderId2 = order2.getId();
+				return orderId2.compareTo(orderId1);
+			}
+		};
+		public static Comparator<ShippingOrder> OrderByDateIdAsc = new Comparator<ShippingOrder>() {
+			public int compare(ShippingOrder order1, ShippingOrder order2) {
+				Timestamp date1 = order1.getScheduledShipDate();
+				Timestamp date2 = order2.getScheduledShipDate();
+				return date1.compareTo(date2);
+			}
+		};
+	
+		public static Comparator<ShippingOrder> OrderByDateIdDsc = new Comparator<ShippingOrder>() {
+			public int compare(ShippingOrder order1, ShippingOrder order2) {
+				Timestamp date1 = order1.getScheduledShipDate();
+				Timestamp date2 = order2.getScheduledShipDate();
+				return date2.compareTo(date1);
+			}
+		};
 }

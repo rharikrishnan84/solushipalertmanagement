@@ -24,6 +24,7 @@ import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.PickupPieceType;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.PickupPortType;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.RequestType;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.ShipperType;
+import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.TrackingDataType;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.TransactionReferenceType;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.UPSSecurity;
 import com.meritconinc.shiplinx.carrier.ups.ws.pickup.proxy.WeightType;
@@ -160,6 +161,13 @@ public class PickupRequestWebServiceClient{
 		tran_ref.setTransactionIdentifier(pickup.getPickupReference());
 		type.setTransactionReference(tran_ref);
 		request.setRequest(type);
+		
+		TrackingDataType track = new TrackingDataType();
+				if(pickup.getMasterTrackingNum() != null && !pickup.getMasterTrackingNum().isEmpty()){
+					track.setTrackingNumber(pickup.getMasterTrackingNum());
+					request.getTrackingData().add(track);
+						
+				}
 		
 		request.setRatePickupIndicator("Y");
 

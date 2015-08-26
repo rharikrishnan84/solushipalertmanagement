@@ -6,10 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.log4j.LogManager;
@@ -758,7 +761,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
         username = user.getUsername();
 
       log.info("User " + username + " performing search from / to: " + so.getFromDate() + " / "
-          + so.getToDate());
+      +so.getToDate());
 
       List<ShippingOrder> list_match = new ArrayList<ShippingOrder>();
       String queryId1 = "";
@@ -900,7 +903,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     // TODO Auto-generated method stub
     int billingStatus = determineShipmentBillingStatus(shipment);
     log.debug("Billing Status for order " + shipment.getId() + " is " + billingStatus
-        + " // previously " + shipment.getBillingStatus());
+    +" // previously " + shipment.getBillingStatus());
     if (shipment.getBillingStatus() != null && shipment.getBillingStatus() == billingStatus
         && !shipment.isInvoiced())
 
@@ -1079,7 +1082,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
       username = user.getUsername();
 
     log.info("User " + username + " performing search from / to: " + order.getFromDate() + " / "
-        + order.getToDate() + " / " + order.getReferenceValue());
+    +order.getToDate() + " / " + order.getReferenceValue());
     List<ShippingOrder> soList = new ArrayList<ShippingOrder>();
     try {
       soList = (List) getSqlMapClientTemplate().queryForList("searchReferenceShipments", order);
@@ -1805,5 +1808,204 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
    ShippingOrder so=(ShippingOrder) getSqlMapClientTemplate().queryForObject("getShippingOrderByReferenceOne",paramObj);
    return so;
    }
+ 	@Override
+ 	public List<ShippingOrder> getShipmentsForTrack(ShippingOrder so) {
+ 		boolean isEdiFound = false;
+ 		boolean isMasterTrackFound = false;
+ 		List<ShippingOrder> resultList = new ArrayList<ShippingOrder>();
+ 		Set<Long> orderIdsSet=new HashSet<Long>();
+ 		List<Long> orderIds1 = new ArrayList<Long>();
+ 		List<Long> orderIds2 = new ArrayList<Long>();
+ 		Long count = 0L ;
+ 		if (so.getId() != null || so.getMasterTrackingNum() != null
+ 				|| so.getReferenceCode() != null
+ 				|| so.getEdiInvoiceNumber() != null) {
+ 			so.setFromDateTime(null);
+ 			so.setToDateTime(null);
+ 		}
+
+ 		if (so.getCustomerId() != null && so.getCustomerId().longValue() <= 0)
+ 			so.setCustomerId(null);
+ 		if (so.getCarrierId() != null && so.getCarrierId().longValue() <= 0)
+ 			so.setCarrierId(null);
+ 		if (so.getServiceId() != null && so.getServiceId().longValue() <= 0)
+ 			so.setServiceId(null);
+ 		if (so.getFromDate() != null && so.getFromDate().trim().isEmpty())
+ 			so.setFromDate(null);
+ 		if (so.getMasterTrackingNum() != null
+ 				&& so.getMasterTrackingNum().trim().isEmpty())
+ 			so.setMasterTrackingNum(null);
+ 		if (so.getEdiInvoiceNumber() != null
+ 				&& so.getEdiInvoiceNumber().trim().isEmpty())
+ 			so.setEdiInvoiceNumber(null);
+ 		if (so.getShowCancelledShipments() != null
+ 				&& so.getShowCancelledShipments())
+ 			so.setCancelledShipments("Y"); // checked - show cancelled shipments
+ 		else
+ 			so.setCancelledShipments("N"); // not checked - dont show cancelled
+ 											// shipments
+ 		if (so.getStatusId() != null && so.getStatusId().longValue() <= 0)
+ 			so.setStatusId(null);
+
+ 		// If search is conducted by order id or order num or tracking number,
+ 		// or batch id or
+ 		// reference, then excluded date range search
+ 		if ((!StringUtil.isEmpty(so.getMasterTrackingNum()))
+ 				|| (so.getId() != null && so.getId() > 0)
+ 				|| (!StringUtil.isEmpty(so.getOrderNum()))
+ 				|| (!StringUtil.isEmpty(so.getEdiInvoiceNumber()))
+ 				|| (!StringUtil.isEmpty(so.getBatchId()))
+ 				|| (!StringUtil.isEmpty(so.getReferenceCode()))) {
+ 			so.setFromDate(null);
+ 			so.setToDate(null);
+ 		}
+
+ 	
+ 		User user = UserUtil.getMmrUser();
+ 		String role = user.getUserRole();
+ 		long startTime1 = System.currentTimeMillis();
+ 		 if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
+ 			 so.setBusinessIds(null);
+ 			 if(so.getId() != null){
+ 				 resultList = getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
+ 				 count = (long) resultList.size();
+ 				 if(resultList.size() >0){
+ 					 resultList.get(0).setOrdersCount(count);
+ 				 }
+ 				 return resultList;
+ 			 }
+ 		 }else{
+ 			 if(user.getCustomerId()>0){
+ 			 so.setCustomerId(user.getCustomerId());
+ 			 }
+ 		 }
+
+ 		 String username = null;
+ 		if (user != null)
+ 			username = user.getUsername();
+ 		log.info("User " + username + " performing search from / to: "
+ 				+ so.getFromDate() + " / " + so.getToDate());
+ 		
+ 		// fetching orders by EDI invoice number from Charges	
+ 		if(so.getEdiInvoiceNumber() != null && !so.getEdiInvoiceNumber().equalsIgnoreCase(""))
+ 		{ 
+ 			isEdiFound = true;
+ 			Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 			paramObj.put("ediInvoiceNumber", so.getEdiInvoiceNumber());
+ 			orderIds1 = getSqlMapClientTemplate().queryForList("getOrderIdByEDINum", paramObj);
+ 			
+ 		} 
+ 		
+ 		// fetch orders by master tracking number from ShippingOrder & Package
+ 		if(so.getMasterTrackingNum() != null && !so.getMasterTrackingNum().equalsIgnoreCase("") ){
+ 			isMasterTrackFound = true;
+ 			Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 			paramObj.put("masterTrackingNum", so.getMasterTrackingNum());
+ 			orderIds2 = getSqlMapClientTemplate().queryForList("getOrdersByTrackingNum", paramObj);
+ 			if(orderIds2.size() == 0){
+ 				Map<String, Object> paramObj1 = new HashMap<String, Object>(1);
+ 				paramObj1.put("masterTrackingNum", so.getMasterTrackingNum());
+ 				orderIds2 = getSqlMapClientTemplate().queryForList("getOrderIdByTrackingNum", paramObj1);
+ 			}
+ 		}
+ 		
+ 		
+ 		// filtering fetched records
+ 		if(isEdiFound && isMasterTrackFound && orderIds1.size() >0 && orderIds2.size() >0 ){
+ 			for(int i =0 ; i< orderIds1.size(); i++){
+ 				for(int j =0 ; j< orderIds1.size(); j++){
+ 					if(orderIds1.get(i) == orderIds2.get(j)){
+ 						orderIdsSet.add(orderIds1.get(i));
+ 					}
+ 				}	
+ 			}
+ 			
+ 		}else{
+ 		if(orderIds1.size() >0 || orderIds2.size()>0){
+ 			
+ 			if(orderIds1.size() != 0){
+ 				orderIdsSet.addAll(orderIds1);
+ 			}
+ 			if(orderIds2.size() != 0){
+ 				orderIdsSet.addAll(orderIds2);
+ 			}
+ 		}
+ 		}
+ 		
+ 		if(orderIdsSet.size() > 0){
+ 			List<Long> tempList = new ArrayList<Long>(orderIdsSet);
+ 			so.setOrderIds(tempList);
+ 		}else{
+ 			so.setOrderIds(null);
+ 		}
+ 		if(isEdiFound && isMasterTrackFound && orderIdsSet.size() == 0){
+ 			return resultList;
+ 		}
+ 		// fetching orders by tracking & search filters from ShippingOrder
+ 		if (so.getOrderIds() != null || so.getFromDateTime() != null
+ 				|| so.getToDateTime() != null || so.getCustomerId() != null
+ 				|| so.getCarrierId() != null && so.getServiceId() != null
+ 				&& so.getMasterTrackingNum() != null
+ 				|| so.getReferenceCode() != null || so.getBillingStatus() > 0
+ 				|| so.getStatusId() == null || so.getStatusId() != null) {
+ 			resultList = getSqlMapClientTemplate().queryForList(
+ 					"searchShipmentsForTrack", so);
+ 			count = (Long) getSqlMapClientTemplate().queryForObject(
+ 					"searchShipmentsForTrackCount", so);
+ 		}
+
+ 		long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
+ 		log.info(" Total Elapsed Time for process fecthing "+resultList.size()+" orders (seconds):" + elapsedTimeSec1);
+ 		so.setPurpose(""); // Clear purpose
+ 		// sorting orders based on order id or date
+ 		if (StringUtil.isEmpty(so.getOrderBy())) {
+ 			Collections.sort(resultList, ShippingOrder.OrderByOrderIdAsc);
+ 		} else {// set the field
+ 			if (so.getOrderBy().equalsIgnoreCase("Order #") && so.getOrder() != null && so.getOrder().equalsIgnoreCase("asc")){
+ 				Collections.sort(resultList, ShippingOrder.OrderByOrderIdAsc);
+ 			}else if (so.getOrderBy().equalsIgnoreCase("Order #") &&  so.getOrder() != null && so.getOrder().equalsIgnoreCase("desc")){
+ 				Collections.sort(resultList, ShippingOrder.OrderByOrderIdDsc);
+ 			}
+ 			else if (so.getOrderBy().equalsIgnoreCase("Shipment Date") && so.getOrder() != null && so.getOrder().equalsIgnoreCase("asc")){
+ 				Collections.sort(resultList, ShippingOrder.OrderByDateIdAsc);
+ 			}else if (so.getOrderBy().equalsIgnoreCase("Shipment Date") && so.getOrder() != null && so.getOrder().equalsIgnoreCase("desc")){
+ 				Collections.sort(resultList, ShippingOrder.OrderByDateIdDsc);
+ 			}
+ 		}
+ 		
+ 		// setting the total orders count for pagination
+ 		if(resultList.size()> 0){
+ 			resultList.get(0).setOrdersCount(count);
+ 		}
+ 		return resultList;
+ 	}
+
+ @Override
+ 	public List<Charge> getChargesByOrderIds(List<Long> orderIds) {
+ 		List<Charge> charges = new ArrayList<Charge>();
+ 		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 		paramObj.put("orderIds", orderIds);
+ 		charges = (List<Charge>) getSqlMapClientTemplate().queryForList(
+ 				"getChargesByOrderIds", paramObj);
+ 		return charges;
+
+ 	}
+
+ @Override
+ public List<Package> getPackagesByOrderIds(List<Long> orderIds) {
+ 	List<Package> packages= new ArrayList<Package>();
+ 	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+ 	paramObj.put("orderIds", orderIds);
+ 	packages = (List<Package>)getSqlMapClientTemplate().queryForList("getPackagesByOrderIds",paramObj);
+ 	return packages;
+ }
+@Override
+public List<CustomsInvoice> getCustomsInvoiceByOrderIds(List<Long> orderIds) {
+	List<CustomsInvoice> customsInvoices = new ArrayList<CustomsInvoice>(); 
+	Map<String, Object> paramObj = new HashMap<String, Object>(1);
+	paramObj.put("orderIds", orderIds);
+	customsInvoices =  (List<CustomsInvoice>)getSqlMapClientTemplate().queryForList("getCustomsInvoiceByOrderIds",paramObj);
+	return customsInvoices;
+}
 	
 }

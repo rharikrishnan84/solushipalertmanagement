@@ -64,4 +64,8 @@ public interface CarrierServiceDAO {
   
   public Carrier getCarrierBycarrierId(Long carrierId);
 
+  public List<Service> getServicesByIds(List<Long> serviceIds);
+      
+  public List<Carrier> getCarrierByIds(List<Long> carrierIds);
+
 }

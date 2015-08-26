@@ -1115,6 +1115,7 @@ public class DHLXmlDataConverter {
 		com.meritconinc.shiplinx.carrier.dhl.xml.shipvalidateglobal.request.Contact c = populateGlobalContact(order.getToAddress());
 		if (c != null)
 			consignee.setContact(c);
+		consignee.setDivision(order.getToAddress().getProvinceCode());
 		
 		return consignee;
 	}

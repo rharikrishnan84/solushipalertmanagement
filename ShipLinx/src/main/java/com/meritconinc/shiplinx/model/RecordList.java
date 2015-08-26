@@ -10,6 +10,8 @@ public class RecordList {
 	private String city;
 	private String pickupLocation;
 	
+	private String masterTrackingNum;
+	
 	public String getPickupLocation() {
 		return pickupLocation;
 	}
@@ -65,6 +67,12 @@ public class RecordList {
 	}
 	public void setPickupDate(String pickupDate) {
 		this.pickupDate = pickupDate;
+	}
+	public String getMasterTrackingNum() {
+		return masterTrackingNum;
+	}
+	public void setMasterTrackingNum(String masterTrackingNum) {
+		this.masterTrackingNum = masterTrackingNum;
 	}
 	
 	

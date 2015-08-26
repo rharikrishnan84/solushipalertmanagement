@@ -54,6 +54,8 @@ public class Pickup implements Serializable {
 	private String pickupDate_web;
 	private double totalActualWeight=1.0;
 	
+	private String masterTrackingNum;
+	
 	public double getTotalActualWeight() {
 		return totalActualWeight;
 	}
@@ -263,6 +265,12 @@ public class Pickup implements Serializable {
 	}
 	public void setOversizeQuantity(int oversizeQuantity) {
 		this.oversizeQuantity = oversizeQuantity;
+	}
+	public String getMasterTrackingNum() {
+		return masterTrackingNum;
+	}
+	public void setMasterTrackingNum(String masterTrackingNum) {
+		this.masterTrackingNum = masterTrackingNum;
 	}
 	
 	

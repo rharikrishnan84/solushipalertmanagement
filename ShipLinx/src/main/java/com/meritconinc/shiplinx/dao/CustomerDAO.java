@@ -63,4 +63,5 @@ public interface CustomerDAO{
 	public void callCommissionStoredProcedure();
 	public void setCopyCustomerMarkupFlag(long customerId, long businessId);
 	public List<Customer> getAllCustomerForBusiness(long businessId);
+	public List<Customer> getCustomerByCustomerIds(List<Long> customerIds);
 }	

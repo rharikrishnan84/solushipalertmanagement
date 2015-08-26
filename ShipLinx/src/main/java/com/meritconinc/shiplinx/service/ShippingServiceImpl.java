@@ -2438,5 +2438,120 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 			return i;
 	}
 	
+		public List<ShippingOrder> populateOrder(List<ShippingOrder> orders) {
+		long startTime = System.currentTimeMillis();
+		List<Long> addressIds = new ArrayList<Long>();
+		List<Long> serviceIds = new ArrayList<Long>();
+		List<Long> customerIds = new ArrayList<Long>();
+		List<Long> carrierIds = new ArrayList<Long>();
+		List<Long> orderIds = new ArrayList<Long>();
+		List<ShippingOrder> orderList = new ArrayList<ShippingOrder>();
+		for (ShippingOrder order : orders) {
+			addressIds.add(order.getShipFromId());
+			addressIds.add(order.getShipToId());
+			serviceIds.add(order.getServiceId());
+			customerIds.add(order.getCustomerId());
+			carrierIds.add(order.getCarrierId());
+			orderIds.add(order.getId());
+		}
+		List<Address> addressList = addressDAO.getAddressByIds(addressIds);
+		List<OrderStatus> orderStatus = shippingDAO
+				.getShippingOrdersAllStatus();
+		List<Service> servicesList = carrierServiceDAO
+				.getServicesByIds(serviceIds);
+		List<Carrier> carriersList = carrierServiceDAO
+				.getCarrierByIds(carrierIds);
+		List<Customer> customersList = customerDAO
+				.getCustomerByCustomerIds(customerIds);
+		List<CustomsInvoice> customsInvoicesList = shippingDAO.getCustomsInvoiceByOrderIds(orderIds); 
+		List<Charge> charges = shippingDAO.getChargesByOrderIds(orderIds);
+		List<Package> packages = shippingDAO.getPackagesByOrderIds(orderIds);
+		long statusId = 0;
+		long serviceId = 0;
+		long carrierId = 0;
+		long orderId = 0;
 
+		for (ShippingOrder order : orders) {
+			if (order.getStatusId() != null) {
+				statusId = order.getStatusId();
+			}
+			if (order.getServiceId() != null) {
+				serviceId = order.getServiceId();
+			}
+			if (order.getCarrierId() != null) {
+				carrierId = order.getCarrierId();
+			}
+			if (order.getId() != null) {
+				orderId = order.getId();
+			}
+			for (Address address : addressList) {
+				if (order.getShipFromId() == address.getAddressId()) {
+					order.setFromAddress(address);
+					order.setFromAddressLong(address.getAddressLong());
+					// addressList.remove(address);
+				} else if (order.getShipToId() == address.getAddressId()) {
+					order.setToAddress(address);
+					order.setToAddressLong(address.getAddressLong());
+					// addressList.remove(address);
+				}
+			}
+			for (OrderStatus status : orderStatus) {
+				if (statusId == status.getId()) {
+					order.setStatusName(status.getName());
+					order.setOrderStatus(status.getName());
+				}
+			}
+			for (Customer customer : customersList) {
+				if (order.getCustomerId() != null && customer != null) {
+					if (order.getCustomerId() == customer.getId()) {
+						order.setCustomer(customer);
+						order.setCustomerName(customer.getName());
+					}
+				}
+			}
+			for (Carrier carrier : carriersList) {
+				if (carrierId == carrier.getId()) {
+					order.setCarrier(carrier);
+					order.setCarrierName(carrier.getName());
+					order.setMasterCarrierName(carrier.getName());
+				}
+			}
+			for (Service service : servicesList) {
+				if (serviceId == service.getId()) {
+					order.setService(service);
+					order.setServiceName(service.getName());
+				}
+			}
+			for (Package package1 : packages) {
+				if (order.getId() == package1.getOrderId()) {
+					order.getPackages().add(package1);
+				}
+			}
+			for (Charge charge : charges) {
+				if (order.getId() == charge.getOrderId()) {
+					order.getCharges().add(charge);
+				}
+			}
+			for (CustomsInvoice invoice : customsInvoicesList) {
+				if (order.getId() == invoice.getOrderId()) {
+					order.setCustomsInvoice(invoice);
+				}
+			}
+			orderList.add(order);
+		}
+
+		long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
+		log.info(" Total Elapsed Time for Setting Object (seconds):"+elapsedTimeSec);
+
+		return orderList;
+	}
+
+	@Override
+	public List<ShippingOrder> getShipmentsForTrack(ShippingOrder so) {
+		List<ShippingOrder> temList = this.shippingDAO.getShipmentsForTrack(so);
+			if(temList.size() >0 ){
+			return populateOrder(temList);
+			}
+			return temList;
+	}
 }

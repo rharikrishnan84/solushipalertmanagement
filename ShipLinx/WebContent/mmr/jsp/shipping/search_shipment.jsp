@@ -43,6 +43,8 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 		{
 				 document.searchform.action = "list.shipment.action";
 			 	document.searchform.submit();
+				$('#loader').css('display', 'block');
+				$('#loaderImg').css('display', 'block');
 		}
 		function saveShipmentList() {
 			document.searchform.action = "save.shipment.action";
@@ -198,7 +200,10 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
   $('#wrapper_new').css({'min-height':wndo,'width':'100%'});
   });
 	</script>
-
+<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+<div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+</div>
 	<div id="messages">
 <div class="message_inner">
 	<jsp:include page="../common/action_messages.jsp"/>

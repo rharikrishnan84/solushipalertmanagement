@@ -252,4 +252,5 @@ public ChargeGroup getChargeDetailsByProvince(String province);
 
 	public int checkAccessorial(String chargeCode);
 	public int saveDuplicateOrder(ShippingOrder dupOrder, ShippingOrder shippingOrder);
+	public List<ShippingOrder>getShipmentsForTrack(ShippingOrder so);
 }

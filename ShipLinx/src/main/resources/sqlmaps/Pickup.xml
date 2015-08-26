@@ -30,6 +30,7 @@
 		<result property="status" column="status"/>
 		<result property="customer" column="customer_id" select="selectCustomer"/>
 		<result property="carrier" column="carrier_id" select="getCarrierById"/>
+		<result property="masterTrackingNum" column="tracking_num" />
 	</resultMap>
 	
 	<resultMap id="CustomerMap" class="com.meritconinc.shiplinx.model.Customer">
@@ -74,11 +75,12 @@
 			<result property="address1" />
 			<result property="address2"/>
 			<result property="city"/>
-			<result property="pickupLocation"/>				
+			<result property="pickupLocation"/>		
+			<result property="masterTrackingNum" />			
 	</resultMap>
 	
 	<select id="selectpickuplist"  resultMap="pickuplist">
-		select p.address_id,p.pickup_date,p.carrier_id,p.status,a.abbreviation_name,a.address1,a.address2,a.city,p.location from pickup p left join address a on (p.address_id=a.address_id) where pickup_date >= curDate();
+		select p.address_id,p.pickup_date,p.carrier_id,p.status,a.abbreviation_name,a.address1,a.address2,a.city,p.location,p.tracking_num from pickup p left join address a on (p.address_id=a.address_id) where pickup_date >= curDate();
 	</select>
 	
 	<select id="selectCustomer" parameterClass="long" resultMap="CustomerMap">
@@ -91,8 +93,8 @@
 	</select>
 
 	<insert id="addPickup" parameterClass="com.meritconinc.shiplinx.model.Pickup">
-		  insert into pickup (carrier_id, customer_id, business_id, ready_hour, ready_min, close_hour, close_min, location, reference, confirmation_num, address_id, pickup_date, quantity, service_id, destination_country_code, overweight, instructions, package_type_id, total_weight, order_id, carrier_reference, status)
-		  values (#carrierId#,#customerId#,#businessId#,#readyHour#,#readyMin#,#closeHour#,#closeMin#,#pickupLocation#,#pickupReference#,#confirmationNum#,#addressId#,#pickupDate#,#quantity#,#serviceId#,#destinationCountryCode#, #overweight#, #instructions#, #packageTypeId#, #totalWeight#, #orderId#, #carrierReference#, #status#)
+		  insert into pickup (carrier_id, customer_id, business_id, ready_hour, ready_min, close_hour, close_min, location, reference, confirmation_num, address_id, pickup_date, quantity, service_id, destination_country_code, overweight, instructions, package_type_id, total_weight, order_id, carrier_reference, status, tracking_num)
+		  values (#carrierId#,#customerId#,#businessId#,#readyHour#,#readyMin#,#closeHour#,#closeMin#,#pickupLocation#,#pickupReference#,#confirmationNum#,#addressId#,#pickupDate#,#quantity#,#serviceId#,#destinationCountryCode#, #overweight#, #instructions#, #packageTypeId#, #totalWeight#, #orderId#, #carrierReference#, #status#, #masterTrackingNum#)
 		  <selectKey keyProperty="pickupId" resultClass="long">
 			SELECT @@IDENTITY AS 'Identity'
 		</selectKey>	

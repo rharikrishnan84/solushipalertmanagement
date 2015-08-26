@@ -30,6 +30,34 @@
 		<result property="brokerCode"/>
 		<result property="taxId"/>
 	</resultMap>
+	<resultMap id="FullAddressMap" class="com.meritconinc.shiplinx.model.Address">
+		<result property="addressId" />
+		<result property="abbreviationName" />
+		<result property="consigneeId" />
+		<result property="address1" />
+		<result property="address2" />
+		<result property="city" />
+		<result property="phoneNo" />
+		<result property="phoneExt" />
+		<result property="faxNo" />
+		<result property="mobilePhoneNo" />
+		<result property="emailAddress" />
+		<result property="contactName" />
+		<result property="postalCode" />
+		<result property="url" />
+		<result property="residential" />
+		<result property="countryCode" />
+		<result property="provinceCode" />
+		<result property="customerId" />
+		<result property="defaultFromAddress" />
+		<result property="defaultToAddress" />
+		<result property="sendNotification" />
+		<result property="dateCreated" />
+		<result property="distributionName" />
+		<result property="brokerCode" />
+		<result property="taxId" />
+		<result property="addressLong" column="address_long" />
+	</resultMap>
 	
 	<resultMap id="AddressMaps" class="com.meritconinc.shiplinx.model.Address">
 	<result property="abbreviationName" />
@@ -295,4 +323,22 @@
 		select distinct a.customer_id from address a where a.address1 like '%$toAddress$%' and (a.postal_code like '%$toPostalCode$%')  
 		and (a.country_code like '%$toCountryCode$%') and (a.abbreviation_name like '%$toAbbreviationName$%' and customer_id > 0) limit 1
 	</select>
+	<select id="getAddressByIds" resultMap="FullAddressMap">
+		select
+		a.*,concat(COALESCE(a.abbreviation_name,''),',',COALESCE(a.address1,''),',',
+		COALESCE(a.address2,''),',', COALESCE(a.city,''),',',
+		COALESCE(a.postal_code,''),',', COALESCE(a.province_code,'')) as
+		address_long from address a
+		<dynamic prepend="where">
+			<isNotNull property="addressIds">
+				<isNotEmpty property="addressIds">
+					a.address_id IN
+					<iterate open="(" close=")" conjunction="," property="addressIds">
+						#addressIds[]#
+					</iterate>
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</select>
+	
 </sqlMap>

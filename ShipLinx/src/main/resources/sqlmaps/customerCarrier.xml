@@ -322,4 +322,30 @@
 	    	    select * from carrier where carrier_id=#carrierId#
 	    	    
 	    	</select>
+<select id="getCarriersByIds" resultMap="CarrierResult">
+			select * from carrier c
+	<dynamic prepend="where">
+		<isNotNull property="carrierIds">
+			<isNotEmpty property="carrierIds">
+				c.carrier_id IN
+				<iterate open="(" close=")" conjunction="," property="carrierIds">
+					#carrierIds[]#
+				</iterate>
+			</isNotEmpty>
+		</isNotNull>
+	</dynamic>
+</select>	    	
+<select id="getServiceByIds" resultMap="CarrierServicesResult1">
+	select * from service s
+	<dynamic prepend="where">
+		<isNotNull property="serviceIds">
+			<isNotEmpty property="serviceIds">
+				s.service_id IN
+				<iterate open="(" close=")" conjunction="," property="serviceIds">
+					#serviceIds[]#
+				</iterate>
+			</isNotEmpty>
+		</isNotNull>
+	</dynamic>
+</select>	    	
 </sqlMap>

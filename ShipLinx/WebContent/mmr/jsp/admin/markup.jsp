@@ -16,8 +16,52 @@
 <script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
 
-<body> 
+<!-- <body>  -->
+<body onload="defaultLabel()"> 
 </script>	
+
+<script>
+ 
+function defaultLabel()
+{
+	 if(document.getElementById("drop").value==1)
+	{
+	document.getElementById("fromCost").style.display="block";
+	document.getElementById("fromWeight").style.display="none";
+	document.getElementById("toCost").style.display="block";
+	document.getElementById("toWeight").style.display="none";
+	}
+else
+	{
+	document.getElementById("fromCost").style.display="none";
+	document.getElementById("fromWeight").style.display="block";
+	document.getElementById("toCost").style.display="none";
+	document.getElementById("toWeight").style.display="block";
+	} 
+	
+	
+	
+	}
+function changeLabel()
+{
+	if(document.getElementById("drop").value==1)
+		{
+		document.getElementById("fromCost").style.display="block";
+		document.getElementById("fromWeight").style.display="none";
+		document.getElementById("toCost").style.display="block";
+		document.getElementById("toWeight").style.display="none";
+		}
+	else
+		{
+		document.getElementById("fromCost").style.display="none";
+		document.getElementById("fromWeight").style.display="block";
+		document.getElementById("toCost").style.display="none";
+		document.getElementById("toWeight").style.display="block";
+		}
+	//alert(document.getElementById("drop").value);
+	}
+</script>
+ 	
 	
 		    <style type="text/css">
 .autocomplete-suggestions {
@@ -395,7 +439,8 @@ display:none;
           if(txt1 < 1 && txt2 <1 )
         alert('Please select at least one');  
           else{
-         var i,selectedItem="",percentage="",flat="",disabledflag="",variable="";
+         /* var i,selectedItem="",percentage="",flat="",disabledflag="",variable=""; */
+         var i,selectedItem="",percentage="",flat="",disabledflag="",variable="",fromWeight="",toWeight="";
           for(i=0;i<savemarkup.length;i++){
            if(savemarkup[i].checked){
             selectedItem=selectedItem+savemarkup[i].value+",";
@@ -403,6 +448,8 @@ display:none;
             flat=flat+document.getElementsByName("markupFlat")[i].value+",";
             disabledflag=disabledflag+document.getElementsByName("disabledFlag")[i].value+",";     
             variable=variable+document.getElementsByName("variable")[i].value+",";
+            fromWeight=fromWeight+document.getElementsByName("fromWeight")[i].value+",";
+            toWeight=toWeight+document.getElementsByName("toWeight")[i].value+",";
            }   
                      }
                      
@@ -425,7 +472,8 @@ display:none;
                }
               }   
       }
-      document.searchform.action = "saveMarkupList.action?selectedItem="+selectedItem+"&percentage="+percentage+"&flat="+flat+"&disabledFlag="+disabledflag+"&variable="+variable+"&carrierId="+carrierId+"&carrierName="+carrierName+"&carrierInactive="+carrierInactive;
+     /*  document.searchform.action = "saveMarkupList.action?selectedItem="+selectedItem+"&percentage="+percentage+"&flat="+flat+"&disabledFlag="+disabledflag+"&variable="+variable+"&carrierId="+carrierId+"&carrierName="+carrierName+"&carrierInactive="+carrierInactive; */
+     document.searchform.action = "saveMarkupList.action?selectedItem="+selectedItem+"&percentage="+percentage+"&flat="+flat+"&disabledFlag="+disabledflag+"&variable="+variable+"&carrierId="+carrierId+"&carrierName="+carrierName+"&carrierInactive="+carrierInactive+"&fromWeight="+fromWeight+"&toWeight="+toWeight;
           document.searchform.submit();
      }
  }
@@ -585,13 +633,22 @@ display:none;
            </div>
           </div>
           <div class="fields">
-           <label><mmr:message messageId="label.markup.fromWeight"/></label>
+           <%-- <label><mmr:message messageId="label.markup.fromWeight"/></label> --%>
+           <div id="fromWeight">
+           <label><mmr:message messageId="label.markup.fromWeight"/></label></div>
+           <div id="fromCost">
+          <label>From Cost</label></div>
            <div class="controls"><span>:</span>
             <s:textfield  key="markup.fromWeight" name="markup.fromWeight"   />
            </div>
           </div>
           <div class="fields">
+          <div id="toWeight">
            <label><mmr:message messageId="label.markup.toWeight"/> </label>
+           </div>
+           <div id="toCost">
+           <label>To Cost</label>
+          </div>
            <div class="controls"><span>:</span>
             <s:textfield  key="markup.toWeight" name="markup.toWeight"   />
            </div>
@@ -611,7 +668,8 @@ display:none;
 		  <div class="fields">
            <label><mmr:message messageId="label.markup.variable"/> </label>
            <div class="controls"><span>:</span>
-           <s:select value="%{markup.variable}" name="markup.variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" />
+           <%-- <s:select value="%{markup.variable}" name="markup.variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /> --%>
+           <s:select value="%{markup.variable}" name="markup.variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" id="drop" onchange="changeLabel()"/>
    			</div>
 									
            </div>
@@ -752,8 +810,10 @@ display:none;
 										Markdown
 									</s:elseif>
 								</td>
-								<td ><s:property value="fromWeight"/></td>
-								<td ><s:property value="toWeight"/></td>
+								<%-- <td ><s:property value="fromWeight"/></td>
+								<td ><s:property value="toWeight"/></td> --%>
+								<td><s:textfield size="5" id="fromWeight%{index}" value="%{fromWeight}" name="fromWeight"></s:textfield></td>
+								<td><s:textfield size="5" id="toWeight%{index}" value="%{toWeight}" name="toWeight"></s:textfield></td>
 								<td><s:select value="%{variable}" id="evenVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
 								<td ><s:textfield size="5" id="evenPercId%{index}"   key="markupPercentage" name="markupPercentage" onchange="ontimevalidate(this.value,'perc','even',%{index});" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 								<td><s:textfield size="5"  id="evenFlatId%{index}"   key="markupFlat" name="markupFlat" onchange="ontimevalidate(this.value,'flat','even',%{index});" cssClass="text_02_tf_small flat%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
@@ -786,8 +846,10 @@ display:none;
 
 
 
-								<td><s:property value="fromWeight"/></td>
-								<td><s:property value="toWeight"/></td>									
+								<%-- <td><s:property value="fromWeight"/></td>
+								<td><s:property value="toWeight"/></td> --%>	
+								<td><s:textfield size="5" id="fromWeight%{index}" value="%{fromWeight}" name="fromWeight"></s:textfield></td>
+								<td><s:textfield size="5" id="toWeight%{index}" value="%{toWeight}" name="toWeight"></s:textfield></td>															
 
 									<td><s:select value="%{variable}" id="oddVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
 								<td ><s:textfield size="5" id="oddPercId%{index}" class="perc"  onchange="ontimevalidate(this.value,'perc','odd',%{index});" key="markupPercentage" name="markupPercentage" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>

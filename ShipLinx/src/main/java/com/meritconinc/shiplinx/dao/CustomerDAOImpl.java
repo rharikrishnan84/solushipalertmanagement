@@ -3,6 +3,7 @@ package com.meritconinc.shiplinx.dao;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -502,4 +503,17 @@ public int findUnpaidInvoiceDuration(long customerId, int holdTerms){
 	public List<Customer> getAllCustomerForBusiness(long businessId) {
 		return (List<Customer>) getSqlMapClientTemplate().queryForList("getAllCustomerForBusiness",businessId);
 		}
+	@Override
+	public List<Customer> getCustomerByCustomerIds(List<Long> customerIds) {
+		List<Customer> customers = new ArrayList<Customer>();
+		try {
+			Map<String, Object> paramObj = new HashMap<String, Object>(1);
+			paramObj.put("customerIds", customerIds);
+			customers = (List<Customer>) getSqlMapClientTemplate()
+					.queryForList("getCustomerByCustomerIds", paramObj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return customers;
+	}
 }

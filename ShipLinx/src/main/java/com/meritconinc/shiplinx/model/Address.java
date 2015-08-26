@@ -37,6 +37,7 @@ public class Address implements Serializable, Cloneable {
 	private Date dateCreated;
 	private boolean sendNotification;
 	private String taxId;
+	private String addressLong;
 	
 	//Web only
 	
@@ -343,21 +344,23 @@ public class Address implements Serializable, Cloneable {
 	}
 	public void copyAddress(Address sourceAddress)
 	{
-		this.setAbbreviationName(sourceAddress.getAbbreviationName());
-		this.setAddress1(sourceAddress.getAddress1());
-		this.setAddress2(sourceAddress.getAddress2());
-		this.setCity(sourceAddress.getCity());
-		this.setPostalCode(sourceAddress.getPostalCode());
-		this.setCountryCode(sourceAddress.getCountryCode());
-		this.setProvinceCode(sourceAddress.getProvinceCode());
-		this.setProvinceId(sourceAddress.getProvinceId());
-		this.setPhoneNo(sourceAddress.getPhoneNo());
-		this.setEmailAddress(sourceAddress.getEmailAddress());
-		this.setContactName(sourceAddress.getContactName());
-		this.setFaxNo(sourceAddress.getFaxNo());
-		this.setTaxId(sourceAddress.getTaxId());
-		this.setResidential(sourceAddress.getResidential());
-		this.setSendNotification(sourceAddress.sendNotification);
+		if(sourceAddress!=null){
+			this.setAbbreviationName(sourceAddress.getAbbreviationName());
+			this.setAddress1(sourceAddress.getAddress1());
+			this.setAddress2(sourceAddress.getAddress2());
+			this.setCity(sourceAddress.getCity());
+			this.setPostalCode(sourceAddress.getPostalCode());
+			this.setCountryCode(sourceAddress.getCountryCode());
+			this.setProvinceCode(sourceAddress.getProvinceCode());
+			this.setProvinceId(sourceAddress.getProvinceId());
+			this.setPhoneNo(sourceAddress.getPhoneNo());
+			this.setEmailAddress(sourceAddress.getEmailAddress());
+			this.setContactName(sourceAddress.getContactName());
+			this.setFaxNo(sourceAddress.getFaxNo());
+			this.setTaxId(sourceAddress.getTaxId());
+			this.setResidential(sourceAddress.getResidential());
+			this.setSendNotification(sourceAddress.sendNotification);
+		}
 	}
 	public boolean isZipCodeRequired() {
 		return zipCodeRequired;
@@ -373,6 +376,12 @@ public class Address implements Serializable, Cloneable {
 	}
 	public boolean getSendNotification() {
 		return sendNotification;
+	}
+	public String getAddressLong() {
+		return addressLong;
+	}
+	public void setAddressLong(String addressLong) {
+		this.addressLong = addressLong;
 	}
 	
 }

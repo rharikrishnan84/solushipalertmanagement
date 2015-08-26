@@ -194,6 +194,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	private List<FutureReferencePackages>futureRefPackList=new ArrayList<FutureReferencePackages>();
 	
 	private List<KeyValueVO> cachedList;
+	private Map<String, Integer> trackCachedMap;
 	public List<CurrencySymbol> getCurrencyList() {
 		return currencyList;
 	}
@@ -2743,6 +2744,43 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  	    	  long serviceId = rating.getServiceId();
 	    		  	          Service service = carrierServiceManager.getService(serviceId);
 	    		            if (service != null && service.getServiceType() ==ShiplinxConstants.SERVICE_TYPE_LTL_POUND) {
+	    		            	//vivek hide
+	    		            	/*if(rating.getMarkupPercentage()!=null && rating.getMarkupPercentage()!= 0 &&  rating.getMarkupFlat() != 0 &&rating.getTotalCost()!=0.0){
+	    		            			    		            			    		            			    		                	  double totalCost=rating.getTotalCost();
+	    		            			    		            			    		            			    		                	  double totalCostPer=0;
+	    		            			    		            			    		            			    		                	  double totalCostFlat=0;
+	    		            			    		            			    		            			    		                	
+	    		            			    		            			    		            			    		                	           	  
+	    		            			    		            			    		            			    		                	             	  
+	    		            			    		            			    		            			    		                	   totalCostPer=totalCostPer+(totalCost+(totalCost*rating.getMarkupPercentage()/100));
+	    		            			    		            			    		            			    		                	  totalCostFlat=totalCostFlat+totalCost+rating.getMarkupFlat();
+	    		            			    		            			    		            			    		                   	   if(totalCostPer>totalCostFlat){
+	    		            			    		            			    		            			    		                   		for(Charge cha:rating.getCharges()){
+	    		            			    		            			    		            			    		                  		
+	    		            			    		            			    		            			    		                  		  cha.setCharge(cha.getCost()+cha.getCost()*rating.getMarkupPercentage()/100);
+	    		            			    		            			    		            			    		                  	     }
+	    		            			    		            			    		            			    		                   		   rating.setTotal(totalCostPer);
+	    		            			    		            		    		            			    		                   	   }else{
+	    		            			    		            			    		            			    		                   		   
+	    		            		    		            			    		            			    		                   		   for(Charge cha:rating.getCharges())
+	    		            			    		            			    		            			    		                   		   {
+	    		            			    		            			    		            			    		                   			if(cha.getChargeCode()!=null&&(cha.getChargeCode().equalsIgnoreCase("FRT")))
+	    		            			    		            			    		            			    		                   			{
+	    		            			    		            			    		            			    		                   				cha.setCharge(cha.getCost()+rating.getMarkupFlat());
+	    		            			    		            			    		            			    		                   					    		                   				
+	    		            			    		            			    		            			    		                   			}
+	    		            			    		            			    		            			    		                   			else
+	    		            			    		            			    		            			    		                   			{
+	    		            			    		            			    		            			    		                   			cha.setCharge(cha.getCost());
+	    		            			    		            			    		            			    		                   			}
+	    		            			    		            			    		            			    		                   		   }
+	    		            			    		            			    		            			    		                   		rating.setTotal(totalCostFlat);
+	    		            			    		            			    		            			    		                      	
+	    		            			    		            			    		            			    		                   	   }
+	    		            			    		            			    		            			    		                   	   
+	    		            			    		            			    		            			    		                   	             	                         	   
+	    		            			    		            			    		            			    		           	   }*/
+
 	    		  	        	  markupManagerService = (MarkupManager)MmrBeanLocator.getInstance().findBean("markupManagerService");
 	    		  	        	  Markup searchMarkup = markupManagerService.getMarkupObj(shippingOrder);
 	    		  	        	searchMarkup.setServiceId(serviceId);
@@ -2788,6 +2826,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  	        		    	baseMarkupCharge=true;
 	    		          		    	if(baseMarkupFlat){
 	    		  	        		    		rating.setMarkupFlat(baseMarkup.getMarkupFlat());
+	    		  	        		    		//vivek hide
+	    		  	        		    		//rating.setMarkupPercentage(baseMarkup.getMarkupPercentage());
 	    		  	                        	  rating.setMarkupTypeText("Flat");
 	    		  	        		    	for(Charge charge:rating.getCharges()){	        		    		
 	    		  	        		    		 if(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("FRT")){
@@ -2811,6 +2851,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  	        		    	}
 	    		  	        		    	}else{
 	    		  	        		    		rating.setMarkupPercentage(baseMarkup.getMarkupPercentage());
+	    		  	        		    		//vivek hide
+	    		  	        		    		//rating.setMarkupFlat(baseMarkup.getMarkupFlat());
 	    		                            	  rating.setMarkupTypeText(baseMarkup.getTypeText());
 	    		  	        		    		for(Charge charge:rating.getCharges()){
 	    		  	        		    			if(charge.getChargeCode()!=null&&(charge.getChargeCode().equalsIgnoreCase("FRT")||charge.getChargeCode().equalsIgnoreCase("FUE")))
@@ -2819,6 +2861,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    		  		        		    	}
 	    		  	        		    	}
 	    		  	        		    }
+	    		  	        		    //vivek hide
+	    		  	        		 /* else {
+	    		  	        			  	        				    		  	        				   	rating.setMarkupPercentage(rating.getMarkupPercentage());
+	    		  	        			  	        				    		  	        				  	rating.setMarkupFlat(rating.getMarkupFlat());
+	    		  	        				  	        		    }*/
 	    		  	        	  }
 	    		             }
 	    		  	          if(baseMarkupCharge){
@@ -4785,7 +4832,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 																										
 																										so.getBusinessIds().addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
 																										List<Long> busIds=so.getBusinessIds();
-																										so.getBusinessIds().clear();
+																										//so.getBusinessIds().clear();
 																										so.setBusinessIds(BusinessFilterUtil.getvalidatedBusIds(busIds));
 																									}else{
 																										so.setBusinessIds(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(),ubs));
@@ -4809,37 +4856,62 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					cacheNotFound = true;
 				}
 			}
-			if (this.shippingService != null && cacheNotFound) {
+			String tempUUID = "";
+			
+			if(this.getShipments() != null &&  this.getShipments().size() >0){
+				this.getShipments().clear();
+			}
+			trackCachedMap = new HashMap<String, Integer>();
+			if (this.shippingService != null && (reqCacheId == null || "".equals(reqCacheId))) {
 				so.setPurpose("SEARCH_SHIPMENTS");
-				List<ShippingOrder> shipments = this.shippingService.getShipments(so);
+				so.setOffsetRange(0);
+				//List<ShippingOrder> shipments = this.shippingService.getShipments(so);
+				List<ShippingOrder> shipments=this.shippingService.getShipmentsForTrack(so);
+				if(shipments.size() >0 ){
 				int rows_per_page = 500;
 				int temp = 1;
 				String cacheId = "";
 				cachedList = new ArrayList<KeyValueVO>();
-				for (int i = 0; i < shipments.size(); i=i+rows_per_page) {
+				long ordersCount = shipments.get(0).getOrdersCount();
+				for (int i = 0; i < ordersCount; i=i+rows_per_page) {
 					String uuid = UUID.randomUUID().toString();
 					temp = i + rows_per_page; 
-					if (temp > shipments.size()){
-						temp = shipments.size();
+					if (temp > ordersCount){
+						temp = (int) ordersCount;
 					}
 					KeyValueVO keyValue = new KeyValueVO();
-					List<ShippingOrder> subList = shipments.subList(i, temp);
-					getSession().put(uuid, subList);
 					if (i==0){
 						cacheId = uuid;
+						tempUUID = uuid;
 					}
 					keyValue.setKey(uuid);
 					keyValue.setValue(i+" - "+temp);
+					trackCachedMap.put(uuid, i);
 					cachedList.add(keyValue);
 				}
+				getSession().put(tempUUID, shipments);
+				cacheId = tempUUID;
 				request.setAttribute("current_page", cacheId);
 				getSession().put("cachedList", cachedList);
+				getSession().put("trackCachedMap", trackCachedMap);
 				this.setShipments((List<ShippingOrder>)getSession().get(cacheId));
+				}
 			}else{
+				/*cachedList = (List<KeyValueVO>) getSession().get("cachedList");
+				request.setAttribute("current_page", reqCacheId);
+				this.setShipments((List<ShippingOrder>)cacheObject);*/
+				String temp = reqCacheId;
+				trackCachedMap =  (Map<String, Integer>) getSession().get("trackCachedMap");
+				 int offsetValue = trackCachedMap.get(temp);
+				so.setPurpose("SEARCH_SHIPMENTS");
+				so.setOffsetRange(offsetValue);
+				List<ShippingOrder> shipments = this.shippingService
+						.getShipmentsForTrack(so);
 				cachedList = (List<KeyValueVO>) getSession().get("cachedList");
 				request.setAttribute("current_page", reqCacheId);
-				this.setShipments((List<ShippingOrder>)cacheObject);
+				this.setShipments(shipments);
 			}
+			
 			
 			User user = userService.findUserByUsername(UserUtil.getMmrUser().getUsername());
 			//setting the print config values for the logged user
@@ -4908,8 +4980,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					this.setShipments(filterShipments(this.getShipments()));
 					}
 		return SUCCESS;
-	}	
-
+	}
 	private List<ShippingOrder> filterShipments(List<ShippingOrder> shipments) {
 						// TODO Auto-generated method stub
 						List<Customer> filCus=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
@@ -9112,6 +9183,16 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
    ServiceAvailabilityWebServiceClient zipCodeValidator = new ServiceAvailabilityWebServiceClient();
    address = zipCodeValidator.getSuggestedAddress(address);
    return address;
+}
+
+
+public Map<String, Integer> getTrackCachedMap() {
+	return trackCachedMap;
+}
+
+
+public void setTrackCachedMap(Map<String, Integer> trackCachedMap) {
+	this.trackCachedMap = trackCachedMap;
 } 
 
 	

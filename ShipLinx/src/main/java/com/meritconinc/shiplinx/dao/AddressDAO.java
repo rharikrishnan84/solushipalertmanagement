@@ -66,4 +66,5 @@ public interface AddressDAO {
   public long getCustomerIdByAddressMatch (ShippingOrder shipment);
    public long getCustomerIdForFromAddress (ShippingOrder shipment);
    public long getCustomerIdForToAddress (ShippingOrder shipment);
+   public List<Address> getAddressByIds(List<Long> addressIds);
 }

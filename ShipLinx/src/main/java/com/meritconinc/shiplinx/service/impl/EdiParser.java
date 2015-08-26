@@ -723,6 +723,13 @@ public abstract class EdiParser {
 			dbCharge.setCharge(FormattingUtil.add(dbCharge.getCharge(), ediCharge.getCharge()).doubleValue());
 		if (ediCharge.getTariffRate() != null && dbCharge.getTariffRate() != null)
 			dbCharge.setTariffRate(FormattingUtil.add(dbCharge.getTariffRate(), ediCharge.getTariffRate()).doubleValue());
+		
+		if(ediCharge!=null){
+						if(ediCharge.getIsTax()||(ediCharge.getChargeCode()!=null&&ediCharge.getChargeCode().equalsIgnoreCase("TAX")))
+						dbCharge.setisCommissonable(false);
+						else
+							dbCharge.setisCommissonable(true);
+					}
 
 		shippingService.updateCharge(dbCharge);
 	}
@@ -749,6 +756,14 @@ public abstract class EdiParser {
 			throws Exception {
 		// TODO Auto-generated method stub
 		ediCharge.setOrderId(dbShipment.getId());
+		
+		if(ediCharge!=null){
+						if(ediCharge.getIsTax()||(ediCharge.getChargeCode()!=null&&ediCharge.getChargeCode().equalsIgnoreCase("TAX")))
+							ediCharge.setisCommissonable(false);
+						else
+							ediCharge.setisCommissonable(true);
+					}
+					
 		this.shippingService.saveCharge(ediCharge);
 	}
 	protected Double applyMarkup(ShippingOrder shipment, Charge charge, EdiItem item) {

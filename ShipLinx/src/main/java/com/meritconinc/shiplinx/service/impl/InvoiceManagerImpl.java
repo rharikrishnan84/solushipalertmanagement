@@ -2194,11 +2194,18 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
         strvalues[i] = ",";
       i++;
 
+      strheader[i]="Ref,";
+            if(so.getReferenceCode()!=null)
+          	  strvalues[i]=so.getReferenceCode()+",";
+            else
+          	  strvalues[i]=",";
+            i++;
+      
       strheader[i] = "Ref 1,";
       if (so.getReferenceOne() != null)
         strvalues[i] = so.getReferenceOne() + ",";
-      else if(so.getReferenceCode()!=null)
-    	      	  strvalues[i] = so.getReferenceCode() + ",";
+      /*else if(so.getReferenceCode()!=null)
+    	      	  strvalues[i] = so.getReferenceCode() + ",";*/
       else
         strvalues[i] = ",";
       i++;

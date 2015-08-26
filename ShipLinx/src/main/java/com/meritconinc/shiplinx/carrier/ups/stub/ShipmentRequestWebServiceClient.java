@@ -345,12 +345,14 @@ public class ShipmentRequestWebServiceClient{
 			 * Expedited (CA) 19 02 08 008 or 17
 			 * 
 			 */
-			if (shipment.getService().getCode().equals("13")){
-				shipment.getService().setCode("65");
-			}else if(shipment.getService().getCode().equals("02")){
-				shipment.getService().setCode("08");
-			}
 			
+			if(customerCarrier.getCarrierId() != ShiplinxConstants.CARRIER_UPS_USA){
+				if (shipment.getService().getCode().equals("13")){
+					shipment.getService().setCode("65");
+				}else if(shipment.getService().getCode().equals("02")){
+					shipment.getService().setCode("08");
+				}
+			}
 			//InvoiceLineTotal element is required for shipments from US to Canada or PR
 			if(order.getFromAddress().getCountryCode().equalsIgnoreCase(ShiplinxConstants.US)){
 					if(order.getToAddress().getCountryCode().equalsIgnoreCase(ShiplinxConstants.CANADA) || order.getToAddress().getCountryCode().equalsIgnoreCase(ShiplinxConstants.PUERTORICO)){

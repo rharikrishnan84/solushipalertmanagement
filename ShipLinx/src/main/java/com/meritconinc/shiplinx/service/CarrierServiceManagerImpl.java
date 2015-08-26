@@ -1242,6 +1242,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       pickupId = 0;
       // schedule pick up if requested
       if (order.getPickup() != null && order.getPickup().isPickupRequired()) {
+    	  if(order.getCarrierId() != null && (order.getCarrierId() == 2 || order.getCarrierId() == 5)){
+    		      		  if(order.getMasterTrackingNum() != null){
+    		          		  order.getPickup().setMasterTrackingNum(order.getMasterTrackingNum());
+    		      		  }
+    		      	  }
         copyFromOrderToPickup(order, rate);
         order.getPickup().setCarrierAccount(rate.getCustomerCarrier());
         pickupId = createPickup(order.getPickup());
@@ -2218,8 +2223,14 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           c.setCharge(markupManagerService.applyMarkup(order, c, false));
           if(rate.getMarkupFlat() > 0 && (rate.getMarkupPercentage() == null 
         		          		  || rate.getMarkupPercentage() == 0)){
+        	  if(c.getChargeCode().equalsIgnoreCase("FRT")||c.getChargeCode().equalsIgnoreCase("050"))
+        		       	  {
         		  	          double ch = c.getCharge() + rate.getMarkupFlat();
         		  	          c.setCharge(ch);
+        		       	}
+        	          	  else{
+        	          		  c.setCharge(c.getCharge());
+        	          	  }
         		            }
           /*Markup searchMarkup = markupManagerService.getMarkupObj(order);
                     if(searchMarkup!=null && rate.getCarrierId()==ShiplinxConstants.CARRIER_GENERIC){
@@ -3656,6 +3667,32 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
             	                                                	}*/
             	                                       	  baseMarkupFlatText=true;                        				
             	                        			}
+            	                        			
+            	                        			//vivek hide
+            	                        		/*	if(baseMarkup.getMarkupPercentage()!=0 && baseMarkup.getMarkupFlat()!=0)
+            	                        				            	                        				            	                        				            	                                    {
+            	                        				            	                        				            	                        				            	                                  	  double totalpercentage;
+            	                        				            	                        				           	                        				            	                                  	  totalpercentage=freightCharge.getCost()
+            	                        				            	                        				            	                        				            	                                                + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100)+(fuelCharge.getCost()
+            	                        				            	                        				            	                        				            	                                                + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+            	                        				            	                        				            	                        				            	                                  	  double totalFlat;
+            	                        				            	                        				            	                        				            	                                  	  totalFlat=freightCharge.getCost() + baseMarkup.getMarkupFlat()+fuelCharge.getCost();
+            	                        				            	                        				            	                        				            	                                  	  if(totalpercentage>totalFlat)
+            	                        				            	                        				            	                        				            	                                  	  {
+            	                        				            	                        				            	                        				            	                                  	  baseFreightCharge.setCharge(freightCharge.getCost()
+            	                        				            	                        				            	                        				            	                                                + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+            	                        				            	                        				            	                        				            	                        				baseFuelCharge.setCharge(fuelCharge.getCost()
+            	                        				            	                        				            	                        				            	                                                + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100)); 
+            	                        				            	                        				            	                        				            	                                  	  }
+            	                        				            	                        				            	                        				            	                                  	  else
+            	                        				            	                        				            	                        				            	                                  	  {
+            	                        				            	                        				            	                        				            	                                  		  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+            	                        				            	                        				            	                        				            	                                  		  baseFuelCharge.setCharge(fuelCharge.getCost());
+            	                        				            	                        				            	                        				            	                                  		  baseMarkupFlatText=true;   
+            	                        				            	                        				            	                        				            	                                  	  }
+            	                        				            	                        				            	                        				            	                        				
+            	                        				           	                        				            	                        				            	                                    }*/
+
             	                        			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
             	                        				freightCharge.setCharge(baseFreightCharge.getCharge());
             	                        				if(fuelCharge.getCost()>0){
@@ -3812,6 +3849,32 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                                         	}*/
                                 	  baseMarkupFlatText=true;                        				
                 			}
+                			
+                			//vivek hide
+                			/*if(baseMarkup.getMarkupPercentage()!=0 && baseMarkup.getMarkupFlat()!=0)
+                				                				                				                                  {
+                				                				                				                                	  double totalpercentage;
+                				               				                				                                	  totalpercentage=freightCharge.getCost()
+                				                				                				                                              + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100)+(fuelCharge.getCost()
+                				                				                				                                              + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+                				                				                				                                	  double totalFlat;
+                				                				                				                                	  totalFlat=freightCharge.getCost() + baseMarkup.getMarkupFlat()+fuelCharge.getCost();
+                				                				                				                                	  if(totalpercentage>totalFlat)
+                				                				                				                                	  {
+                				                				                				                                	  baseFreightCharge.setCharge(freightCharge.getCost()
+                				                				                				                                              + (freightCharge.getCost() * baseMarkup.getMarkupPercentage() / 100));
+                				                				                				                      				baseFuelCharge.setCharge(fuelCharge.getCost()
+                				               				                				                                              + (fuelCharge.getCost() * baseMarkup.getMarkupPercentage() / 100)); 
+                				                				                				                                	  }
+                				                				                				                                	  else
+                				                				               				                                	  {
+                				                				                				                                		  baseFreightCharge.setCharge(freightCharge.getCost() + baseMarkup.getMarkupFlat());
+                				                				                				                                		  baseFuelCharge.setCharge(fuelCharge.getCost());
+                				                				                				                                		  baseMarkupFlatText=true;   
+                				                				                				                                	  }
+                				                				                				                      				
+                				               				                				                                  }*/
+
                 			if(baseFreightCharge.getCharge()>freightCharge.getCharge()){
                 				freightCharge.setCharge(baseFreightCharge.getCharge());
                 				if(fuelCharge.getCost()>0){

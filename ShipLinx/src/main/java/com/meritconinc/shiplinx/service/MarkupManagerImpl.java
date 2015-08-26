@@ -32,6 +32,7 @@ import com.meritconinc.shiplinx.model.Zone;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import com.opensymphony.xwork2.ActionContext;
 
 public class MarkupManagerImpl implements MarkupManager {
 
@@ -273,8 +274,7 @@ public class MarkupManagerImpl implements MarkupManager {
       Markup m = getUniqueMarkup(markup);
       if (m == null || m.getCustomerId().longValue() != markup.getCustomerId().longValue()
           || !m.getFromCountryCode().equals(markup.getFromCountryCode())
-          || !m.getToCountryCode().equals(markup.getToCountryCode())
-          || m.getToWeight().doubleValue() < markup.getFromWeight().doubleValue()) {
+          || !m.getToCountryCode().equals(markup.getToCountryCode())) {
         markupDAO.addMarkup(markup);
       } else {
         return m;
@@ -287,13 +287,30 @@ public class MarkupManagerImpl implements MarkupManager {
   @Override
   public Markup getUniqueMarkup(Markup markup) {
     // TODO Auto-generated method stub
+	  //vivek hide
+	 // boolean addMark=false;
     if (markupDAO != null && markup != null) {
       List<Markup> mList = markupDAO.getMarkupListForUniqueMarkup(markup);
       if(mList==null  || mList.size()==0){
     	      	      	            mList=BusinessFilterUtil.getMarkupListForUniqueMarkup(markupDAO,markup);	
     	      	      	           }
       if (mList != null && mList.size() > 0) {
+    	  
+    	  //vivek hide
+    	  /*try{
+    		  	  	  	    
+    		  	  	   	   addMark= (Boolean) ActionContext.getContext().getSession().get("addMarkup");
+    		  	  	   	    }catch(Exception e)
+    		  	  	   	    {
+    		    	   	    	addMark=false;
+    		  	  	   	    }
+    		  	  	    	if(addMark)
+    		  	  	    	{
+    		  	  	    		return applyRulesForAdd(mList,markup);
+    		  	  	    	}else{
+*/
         return applyRules(mList, markup);
+    		  	  	    	//}
       }
     }
     return null;
@@ -399,14 +416,76 @@ public class MarkupManagerImpl implements MarkupManager {
 
     return m;
   }
+  
+  private Markup applyRulesForAdd(List<Markup> mList, Markup markup) {
+	  	  
+	  	  boolean bCus = false;
+	  	  boolean addMark=false;
+	   	    if (markup.getCustomerId() != null && markup.getCustomerId().longValue() > 0) {
+	   	      // Customer based markup
+	   	      bCus = true;
+	   	    }
+	      try{
+	  	    
+	     addMark= (Boolean) ActionContext.getContext().getSession().get("addMarkup");
+	  	    }catch(Exception e)
+	  	    {
+	  	    	addMark=false;
+	      }
+	  	   
+	  	   if(addMark)
+	  	   {
+	  		   for(Markup m:mList){
+	  			   if(m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)&&bCus && m.getCustomerId().equals(markup.getCustomerId())&&m.getVariable()==markup.getVariable()){
+	  		   if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)&&isWeightsMatched(m, markup)) {
+	  					    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+	  				      return m;
+	  					    /*if (m.getCustomerId().longValue() == 0)
+	  				      return m;*/
+	  					  }
+	  		   }
+	  			   else{
+	  				   if (m.getServiceId().equals(markup.getServiceId()) && isCompareCountries(m, markup)) {
+	  					    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+	  					      return m;
+	  					    /*if (m.getCustomerId().longValue() == 0)
+	  					      return m;*/
+	  					  }
+	  				   
+	  			   }
+	  		   }
+	  		   
+	  	   }
+	  	   
+	    
+	  	  return null;
+	    
+	    }
+
 
   private Markup applyRules(List<Markup> mList, Markup markup) {
     // TODO Auto-generated method stub
 	  boolean bCus = false;
+	  
 	    if (markup.getCustomerId() != null && markup.getCustomerId().longValue() > 0) {
 	      // Customer based markup
 	      bCus = true;
 	    }
+	    
+	    
+	    		   
+	    		   /* for (Markup m : mList) {
+	    		    		    	      if (m.getCustomerId().equals(markup.getCustomerId()) &&m.getServiceId().equals(markup.getServiceId()) 
+	    		    		    	          && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
+	    		    		    	          && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)&&m.getToWeight()>=markup.getToWeight()) {
+	    	    		    	        if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
+	    		    		    	          return m;
+	    		    		    	        if (m.getCustomerId().longValue() == 0)
+	    		    		    	          return m;
+	    		    		    	      }
+	    		    		    	    }*/
+
+	    
 	    for (Markup m : mList) {
 	    	if(bCus){
 				  // Rule # 1 - All Fields Match
@@ -480,15 +559,15 @@ public class MarkupManagerImpl implements MarkupManager {
 				  }
 				
 				  // Rule # 8 - match without Weights - From Country and To Country both are "ANY"
-				  if (m.getServiceId().equals(markup.getServiceId())
+				  /*if (m.getServiceId().equals(markup.getServiceId())
 					      && m.getFromCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
 					      && m.getToCountryCode().equals(ShiplinxConstants.COUNTRY_ANY)
 					      ) {
 					    if (bCus && m.getCustomerId().equals(markup.getCustomerId()))
 					      return m;
-					    /*if (m.getCustomerId().longValue() == 0)
-					      return m;*/
-					  }
+					    if (m.getCustomerId().longValue() == 0)
+					      return m;
+					  }*/
 	      
 	    	}
 	    }
@@ -610,9 +689,9 @@ public class MarkupManagerImpl implements MarkupManager {
     if (m.getFromWeight().doubleValue() <= markup.getFromWeight().doubleValue()
         && m.getToWeight().doubleValue() >= markup.getToWeight().doubleValue())
       return true;
-    if (m.getFromWeight().doubleValue() >= markup.getFromWeight().doubleValue()
+    /*if (m.getFromWeight().doubleValue() >= markup.getFromWeight().doubleValue()
     		            && m.getToWeight().doubleValue() >= markup.getToWeight().doubleValue())
-    		          return true;
+    		          return true;*/
     return false;
   }
 
