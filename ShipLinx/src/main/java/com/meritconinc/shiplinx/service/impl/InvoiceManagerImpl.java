@@ -2792,4 +2792,8 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 					customerDAO.updateCustomerStatus(custId,customerStatus);
 				
 				}
+				public void updateInvoiceCommissionCalculated(String invoiceNum)
+								{
+									invoiceDAO.updateInvoiceCommissionCalculated(invoiceNum);
+								}
 		}

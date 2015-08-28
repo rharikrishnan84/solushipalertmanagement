@@ -1510,10 +1510,17 @@
 	</select>	
 	
 	<select id="searchReferenceShipments" resultMap="SearchOrderResult">
-		select * from shipping_order where business_id = #businessId# and ((order_id = #referenceValue#) or (order_num = #referenceValue#) or (reference1 = #referenceValue#) or (reference2 = #referenceValue#) or (reference_code = #referenceValue#))
+		select s.* from shipping_order s where 1 =1 and ((s.order_id = #referenceValue#) or (s.order_num = #referenceValue#) or FIND_IN_SET(#referenceValue#, s.reference1) or FIND_IN_SET(#referenceValue#, s.reference2) or FIND_IN_SET(#referenceValue#, s.reference_code))
 			<isGreaterThan prepend="and" property="customerId" compareValue="0">
-				customer_id = #customerId#
+				s.customer_id = #customerId#
 			</isGreaterThan>
+	<isNotNull property="businessIds">
+		<isNotEmpty property="businessIds">
+			and s.business_id IN
+			<iterate open="(" close=")" conjunction="," property="businessIds">
+				#businessIds[]# </iterate>
+		</isNotEmpty>
+	</isNotNull>
 	</select>
 	
 	<select id="getShippingBillingAllStatus" resultMap="ShippingBillingAllStatus">

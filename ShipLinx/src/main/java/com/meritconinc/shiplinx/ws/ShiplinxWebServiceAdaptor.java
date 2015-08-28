@@ -215,6 +215,7 @@ public class ShiplinxWebServiceAdaptor {
 				so.setStatusId(Long.valueOf(ShiplinxConstants.STATUS_READYTOPROCESS));
 				so.setCustomsInvoiceRequired(true);
 				if (this.shippingService != null) {
+					so.setGeneratedBy(ShiplinxConstants.GENERATEDBYODBC);
 					this.shippingService.save(so);
 					// Order saved successfully
 					// retrieve order info from the database, ideally saveOrder should return it

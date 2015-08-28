@@ -559,5 +559,6 @@ public class ShiplinxConstants {
 	
 	 private static final String CHARGE_CODE_FOR_HEAVY_WEIGHT = "588";
 	 public static final String SHIPMENT_CREATED="80";
-	 
+	//ODBC Related Constants
+	 public static final String GENERATEDBYODBC= "Soluship-ODBC";
 }

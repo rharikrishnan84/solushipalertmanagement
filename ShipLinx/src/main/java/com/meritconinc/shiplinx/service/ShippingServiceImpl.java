@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
@@ -67,7 +69,6 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.meritconinc.shiplinx.model.FutureReferencePackages;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
-
 import com.meritconinc.shiplinx.model.AccessorialServices;
 import com.meritconinc.shiplinx.model.AddressCheckList;
 import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
@@ -512,6 +513,32 @@ public class ShippingServiceImpl implements ShippingService {
     ShippingOrder order = getShippingDAO().getShippingOrder(orderId);
     if (order != null) {
       order.setPaymentRequired(isPaymentRequired(order));
+            //For ODBC Franke Kindred Canada Limited Customer
+      		long customerId = order.getCustomerId();
+      		String flag = "false";
+      		String temp = null;
+      		String[] trackingNum = null;
+      		if (customerId == 4162) {
+      			final Set<String> set1 = new HashSet<String>();
+      			for (Package p : order.getPackages()) {
+      				String trc = p.getTrackingNumber();
+      				if (trc.contains(",")) {
+      					flag = "true";
+      					trackingNum = trc.split(",");
+      			}
+      				set1.add(trc);
+      			}
+      			if (set1.size() >= 2 || flag == "true") {
+      			// more tracking number in the list
+      				if(set1.size() >0){
+      				 temp = set1.toString();	
+      			}
+      				ServletActionContext.getRequest().setAttribute("COUNT",
+      						"one");
+      				ServletActionContext.getRequest().setAttribute("trackNums",
+      						temp);
+      			}
+      		}
       if (order.getUnitmeasure() == 2 && order.getSaveShipmet()==0) {
 	      for (Package pack : order.getPackages()) {
 	        double lengthDouble = pack.getLength().doubleValue() / 0.39370;

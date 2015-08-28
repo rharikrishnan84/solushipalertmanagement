@@ -1080,7 +1080,8 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     String username = null;
     if (user != null)
       username = user.getUsername();
-
+    List<Long> bussinessIds = BusinessFilterUtil.getBusIdParentId(user.getBusinessId());
+    order.setBusinessIds(bussinessIds);
     log.info("User " + username + " performing search from / to: " + order.getFromDate() + " / "
     +order.getToDate() + " / " + order.getReferenceValue());
     List<ShippingOrder> soList = new ArrayList<ShippingOrder>();

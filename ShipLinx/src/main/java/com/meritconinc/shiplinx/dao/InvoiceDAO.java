@@ -60,5 +60,5 @@ public interface InvoiceDAO {
     		 			double totalCHB, double totalFWD, double totalFPA, long invoiceId);
      public SubTotal getcommissionbyIdd(long invoiceId);
      public List<Invoice> getInvoiceByEmailType(Long invoiceId);
-     
+     public void updateInvoiceCommissionCalculated(String invoiceNum);
 }

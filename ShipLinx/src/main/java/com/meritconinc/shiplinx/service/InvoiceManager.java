@@ -71,5 +71,6 @@ public interface InvoiceManager {
 			public List<FutureReferencePackages> showFutureReferencePackage(Long id1);
 			
 			public void updateCustomerStatus(long custId,String customerStatus);
+			public void updateInvoiceCommissionCalculated(String invoiceNumber);
 			
 }

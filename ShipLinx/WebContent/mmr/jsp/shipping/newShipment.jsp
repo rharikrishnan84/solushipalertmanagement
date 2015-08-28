@@ -21,6 +21,8 @@
 <script type="text/javascript">  
   var contextPath = "<%=request.getContextPath()%>";
   var userrole = "<%=request.getAttribute("USERROLE") %>";
+  var count="<%=request.getAttribute("COUNT") %>";
+  var trackingNum="<%=request.getAttribute("trackNums") %>";
   window.onload = function()
   {
 	  	var packaging_type = document.getElementById("packType").value;
@@ -37,6 +39,27 @@
 					$('.referenceClose').css('display','block');
 					$('.referenceOpen,.referenceBody').css('display','none');
 				}
+				// conform box for franke odbc
+			if(count=="one")
+						{
+						var str ='This order contains multiple reference numbers ';
+						var str2 = ' would you like to continue shipping this order?';
+						var wait = false;
+						var msg = str.concat(trackingNum,str2);
+						 jConfirm(
+								 msg,
+								'Yes',
+								'No',
+								function(confirmationMessage) {
+									if (confirmationMessage == true) {
+									} else {
+										document.userform.action = "process.shipment.action";
+									    document.userform.submit();
+										$('#loader').css('display', 'block');
+									$('#loaderImg').css('display', 'block');
+									}
+								}); 
+						}
 		if(packaging_type=='type_pallet')
 		{
 			if(navigator.appName.indexOf("Microsoft") > -1)

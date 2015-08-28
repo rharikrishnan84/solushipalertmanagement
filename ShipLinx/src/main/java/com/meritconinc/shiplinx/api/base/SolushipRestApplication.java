@@ -4,6 +4,7 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
+import com.meritconinc.shiplinx.api.controller.UpdatShippingPackageController;
 import com.meritconinc.shiplinx.api.controller.UpdateShippingOrderController;
 import com.meritconinc.shiplinx.api.controller.CreateShipmentAPIController;
 import com.meritconinc.shiplinx.api.controller.GetRatesAPIController;
@@ -18,7 +19,10 @@ public class SolushipRestApplication extends Application {
 	public synchronized Restlet createInboundRoot() {
 		Router router = new Router(getContext());
 		// Defines only one route
+		// rest web service for ODBC start
 		router.attach("/updateorder", UpdateShippingOrderController.class);
+		router.attach("/updatepackage",UpdatShippingPackageController.class);
+		// rest web service for ODBC End
 		router.attach("/createShipment",CreateShipmentAPIController.class);
 		router.attach("/genericrates", GetRatesAPIController.class);
 		router.attach("/cancelshipment",cancelShipmentController.class);

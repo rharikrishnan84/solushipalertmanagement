@@ -590,4 +590,7 @@ update invoice set spd_total=#totalSPD# ,ltl_total=#totalLTL# , chb_total=#total
                       
                       
  	</select>
+ 	 <update id = "updateInvoiceCommissionCalculated">
+		update invoice set commission_calculated=0 where invoice_num=#invoiceNum#
+	</update>
 </sqlMap>

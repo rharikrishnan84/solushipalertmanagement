@@ -280,4 +280,11 @@ public class InvoiceDAOImpl extends SqlMapClientDaoSupport implements InvoiceDAO
 								paramObj.put("invoiceId", invoiceId);
 								return (List<Invoice>)getSqlMapClientTemplate().queryForList("getInvoiceDetailsByEmailType",paramObj);
 							}
+							public void updateInvoiceCommissionCalculated(String invoiceNum)
+														{
+															Map<String, Object> paramObj = new HashMap<String, Object>();
+														paramObj.put("invoiceNum", invoiceNum);
+															getSqlMapClientTemplate().update("updateInvoiceCommissionCalculated",
+																	paramObj);
+														}
 }

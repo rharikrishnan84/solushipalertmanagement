@@ -1435,6 +1435,13 @@ public String getSalesRep() {
         invoice = invoiceManager.updateInvoice(invoice, ids, userCharges, userCosts, userNames,
             trackNos);
         this.setInvoice(invoice);
+        try{
+        invoiceManager.updateInvoiceCommissionCalculated(invoice.getInvoiceNum());
+        invoiceManager.deleteCommission(invoice.getInvoiceId());
+        }catch(Exception e){
+        	log.error(e);
+        }
+        
         addActionMessage("Charge Updated Successfully..");
         PDFRenderer pdfRenderer = new PDFRenderer();
         ArrayList<String> srcList = new ArrayList<String>();
