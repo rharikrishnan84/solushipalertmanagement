@@ -84,11 +84,11 @@ public class UpdatShippingPackageController extends SolushipRestServerResource{
 			if(tempPackage.getType().equalsIgnoreCase("package")){
 			this.shippingDAO.addPackage(convertPackage);
 			totatlWeight +=convertPackage.getWeight().floatValue();
-			if(!ref2List.contains(convertPackage.getTrackingNumber())){
-				ref2List.add(convertPackage.getTrackingNumber());
+			if(!ref2Code.contains(convertPackage.getTrackingNumber())){
+				ref2Code.add(convertPackage.getTrackingNumber());
 			}
-			if(!ref2Code.contains(tempPackage.getShipId())){
-				ref2Code.add(tempPackage.getShipId());
+			if(!ref2List.contains(tempPackage.getReference2())){
+				ref2List.add(tempPackage.getReference2());
 			}
 			
 			quantity++;
@@ -105,11 +105,11 @@ public class UpdatShippingPackageController extends SolushipRestServerResource{
 							newQuantity += oldQuantity;
 							convertPackage.setDescription("STC "+newQuantity+" Units" );
 							convertPackage.setPackageId(pack.getPackageId());
-							if(!ref2List.contains(convertPackage.getTrackingNumber())){
-								ref2List.add(convertPackage.getTrackingNumber());
+							if(!ref2Code.contains(convertPackage.getTrackingNumber())){
+								ref2Code.add(convertPackage.getTrackingNumber());
 							}
-							if(!ref2Code.contains(tempPackage.getShipId())){
-								ref2Code.add(tempPackage.getShipId());
+							if(!ref2List.contains(tempPackage.getReference2())){
+								ref2List.add(tempPackage.getReference2());
 							}
 							if(!pack.getTrackingNumber().equalsIgnoreCase(convertPackage.getTrackingNumber())){
 								String temp = pack.getTrackingNumber()+"," + convertPackage.getTrackingNumber();

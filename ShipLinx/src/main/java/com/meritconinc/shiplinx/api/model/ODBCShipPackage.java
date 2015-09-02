@@ -20,6 +20,7 @@ public class ODBCShipPackage {
     protected String type;
     protected String weight;
     protected String weightUOM;
+    private String reference2;
 	public String getSoluShipOrderId() {
 		return soluShipOrderId;
 	}
@@ -97,6 +98,12 @@ public class ODBCShipPackage {
 	}
 	public void setWeightUOM(String weightUOM) {
 		this.weightUOM = weightUOM;
+	}
+	public String getReference2() {
+		return reference2;
+	}
+	public void setReference2(String reference2) {
+		this.reference2 = reference2;
 	}
     
     
