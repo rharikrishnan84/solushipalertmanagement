@@ -1667,13 +1667,17 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    			  String fileName=file.getName();
           		    			  String[] splitFileName=fileName.split("_");
           		    			  if(id==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("ICBOL")){
+          		    				/*  if(file.length() > 0) {*/
           		    				  flag=true;
-          		    				          		    				shippingCopies=scopies;
+          		    				  shippingCopies=scopies;
           		    				  for (int s = 0; s < scopies; s++){
           		    					  srcList.add(file.toString());
           		    					fLabelPDF = new File(file.toString());
           		    					shippingLabel=true;
           		    				  }
+          		    			  /*} else {
+            		    				file.delete();
+          		    			  } */
           		    			  }
           		    		  }
           		    	  }
@@ -1691,6 +1695,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           	                // customerCarrierList){
           	                CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
           	                carrierService.generateShippingLabel(labelBOS, Long.valueOf(lstOrders.get(i)), customerCarrier);
+          	                File checkFile = new File(fLabelPDF.getAbsolutePath());
+          	              /*patch 260*/
+          	               /* if (checkFile.length() <= 0)
+          	                	checkFile.delete();*/
           	              shippingCopies=scopies;
           	                for (int s = 0; s < scopies; s++) // generate Shipping Label
                           // for the no of copies

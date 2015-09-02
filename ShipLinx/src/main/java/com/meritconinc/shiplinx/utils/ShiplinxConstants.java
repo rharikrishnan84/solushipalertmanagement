@@ -63,6 +63,8 @@ public class ShiplinxConstants {
 	public static final String PACKAGE_TYPE_PALLET_STRING = "type_pallet";
 	public static final String PACKAGE_PALLET_STRING = "pallet";
 	
+	public static String SHIPPING_DOC_DIR="/home/soluship/solushipfiles/";
+	
 	//Fedex packaging Types
 	public final static String YOUR_PACKAGING = "YOUR_PACKAGING" ;
 	public final static String FEDEX_10KG_BOX = "FEDEX_10KG_BOX" ;

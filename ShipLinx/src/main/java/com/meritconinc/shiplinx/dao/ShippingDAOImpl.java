@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import com.lowagie.text.pdf.PRAcroForm;
+import com.meritconinc.shiplinx.model.Document;
+import com.meritconinc.shiplinx.model.Customer;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -1864,6 +1867,23 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
  	
  		User user = UserUtil.getMmrUser();
  		String role = user.getUserRole();
+ 		if(user != null) {
+ 			 		if((UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SALES))){
+ 			 			List<Customer> customers = BusinessFilterUtil.getSalesUserCustomers(user);
+ 			 			List<Long> customerIds = new ArrayList<Long>();
+ 			 			for(Customer cus:customers){
+ 			 				customerIds.add(cus.getId());
+ 			 			}
+ 			 			so.setCustomerIds(customerIds);
+ 			 		}else{
+ 			 			so.setCustomerIds(null);
+ 			 		}
+ 			 		}
+ 			 		// if role = sales;
+ 			 		// getcustomers
+ 			 		// list List<Long> customerId
+ 			 		//so.setCustomerId
+
  		long startTime1 = System.currentTimeMillis();
  		 if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
  			 so.setBusinessIds(null);
@@ -1976,7 +1996,10 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
  		
  		// setting the total orders count for pagination
  		if(resultList.size()> 0){
- 			resultList.get(0).setOrdersCount(count);
+ 			// resultList.get(0).setOrdersCount(count);
+ 			for(int i=0; i< resultList.size(); i++){
+ 				 			resultList.get(i).setOrdersCount(count);
+ 				 			}
  		}
  		return resultList;
  	}
@@ -2008,5 +2031,76 @@ public List<CustomsInvoice> getCustomsInvoiceByOrderIds(List<Long> orderIds) {
 	customsInvoices =  (List<CustomsInvoice>)getSqlMapClientTemplate().queryForList("getCustomsInvoiceByOrderIds",paramObj);
 	return customsInvoices;
 }
+@Override
+											public void addShippingDocument(
+												Document document) {
+												// TODO Auto-generated method stub
+											
+												getSqlMapClientTemplate().insert("addShippingDocument",document);
+												
+											}
+											@SuppressWarnings("unchecked")
+											@Override
+											public List<Document> getshippingDocList(
+													Long orderId) {
+											List<Document> docList=getSqlMapClientTemplate().queryForList("getshippingDocList",orderId);
+												return docList;
+											}
+
+										@Override
+											public Document getDocumentById(
+													long documentId) {
+												// TODO Auto-generated method stub
+												Document doc=(Document)getSqlMapClientTemplate().queryForObject("getDocumentById",documentId);
+												return doc;
+										}
+
+											@Override
+											public void deleteDocumentById(
+													long documentId) {
+												// TODO Auto-generated method stub
+											getSqlMapClientTemplate().update("deleteDocumentById",documentId);
+											}
+
+											@Override
+										public void updateShipDocVisbibilty(
+													String visibility,
+													long documentId) {
+												// TODO Auto-generated method stub
+												Map<String, Object> paramObj = new HashMap<String, Object>();
+												boolean ispublic=false;
+											boolean isprivate=false;
+												 
+												paramObj.put("documentId",documentId);
+												if(visibility.equals("public")){
+													ispublic=true;	
+											}else if(visibility.equals("private")){
+													isprivate=true;
+												}
+												paramObj.put("isprivate",isprivate);
+												paramObj.put("ispublic",ispublic);
+												getSqlMapClientTemplate().update("updateShipDocVisbibilty",paramObj);
+										}
+
+										@Override
+											public void updateShipDocument(
+													Document document) {
+											// TODO Auto-generated method stub
+												getSqlMapClientTemplate().update("updateShipDocument",document);
+											}
+										@Override
+										public void deletePackageById(long packageId) {
+											 try {
+												 Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												 paramObj.put("packageId", packageId);
+											      getSqlMapClientTemplate().delete("deletePackageById", paramObj);
+											    } catch (Exception e) {
+											      e.printStackTrace();
+											      logger.error(e);
+											    }
+											
+										}
+
+
 	
 }

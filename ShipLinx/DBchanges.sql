@@ -4607,6 +4607,93 @@ CHANGE COLUMN `message` `message` VARCHAR(3000) NULL DEFAULT NULL ;
 
 
 #end od purolator freight query
+
+ALTER TABLE `shipping_order` 
+ADD COLUMN `signature_required` INT(10) NULL DEFAULT '0' AFTER `eta`;
+
+
+
+
+CREATE TABLE `document` (
+  `doument_id` INT(10) NOT NULL,
+  `order_id` INT(10) NULL,
+  `name` VARCHAR(45) NULL,
+  `description` VARCHAR(45) NULL,
+  `file_name` VARCHAR(45) NULL,
+  `ispublic` BIT(1) NULL DEFAULT b'0',
+  `isprivate` BIT(1) NULL DEFAULT b'0',
+  `doc_type` VARCHAR(45) NULL,
+  PRIMARY KEY (`doument_id`));
+
+
+
+ALTER TABLE `document` 
+ADD COLUMN `file_path` VARCHAR(145) NULL DEFAULT NULL AFTER `doc_type`,
+ADD COLUMN `uploadedBy` VARCHAR(75) NULL DEFAULT NULL AFTER `file_path`,
+ADD COLUMN `uploadedDate` TIMESTAMP NULL DEFAULT NULL AFTER `uploadedBy`;
+
+
+ALTER TABLE `document` 
+CHANGE COLUMN `doument_id` `document_id` INT(10) NOT NULL AUTO_INCREMENT ;
+
+===============================
+
+
+ALTER TABLE `business` 
+ADD COLUMN `ship_doc_path` VARCHAR(45) NULL DEFAULT NULL AFTER `default_hold_terms`;
+
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('upload.document', '261', 0, 'upload documetnt', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1112');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1112');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1112');
+
+
+
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('download.doc', '261', 0, 'download document', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1114');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1114');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1114');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('delete.doc', '261', 0, 'delete document', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1116');
+  INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1116');  
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1116');
+
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe` ) VALUES ('change.visbility.doc', '261', 1, 'change visibiliy', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1118');
+  INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1118');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1118');
+
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('update.doc', '261', 0, 'edit document', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1120');
+  INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1120');
+ INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1120');
+
+ INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('edit.doc', '261', 0, 'edit document', 1);
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1122');
+  INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1122');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1122');
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.edit.doc', 'EDIT DOCUMENT', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.add.doc', 'ADD DOCUMENT', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.doc.type', 'Document Type', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.doc.mk.public', 'MAKE PUBLIC', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.doc.mk.private', 'MAKE PRIVATE', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.visibility', 'Visibility', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `resourcebundle_id`) VALUES ('label.uploadedBy', 'Uploaded By', 'en_CA', 1, '');
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.document', 'Documents', 'en_CA', 1);
+
+
 .......................................End of Live server commit.......................................
-
-

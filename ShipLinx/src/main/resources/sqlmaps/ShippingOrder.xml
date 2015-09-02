@@ -74,6 +74,8 @@
 			<result property="toFloorNo" column="to_floor_no"/>
 			<result property="tempControl" column="istempControl"/>
 			<result property="temperature" column="temperature"/>
+			<result property="dutiableAmount" column="dutiable_value"/>
+  			 <result property="signatureRequired" column="signature_required"/>
 			<result property="generatedBy" column="generated_by"/>
 	</resultMap>
 	<resultMap id="TrackSearchOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
@@ -133,6 +135,8 @@
 		<result property="actualTotalCost" column="actual_cost" />
 		<result property="shipFromId" column="ship_from_id" />
 		<result property="shipToId" column="ship_to_id" />
+		<result property="dutiableAmount" column="dutiable_value"/>
+   <result property="signatureRequired" column="signature_required"/>
 	</resultMap>
 	<resultMap id="packageResult" class="com.meritconinc.shiplinx.model.Package">
 		<result property="packageId" column="package_id" />
@@ -307,6 +311,8 @@
 			<result property="toFloorNo" column="to_floor_no"/>	
 			<result property="tempControl" column="istempControl"/>
 			<result property="temperature" column="temperature"/>
+			<result property="dutiableAmount" column="dutiable_value"/>
+   <result property="signatureRequired" column="signature_required"/>
 			<result property="generatedBy" column="generated_by"/>
 </resultMap>
 	
@@ -758,7 +764,7 @@
 	message, tradeshow_pickup, tradeshow_delivery, inside_pickup,
 	appointment_pickup, appointment_delivery, tracking_url,
 	rated_as_weight, billing_type,
-	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature,account_num,generated_by,link_to_order)
+	billing_account,quote_total,quote_cost,actual_total,actual_cost,slave_service_id,def_pickup_time_between,from_pallet_jack,to_pallet_jack,from_dock_level,to_dock_level,from_floor_no,to_floor_no,istempControl,temperature,account_num,generated_by,link_to_order,signature_required,dutiable_value)
 	values (#orderNum#, #statusId#,#shipToId#, #shipFromId#,
 	#packageTypeId.packageTypeId#, #businessId#, #customerId#,
 	#referenceCodeName#,#referenceCode#, #carrierReference#, #satDelivery#,
@@ -777,7 +783,7 @@
 	#createdBy#, #batchId#, #message#, #tradeShowPickup#,
 	#tradeShowDelivery#, #insidePickup#, #appointmentPickup#,
 	#appointmentDelivery#, #trackingURL#, #ratedAsWeight#, #billToType#,
-	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#,#accountNum#,#generatedBy#,#linkToOrder#)
+	#billToAccountNum#,#quoteTotalCharge#,#quoteTotalCost#,#actualTotalCharge#,#actualTotalCost#,#slaveServiceId#,#defaultPickupTimeBetween#,#fromPalletJack#,#toPalletJack#,#fromDockLevel#,#toDockLevel#,#fromFloorNo#,#toFloorNo#,#tempControl#,#temperature#,#accountNum#,#generatedBy#,#linkToOrder#,#signatureRequired#,#dutiableAmount#)
 	<selectKey resultClass="long" type="post" keyProperty="id">select
 		LAST_INSERT_ID() as value
 	</selectKey>
@@ -809,7 +815,19 @@
 			<result property="countryCode" column="country_code" />
 			<result property="languageCode" column="language_code" />
 	</resultMap>
-	
+	<resultMap class="com.meritconinc.shiplinx.model.Document" id="ShipmentDocumentMap">
+	    <result property="documentId" column="document_id"/>
+	    <result property="orderId" column="order_id"/>
+	    <result property="name" column="name"/>
+	    <result property="description" column="description"/>
+	    <result property="docType" column="doc_type"/>
+	    <result property="publicEnable" column="ispublic"/>
+	    <result property="privateEnable" column="isprivate"/>
+	    <result property="fileName" column="file_name"/>
+	    <result property="filePath" column="file_path"/>
+	    <result property="uploadedTime" column="uploadedDate"/>
+	    <result property="uploadedBy" column="uploadedBy"/>
+	</resultMap>
 	<insert id="addPackage" parameterClass="com.meritconinc.shiplinx.model.Package">
 			  insert into package	(package_id,	order_id,	description,	length,		width,	height,		weight,		position,	tracking_number,	cod_value,	insurance_amount,	freight_class, 	billed_weight, 	reference1, 	reference2, 	reference3, 	weight_uom, dimmed_string,type) 
 			  values 				(#packageId#,	#orderId#,	#description#,	#length#,	#width#,#height#,	#weight#,	#position#,	#trackingNumber#,	#codAmount#,#insuranceAmount#,	#freightClass#, #billedWeight#, #reference1#, 	#reference2#, 	#reference3#, 	#weightUOM#, #dimmedString#,#type#)
@@ -1006,7 +1024,7 @@
 						billing_status=#billingStatus#, paid_amount=#paidAmount#, applied_amount=#appliedAmount#, refunded_amount=#refundedAmount#, billed_weight=#billedWeight#, currency=#currency#, message=#message#,
 						quoted_weight=#quotedWeight#, quoted_weight_uom=#quotedWeightUOM#, billed_weight_uom=#billedWeightUOM#, scheduled_ship_date=#scheduledShipDate#, tradeshow_pickup = #tradeShowPickup#, tradeshow_delivery = #tradeShowDelivery#, 
 						inside_pickup = #insidePickup#, appointment_pickup = #appointmentPickup#, appointment_delivery = #appointmentDelivery#, fromtailgate = #fromTailgate#, totailgate = #toTailgate#,
-						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#, unitmeasure=#unitmeasure#,link_to_order = #linkToOrder#
+						tracking_url = #trackingURL#, billing_type=#billToType#, billing_account=#billToAccountNum#, unitmeasure=#unitmeasure#,link_to_order = #linkToOrder#,istempControl = #tempControl#,temperature = #temperature#,docs_only = #docsOnly#, hold = #holdForPickupRequired#, sat_delivery = #satDelivery#, signature_required = #signatureRequired#, dutiable_value = #dutiableAmount#
 				where order_id=#id#
 	</update>	
 
@@ -2209,6 +2227,11 @@
 		<isNotNull property="customerId">
 			and o.customer_id=#customerId#
 		</isNotNull>
+		<isNotNull property = "customerIds">
+				<isNotEmpty property = "customerIds">
+				and o.customer_id IN <iterate   open="(" close=")" conjunction="," property="customerIds"> #customerIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>
 		<isNotNull property="businessIds">
 			<isNotEmpty property="businessIds">
 				and o.business_id IN
@@ -2257,7 +2280,13 @@
 			</isNotNull>			
 			<isNotNull property="customerId">
 				and o.customer_id=#customerId#
-			</isNotNull>	
+			</isNotNull>
+		
+			<isNotNull property = "customerIds">
+				<isNotEmpty property = "customerIds">
+				and o.customer_id IN <iterate   open="(" close=")" conjunction="," property="customerIds"> #customerIds[]# </iterate>
+				</isNotEmpty>
+		   </isNotNull>	
 			<isNotNull  property="carrierId">
 				 and o.carrier_id=#carrierId#
 			</isNotNull>			
@@ -2343,6 +2372,41 @@
 		</dynamic>
 	</select>
   <!-- Track and search soluship side changes Ends --> 
- 
+  <!-- dev 86 -->
+    <insert id="addShippingDocument" parameterClass="com.meritconinc.shiplinx.model.Document">
+        
+       INSERT INTO  `document` ( `order_id`,`name`,`description`,`file_name`,
+		`ispublic`,`isprivate`,`doc_type`,`file_path`,uploadedBy,uploadedDate)
+	VALUES (#orderId#,#name#,#description#,#fileName# ,#publicEnable#,#privateEnable#,#docType#,#filePath#,#uploadedBy#,#uploadedTime#)
+        
+   </insert>	
+    
+   <select id="getshippingDocList" resultMap="ShipmentDocumentMap">
+        select * from  document where order_id=#orderId#
+   </select>
+	<select id="getDocumentById" resultMap="ShipmentDocumentMap" >
+     select * from  document where document_id=#documentId# 
+	</select>
+<update id="deleteDocumentById">
+	    delete from  document where document_id=#documentId# 
+	</update>
+	<update id="updateShipDocVisbibilty">
+    update document set  ispublic=#ispublic# ,isprivate=#isprivate# where 
+	    document_id=#documentId# 
+	    
+	</update>
+
+	<update id="updateShipDocument">
+	    UPDATE  `document` SET `name` = #name#,`description` =#description#,`ispublic` = #publicEnable#,
+		`isprivate` = #privateEnable#,`doc_type` = #docType# WHERE `document_id` = #documentId#
+	</update>
+ <delete id = "deletePackageById">
+		delete from package where package_id = #packageId# 
+	</delete>
+	<select id="getPackagesIdListByOrderId" resultClass="long">
+select package_id from package where order_id=#orderID# 
+ </select>
+	
+	
 </sqlMap>
 

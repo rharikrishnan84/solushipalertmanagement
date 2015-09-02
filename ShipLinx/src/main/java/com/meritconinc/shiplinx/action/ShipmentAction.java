@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
+import com.meritconinc.mmr.utilities.security.FilesUtil;
+import com.meritconinc.shiplinx.model.EdiItem;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -188,11 +190,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 //	private List<OrderStatus> orderStatusList;
 	private MarkupManager markupManagerService;
 	
+	//issue 86
+		private com.meritconinc.shiplinx.model.Document document=new com.meritconinc.shiplinx.model.Document();
+		private List<com.meritconinc.shiplinx.model.Document> documentList;
+		private long documentId;
+		
+		private long orderId;
+		private String viewDoc;
+	
 	private FutureReference fc;
 	private ShippingOrder so;
 	private FutureReferencePackages frp;
 	private List<FutureReferencePackages>futureRefPackList=new ArrayList<FutureReferencePackages>();
-	
+	private boolean pdfSize;
+	private Date startTime;
 	private List<KeyValueVO> cachedList;
 	private Map<String, Integer> trackCachedMap;
 	public List<CurrencySymbol> getCurrencyList() {
@@ -331,6 +342,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    this.pickupRequired = pickupRequired;
 	  }
 	private InputStream inputStream;
+	
+	private InputStream result;
 	
 	private List<String> shipmentIdList = new ArrayList<String>();
 	
@@ -4059,12 +4072,19 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	public String getShippingLabel(){
 		
-	
+	/*if(!pdfSize) {
+			pdfSize = true;
+			startTime = new Date();
+		}*/
 		//shippingOrder = (ShippingOrder)getSession().get("shippingOrder");
 		log.debug("----getShippingLabel-----");
 		String id = request.getParameter("id");
+		String carrierId = request.getParameter("carrierId");
+		/*long cId = 0;
+		if(carrierId != null && !carrierId.equals(""))
+			cId = Long.parseLong(carrierId);*/
 		ShippingOrder shippingOrder = null;
-	
+		User user1 = UserUtil.getMmrUser();
 		try{
 			getSession().put("AutoPrintAgain",false);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -4105,6 +4125,23 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			response.setHeader("Pragma", "public"); 
 			response.setContentLength(baos.size());
 			ByteArrayInputStream bis=new ByteArrayInputStream(baos.toByteArray());
+			/*if(cId == 20 && user1.getPreferredLabelSize().equals("8 x 11")) {
+				log.info("label size : "+bis.read());
+				Date currTime = new Date();
+				long diff = currTime.getTime() - startTime.getTime();
+				long sec = (diff/1000) % 60;
+			if(bis.read() <= 0 && sec < 59) {
+				log.info("bis == 0 recall method");
+				getShippingLabel();
+			} else if(bis.read() <= 0 && sec > 58){
+				log.info("bis == 0 no label");
+				getSession().put("checklabel", "fail");
+			} else if(bis.read() > 0){
+				log.info("label available");
+				inputStream = bis;
+				getSession().put("checklabel", "true");
+			}
+			} else*/
 			inputStream = bis;
 			
 		} catch (Exception e) {			
@@ -4114,6 +4151,26 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return SUCCESS;
 		
 	}
+	
+	/*public String checkLabel() {
+		Object checklabel = getSession().get("checklabel");
+		User user1 = UserUtil.getMmrUser();
+		if (user1.getPreferredLabelSize().equals("8 x 11")) {
+			if (checklabel != null) {
+				if (checklabel.toString().equals("true")
+						|| checklabel.toString().equals("fail")) {
+					setResult(new StringBufferInputStream(
+							checklabel.toString()));
+					getSession().remove("checklabel");
+				} else
+					getSession().remove("checklabel");
+			} else
+				setResult(new StringBufferInputStream("false"));
+		} else {
+			setResult(new StringBufferInputStream("true"));
+		}
+		return SUCCESS;
+	}*/
 
 	public void setServletResponse(HttpServletResponse response) {
 		this.response = response;
@@ -5708,6 +5765,28 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 	        if (request.getParameter("notrackurl") != null)
 	          request.setAttribute("notrackurl", "true");
+	      //shipemnt document list
+	        	        documentList=shippingService.getshippingDocList(Long.valueOf(shipmentId));
+	        	        this.document=null;
+	               setViewDoc(request.getParameter("viewdoc"));
+	        	       String upload200=request.getParameter("upload200");
+	        	       if(upload200!=null && upload200.equals("upload200")){
+	        	    	   addActionMessage("Shipping Document Uploaded Successfully");
+	        	       }
+	        	       
+	        	       String editDoc=request.getParameter("editDoc");
+	        	       if(editDoc!=null && editDoc.equals("editDoc")){
+	        	    	   Long documentId=Long.parseLong(request.getParameter("documentId"));
+	        	    	   this.setDocument(shippingService.getDocumentById(documentId));
+	        	    	   
+	            	   if( this.getDocument()!=null && this.getDocument().isPublicEnable()){
+	        	    		   this.getDocument().setVisibilty("1");
+	        	    	   }else if(this.getDocument()!=null && this.getDocument().isPrivateEnable()){
+	        	    		   this.getDocument().setVisibilty("2");
+	        	    	   }
+	        	    	   
+	        	    	   
+	        	       }
 	      }
 	      // else is executed for a new shipment.
 	      else {
@@ -9195,7 +9274,225 @@ public void setTrackCachedMap(Map<String, Integer> trackCachedMap) {
 	this.trackCachedMap = trackCachedMap;
 } 
 
-	
+/*issue 86:
+					 * uploading shipment documents
+					 * 
+				 */
+					public String uploadDocument(){
+						String path;
+						if(this.document.getUploadDoc()!=null){
+					 
+							this.setOrderId(Long.parseLong(request.getParameter("viewShipmentId")));
+							ShippingOrder so=shippingService.getShippingOrder(getOrderId());
+							String filePath=null;
+						Business b=null;
+							if(so.getBusiness()!=null){
+							 b=so.getBusiness();
+							 // if(b!=null)
+							//filePath=b.getShippingDocPath();
+							 String busId=String.valueOf(so.getBusinessId());
+							 String cusId=String.valueOf(so.getCustomerId());
+							 path =ShiplinxConstants.SHIPPING_DOC_DIR+"business_"+busId+"/customer_"+cusId+"/ShippingDocuments";
+							 filePath=path;
+						}else{
+								  BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+								  b=businessDAO.getBusiessById(so.getBusinessId());
+								  //if(b!=null)
+								//filePath=b.getShippingDocPath();
+								  String busId=String.valueOf(so.getBusinessId());
+								  								  String cusId=String.valueOf(so.getCustomerId());
+								  									 path =ShiplinxConstants.SHIPPING_DOC_DIR+"business_"+busId+"/customer_"+cusId+"/ShippingDocuments";
+								  									  filePath=path;
+							}
+							this.document.setOrderId(getOrderId());
+							this.document.setFileName(so.getId()+"_"+so.getCustomerId()+"_"+this.document.getUploadDocFileName());
+							this.document.setUploadDocFileName(this.document.getFileName());
+							if(filePath!=null){
+							this.getDocument().setFilePath(filePath + File.separator + this.getDocument().getFileName());
+							File f=new File(this.document.getFilePath());
+								if(!f.isFile()){
+								 try {
+									FilesUtil.UploadFile(this.getDocument().getUploadDoc(), this.getDocument().getUploadDocFileName(), filePath);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								 String scope=request.getParameter("scope");
+								 if(scope.equals("1")){
+									 this.getDocument().setPublicEnable(true);
+								 }else if(scope.equals("2")){
+									 this.getDocument().setPrivateEnable(true);
+								 }
+								 this.getDocument().setUploadedTime(new Timestamp(new Date().getTime()));
+								 this.getDocument().setUploadedBy(UserUtil.getMmrUser().getUsername());
+							 shippingService.addShippingDocument(this.document);
+								 
+								
+								 return SUCCESS;
+							}else{
+								addActionError("This Document File Already Exist.");
+								}
+							}else{
+							addActionError("server is busy.");
+							}
+						}
+						
+						   viewShipment();
+					   this.setViewDoc("viewdoc");
+							return INPUT;
+						
+			
+				}
+
+					/*Issue 86: 
+					 * downloading the uploaded 
+					 * Document of shipments
+					 */
+					public String downloadDocument(){
+						
+					 documentId=Long.parseLong(request.getParameter("documentId"));
+						document=shippingService.getDocumentById(documentId);
+						if(document!=null){
+						try {
+								inputStream = new FileInputStream(new File(document.getFilePath()));
+							} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					}
+						 
+						return SUCCESS;
+					}
+					
+					public String deleteDocument(){
+			        documentId=Long.parseLong(request.getParameter("documentId"));
+						long orderId=Long.parseLong(request.getParameter("orderId"));
+						document=shippingService.getDocumentById(documentId);
+						if(document!=null){
+							File todelete=new File(document.getFilePath());
+							todelete.delete();
+						}
+						shippingService.deleteDocumentById(documentId);
+						
+						documentList=shippingService.getshippingDocList(orderId);
+						return SUCCESS;
+					}
+					
+					public String changeVisibility(){
+						  documentId=Long.parseLong(request.getParameter("documentId"));
+						orderId=Long.parseLong(request.getParameter("orderId"));
+						String visibility=request.getParameter("visibility");
+						if(visibility!=null){
+						shippingService.updateShipDocVisbibilty(visibility,documentId);
+						} 
+						return SUCCESS;
+					}
+					
+					
+					public String editDocument(){
+					    documentId=Long.parseLong(request.getParameter("documentId"));
+						orderId=Long.parseLong(request.getParameter("orderId"));
+					    getSession().put("edit", "true");
+						this.document.setOrderId(getOrderId());
+						this.setDocument(shippingService.getDocumentById(documentId));
+						
+					return SUCCESS;
+					}
+					public String updateDocument(){
+						  documentId=this.getDocument().getDocumentId();
+						orderId=Long.parseLong(request.getParameter("orderId"));
+						this.document.setOrderId(getOrderId());
+						 String scope=request.getParameter("scope");
+						 
+						 if(scope.equals("1")){
+							 this.getDocument().setPublicEnable(true);
+						 }else if(scope.equals("2")){
+							 this.getDocument().setPrivateEnable(true);
+						 }
+						 
+						 getSession().remove("edit");
+						 shippingService.updateShipDocument(this.getDocument());
+						return SUCCESS;
+					}
+					public com.meritconinc.shiplinx.model.Document getDocument() {
+						return document;
+					}
+
+
+					public void setDocument(com.meritconinc.shiplinx.model.Document document) {
+						this.document = document;
+					}
+
+
+					public List<com.meritconinc.shiplinx.model.Document> getDocumentList() {
+						return documentList;
+					}
+
+
+					public void setDocumentList(List<com.meritconinc.shiplinx.model.Document> documentList) {
+						this.documentList = documentList;
+					}
+
+
+					public long getOrderId() {
+						return orderId;
+					}
+
+
+					public void setOrderId(long orderId) {
+						this.orderId = orderId;
+					}
+
+
+					public String getViewDoc() {
+						return viewDoc;
+					}
+
+
+					public void setViewDoc(String viewDoc) {
+						this.viewDoc = viewDoc;
+					}
+
+
+					public long getDocumentId() {
+						return documentId;
+					}
+
+
+					public void setDocumentId(long documentId) {
+						this.documentId = documentId;
+					}
+
+
+					public boolean isPdfSize() {
+						return pdfSize;
+					}
+
+
+					public void setPdfSize(boolean pdfSize) {
+						this.pdfSize = pdfSize;
+					}
+
+
+					public Date getStartTime() {
+						return startTime;
+					}
+
+
+					public void setStartTime(Date startTime) {
+						this.startTime = startTime;
+					}
+
+
+					public InputStream getResult() {
+						return result;
+					}
+
+
+					public void setResult(InputStream result) {
+						this.result = result;
+					}
+					
 	// / ============== End =======================
 
 }

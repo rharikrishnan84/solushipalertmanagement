@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 
@@ -19,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import com.meritconinc.shiplinx.model.Document;
 
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.Common;
@@ -300,7 +304,7 @@ public class ShippingServiceImpl implements ShippingService {
     		  so.getToAddress().setAddressId((Long)toUpdate);
     	  }
       }
-      this.shippingDAO.updateShippingOrderExtended(so);
+     // this.shippingDAO.updateShippingOrderExtended(so);
 
       // update From and To Addresses
       if (so.getFromAddress() != null)
@@ -309,6 +313,7 @@ public class ShippingServiceImpl implements ShippingService {
         this.addressDAO.edit(so.getToAddress());
 
       // charges
+      
       if (so.getCharges() != null) {
         for (Charge shippingCharge : so.getCharges()) {
           if (shippingCharge.getId() == null || shippingCharge.getId().longValue() <= 0) {
@@ -317,23 +322,59 @@ public class ShippingServiceImpl implements ShippingService {
           }
         }
       }
-
+      
+      
       shippingDAO.updateShippingOrderBillingStatus(so);
-
+      
+      List<Package>  packageList=shippingDAO.getShippingPackages(so.getId());
+           float totatlWeight = so.getQuotedWeight();
+      
       // Packages
+      
       if (so.getPackages() != null && so.getPackages().size() > 0) {
         for (Package p : so.getPackages()) {
           if (p.getPackageId() <= 0) {
+        	
             // Add Package
             p.setOrderId(so.getId());
+            totatlWeight += p.getWeight().floatValue();
             this.shippingDAO.addPackage(p);
           } else {
             // Update Package
+        	  int index =0;
+        	          	  for(Package pack:packageList){
+        	          		 if(pack.getPackageId() == p.getPackageId()){ 
+        	          		 totatlWeight -= pack.getWeight().floatValue();
+        	          		 totatlWeight += p.getWeight().floatValue();
+        	          		 index++;
+        	          		 }
+        	          	  }
+
             updatePackage(p);
+           
+            p.setOrderId(so.getId());
+                        if(index !=0){
+                        packageList.remove(index-1);
+                        }else if(index ==0){
+                        	packageList.remove(index);
+                       }
           }
         }
+        if(packageList.size()>0)
+        	            for(Package pack:packageList){
+        	            {
+        	            	 totatlWeight -= pack.getWeight().floatValue();
+        	            	shippingDAO.deletePackageById(pack.getPackageId());
+        	            	}
+        	            }
+
       }
+      
+      so.setQuotedWeight(totatlWeight);
+       this.shippingDAO.updateShippingOrderExtended(so);
       // Labels
+       
+       
       for (ShippingLabel label : so.getLabels()) {
         if (label.getId() == null || label.getId().longValue() <= 0) {
           label.setOrderId(so.getId().longValue());
@@ -2499,6 +2540,7 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 		long orderId = 0;
 
 		for (ShippingOrder order : orders) {
+			String trackingUrl;
 			if (order.getStatusId() != null) {
 				statusId = order.getStatusId();
 			}
@@ -2541,6 +2583,13 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 					order.setCarrier(carrier);
 					order.setCarrierName(carrier.getName());
 					order.setMasterCarrierName(carrier.getName());
+					if(carrier!=null && carrier.getTrackingURL() != null){
+						trackingUrl = carrier.getTrackingURL();
+						if(trackingUrl !=null && order.getMasterTrackingNum() != null){
+							trackingUrl = trackingUrl.replace("*trackingnum", order.getMasterTrackingNum());
+							order.setTrackingURL(trackingUrl);
+						}
+				}
 				}
 			}
 			for (Service service : servicesList) {
@@ -2581,4 +2630,37 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 			}
 			return temList;
 	}
+	@Override
+		public void addShippingDocument(Document document) {
+			// TODO Auto-generated method stub
+			 shippingDAO.addShippingDocument(document);
+		}
+			@Override
+	public List<Document> getshippingDocList(Long orderId) {
+			// TODO Auto-generated method stub
+			return this.shippingDAO.getshippingDocList(orderId);
+		}
+			@Override
+		public Document getDocumentById(long documentId) {
+			// TODO Auto-generated method stub
+		return this.shippingDAO.getDocumentById(documentId);
+		}
+	
+		@Override
+	public void deleteDocumentById(long documentId) {
+			// TODO Auto-generated method stub
+		 this.shippingDAO.deleteDocumentById(documentId);
+		}
+			@Override
+	public void updateShipDocVisbibilty(String visibility, long documentId) {
+			// TODO Auto-generated method stub
+			 this.shippingDAO.updateShipDocVisbibilty(visibility,documentId);
+	}
+	
+		@Override
+		public void updateShipDocument(Document document) {
+			// TODO Auto-generated method stub
+			 this.shippingDAO.updateShipDocument(document);
+		}
+
 }

@@ -473,14 +473,20 @@ public class EdiPurolatorParser extends EdiParser {
 			chargeGroupCode = chargeCodes.get(0).getGroupCode(); 	
 			chargeName =chargeCodes.get(0).getChargeName();
 			}else{
+				if(!(chargeCode.contains("TAX")))
+										{
 				chargeCode = ShiplinxConstants.CHARGE_CODE_PURO_ACC;
 				chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_PURO_OTH;
 				chargeName = chargeCodeMapInfo[0];
+										}
 			}
 		}else {
+			if(!(chargeCode.contains("TAX")))
+								{
 			chargeCode = ShiplinxConstants.CHARGE_CODE_PURO_ACC;
 			chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_PURO_OTH;
 			chargeName = chargeCodeMapInfo[0];
+								}
 			
 		}
 		

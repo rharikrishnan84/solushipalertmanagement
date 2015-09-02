@@ -164,8 +164,9 @@ var dojos = getElementsByClassName("dojoComboBox");
 	    HttpSession httpSession = request.getSession();
 	    com.meritconinc.shiplinx.model.ShippingOrder shippingOrder=(com.meritconinc.shiplinx.model.ShippingOrder)httpSession.getAttribute("shippingOrder");
     %>
-    var prevQuantity=<%=shippingOrder.getQuantity()%>;    
+      
  	function modifyQuantity(){
+ 		 var prevQuantity=<%=shippingOrder.getQuantity()%>; 
 		var existingPackageArray = new Array();				
 			    var i;
     for(i=0;i<prevQuantity;i++){
@@ -219,7 +220,7 @@ var dojos = getElementsByClassName("dojoComboBox");
 	if(type=='type_env' || type=='type_pak')
 	{
 		document.getElementById("quantity").value = 1;
-		
+		disableEnableComponents(pallet_opt1, 'none');
 		//document.getElementById('dg_field').selectedIndex=0;
 		//document.getElementById("dg_field").disabled = true;
 	}

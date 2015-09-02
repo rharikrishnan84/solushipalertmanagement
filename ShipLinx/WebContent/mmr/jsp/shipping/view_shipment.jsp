@@ -245,6 +245,9 @@ var product_id=0;
 				$('#loaderImg').css('display','block');
 			}
 		}		
+		
+		var checkLabelTimer = null;
+		var carrierId20='<s:property value="selectedOrder.carrierId"/>';
 		function generateLabel(id){
 		//alert("label::"+id);
 		var arrOrders = new Array();
@@ -254,12 +257,46 @@ var product_id=0;
 	    	var ccopies = document.getElementById("customsinv_copies").value;
 	    	else // for domestic shipments
 	    	var ccopies = 0;
-	    	var url="getShippingLabel.action?slcopies="+slcopies+"&cicopies="+ccopies+"&arrayOrders="+arrOrders;
+			var url="getShippingLabel.action?slcopies="+slcopies+"&cicopies="+ccopies+"&arrayOrders="+arrOrders; //+"&carrierId="+carrierId20;
 	    	//alert(url);
-			window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
+	    	
+			/* adding loader wheel image for carrierId 20 purolator
+			if(carrierId20 == 20) {
+	    		spinBall();
+	    		var w = window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
+	    		checkLabelTimer = setInterval(function(){checkLabel();}, 500 );
+	    		function checkLabel() {
+	    			$.ajax({
+	    				type : "POST",
+	    				url : "checkLabel.action",
+	    				contentType : "text/html; charset=utf-8",
+	    				success : function(msg) {
+	    					//alert("msg "+msg);
+	    					if(msg == 'true') {
+	    					clearInterval( checkLabelTimer );
+	    					$('#loader').css('display','none');
+	    					$('#loaderImg').css('display','none');
+	    					$('#loaderImg').hide();
+	    					} else if(msg == 'fail') {
+	    						$('#loader').css('display','none');
+		    					$('#loaderImg').css('display','none');
+		    					$('#loaderImg').hide();
+		    					w.close();
+		    					alert("label not available");
+	    					}
+	    				}
+	    				});
+	    		}
+	    	} else */ 
+	    		window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
+ 		}
 
-		}
-		function cancelShipment() {
+		/* function spinBall() {
+			$('#loader').css('display','block');
+			$('#loaderImg').css('display','block');
+		} */
+
+			function cancelShipment() {
 			 var clientIP;
 							       // alert(ip);
 		    try
@@ -589,6 +626,7 @@ var product_id=0;
 						$(document).ready(function(){
 							<%
 														 String isLTL=(String)request.getAttribute("isLTL");
+							String viewDoc=(String)request.getAttribute("viewdoc");
 														 %>
 														 
 														 var colorCode=getStyle();
@@ -605,18 +643,25 @@ var product_id=0;
 								
 														 
 														var isLTL = <%=isLTL%>;
+														var viewDoc="<s:property value="viewDoc" />";
 														if(isLTL == "1"){
 															$('#box3').css('display','block');
-									   					    $('#box1,#box2').css('display','none');
+									   					   /*  $('#box1,#box2').css('display','none'); */
+									   					    $('#box1,#box2,#box4').css('display','none');
 									   						/* $('#box3').css('background-color','#990000');
 									   						$('.navi4 ul li:last-child').css('background-color','#990000'); */
 									   						$('#box3').css('background-color',buttonColor);
+														}else  if(viewDoc == "viewdoc"){
+															$('#box1').css('background-color','#000000');
+															$('#box4').css('display','block');
 									   						$('.navi4 ul li:last-child').css('background-color',buttonColor);
+									   						$('#box2,#box3,#box1').css('display','none');
 														}
 														else{
 							/* $('.navi4 ul li:first-child').css('background-color','#990000'); */
 							$('.navi4 ul li:first-child').css('background-color',buttonColor);
-							$('#box2,#box3').css('display','none');
+							/* $('#box2,#box3').css('display','none'); */
+							$('#box2,#box3,#box4').css('display','none');
 														}
 							$('.navi4 ul li').click(function(){
 								/* $(this).css('background-color','#990000');
@@ -626,25 +671,34 @@ var product_id=0;
 								var indexval = $(this).index();
 								if(indexval == 0){
 									$('#box1').css('display','block');
-									$('#box2,#box3').css('display','none');
+									/* $('#box2,#box3').css('display','none'); */
+									$('#box2,#box3,#box4').css('display','none');
 								}
 								if(indexval == 1){
 									$('#box2').css('display','block');
-									$('#box1,#box3').css('display','none');
+									/* $('#box1,#box3').css('display','none'); */
+									$('#box1,#box3,#box4').css('display','none');
 								}
 								if(indexval == 2){
 									$('#box3').css('display','block');
-									$('#box2,#box1').css('display','none');
+									/* $('#box2,#box1').css('display','none'); */
+									$('#box2,#box1,#box4').css('display','none');
 								}
+								if(indexval == 3){
+									$('#box4').css('display','block');
+									$('#box2,#box1,#box3').css('display','none');
+																		 								}
 							});
 							
 							$('#vw_shpmnt_nxt').click(function(){
 								$('#box2').css('display','block');
-								$('#box1,#box3').css('display','none');
+								/* $('#box1,#box3').css('display','none'); */
+								$('#box1,#box3,#box4').css('display','none');
 							});
 							$('#vw_shpmnt_nxt1').click(function(){
 								$('#box1').css('display','block');
-								$('#box2,#box3').css('display','none');
+								/* $('#box2,#box3').css('display','none'); */
+								$('#box2,#box3,#box4').css('display','none');
 							});
 													
 						});
@@ -872,7 +926,10 @@ function deletecharge(action){
 <div id="messages"><jsp:include
 	page="../common/action_messages.jsp" /></div>
 	
-	
+	<div id="loader1" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+  <div id="loaderImg1" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+    </div>
+</div>
 
 <div class="form-container"><s:form id="viewform"
 	action="update.charge.shipment.action" name="viewform">
@@ -887,6 +944,7 @@ function deletecharge(action){
 								<li><mmr:message messageId="menu.orderdetails"/></li>
         <li><mmr:message messageId="menu.packagedetails"/></li>
         <li><mmr:message messageId="menu.statusupdate"/></li>
+        <li><mmr:message messageId="menu.document"/> Document</li>
 							</ul>
 							<s:if test="%{selectedOrder.statusId!=40}">
 								 <a id="cancel_shipment" href="javascript:cancelShipment()"><mmr:message messageId="menu.cancel.shipment" /> </a> 
@@ -1243,17 +1301,25 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 										<label><mmr:message messageId="label.viewship.ref1"/> </label>
 										<div class="controls">
 											<span>:</span>
-											<p><s:property
-						value="%{selectedOrder.referenceCode}" /></p>
+											<%-- <p><s:property
+						value="%{selectedOrder.referenceCode}" /></p> --%>
+						<p title="<s:property
+						value="%{selectedOrder.referenceCode}" />" style="width:160px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property
+						value="%{selectedOrder.referenceCode}" /> </p>
 										</div>
 									</div>
 								<div class="fields">
 										<label><mmr:message messageId="label.viewship.ref2"/> </label>
 										<div class="controls">
 											<span>:</span>
-											<p style="width:160px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property
+											<%-- <p style="width:160px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property
 						value="%{selectedOrder.referenceOne}" /> <s:property
-						value="%{selectedOrder.referenceTwo}" /></p>
+						value="%{selectedOrder.referenceTwo}" /></p> --%>
+						<p title="<s:property
+						value="%{selectedOrder.referenceOne}" />,<s:property
+						value="%{selectedOrder.referenceTwo}" />" style="width:160px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property
+						value="%{selectedOrder.referenceOne}" />,<s:property
+						value="%{selectedOrder.referenceTwo}" /> </p>
 										</div>
 									</div>
 									<div class="fields">
@@ -2323,10 +2389,18 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 						<div class="content_table" id="box3" > 
 						<jsp:include page="add_info_shipping.jsp"/>
 						</div>
-</div>
+<%-- </div>
 					</div>
 </s:form>					
-					</div>
+					</div> --%>
+					</s:form>	
+	<s:form  method="post" enctype="multipart/form-data" id="uploadForm">
+		<div class="content_table" id="box4" > 
+		<input type="hidden" value="<s:property value="%{selectedOrder.id}" />" name="viewShipmentId">
+						<jsp:include page="doc_shipment.jsp"/>
+						</div>
+</s:form>	
+				</div>
 			
 </body>
 </html>

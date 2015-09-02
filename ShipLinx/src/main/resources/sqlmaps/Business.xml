@@ -60,6 +60,7 @@
 			<result property="partnerLevel" column="isPartner"/>
 			<result property="nationLevel"  column="isNation" /> 
 			<result property="branchLevel" column="isBranch"/>
+			<result property="shippingDocPath" column="ship_doc_path"/>
 			<result property="contactPath" column="contact_path"/>
 			<result property="feedbackPath" column="feedback_path"/>
 			<result property="customMarkup" column="custom_markup"/>

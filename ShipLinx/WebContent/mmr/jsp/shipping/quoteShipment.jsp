@@ -121,8 +121,9 @@
     HttpSession httpSession = request.getSession();
     com.meritconinc.shiplinx.model.ShippingOrder shippingOrder=(com.meritconinc.shiplinx.model.ShippingOrder)httpSession.getAttribute("shippingOrder");
 	%>
-	var prevQuantity=<%=shippingOrder.getQuantity()%>;
+	
  	function modifyQuantity(){
+ 		var prevQuantity=<%=shippingOrder.getQuantity()%>;
 		var existingPackageArray = new Array();				
 	    var i;
 	    for(i=0;i<prevQuantity;i++){
@@ -148,6 +149,25 @@
 					obj.type1=document.getElementById("shippingOrder_packages_"+i+"__type").value;
 				}
 	    	}
+			
+			if(packType1=='type_env' || packType1=='type_pak'){
+								if(obj.length>0 ||obj.width>0 || obj.height>0 ){
+									document.getElementById("shippingOrder.packageArray["+i+"].length").value=1;
+								document.getElementById("shippingOrder.packageArray["+i+"].width").value=1;
+									document.getElementById("shippingOrder.packageArray["+i+"].height").value=1;
+								}
+								document.getElementById("shippingOrder.packageArray["+i+"].length").disabled = true;
+								document.getElementById("shippingOrder.packageArray["+i+"].width").disabled = true;
+								document.getElementById("shippingOrder.packageArray["+i+"].height").disabled  = true;
+								document.getElementById("quantity").disabled=true;
+								
+							}
+							if(packType1=='type_package'||packType1=='type_pallet'){
+								document.getElementById("shippingOrder.packageArray["+i+"].length").disabled= false;
+								document.getElementById("shippingOrder.packageArray["+i+"].width").disabled= false;
+								document.getElementById("shippingOrder.packageArray["+i+"].height").disabled= false;
+								document.getElementById("quantity").disabled=false;
+							}
 	    	obj.description=document.getElementById("shippingOrder.packageArray["+i+"].description").value;
 	    	existingPackageArray.push(obj);
 	    }
@@ -215,6 +235,26 @@
 							document.getElementById("shippingOrder_packages_"+i+"__type").value=existingPackageArray[i].type1;
 						}
 					}
+					
+					if(packType1=='type_env' || packType1=='type_pak'){
+												if(obj.length>0 ||obj.width>0 || obj.height>0 ){
+													document.getElementById("shippingOrder.packageArray["+i+"].length").value=1;
+													document.getElementById("shippingOrder.packageArray["+i+"].width").value=1;
+													document.getElementById("shippingOrder.packageArray["+i+"].height").value=1;
+												}
+												document.getElementById("shippingOrder.packageArray["+i+"].length").disabled = true;
+												document.getElementById("shippingOrder.packageArray["+i+"].width").disabled = true;
+												document.getElementById("shippingOrder.packageArray["+i+"].height").disabled  = true;
+												document.getElementById("quantity").disabled=true;
+												
+										}
+											if(packType1=='type_package'||packType1=='type_pallet'){
+												document.getElementById("shippingOrder.packageArray["+i+"].length").disabled= false;
+												document.getElementById("shippingOrder.packageArray["+i+"].width").disabled= false;
+											document.getElementById("shippingOrder.packageArray["+i+"].height").disabled= false;
+												document.getElementById("quantity").disabled=false;
+											}
+
 					document.getElementById("shippingOrder.packageArray["+i+"].description").value=existingPackageArray[i].description;
 				}
 					prevQuantity = document.getElementById("quantity").value;

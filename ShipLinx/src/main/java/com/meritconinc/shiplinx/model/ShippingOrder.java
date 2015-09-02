@@ -53,6 +53,8 @@ public class ShippingOrder implements Serializable {
   public static final int COD_RETURN_TYPE_SENDER = 1;
   public static final int COD_RETURN_TYPE_OTHER = 2;
   public static final String DATE_FORMAT = "MM/dd/yyyy";
+  
+  private List<Long> customerIds;
 
   private Long customerId;
   private Long id;
@@ -2097,6 +2099,14 @@ public List<Long> getBusinessIds() {
 
 public void setBusinessIds(List<Long> businessIds) {
 	this.businessIds = businessIds;
+}
+
+public List<Long> getCustomerIds() {
+	return customerIds;
+}
+
+public void setCustomerIds(List<Long> customerIds) {
+	this.customerIds = customerIds;
 }
 
 //For eshipplus

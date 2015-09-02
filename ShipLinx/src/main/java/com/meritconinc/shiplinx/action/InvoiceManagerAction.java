@@ -370,9 +370,11 @@ public String getSalesRep() {
   			    	      	availableCredit=this.customerService.getAvailableCredit(invoice.getCustomerId());
   			    	      	getSession().put("availableCredit",currencyFormatter.format(availableCredit));
   			    	      	getSession().put("currencyS", cur.getCurrencySymbol());
+  			    	      getSession().put("creditLimit", c.getCreditLimit());
   	      		    	  }else{
   	      		    		getSession().put("availableCredit",availableCredit);
   			    	      	getSession().put("currencyS", cur.getCurrencySymbol());
+  			    	      getSession().put("creditLimit", c.getCreditLimit());
   	      		    	  }
   	      	      }
   	      	    } catch(Exception e){

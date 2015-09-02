@@ -29,6 +29,7 @@ import com.meritconinc.shiplinx.model.AccessorialServices;
 import com.meritconinc.shiplinx.model.AddressCheckList;
 import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
 import com.meritconinc.shiplinx.model.EshipplusPackage;
+import com.meritconinc.shiplinx.model.Document;
 
 public interface ShippingDAO {
 
@@ -287,4 +288,16 @@ public interface ShippingDAO {
 	public List<Package> getPackagesByOrderIds(List<Long> orderIds);
 	
 	public List<CustomsInvoice> getCustomsInvoiceByOrderIds(List<Long> orderIds);
+	public void addShippingDocument(Document document);
+	
+		public List<Document> getshippingDocList(Long orderId);
+	
+		public Document getDocumentById(long documentId);
+	
+		public void deleteDocumentById(long documentId);
+	
+		public void updateShipDocVisbibilty(String visibility, long documentId);
+	
+		public void updateShipDocument(Document document);
+		public void deletePackageById(long packageId);
 }

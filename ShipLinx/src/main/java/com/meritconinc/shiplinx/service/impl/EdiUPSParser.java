@@ -276,8 +276,11 @@ public class EdiUPSParser extends EdiParser {
 			chargeCodeLevel2 = chargeCodes.get(0).getChargeCodeLevel2();
 			chargeGroupCode = chargeCodes.get(0).getGroupCode(); 			
 		} else {
+			if(!(chargeCode.contains("TAX")))
+						{
 			chargeCode = ShiplinxConstants.CHARGE_CODE_UPS_ACC;
 			chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_UPS_OTH;
+						}
 		}
 		
 		//if this is HST,  we need to set to appropriate HST (ON,BC,NS,NB,NF) as the charge code in UPS EDI file does not indicate which HST

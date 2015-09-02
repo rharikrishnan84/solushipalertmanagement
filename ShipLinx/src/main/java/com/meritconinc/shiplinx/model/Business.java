@@ -38,6 +38,9 @@ public class Business {
 	
 	private String emailHeaderImage;
 	private String taxInfo;
+	//issue 86
+		
+	private String shippingDocPath;
 	
 	private String financeEmail;
 	
@@ -548,6 +551,12 @@ public class Business {
 				public void setCopyMarkup(boolean copyMarkup) {
 					this.copyMarkup = copyMarkup;
 				}
+				public String getShippingDocPath() {
+										return shippingDocPath;
+									}
+								public void setShippingDocPath(String shippingDocPath) {
+										this.shippingDocPath = shippingDocPath;
+									}
 						
 			
 }

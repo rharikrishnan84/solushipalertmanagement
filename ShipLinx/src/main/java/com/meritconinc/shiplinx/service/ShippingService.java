@@ -253,4 +253,16 @@ public ChargeGroup getChargeDetailsByProvince(String province);
 	public int checkAccessorial(String chargeCode);
 	public int saveDuplicateOrder(ShippingOrder dupOrder, ShippingOrder shippingOrder);
 	public List<ShippingOrder>getShipmentsForTrack(ShippingOrder so);
+	public void addShippingDocument(com.meritconinc.shiplinx.model.Document document);
+	
+	public List<com.meritconinc.shiplinx.model.Document> getshippingDocList(
+			Long orderId);
+	
+	public com.meritconinc.shiplinx.model.Document getDocumentById(long documentId);
+	
+	public void deleteDocumentById(long documentId);
+	
+	public void updateShipDocVisbibilty(String visibility, long documentId);
+	
+	public void updateShipDocument(com.meritconinc.shiplinx.model.Document document);
 }

@@ -429,9 +429,12 @@ public class EdiLoomisParser extends EdiParser {
 				chargeName = chargeCodes.get(0).getChargeName();
 				chargeGroupCode = chargeCodes.get(0).getGroupCode(); 
 			} else {
+				if(!(chargeCode.contains("TAX")))
+									{
 				chargeCode = ShiplinxConstants.CHARGE_CODE_LOOMIS_ACC;
 				chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_LOOMIS_OTH;
 				chargeName = ShiplinxConstants.CHARGE_CODE_LOOMIS_ACC;
+									}
 			}
 			
 			charge.setChargeCode(chargeCode);

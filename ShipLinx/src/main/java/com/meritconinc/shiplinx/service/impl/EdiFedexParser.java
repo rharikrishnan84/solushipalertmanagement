@@ -343,9 +343,12 @@ public class EdiFedexParser extends EdiParser {
 				chargeName = chargeCodes.get(0).getChargeName();
 				chargeGroupCode = chargeCodes.get(0).getGroupCode();
 			} else {
+				if(!(chargeCode.contains("TAX")))
+										{
 				chargeCode = ShiplinxConstants.CHARGE_CODE_FEDEX_ACC;
 				chargeCodeLevel2 = ShiplinxConstants.CHARGE_CODE_LEVEL_2_FEDEX_OTH;
 				chargeName = ShiplinxConstants.CHARGE_CODE_FEDEX_ACC;
+										}
 			}
 			
 //			charge.setCharge(new Double(0.0));
