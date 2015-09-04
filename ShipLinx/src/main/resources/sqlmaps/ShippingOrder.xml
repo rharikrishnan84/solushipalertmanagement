@@ -1010,7 +1010,19 @@
 				<isNotEmpty prepend="," property="quantity">
 					quantity=#quantity#
 				</isNotEmpty>
-			</isNotNull>								
+			</isNotNull>
+			
+			
+			<isNotNull property="referenceTwo">
+				<isNotEmpty prepend="," property="referenceTwo">
+					reference2=#referenceTwo#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="referenceTwoName">
+				<isNotEmpty prepend="," property="referenceTwoName">
+					reference2_name=#referenceTwoName#
+				</isNotEmpty>
+ 			</isNotNull>									
 		</dynamic>
 		where order_id=#id#
 	</update>

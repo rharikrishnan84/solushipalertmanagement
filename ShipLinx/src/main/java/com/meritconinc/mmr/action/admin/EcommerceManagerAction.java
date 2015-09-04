@@ -129,6 +129,13 @@ ServletRequestAware, ServletResponseAware {
 			ecommerceStoreList=eCommerceDAO.listEcommerceStores(st);
 		}else if(UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
 			st.setCustomerId(UserUtil.getMmrUser().getCustomerId());
+			try {
+								customer=customerService.getCustomerInfoByCustomerId(UserUtil.getMmrUser().getCustomerId());
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			
 			ecommerceStoreList=eCommerceDAO.listEcommerceStores(st);
 			if(ecommerceStoreList!=null && UserUtil.getMmrUser()!=null && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN) 
 												&& ecommerceStoreList.size()>0){
@@ -146,6 +153,9 @@ ServletRequestAware, ServletResponseAware {
    
 	public String newStore(){
 		ecommerceStore=new EcommerceStore();
+		ecommerceStore.setCancelShipmentUrl("https://soluship.com/api/v1/cancelshipment");
+				ecommerceStore.setRateServiceUrl("https://soluship.com/api/v1/genericrates");
+				ecommerceStore.setCreateShipmentUrl("https://soluship.com/api/v1/createShipment");
 		getSession().remove("edit");
 		return SUCCESS;
 	}
@@ -201,6 +211,10 @@ ServletRequestAware, ServletResponseAware {
  		 listStore();
  		 }else{
  			ecommerceStore=new EcommerceStore();
+ 			ecommerceStore.setCancelShipmentUrl("https://soluship.com/api/v1/cancelshipment");
+ 			 			ecommerceStore.setRateServiceUrl("https://soluship.com/api/v1/genericrates");
+ 			 			ecommerceStore.setCreateShipmentUrl("https://soluship.com/api/v1/createShipment");
+ 			
  			getSession().remove("edit");
  			 return INPUT;
  		 }
@@ -227,6 +241,12 @@ ServletRequestAware, ServletResponseAware {
 		 }else if(packageMapFlag==2){
 			 ecommerceStore.setPackageMap(false);
 		 } 
+		 
+		 if(store.isSinglePack()){
+			 			 ecommerceStore.setSinglePack(true);
+			 		 }
+			 		 ecommerceStore.setMaxPackWeight(store.getMaxPackWeight());
+			 		 
 		 
 		if(ecomStoreId!=null){
 			ecommerceStore.setEcommerceStoreId(Long.parseLong(ecomStoreId));
@@ -263,7 +283,7 @@ ServletRequestAware, ServletResponseAware {
 		
 	    if(UserUtil.getMmrUser()!=null &&eCommerceDAO.getEcommerceStoreById(ecommerceStore.getEcommerceStoreId()).getAccessKey()!=null 
 	    		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_CUSTOMER_ADMIN)){
-	    	UpdateEcommerceService(ecommerceStore.getEcommerceStoreId());
+	    	//UpdateEcommerceService(ecommerceStore.getEcommerceStoreId());
 	    }
 		addActionMessage("Store Updated Succesffuly");
 		getSession().remove("edit");
@@ -402,6 +422,19 @@ ServletRequestAware, ServletResponseAware {
 			addActionError("Property Missing Error.");
 			i++;
 		}
+		
+		
+		if(ecommerceStore2.isSinglePack()){
+						if(ecommerceStore2.getMaxPackWeight()==null){
+							addActionError("Enter Valid Maximum Single Package Weight.");
+							i++;
+						}else if(ecommerceStore2.getMaxPackWeight().equals("")
+								|| ecommerceStore2.getMaxPackWeight()<=0){
+							
+							addActionError("Enter Valid Maximum Single Package Weight.");
+							i++;
+						}
+					}
 	 
 		
 		if(i>0){

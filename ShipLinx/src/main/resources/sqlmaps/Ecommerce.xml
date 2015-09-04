@@ -43,6 +43,9 @@
 		<result property="markupLevel" column="markup_level"/>
 		<result property="freeshipRequired" column="enable_freeship"/>
 		
+		<result property="maxPackWeight" column="max_pack_weight"/>
+ 		<result property="singlePack" column="single_pack_enable"/>
+		
 	</resultMap>
  
 	 
@@ -57,8 +60,8 @@
 	<!-- INSERT START -->
 
 	<insert id="addEcommerceStore" parameterClass="com.meritconinc.mmr.model.admin.EcommerceStore">
-	    INSERT INTO  ecommerce_store  ( `store_url`,`business_id`,`customer_id`,`scopes`,`access_key`,`rate_service_url`,`create_shipment_url`,`api_key`,`shared_scret`,`ecommerce_domain`,`chepest`,`fastest`,`both_service`,cancel_shipment_url,installation_url,active,package_map,created_by)
-	VALUES (#url#,#businessId#,#customerId#,#scopes#,#accessKey#,#rateServiceUrl#,#createShipmentUrl#,#apiKey#,#sharedSceret#,#ecommerceDomain#,#chepest#,#fastest#,#bothService#,#cancelShipmentUrl#,#installUrl#,#active#,#packageMap#,#createdBy#)
+	     INSERT INTO  ecommerce_store  ( `store_url`,`business_id`,`customer_id`,`scopes`,`access_key`,`rate_service_url`,`create_shipment_url`,`api_key`,`shared_scret`,`ecommerce_domain`,`chepest`,`fastest`,`both_service`,cancel_shipment_url,installation_url,active,package_map,created_by,single_pack_enable,max_pack_weight)
+	VALUES (#url#,#businessId#,#customerId#,#scopes#,#accessKey#,#rateServiceUrl#,#createShipmentUrl#,#apiKey#,#sharedSceret#,#ecommerceDomain#,#chepest#,#fastest#,#bothService#,#cancelShipmentUrl#,#installUrl#,#active#,#packageMap#,#createdBy#,#singlePack#,#maxPackWeight#)
 	<selectKey resultClass="long" type="post" keyProperty="ecommerceStoreId" >select LAST_INSERT_ID() as value
 	 		</selectKey>
 	</insert>
@@ -131,6 +134,14 @@
 	<isNotNull property="updatedAt">
 	    updated_at=#updatedAt#,
 	</isNotNull>
+	
+	<isNotNull property="singlePack">
+	    single_pack_enable=#singlePack#,
+	</isNotNull>
+	<isNotNull property="maxPackWeight">
+	    max_pack_weight=#maxPackWeight#,
+	</isNotNull>
+	
    <isNotNull property="packageMap">
 	 package_map=#packageMap#
 	 </isNotNull>

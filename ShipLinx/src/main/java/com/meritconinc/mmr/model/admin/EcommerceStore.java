@@ -63,7 +63,12 @@ public class EcommerceStore {
  	 private Long markupType; // 1  mark up ; 2 mark down
  	 private Long markupLevel; //1 : markup by flat rate ; 2 markup by percentage;
 	 private boolean freeshipRequired;	 
- 	 
+  	 
+	 // customer settings sept-2
+	 private boolean singlePack;
+	 private Double maxPackWeight;
+	 
+	 
 	 
 	public Double getFlatRate() {
 		return flatRate;
@@ -317,6 +322,18 @@ public class EcommerceStore {
 	}
 	public void setWebhookUnistallId(Long webhookUnistallId) {
 		this.webhookUnistallId = webhookUnistallId;
+	}
+	public boolean isSinglePack() {
+		return singlePack;
+	}
+	public void setSinglePack(boolean singlePack) {
+		this.singlePack = singlePack;
+	}
+	public Double getMaxPackWeight() {
+		return maxPackWeight;
+	}
+	public void setMaxPackWeight(Double maxPackWeight) {
+		this.maxPackWeight = maxPackWeight;
 	}
  
 

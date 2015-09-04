@@ -441,7 +441,7 @@ public class ShopifyUtil /*implements Runnable */ {
 				&& shopifyHmac.equals(calucaltedHmac)) {
 			return true;
 		}
- 		return true;
+ 		return false;
 
 	}
    

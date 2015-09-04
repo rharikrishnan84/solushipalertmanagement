@@ -194,8 +194,21 @@ window.onload = function() {
 				}
 				
 				
-			
-		
+				function toShoworHidemax(checked)
+				{ 
+					if(checked)
+					{
+						//alert("Show");
+						document.getElementById("maxpack").style.display = 'block';			
+					}
+					else
+					{
+						//alert("Hide");
+						document.getElementById("maxpack").style.display = 'none';			
+					}		
+				}
+				
+				 
 		
 </script> 
 
@@ -216,7 +229,12 @@ window.onload = function() {
     	<s:hidden name="ecommerceStoreId" value="%{ecommerceStore.ecommerceStoreId}"/>
      </s:else>
  					  
-				<div class="content_table">
+								 <s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
+								 
+								 
+								 <div class="content_table">
+								 
+				
 				
 				
 					<div class="content_header">
@@ -258,7 +276,6 @@ window.onload = function() {
 									</div>
 									 </s:if>
 									 <s:hidden name="ecommerceStore.ecommerceStoreId" value="%{ecommerceStore.ecommerceStoreId}"></s:hidden>
-								 <s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
 
 									<div class="fields">
 										<label><mmr:message messageId="ecommerce.rate.url"/> </label>
@@ -286,31 +303,14 @@ window.onload = function() {
 									</div>
 									
 									
-									</s:if>
 									</div>
-								<div class="rows">
-								 <div class="fields_radio" style="margin-left: 50px;">	
-										 <label> <mmr:message messageId="shipping.service"/></label>
-
-											<span>:</span> 
-											<s:radio name="shipCustomerFlag" list="#{'1':'Cheapest','2':'Fastest','3':'Both Services'}" value="%{shipCustomerFlag}"  id="visibility1"/>
-											 <input type="hidden" id="hiddenVis" name="scope" > 
-										<br>
-									</div>
-									
-									
-<br>
-								  <div class="fields_radio" style="margin-left: 50px;">
-										 <label> <mmr:message messageId="menu.product.pack.map"/>  :</label>
-											<s:radio name="packageMapFlag" list="#{'1':'Enable','2':'Disable'}" value="%{packageMapFlag}"  id="visibility1"/>									
-											 <input type="hidden" id="hiddenVis" name="scope" > 
-										<br>
-									</div><br></div> 
+								
 				</div>	
 				</div>
+									</s:if>
 				
 				<s:if test="#session.edit == 'true'">
-				
+				<s:if test="%{#session.ROLE.contains('customer_admin')}">	
 				<div class="content">
 	<div id="pickup_div_hdr">
 	<div class="content_body">
@@ -319,12 +319,19 @@ window.onload = function() {
 		<div class="cont_hdr_title"><mmr:message messageId="free.ship.setting"/>  
 <s:checkbox name="ecommerceStore.freeshipRequired"  value="%{ecommerceStore.freeshipRequired}" id="pickup_checkbox" onclick="toShoworHide(this.checked);"/>
 	
+	
 	 
 	</div>
 	
-	
+	<div class="cont_hdrtitle_l" style="width:auto;">
+								 <s:property value="ecommerceStore.url"/>
+	 	</div>
 	 
-	
+	 <div class="form_buttons">
+							  
+									<a href="#" onclick="submitform()"><mmr:message messageId="label.btn.save"/></a> 
+									 
+								</div>
 	</div>
 	<div id="pickup_div_panel" style="display: none;">
  							<div class="cont_data_body">
@@ -379,10 +386,8 @@ window.onload = function() {
 	</div>
 	</div>
 	</div> 
-						
+					
 					<div class="content_table">
-				
-				
 					<div class="content_header">
 					
 								<div class="cont_hdr_title">
@@ -433,6 +438,7 @@ window.onload = function() {
 										</s:else>
 									</div>
 								</div>
+								
 
 
 								 
@@ -442,17 +448,92 @@ window.onload = function() {
 				</div>
 				
 					</div> 	
+					</s:if>
  </s:if>
 				
 						
-						
-						
-						
-						 
+			
+			<div class="content_table">
+					<div class="content_header">
+								<div class="cont_hdr_title">
+									Custom Shipping Setting:
+								</div>
+						 </div>
+							<div class="cont_data_body">
+							
+							
+				<div class="rows">
+								<div class="fields">
+									<label>
+									Simple Package System
+									</label>
+									<div class="controls">
+										<span>:</span>
+											<s:checkbox id="checkboxmax" name="ecommerceStore.singlePack"  value="%{ecommerceStore.singlePack}" onclick="toShoworHidemax(this.checked)"/>
+									</div>
+								</div> 
+								<s:if test="%{#session.ROLE.contains('sysadmin')}">
+								<div class="fields" id="maxpack" style="display: none;">
+									<label>
+									Maximum Package Weight
+									</label>
+									<div class="controls" >
+										<span>:</span>
+											<s:textfield  id="maxPackWeihgt" key="ecommerceStore.maxPackWeight" name="ecommerceStore.maxPackWeight" value="%{ecommerceStore.maxPackWeight}"/>
+									</div>
+								</div> 
+								</s:if><s:else>
+									<div class="fields" id="maxpack" style="display: none;">
+									<label>
+									Maximum Package Weight
+									</label>
+									<div class="controls">
+										<span>:</span>
+											<s:textfield  id="maxPackWeihgt" key="ecommerceStore.maxPackWeight" name="ecommerceStore.maxPackWeight" value="%{ecommerceStore.maxPackWeight}" readonly="true"/>
+									</div>
+								</div>
+								</s:else>
+				</div>	
+				
+				<div class="rows">
+								 <div class="fields_radio" style="margin-left: 5px;">	
+										 <label> <mmr:message messageId="shipping.service"/></label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+											<span>:</span> 
+											<s:radio name="shipCustomerFlag" list="#{'1':'Cheapest','2':'Fastest','3':'Both Services'}" value="%{shipCustomerFlag}"  id="visibility1"/>
+											 <input type="hidden" id="hiddenVis" name="scope" > 
+										<br>
+									</div>
+									
+									
+<br>
+								  <div class="fields_radio" style="margin-left: 5px;">
+										 <label> <mmr:message messageId="menu.product.pack.map"/> </label>
+										 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										 											<span>:</span> 
+										  
+											<s:radio name="packageMapFlag" list="#{'1':'Enable','2':'Disable'}" value="%{packageMapFlag}"  id="visibility1"/>									
+											 <input type="hidden" id="hiddenVis" name="scope" > 
+										<br>
+									</div><br></div> 
+				</div>
+					</div> 				
+					 
 		</s:form> 
 	</div>
 </div>	
+<script type="text/javascript">
+var idq='<s:property value="ecommerceStore.singlePack"/>';
+	 
+if(idq=="true"){
+//	alert(id);
+ 	document.getElementById("maxpack").style.display = 'block';
+}else if(idq=="false"){
+		//alert(id);
+		document.getElementById("maxpack").style.display = 'none';
+}
 
+</script>
 <s:if test="#session.edit == 'true'">	
   <script type="text/javascript">
  

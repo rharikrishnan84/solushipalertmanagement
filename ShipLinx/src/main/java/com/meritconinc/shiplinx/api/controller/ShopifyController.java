@@ -13,7 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.JSONException;
@@ -230,6 +232,14 @@ public class ShopifyController implements Runnable {
 			ShopifyRateRequest shopifyRateRequest) throws Exception {
 		// TODO Auto-generated method stub
 
+
+		EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator
+				.getInstance().findBean("eCommerceDAO");
+
+		String storename =shopifyRateRequest.getStoreName();
+		EcommerceStore store = eCommerceDAO
+				.getEcomStorebyStoreUrl("https://" + storename);
+		
 		ShopifyShop shop = (ShopifyShop) ActionContext.getContext()
 				.getSession().get("SHOPIFY_STORE");
 		if (shop == null) {
@@ -269,11 +279,90 @@ public class ShopifyController implements Runnable {
 		order.setPackageTypeId(getPackageType());
 		if (this.packageMap == false) {
 		}
-		order.setPackages(getPackageFromShopifyReq(shopifyRateRequest
+				if(store!=null && store.isSinglePack()){
+						order.setPackages(getPackageFromShopifyReqForSinglePack(store,shopifyRateRequest.getItems()));
+					}else{
+						order.setPackages(getPackageFromShopifyReq(shopifyRateRequest
+
 				.getItems()));
+		}
 		return order;
 	}
 
+	
+
+	private List<Package> getPackageFromShopifyReqForSinglePack(
+			EcommerceStore store, List<Item> items) {
+		// TODO Auto-generated method stub
+		List<Package> packageList = new ArrayList<Package>();
+		if (items != null && items.size() > 0) {
+			
+			double totalWeight=0d;
+			for (Item item : items) {
+				Double singleWeight = ShopifyUtil.gramToLBS(Double
+						.parseDouble(item.getGrams()));
+				singleWeight = singleWeight
+						* Long.parseLong(item.getQuantity());
+                 totalWeight+=singleWeight;
+
+			}
+			int sclise=0;
+ 			if(totalWeight>store.getMaxPackWeight()){
+				  sclise=(int) (totalWeight/store.getMaxPackWeight());
+				  if(sclise>1){
+					  for(int i=0;i<sclise;i++){
+						  Package pack = new Package();
+							pack.setHeight(new BigDecimal(1));
+							pack.setLength(new BigDecimal(1));
+							pack.setWidth(new BigDecimal(1));
+						  pack.setWeight(new BigDecimal(store.getMaxPackWeight()).setScale(2,
+									BigDecimal.ROUND_HALF_UP));
+						  packageList.add(pack);
+					  }
+					  double slWeight=0d;
+					  slWeight=store.getMaxPackWeight()*sclise;
+					  Package pack = new Package();
+						pack.setHeight(new BigDecimal(1));
+						pack.setLength(new BigDecimal(1));
+						pack.setWidth(new BigDecimal(1));
+					  pack.setWeight(new BigDecimal(totalWeight-slWeight).setScale(2,
+								BigDecimal.ROUND_HALF_UP));
+					  packageList.add(pack);
+				  }else{
+					  Package pack = new Package();
+					pack.setHeight(new BigDecimal(1));
+						pack.setLength(new BigDecimal(1));
+						pack.setWidth(new BigDecimal(1));
+					  pack.setWeight(new BigDecimal(store.getMaxPackWeight()).setScale(2,
+								BigDecimal.ROUND_HALF_UP));
+					  packageList.add(pack);
+					    pack = new Package();
+						pack.setHeight(new BigDecimal(1));
+						pack.setLength(new BigDecimal(1));
+						pack.setWidth(new BigDecimal(1));
+					  pack.setWeight(new BigDecimal(totalWeight-store.getMaxPackWeight()).setScale(2,
+								BigDecimal.ROUND_HALF_UP));
+					  packageList.add(pack);
+				  }
+ 				  
+			}else{ 
+				Package pack = new Package();
+				pack.setHeight(new BigDecimal(1));
+				pack.setLength(new BigDecimal(1));
+				pack.setWidth(new BigDecimal(1));
+				pack.setWeight(new BigDecimal(totalWeight).setScale(2,
+						BigDecimal.ROUND_HALF_UP));
+				packageList.add(pack);
+			}
+		}
+		
+		log.debug(packageList.size() +"Package for the store:"+store.getUrl());
+		return packageList;
+	}
+
+
+
+	
 	/**
 	 * This method is logic for mapping the product's with it's corresponding
 	 * package dynamically
@@ -634,11 +723,12 @@ public class ShopifyController implements Runnable {
 			Long customerId) {
 
 		Shop sh = shop.getShop();
-		if (shop != null && origin != null && sh!=null) {
+		if (shop != null  && sh!=null) {
 			Address ad = new Address();
 
 			String city = sh.getCity();
 			ad.setAddress1(sh.getAddress1());
+			ad.setAddress2("");
 			ad.setProvinceCode(sh.getProvince_code());
 			ad.setCountryCode(sh.getCountry_code());
 			ad.setContactName(sh.getName());
@@ -994,7 +1084,7 @@ public class ShopifyController implements Runnable {
 					EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator.getInstance()
 							.findBean("eCommerceDAO");
 					EcommerceStore st=eCommerceDAO.getEcomStorebyStoreUrl(url);
-					if(st!=null && st.getAccessKey()==null){
+					if(/*st!=null && st.getAccessKey()==null*/true){
 						// update access key
 						ShopifyUtil.addAccesKeyForStore(url, accessKey);
 						// Rate service
@@ -1348,5 +1438,66 @@ public class ShopifyController implements Runnable {
 		log.debug("Total package Weight :"+totweight);
 		return totweight;
 	}
+	
+	
+	
+	
+	
+
+	public String fulfilltheShopifyOrder(ShippingOrder order2,EcommerceStore ecommerceStore2) {
+		// TODO Auto-generated method stub
+
+		String shopUrl=ecommerceStore2.getUrl();
+		if(!shopUrl.startsWith("https://")){
+			shopUrl="https://"+shopUrl;
+		}
+		String url = shopUrl + "/admin/orders/"+order2.getReferenceOne()+"/fulfillments.json";
+			Client client = Client.create();
+		WebResource webResource = client.resource(url);
+		String orderCreationJson = getFullFillmentJson(order2);
+		ClientResponse response = webResource.type("application/json")
+ 				    .header("Accept", "application/json")
+     				.header("X-Shopify-Access-Token", ecommerceStore2.getAccessKey())
+				.post(ClientResponse.class, orderCreationJson);
+		String output = response.getEntity(String.class);
+		System.out.println("Output from Server .... \n" + output);
+		
+		
+		try {
+			JSONObject js=new JSONObject(output);
+			JSONObject dd=js.getJSONObject("fulfillment");
+			Long idd=dd.getLong("id");
+			output=idd.toString();
+		} catch (org.json.JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return output;
+	}
+
+	private String getFullFillmentJson(ShippingOrder order2) {
+		// TODO Auto-generated method stub
+	//	String dd="{\"fulfillment\": {\"tracking_number\": "+order2.getMasterTrackingNum()+","notify_customer": true
+		//
+		
+		
+		JSONObject js=new JSONObject();
+		try {
+			js.accumulate("tracking_number", order2.getMasterTrackingNum());
+			js.accumulate("notify_customer", true);
+			js.accumulate("tracking_url", order2.getTrackingURL());
+			
+			
+		} catch (org.json.JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String ss="{\"fulfillment\":"+js.toString()+"}";
+		
+		return ss;
+	}
+	
+
 
 }
+	

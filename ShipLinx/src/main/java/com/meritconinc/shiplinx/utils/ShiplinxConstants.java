@@ -560,7 +560,7 @@ public class ShiplinxConstants {
 	public static final String DESTINATION_NOTIFY_OR_APPOINTMENT_LEVEL_2 = "DNT";
 	
 	 private static final String CHARGE_CODE_FOR_HEAVY_WEIGHT = "588";
-	 public static final String SHIPMENT_CREATED="80";
+	 public static final String SHIPMENT_CREATED="Shipment Created";
 	//ODBC Related Constants
 	 public static final String GENERATEDBYODBC= "Soluship-ODBC";
 }

@@ -40,6 +40,11 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 /*import com.meritconinc.shiplinx.service.impl.CarrierServiceManager;*/
 import com.opensymphony.xwork2.ActionContext;
 
+import java.util.ArrayList;
+import com.meritconinc.shiplinx.model.Customer;
+import com.meritconinc.shiplinx.service.CustomerManager;
+import com.meritconinc.shiplinx.service.ShippingService;
+
 public class CreateShipmentAPIController extends GenericRestServerResource {
 
 	private static final Logger log = LogManager.getLogger(CreateShipmentAPIController.class);
@@ -123,6 +128,12 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 											.getStoreName()));
 					ShippingOrder so = shopifyShop
 							.castShopifyRequestToShippingOrder(shopifyReq);
+					
+					CustomerManager customerService=(CustomerManager)MmrBeanLocator.getInstance().findBean("customerService");
+										Customer c=customerService.getCustomerInfoByCustomerId(store.getCustomerId());
+									so.getFromAddress().setAbbreviationName(c.getName());
+										order2.setFromAddress(so.getFromAddress());
+					
 					t1.join();
 					if(store.isPackageMap()){
 						if(shopifyShop.getShipPackes()!=null && shopifyShop.getShipPackes().size()>0)
@@ -177,8 +188,22 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 
 							order2.getToAddress().setEmailAddress(shopifyOrder.getEmail());
 							log.debug(order2.getToAddress().getEmailAddress());
+							List<Rating> rates = new ArrayList<Rating>();
+							rates.add(orderRate);
+							order2.setRateList(rates);
+
 							carrierServiceManager.shipOrder(order2, orderRate);
+							String refno=order2.getReferenceOne();
 							order2=shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(order2.getReferenceOne()),ShiplinxConstants.SHIPMENT_CANCELLED);
+							order2.setReferenceOne(refno);
+							String fulfilId = shopifyShop
+									.fulfilltheShopifyOrder(order2, store);
+							order2.setReferenceTwo(fulfilId);
+							order2.setReferenceTwoName("SHOPIFY ORDER FULFILMENT");
+							ShippingService shippingService = (ShippingService) MmrBeanLocator
+									.getInstance().findBean("shippingService");
+							shippingService.updateShippingOrder(order2);
+
 							addLoggedEvent(order2,shopifyOrder);
 
 						}
@@ -202,9 +227,9 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 		   	LoggedEvent loggedEvent = new LoggedEvent();
 			loggedEvent.setEntityId(Long.valueOf(order2.getId()));
 			loggedEvent.setEventDateTime(currentDate);
-			loggedEvent.setEntityType(Long.valueOf(ShiplinxConstants.SHIPMENT_CREATED));	
+			loggedEvent.setEntityType(Long.valueOf(80));		
 			loggedEvent.setEventUsername(userName); 
-			loggedEvent.setMessage(ShiplinxConstants.SHIPMENT_CREATED+" "+"on"+" "+cd+" "+"by SHOPIFY CUSTOMER "+" "+order2.getCustomerName()+" "+"using Ecommerce store "+" "+shopifyOrder.getStoreName());
+			loggedEvent.setMessage(ShiplinxConstants.SHIPMENT_CREATED+" "+"on"+" "+cd+"using Ecommerce store "+" "+shopifyOrder.getStoreName());
 			loggedEvent.setPrivateMessage(false);
 			loggedEvent.setDeletedMessage(false);
 			loggedEvent.setSystemLog("The Order "+ Long.valueOf(order2.getId())+" has been Created");

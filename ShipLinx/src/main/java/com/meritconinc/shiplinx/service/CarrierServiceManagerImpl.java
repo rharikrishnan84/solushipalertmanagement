@@ -1267,7 +1267,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       // check if template is set in business, then only send mail if it
       // is set.
       if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){
-    	      	  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    	      	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
+    		      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      	  }else if(UserUtil.getMmrUser()!=null){
+    		      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    		      	  }
+
     	        }else{
       Business business = businessService.getBusinessById(order.getBusinessId());
       if (!StringUtil.isEmpty(business.getShipOrderNotificationBody())) {
