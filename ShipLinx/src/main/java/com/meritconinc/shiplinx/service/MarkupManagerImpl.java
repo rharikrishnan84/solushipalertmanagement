@@ -19,6 +19,7 @@ import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.MarkupManagerDAO;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BusinessMarkup;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -996,38 +997,209 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup) {
 		}
 	
 	@Override
-	public BusinessMarkup addBusinessMarkup(BusinessMarkup markup) {
-			List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
-			businessMarkupList = getBusinessMarkupListForCustomer(markup);
-			boolean dupFlag = false;
-			if (businessMarkupList != null && businessMarkupList.size()>0){
-				for(BusinessMarkup m:businessMarkupList){
-					if (m.getCustomerId().longValue() == markup.getCustomerId().longValue()
-							&& m.getFromCountryCode().equals(markup.getFromCountryCode())
-							&& m.getToCountryCode().equals(markup.getToCountryCode())
-							&& m.getToCost().doubleValue() == markup.getToCost().doubleValue()
-							&& m.getFromCost().doubleValue() == markup.getFromCost().doubleValue()) {
-						return markup;
+	public BusinessMarkup getuniqueBusinessToBusinessMarkup(BusinessMarkup businessMarkup) {
+		BusinessMarkup businessMarkup2= markupDAO.getuniqueBusinessToBusinessMarkup(businessMarkup);
+		return businessMarkup2;
+	}
+	
+	@Override
+	public List<BusinessMarkup> getAllBusinessMarkups(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkups=markupDAO.getAllBusinessMarkups(businessMarkup);
+		return getAdditionalInfoForBusinessMarkup(businessMarkups);
+	}
+	
+	@Override
+	public List<BusinessMarkup> getBusinessMarkups(BusinessMarkup businessMarkup) {
+		BusinessMarkup businessMarkup2=new BusinessMarkup();
+		if(businessMarkup.getBusinessId()!=null && businessMarkup.getBusinessId()>=0){
+			businessMarkup2.setBusinessId(businessMarkup.getBusinessId());
+		}
+		if(businessMarkup.getBusinessToId()!=null && businessMarkup.getBusinessToId()>=0){
+			businessMarkup2.setBusinessToId(businessMarkup.getBusinessToId());
+		}
+		if(businessMarkup.getCarrierId()!=null && businessMarkup.getCarrierId()>=0){
+			businessMarkup2.setCarrierId(businessMarkup.getCarrierId());
+		}
+		if(businessMarkup.getServiceId()!=null && businessMarkup.getServiceId()>=0){
+			businessMarkup2.setServiceId(businessMarkup.getServiceId());
+		}
+		if(businessMarkup.getCustomerId()!=null && businessMarkup.getCustomerId()>=0){
+			businessMarkup2.setCustomerId(businessMarkup.getCustomerId());
+		}
+		if(!businessMarkup.getFromCountryCode().equalsIgnoreCase("ANY")){
+			businessMarkup2.setFromCountryCode(businessMarkup.getFromCountryCode());
+		}
+		if(!businessMarkup.getToCountryCode().equalsIgnoreCase("ANY")){
+			businessMarkup2.setToCountryCode(businessMarkup.getFromCountryCode());
+		}
+		//businessMarkup2.setVariable(businessMarkup.getVariable());
+		List<BusinessMarkup> businessMarkups=markupDAO.getBusinessMarkups(businessMarkup2);
+		return getAdditionalInfoForBusinessMarkup(businessMarkups);
+		}
+
+	/**
+	 * This method is for updating the business mark-up list with required values
+	 * for business mark-up screen 
+	 * @param businessMarkups
+	 * @return
+	 */
+	private List<BusinessMarkup> getAdditionalInfoForBusinessMarkup(List<BusinessMarkup> businessMarkups) {
+		BusinessMarkup businessMarkup=new BusinessMarkup();
+		if(businessMarkups!=null && businessMarkups.size()>0){
+			for(BusinessMarkup businessMarkup2:businessMarkups){
+				if(businessMarkup2.getBusinessId()!=null && businessMarkup2.getBusinessId()>0){
+					if(businessMarkup2.getBusinessToId()!=null && businessMarkup2.getBusinessToId()>0){
+						if(businessMarkup2.getServiceId()!=null && businessMarkup2.getServiceId()>0){
+							if(businessMarkup2.getCustomerId()!=null && businessMarkup2.getCustomerId()>0){
+									businessMarkup=markupDAO.getAdditionalInfoForBusinessMarkup(businessMarkup2);
+									businessMarkup2.setCustomerBusName(businessMarkup.getCustomerBusName());
+									businessMarkup2.setFromBusiness(businessMarkup.getFromBusiness());
+									businessMarkup2.setToBusiness(businessMarkup.getToBusiness());
+									businessMarkup2.setServiceName(businessMarkup.getServiceName());
+									businessMarkup2.setCarrierName(businessMarkup.getCarrierName());
+									continue;
+								}
+								businessMarkup=markupDAO.getAdditionalInfoForBusinessMarkup(businessMarkup2);
+								businessMarkup2.setCustomerBusName("ANY");
+								businessMarkup2.setFromBusiness(businessMarkup.getFromBusiness());
+								businessMarkup2.setToBusiness(businessMarkup.getToBusiness());
+								businessMarkup2.setServiceName(businessMarkup.getServiceName());
+								businessMarkup2.setCarrierName(businessMarkup.getCarrierName());
+								continue;
+							}
+						businessMarkup=markupDAO.getAdditionalInfoForBusinessMarkup(businessMarkup2);
+						businessMarkup2.setFromBusiness(businessMarkup.getFromBusiness());
+						businessMarkup2.setToBusiness(businessMarkup.getToBusiness());
+						if(businessMarkup2.getCustomerId()!=null && businessMarkup2.getCustomerId()>0){
+							businessMarkup2.setCustomerBusName(businessMarkup.getCustomerBusName());
+						}else{
+							businessMarkup2.setCustomerBusName("ANY");
+						}
+						businessMarkup2.setCarrierName("ANY");
+						businessMarkup2.setServiceName("ANY");
+						continue;
 					}
+					businessMarkup=markupDAO.getAdditionalInfoForBusinessMarkup(businessMarkup2);
+					businessMarkup2.setFromBusiness(businessMarkup.getFromBusiness());
+					businessMarkup2.setToBusiness("ANY");
+					if(businessMarkup2.getCustomerId()!=null && businessMarkup2.getCustomerId()>0){
+						businessMarkup2.setCustomerBusName(businessMarkup.getCustomerBusName());
+					}else{
+						businessMarkup2.setCustomerBusName("ANY");
+					}
+					businessMarkup2.setCarrierName("ANY");
+					businessMarkup2.setServiceName("ANY");
+					continue;
 				}
-				 markupDAO.addBusinessMarkup(markup);
-				}
-			else{
-				 markupDAO.addBusinessMarkup(markup);
-			}
-				return null;
+			}	
 		}
+		return businessMarkups;
+	}
+
+	@Override
+	public List<BusinessMarkup> addBusinessMarkup(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkups =new ArrayList<BusinessMarkup>();
+		businessMarkup=frameBusinessMarkupRequest(businessMarkup);
+		businessMarkups=markupDAO.addBusinessMarkup(businessMarkup);
+		CustomerManager customerService = (CustomerManager) MmrBeanLocator.getInstance().findBean("customerService");
+		if(customerService!=null){
+			customerService.createCustomerForParentBusiness(businessMarkup);
+		}
+		return getAdditionalInfoForBusinessMarkup(businessMarkups);
+	}
+	
+	/**
+	 * This method is created to frame the business mark-up object to perform insert in collection
+	 * @param businessMarkup
+	 * @return
+	 */
+	public BusinessMarkup frameBusinessMarkupRequest(BusinessMarkup businessMarkup) {
+		BusinessMarkup businessMarkup2=new BusinessMarkup();
+		if(businessMarkup.getBusinessId()!=null && businessMarkup.getBusinessId()>=0){
+			businessMarkup2.setBusinessId(businessMarkup.getBusinessId());
+		}else{
+			businessMarkup2.setBusinessId(0l);
+		}
+		if(businessMarkup.getBusinessToId()!=null && businessMarkup.getBusinessToId()>=0){
+			businessMarkup2.setBusinessToId(businessMarkup.getBusinessToId());
+		}else{
+			businessMarkup2.setBusinessToId(0l);
+		}
+		if(businessMarkup.getCarrierId()!=null && businessMarkup.getCarrierId()>=0){
+			businessMarkup2.setCarrierId(businessMarkup.getCarrierId());
+		}else{
+			businessMarkup2.setCarrierId(0l);
+		}
+		if(businessMarkup.getServiceId()!=null && businessMarkup.getServiceId()>=0){
+			businessMarkup2.setServiceId(businessMarkup.getServiceId());
+		}else{
+			businessMarkup2.setServiceId(0l);
+		}
+		if(businessMarkup.getCustomerId()!=null && businessMarkup.getCustomerId()>=0){
+			businessMarkup2.setCustomerId(businessMarkup.getCustomerId());
+		}else{
+			businessMarkup2.setCustomerId(0l);
+		}
+		if(businessMarkup.getMarkupFlat()!=null && businessMarkup.getMarkupFlat()>=0){
+			businessMarkup2.setMarkupFlat(businessMarkup.getMarkupFlat());
+		}else{
+			businessMarkup2.setMarkupFlat(0.0);
+		}
+		if(businessMarkup.getMarkupPercentage()!=null){
+			businessMarkup2.setMarkupPercentage(businessMarkup.getMarkupPercentage());
+		}else{
+			businessMarkup2.setMarkupPercentage(0);
+		}
+		if(businessMarkup.getFromRange()!=null && businessMarkup.getFromRange()>=0){
+			businessMarkup2.setFromRange(businessMarkup.getFromRange());
+		}
+		else{
+			businessMarkup2.setFromRange(0.0);
+		}
+		if(businessMarkup.getToRange()!=null && businessMarkup.getToRange()>=0){
+			businessMarkup2.setToRange(businessMarkup.getToRange());
+		}
+		else{
+			businessMarkup2.setToRange(0.0);
+		}
+		businessMarkup2.setFromCountryCode(businessMarkup.getFromCountryCode());
+		businessMarkup2.setToCountryCode(businessMarkup.getToCountryCode());
+		businessMarkup2.setType(businessMarkup.getType());
+		businessMarkup2.setDisabled(0);
+		businessMarkup2.setVariable(businessMarkup.getVariable());
+		return businessMarkup2;
+	}
 	
 	@Override
-	public void deleteBusinessMarkup(BusinessMarkup markup) {
-			if (markupDAO != null && markup != null){
-				markupDAO.deleteBusinessMarkup(markup);
-			}
-		}
+	public List<BusinessMarkup> deleteBusinessMarkup(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkups=markupDAO.deleteBusinessMarkup(businessMarkup);
+		return getAdditionalInfoForBusinessMarkup(businessMarkups);	
+	}
 	
 	@Override
-	public void updateBusinessMarkup(BusinessMarkup markup) {
-			if (markup != null && markupDAO != null)
-			      markupDAO.updateBusinessMarkup(markup);
+	public void updateBusinessMarkup(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkup1=markupDAO.updateBusinessMarkup(businessMarkup);
+	}
+
+	@Override
+	public List<Carrier> getListCarriers(String customerId, String businessId) {
+		List<Carrier> carriers=new ArrayList<Carrier>();
+		carriers=carrierServiceDAO.getListCarriers(customerId,businessId);
+		if(carriers!=null && carriers.size()>0){
+			return carriers;
 		}
+		return new ArrayList<Carrier>();
+	}
+
+	@Override
+	public List<Service> getListCarrierServices(long carrierId, long customerId) {
+		return this.carrierServiceDAO.getListCarrierServices(carrierId,customerId);
+	}
+
+	@Override
+	public BusinessMarkup getUniqueCustomBusinessMarkup(BusinessMarkup businessMarkup) {
+		BusinessMarkup businessMarkup2= markupDAO.getUniqueCustomBusinessMarkup(businessMarkup);
+		return businessMarkup2;
+	}
+
 }

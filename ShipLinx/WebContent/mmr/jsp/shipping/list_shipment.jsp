@@ -20,7 +20,7 @@
 	
 	
 		
-	<script type="text/javascript">
+	<script type="text/javascript"> 
  $(document).ready(function() {
   $('#sample1').dataTable({
 		  aoColumnDefs: [
@@ -390,9 +390,17 @@ function loadTrackingURL(url){
 				</td>
 				
 				<td style="width:100px !important;height:30px;overflow:hidden;text-overflow: ellipsis">
-				<s:if test="%{trackingURL!=null && trackingURL.length()!=0 }">
-					<a href="javascript:loadTrackingURL('<s:property value="trackingURL"/>')"><s:property value="masterTrackingNum"/> </a>
+				<s:set var="dupOrderId" value="id-1"/>
+				<s:if test="%{#dupOrderId==masterTrackingNum}">
+				    <s:a href="view.shipment.action?notrackurl='true'&viewShipmentId=%{masterTrackingNum}"> 
+				<s:if test="%{masterTrackingNum!=null}">
+								<s:property value="masterTrackingNum"/>
+							</s:if>
+					</s:a>
 				</s:if>
+				<s:elseif test="%{trackingURL!=null && trackingURL.length()!=0 }">
+					<a href="javascript:loadTrackingURL('<s:property value="trackingURL"/>')"><s:property value="masterTrackingNum"/> </a>
+				</s:elseif>
 				<s:elseif test="%{masterTrackingNum ==id}">
 				    <s:a href="view.shipment.action?notrackurl='true'&viewShipmentId=%{id}&ltLState='true'"> 
 				<s:if test="%{masterTrackingNum!=null}">

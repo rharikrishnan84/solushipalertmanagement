@@ -4696,4 +4696,33 @@ INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`, `reso
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.document', 'Documents', 'en_CA', 1);
 
 
+ALTER TABLE `business` 
+DROP COLUMN `parent_customer_id`,
+DROP COLUMN `parent_markup_business_id`,
+DROP COLUMN `markup_type`,
+DROP COLUMN `custom_markup`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.toBusiness', 'To Business', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.fromBusiness', 'From Business', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.fromCost', 'From Cost', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.toCost', 'To Cost', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ghead.fromBusiness', 'From Business ', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.ghead.toBusiness', 'To Business', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.viewship.flatMarkup', 'Flat Mark-up Applied', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.fromRange', 'From Range', 'en_CA', 0);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.businessMarkup.toRange', 'To Range', 'en_CA', 0);
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('markup.listToBusiness', '161', 1, 'Search to business for Markup page', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1123');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1096');
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('checkLabel', '261', 1, 'to check status of label', 1);
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('admin', '1124');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1124');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1124');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1124');
+
+INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `prefix`) VALUES ( 'ORDER_NUM', '500000', '9999999', '1033129', '3', '');
+INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `prefix`) VALUES ('INVOICE_NUM', '600053', '9999999', '619887', '3', '');
+INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`) VALUES ('CONFIRMATION_NUM', '1001', '9999999', '1775', '3');
 .......................................End of Live server commit.......................................

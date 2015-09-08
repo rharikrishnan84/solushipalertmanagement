@@ -563,4 +563,12 @@ public class ShiplinxConstants {
 	 public static final String SHIPMENT_CREATED="Shipment Created";
 	//ODBC Related Constants
 	 public static final String GENERATEDBYODBC= "Soluship-ODBC";
+	 
+	/* For business mark-up - start*/
+	public static final int BUSINESS_MARKUP_TYPE_0 = 0;
+	public static final int BUSINESS_MARKUP_TYPE_1 = 1;
+	public static final int BUSINESS_MARKUP_TYPE_2 = 2;
+	/* For business mark-up - end*/
+
+	public static final Long ORDER_INC = 1l;
 }

@@ -214,11 +214,6 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 			loadEmailSettings(1L);
 			getSession().remove("emailRList");
 			getSession().remove("redudant");
-			businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
-			List<Business> businesses=businessDAO.getHoleBusinessList();
-			getSession().put("BUSINESS", businesses);
-			List<Customer> customers=new ArrayList<Customer>();
-			getSession().put("CUSTOMERS", customers);
 			loadNewBussinessDepencies();
 		}catch(Exception e){
 			log.error("Error in new business" +e.getMessage());
@@ -2217,21 +2212,10 @@ private List<BusinessEmail> removeListWithBusEmailId(
 	@SuppressWarnings("unchecked")
 	public String editBusiness(){
 		log.debug(" CHECK METHOD IN editBusiness" );
-		businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
-		List<Business> businesses=businessDAO.getHoleBusinessList();
-		getSession().put("BUSINESS", businesses);
-		List<Customer> customers=new ArrayList<Customer>();
-		CustomerManager customerService = (CustomerManager) MmrBeanLocator.getInstance()
-									.findBean("customerService");
-		customers=customerService.getAllCustomerForBusiness(Long.parseLong(businessId));
-		getSession().put("CUSTOMERS", customers);
-		System.out.println(businessId);
 		try{
 			long selectedBusinessId = Long.parseLong(businessId);
 			getSession().put("editBusinessId",selectedBusinessId);
 			business = businessDAO.getBusiessById(selectedBusinessId);
-			customers=customerService.getAllCustomerForBusiness(business.getParentMarkupBusinessId());
-						getSession().put("CUSTOMERS", customers);
 			CSSVO cssVo = businessDAO.getCSSDetailsForBusiness(selectedBusinessId);
 									if(cssVo != null){
 									business.setCssVO(cssVo);

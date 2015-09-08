@@ -156,7 +156,7 @@ display:none;
 			alert('Please check atmost one');
 		   }
 		   else{
-				var i,serviceId, fromCountryCode, toCountryCode,checked,businessId,businessToId;
+				var i,serviceId, fromCountryCode, toCountryCode,checked,businessId,businessToId,id;
 				for (i=0;i<deleteMarkupId.length;i++){
 					if (deleteMarkupId[i].checked){
 						checked = deleteMarkupId[i].value ;
@@ -165,10 +165,11 @@ display:none;
 						toCountryCode = document.getElementsByName("toCountryCode"+serviceId)[0].value;	
 						businessId = document.getElementsByName("businessId"+serviceId)[0].value;
 						businessToId = document.getElementsByName("businessToId"+serviceId)[0].value;
+						id=document.getElementsByName("id"+serviceId)[0].value;
 					}
 				}
-		   if(fromCountryCode != "ANY" && toCountryCode != "ANY")
-		   {
+		   /* if(fromCountryCode != "ANY" && toCountryCode != "ANY")
+		   { */
 			/*	var del=confirm("Do you really want to delete the selected product?");
 				if(del==true){
 					document.getElementById("markupFormId").action ="deleteMarkup.action?method=deletetMarkup&serviceId="+serviceId+"&fromCountryCode="+fromCountryCode+"&toCountryCode="+toCountryCode;
@@ -220,7 +221,7 @@ display:none;
 				//btnconfirm.onclick = function() {removeCustomAlert();return false; }
 				$('#confirmBtn').click(function(){
 					removeCustomConfirm();
-					document.getElementById("markupFormId").action ="deleteBusinessMarkup.action?method=deletetMarkup&serviceId="+serviceId+"&fromCountryCode="+fromCountryCode+"&toCountryCode="+toCountryCode+"&businessId="+businessId+"&businessToId="+businessToId;
+					document.getElementById("markupFormId").action ="deleteBusinessMarkup.action?method=deletetMarkup&serviceId="+serviceId+"&fromCountryCode="+fromCountryCode+"&toCountryCode="+toCountryCode+"&businessId="+businessId+"&businessToId="+businessToId+"&id="+id;
 					document.getElementById("markupFormId").submit();
 				});
 				$('#confirmCancelBtn').click(function(){
@@ -231,11 +232,11 @@ display:none;
 				function removeCustomConfirm() {
 				document.getElementsByTagName("body")[0].removeChild(document.getElementById("modalContainer"));
 				}
-			}
+			/* }
 
 			else{
 					alert('You CANNOT DELETE THIS RECORD');
-				}
+				} */
 			
 		}
 	}
@@ -462,8 +463,9 @@ display:none;
 				js_stateid.innerHTML= reponse;
 				}
 			}
+			firstBox = document.getElementById('firstBox');
 			secondBox = document.getElementById('secondBox');
-			url="markup.listCarriers.action?value="+secondBox.value;
+			url="markup.listCarriers.action?customerId="+secondBox.value+"&businessToId="+firstBox.value;
 			ajax_Service.open("GET",url,true);
 			ajax_Service.send(this);
 		}
@@ -504,6 +506,20 @@ display:none;
 		ajax_Service.send(this);
 	} // End function showState()	
 	
+	function showToBusiness() {
+		ajax_Service=ajaxFunction();
+		ajax_Service.onreadystatechange=function(){
+			if(ajax_Service.readyState==4){
+				reponse=ajax_Service.responseText;
+				js_stateid=document.getElementById("businessid");
+				js_stateid.innerHTML= reponse;
+				}
+			}
+		firstBox = document.getElementById('businessId');
+		url="markup.listToBusiness.action?value="+firstBox.value;
+		ajax_Service.open("GET",url,true);
+		ajax_Service.send(this);
+		}
 </SCRIPT>
 	
 	<script>
@@ -571,41 +587,51 @@ display:none;
         </div>
         <div class="cont_data_body">
          <div class="rows">
-         <s:hidden  name="businessMarkup.businessId" value="%{businessMarkup.businessId}"/>
          <div class="fields">
-         <label><mmr:message messageId="label.menu.business"/> </label>
+         <label><mmr:message messageId="label.businessMarkup.fromBusiness"/> </label>
+         	<div class="controls"><span>:</span>
+           		<s:select   listKey="id" listValue="name" 
+					name="businessMarkup.businessId" headerValue="" headerKey="-1"  list="#session.BUSINESS" 
+					onchange="javascript:showToBusiness();"  id="businessId" theme="simple" size="1"  />
+         	</div>
+         </div>
+         <%-- <s:hidden  name="businessMarkup.businessId" value="%{businessMarkup.businessId}"/> --%>
+         <div class="fields">
+         <label><mmr:message messageId="label.businessMarkup.toBusiness"/> </label>
+         <div id="businessid">
          <div class="controls"><span>:</span>
            <s:select   listKey="id" listValue="name" 
-				name="businessMarkup.businessToId" headerValue="" headerKey="-1"  list="#session.BUSINESS" 
+				name="businessMarkup.businessToId" headerValue="" headerKey="-1"  list="#session.TO_BUSINESS"  
 				onchange="javascript:showCustomer();"  id="firstBox" theme="simple" size="1"  />
            </div>
           </div>
-           <div class="fields">
-           <label><mmr:message messageId="label.heading.customer"/> </label>
-           <div id="customerid">
-           <div class="controls"><span>:</span>
-            <s:select   listKey="id" listValue="name" 
-							name="businessMarkup.customerId" headerValue="" headerKey="-1"  list="#session.CUSTOMERS" 
-								onchange="javascript:showCarriers();"  id="secondBox" theme="simple" size="1"  />
-           </div>
-           </div>
           </div>
+          <div id="customerid">
+          <div class="fields">
+          <label><mmr:message messageId="label.heading.customer"/> </label>
+          <div class="controls"><span>:</span>
+          <s:select   listKey="id" listValue="name" 
+							name="businessMarkup.customerId" headerValue="ANY" headerKey="-1"  list="#session.CUSTOMERS" 
+								onchange="javascript:showCarriers();"  id="secondBox" theme="simple" size="1" />
+           </div>
+           </div>
           <div class="fields">
            <label><mmr:message messageId="label.track.carrier"/> </label>
            <div id="carrierid">
            <div class="controls"><span>:</span>
             <s:select   listKey="id" listValue="name" 
-							name="businessMarkup.carrierId" headerValue="" headerKey="-1"  list="#session.CARRIERS" 
+							name="businessMarkup.carrierId" headerValue="ANY" headerKey="-1"  list="#session.CARRIERS" 
 								onchange="javascript:showServices();"  id="thirdBox" theme="simple" size="1"  />
            </div>
+          </div>
           </div>
           </div>
            <div class="fields">
            <label><mmr:message messageId="label.markup.service"/></label>
            <div id="stateid">
            <div class="controls"><span>:</span>
-           <s:select  listKey="id" listValue="name" name="businessMarkup.serviceId" list="#session.SERVICES" 
-							 headerKey="-1" id="service" theme="simple"  />
+           <s:select  listKey="serviceId" listValue="name" name="businessMarkup.serviceId"  headerValue="ANY" headerKey="-1" 
+           			list="#session.SERVICES" id="service" theme="simple"  />
            </div>
            </div>
           </div>
@@ -655,15 +681,15 @@ display:none;
            </div>
           </div>
           <div class="fields">
-           <label><mmr:message messageId="label.cost"/></label>
+           <label><mmr:message messageId="label.businessMarkup.fromRange"/></label>
            <div class="controls"><span>:</span>
-            <s:textfield  key="businessMarkup.fromCost" name="businessMarkup.fromCost"   />
+            <s:textfield  key="businessMarkup.fromRange" name="businessMarkup.fromRange"   />
            </div>
           </div>
           <div class="fields">
-           <label><mmr:message messageId="label.cost"/> </label>
+           <label><mmr:message messageId="label.businessMarkup.toRange"/> </label>
            <div class="controls"><span>:</span>
-            <s:textfield  key="businessMarkup.toCost" name="businessMarkup.toCost"   />
+            <s:textfield  key="businessMarkup.toRange" name="businessMarkup.toRange"   />
            </div>
           </div>
           <div class="fields">
@@ -778,8 +804,9 @@ display:none;
     <thead>
 	<tr height="25px">
 	<th ><input id="check_all" type="checkbox" /></th>
-	<th><span style="width:40px !important; float:left;"><mmr:message messageId="label.ghead.id"/></span></th>
-	<th><span style="width:40px !important; float:left;"><mmr:message messageId="label.ghead.id"/></span></th>
+	<th><mmr:message messageId="label.ghead.fromBusiness"/></th>
+	<th><mmr:message messageId="label.ghead.toBusiness"/></th>
+	<th><mmr:message messageId="label.heading.customer"/></th>
 	<th><mmr:message messageId="label.ghead.carrier"/></th>
 	<th><mmr:message messageId="label.ghead.service"/></th>
 	<th><span style="width:60px !important; float:left;"><mmr:message messageId="label.ghead.oco"/></span></th>
@@ -808,10 +835,21 @@ display:none;
 									<input type="hidden"  name="serviceType<s:property value='serviceId'/>" value="<s:property value='serviceType'/>" />
 									<input type="hidden"  name="businessId<s:property value='serviceId'/>" value="<s:property value='businessId'/>" />
 									<input type="hidden"  name="businessToId<s:property value='serviceId'/>" value="<s:property value='businessToId'/>" />
-
+									<input type="hidden"  name="id<s:property value='serviceId'/>" value="<s:property value='id'/>" />
 								</td>								
-								<td ><s:property value="businessId"/></td>
-								<td ><s:property value="businessToId"/></td>
+								<td  style="text-align: left;"><span title="<s:property value="fromBusiness"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromBusiness"/></div></td>
+								<td style="text-align: left;"><span title="<s:property value="toBusiness"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toBusiness"/></div></td>
+								<%-- <s:if test="%{customerId == 0}">
+ 									<td style="text-align: left;"><span title="<s:property value="name"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis">ANY</div></td>
+ 								</s:if>
+ 								<s:else>
+ 									<s:iterator value="#session.CUSTOMERS">
+ 									<s:if test="%{id == customerId}">
+ 										<td style="text-align: left;"><span title="<s:property value="name"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="name"/></div></td> 
+ 									</s:if> 
+								</s:iterator> 
+ 								</s:else> --%>
+								<td style="text-align: left;"><span title="<s:property value="customerBusName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customerBusName"/></div></td>
 								<td  style="text-align: left;"><span title="<s:property value="carrierName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="carrierName"/></div></td>
 								<td  style="text-align: left;"><span title="<s:property value="serviceName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="serviceName"/></div></td>
 								
@@ -825,8 +863,8 @@ display:none;
 										Markdown
 									</s:elseif>
 								</td>
-								<td ><s:property value="fromCost"/></td>
-								<td ><s:property value="toCost"/></td>
+								<td ><s:property value="fromRange"/></td>
+								<td ><s:property value="toRange"/></td>
 								<td><s:select value="%{variable}" id="evenVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
 								<td ><s:textfield size="5" id="evenPercId%{index}"   key="markupPercentage" name="markupPercentage" onchange="ontimevalidate(this.value,'perc','even',%{index});" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
 								<td><s:textfield size="5"  id="evenFlatId%{index}"   key="markupFlat" name="markupFlat" onchange="ontimevalidate(this.value,'flat','even',%{index});" cssClass="text_02_tf_small flat%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
@@ -841,10 +879,22 @@ display:none;
 									<input type="hidden"  name="serviceType<s:property value='serviceId'/>" value="<s:property value='serviceType'/>" />
 									<input type="hidden"  name="businessId<s:property value='serviceId'/>" value="<s:property value='businessId'/>" />
 									<input type="hidden"  name="businessToId<s:property value='serviceId'/>" value="<s:property value='businessToId'/>" />
-								
+									<input type="hidden"  name="id<s:property value='serviceId'/>" value="<s:property value='id'/>" />
 								</td>
-									<td ><s:property value="businessId"/></td>
-									<td ><s:property value="businessToId"/></td>
+									<td  style="text-align: left;"><span title="<s:property value="fromBusiness"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="fromBusiness"/></div></td>
+								<td  style="text-align: left;"><span title="<s:property value="toBusiness"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="toBusiness"/></div></td>						
+ 								<%-- <s:if test="%{customerId == 0}">
+ 									<td style="text-align: left;"><span title="<s:property value="name"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis">ANYCUST</div></td>
+ 								</s:if>
+ 								<s:else>
+ 									<s:iterator value="#session.CUSTOMERS"><s:property value="id"/>
+ 									<s:if test="%{id == customerId}">
+ 										<td style="text-align: left;"><span title="<s:property value="name"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="name"/></div></td> 
+ 									</s:if> 
+								</s:iterator> 
+ 								</s:else> --%>
+ 								
+								 	<td style="text-align: left;"><span title="<s:property value="customerBusName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="customerBusName"/></div></td>
 									
 								<td  style="text-align: left;"><span title="<s:property value="carrierName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="carrierName"/></div></td>	
 								<td style="text-align: left;"><span title="<s:property value="serviceName"/>"></span><div style="width:150px;overflow:hidden;white-space:nowrap;text-overflow: ellipsis"><s:property value="serviceName"/></div></td>
@@ -860,8 +910,8 @@ display:none;
 									</s:elseif>
 
 								</td>
-								<td><s:property value="fromCost"/></td>
-								<td><s:property value="toCost"/></td>									
+								<td><s:property value="fromRange"/></td>
+								<td><s:property value="toRange"/></td>									
 
 									<td><s:select value="%{variable}" id="oddVarId%{index}" name="variable" list="#{'0':'Weight/Skid','1':'Cost $'}" theme="simple"  disabled="false" /></td>
 								<td ><s:textfield size="5" id="oddPercId%{index}" class="perc"  onchange="ontimevalidate(this.value,'perc','odd',%{index});" key="markupPercentage" name="markupPercentage" cssClass="text_02_tf_small percentage%{serviceId}" cssStyle="text-align:right; padding-right:5px;"/></td>
@@ -896,8 +946,7 @@ display:none;
 
 <script type="text/javascript">
 var customers = {
-		<s:iterator value='#session.fromcustomersList'>
-		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
+		<s:iterator value='#session.fromcustomersList'>"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
  };
 	var customersArray = $.map(customers, function (value, key) { return { value: value, data: key }; });

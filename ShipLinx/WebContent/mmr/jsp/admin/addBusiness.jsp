@@ -621,6 +621,7 @@ window.onload = function() {
      </s:else>
     <s:hidden name="businessid" value="%{business.id}" />
     <s:hidden name="addressid" value="%{business.address.addressId}" />
+    <s:hidden name="parentCustomerId" value="%{business.parentCustomerId}" />
 						<div class="content_table">
 							<div class="content_header">
 								<div class="cont_hdr_title">
@@ -650,8 +651,8 @@ window.onload = function() {
 									<div class="fields">
 										<label><mmr:message messageId="label.business.name"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield   id="menuName" key="business.name" name="business.name"  onkeypress="return typenumbers(event,\'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.@\')"/>
-									</div>
+											<s:textfield   id="menuName" key="business.name" name="business.name"  onkeypress="return typenumbers(event,\'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.@\')"/>
+										</div>
 									</div>
 									<div class="fields">
 										<label><mmr:message messageId="label.business.systemName"/> </label>
@@ -663,21 +664,26 @@ window.onload = function() {
 									</div>
 									<div class="fields">
 										<label><mmr:message messageId="label.business.storeCC"/> </label>
-										<div  class="controls"><span>:</span><s:checkbox key="business.storeCC"
-			name="business.storeCC" cssClass="text_02" /></div>
+										<div  class="controls"><span>:</span>
+											<s:checkbox key="business.storeCC" name="business.storeCC" cssClass="text_02" />
+										</div>
 									</div>
 								
 								
-								<div class="fields">
+									<div class="fields">
 										<label><mmr:message messageId="label.business.logoUrl"/> </label>
-										<div  class="controls"><span>:</span><s:textfield  key="business.storeCC" name="business.storeCC" /></div>
+										<div  class="controls"><span>:</span>
+											<s:textfield  key="business.storeCC" name="business.storeCC" />
+										</div>
 									</div>
 									
 								 
 									
 						        	<div class="fields">
 										<label><mmr:message messageId="label.business.subDomain"/> </label>
-										<div  class="controls"><span>:</span><s:textfield  key="business.subdomain" name="business.subdomain" /></div>
+										<div  class="controls"><span>:</span>
+											<s:textfield  key="business.subdomain" name="business.subdomain" />
+										</div>
 									</div>
 									
 									<div class="fields">
@@ -735,36 +741,36 @@ window.onload = function() {
 									<div class="fields">
 										<label><mmr:message messageId="label.business.abbreviationName"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.abbreviationName" name="business.address.abbreviationName" />
-									</div>
+											<s:textfield  key="business.address.abbreviationName" name="business.address.abbreviationName" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.addressone"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.address1" name="business.address.address1" />
-									</div>
+											<s:textfield  key="business.address.address1" name="business.address.address1" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.addresstwo"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.address2" name="business.address.address2" />
-									</div>
+											<s:textfield  key="business.address.address2" name="business.address.address2" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.city"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.city" name="business.address.city" />
-									</div>
+											<s:textfield  key="business.address.city" name="business.address.city" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.phoneno"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.phoneNo" name="business.address.phoneNo" />
-									</div>
+											<s:textfield  key="business.address.phoneNo" name="business.address.phoneNo" />
+										</div>
 									</div>
 									
 									<div class="fields">
@@ -812,81 +818,46 @@ window.onload = function() {
 									<div class="fields">
 										<label><mmr:message messageId="label.business.residential"/> </label>
 										<div class="controls"><span>:</span>
-										<s:checkbox key="business.address.residential" name="business.address.residential" cssClass="text_02" />
-									</div>
-									</div>
-										<div class="fields">
-											<label><mmr:message messageId="label.shippingOrder.country"/> </label>
-											<div class="controls"><span>:</span>
-												<s:select cssClass="text_01" listKey="countryCode" listValue="countryName" name="business.address.countryCode" headerKey="-1"  headerValue="Select" list="#session.CountryList" 
-	                                                  id="firstBox"  theme="simple"/>
-											</div>
+											<s:checkbox key="business.address.residential" name="business.address.residential" cssClass="text_02" />
 										</div>
-											<%-- <div class="fields">
-											<label><mmr:message messageId="label.customer.postalCode"/> </label>
-											<div class="controls"><span>:</span><s:textfield  id="custPostalCode" key="business.address.postalCode" name="business.address.postalCode" onblur="getAddressSuggestBusiness()"  />
-											<img id="loading-img-cust" style="display:none;margin-top:-25px" src="<s:url value="/mmr/images/loading.gif" includeContext="true" />" border="0"></div>
-										</div> --%>
+									</div>
+									
+									<div class="fields">
+										<label><mmr:message messageId="label.shippingOrder.country"/> </label>
+										<div class="controls"><span>:</span>
+											<s:select cssClass="text_01" listKey="countryCode" listValue="countryName" name="business.address.countryCode" headerKey="-1"  headerValue="Select" list="#session.CountryList" 
+	                                                 id="firstBox"  theme="simple"/>
+										</div>
+									</div>
+									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.provinceCode"/> </label>
 										<div class="controls"><span>:</span>
-										<s:textfield  key="business.address.provinceCode" name="business.address.provinceCode" />
-									</div>
+											<s:textfield  key="business.address.provinceCode" name="business.address.provinceCode" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.defaultFrom"/> </label>
 										<div class="controls"><span>:</span>
-										<s:checkbox key="business.address.defaultFromAddress" name="business.address.defaultFromAddress" cssClass="text_02" />
-									</div>
+											<s:checkbox key="business.address.defaultFromAddress" name="business.address.defaultFromAddress" cssClass="text_02" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.defaultTo"/> </label>
 										<div class="controls"><span>:</span>
-										<s:checkbox key="business.address.defaultToAddress" name="business.address.defaultToAddress" cssClass="text_02" />
-									</div>
+											<s:checkbox key="business.address.defaultToAddress" name="business.address.defaultToAddress" cssClass="text_02" />
+										</div>
 									</div>
 									
 									<div class="fields">
 										<label><mmr:message messageId="label.business.sendNotification"/> </label>
 										<div class="controls"><span>:</span>
-										<s:checkbox key="business.address.sendNotification" name="business.address.sendNotification" cssClass="text_02" />
+											<s:checkbox key="business.address.sendNotification" name="business.address.sendNotification" cssClass="text_02" />
+										</div>
 									</div>
-									</div>
-								<div class="fields">
-        								<label><mmr:message messageId="label.business.parentBusiness"/> </label>
-         								<div class="controls"><span>:</span>
-           								<s:select listKey="id" listValue="name" name="business.parentMarkupBusinessId" headerValue="" headerKey="-1"  list="#session.BUSINESS" 
-										onchange="javascript:showCustomer();"  id="parentMarkupBusinessId" theme="simple" size="1"  />
-           							</div>
-          							</div>
-          							<div class="fields">
-          							<label><mmr:message messageId="label.heading.customer"/> </label>
-           								<div id="customerid">
-          								<div class="controls"><span>:</span>
-           								<s:select   listKey="id" listValue="name" 
-											name="business.parentCustomerId" headerValue="" headerKey="-1"  list="#session.CUSTOMERS" 
-											 theme="simple" size="1"  />
-           									</div>
-          								 </div>
-         							</div>
-          							<div class="fields">
-										<label><mmr:message messageId="label.business.customMarkup"/> </label>
-										<div class="controls"><span>:</span>
-										<s:textfield  key="business.customMarkup" name="business.customMarkup" />
-									</div>
-									</div>
-									<%-- <div class="fields">
-        								<label><mmr:message messageId="label.business.markupType" /></label>
-       									<div class="controls">
-       									<span>:</span>
-         								<s:radio name="business.markupType" list="#{'0':'perc','1':'Flat'}" value="business.markupType" />
-       									</div>
-       								</div> --%>
-       								<div class="fields1">
-        								<label style="margin-left: 0.5%;">Markup Type</label><span style="margin-left: 7%;">:<s:radio name="business.markupType" list="#{'0':'perc','1':'Flat'}" value="business.markupType" /></span>
-       								</div>
+									
 									</div>
 							
 						</div>

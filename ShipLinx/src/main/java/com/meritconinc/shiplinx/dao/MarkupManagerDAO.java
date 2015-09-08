@@ -105,9 +105,19 @@ public interface MarkupManagerDAO {
 	public List<BusinessMarkup> getAllBusinessMarkupsForCustomer(
 			BusinessMarkup businessMarkup);
 				
-	public void addBusinessMarkup(BusinessMarkup markup);
+	public List<BusinessMarkup> addBusinessMarkup(BusinessMarkup markup);
 	
-	void deleteBusinessMarkup(BusinessMarkup markup);
+	List<BusinessMarkup> deleteBusinessMarkup(BusinessMarkup markup);
 	
-	void updateBusinessMarkup(BusinessMarkup markup);
+	List<BusinessMarkup> updateBusinessMarkup(BusinessMarkup markup);
+	
+	public BusinessMarkup getuniqueBusinessToBusinessMarkup(BusinessMarkup businessMarkup);
+	
+	public BusinessMarkup getAdditionalInfoForBusinessMarkup(BusinessMarkup businessMarkup2);
+	
+	public List<BusinessMarkup> getBusinessMarkups(BusinessMarkup businessMarkup2);
+	
+	public List<BusinessMarkup> getAllBusinessMarkups(BusinessMarkup businessMarkup);
+	
+	public BusinessMarkup getUniqueCustomBusinessMarkup(BusinessMarkup businessMarkup);
 }

@@ -347,5 +347,39 @@
 			</isNotEmpty>
 		</isNotNull>
 	</dynamic>
-</select>	    	
+</select>
+
+<select id="getListCarriers" resultMap="CarrierResult">
+select distinct(c.carrier_id),c.name,c.tracking_url as 'trackingURL',c.implementing_class from carrier c,customer_carrier cc ,business_carrier bc 
+	<dynamic prepend="where">
+		c.carrier_id=bc.carrier_id 
+		and cc.business_id=bc.business_id
+		<isNotNull property="customerId">
+			<isGreaterThan property="customerId" compareValue="0">	
+ 				and cc.customer_id=#customerId# 
+ 			</isGreaterThan>
+ 		</isNotNull>
+ 		<isNotNull property = "businessIds">
+				<isNotEmpty property = "businessIds">
+				and bc.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
+				</isNotEmpty>
+		</isNotNull>  
+ 	</dynamic>
+</select>
+
+<select id="getListCarrierServices" resultMap="CarrierServicesResult">
+	select s.service_id,s.name,s.description,s.code, s.transit_code,s.service_time_mins,s.carrier_id, s.master_carrier_id, s.mode, s.service_type, s.zone_structure_id from customer_markup cm right join service s on(cm.service_id=s.service_id)
+	<dynamic prepend="where">
+		cm.disabled=0 
+		<isNotNull property="carrierId">
+ 		 	<isGreaterThan property="carrierId" compareValue="0">	
+ 				and s.carrier_id = #carrierId#
+ 			</isGreaterThan>
+ 		</isNotNull>
+ 		<isNotNull property="customerId">
+ 			and cm.customer_id=#customerId# 
+ 		</isNotNull>
+	  	group by s.name order by s.service_id, s.name; 
+	</dynamic>
+</select>    	
 </sqlMap>

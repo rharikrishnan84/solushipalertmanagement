@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BusinessMarkup;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CarrierChargeCode;
 import com.meritconinc.shiplinx.model.Charge;
 import com.meritconinc.shiplinx.model.ChargeGroup;
@@ -91,9 +92,21 @@ public boolean getMarkupListForCustomerAndCarrier(Markup markup);
   public List<BusinessMarkup> getBusinessMarkupListForCustomer(
 		  		BusinessMarkup businessMarkup);
   
-  public BusinessMarkup addBusinessMarkup(BusinessMarkup markup);
-  
-  public void deleteBusinessMarkup(BusinessMarkup markup);
-  
   public void updateBusinessMarkup(BusinessMarkup m);
+
+  public BusinessMarkup getuniqueBusinessToBusinessMarkup(BusinessMarkup businessMarkup);
+
+  public List<BusinessMarkup> getAllBusinessMarkups(BusinessMarkup businessMarkup);
+
+  public List<BusinessMarkup> getBusinessMarkups(BusinessMarkup businessMarkup);
+
+  public List<BusinessMarkup> addBusinessMarkup(BusinessMarkup businessMarkup);
+
+  public List<BusinessMarkup> deleteBusinessMarkup(BusinessMarkup businessMarkup);
+
+  public List<Carrier> getListCarriers(String customerId, String businessId);
+
+  public List<Service> getListCarrierServices(long carrierId, long customerId);
+
+  public BusinessMarkup getUniqueCustomBusinessMarkup(BusinessMarkup businessMarkup);
 }

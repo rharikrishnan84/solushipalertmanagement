@@ -633,64 +633,102 @@ public class MarkupManagerDAOImpl extends SqlMapClientDaoSupport implements Mark
 			    return (count > 0);
 			}
 	@Override
-		public BusinessMarkup getuniqueBusinessMarkup(
+	public BusinessMarkup getuniqueBusinessMarkup(
+			BusinessMarkup businessMarkup) {
+		return (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getuniqueBusinessMarkup", businessMarkup);
+	}
+	
+	@Override
+	public List<BusinessMarkup> getAllBusinessMarkupsForCustomer(
 				BusinessMarkup businessMarkup) {
-			return (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getuniqueBusinessMarkup", businessMarkup);
-		}
-		
-		@Override
-		public List<BusinessMarkup> getAllBusinessMarkupsForCustomer(
-					BusinessMarkup businessMarkup) {
-				return (List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getAllBusinessMarkupsForCustomer", businessMarkup);
-		}
-	
-		@Override
-		public void addBusinessMarkup(BusinessMarkup markup) {
-			if (markup != null) {
-				if (markup.getFromCost() == null)
-					markup.setFromCost(0.0);
-				if (markup.getToCost() == null)
-					markup.setToCost(0.0);
-				getSqlMapClientTemplate().insert("addBusinessMarkup", markup);
+			return (List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getAllBusinessMarkupsForCustomer", businessMarkup);
+	}
+
+	@Override
+	public BusinessMarkup getuniqueBusinessToBusinessMarkup(BusinessMarkup businessMarkup) {
+		businessMarkup = (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getuniqueBusinessToBusinessMarkup", businessMarkup);
+		return businessMarkup;
+	}
+
+	@Override
+	public List<BusinessMarkup> addBusinessMarkup(BusinessMarkup businessMarkup) {
+		List<BusinessMarkup> businessMarkups=new ArrayList<BusinessMarkup>();
+		if (businessMarkup != null) {
+			if (businessMarkup.getFromRange() == null)
+				businessMarkup.setFromRange(0.0);
+			if (businessMarkup.getToRange() == null)
+				businessMarkup.setToRange(0.0);
+			
+			BusinessMarkup businessMarkup2=(BusinessMarkup)getSqlMapClientTemplate().queryForObject(
+					"getBusinessMarkup", businessMarkup);
+			if(businessMarkup2==null){
+				getSqlMapClientTemplate().insert("addBusinessMarkup", businessMarkup);
+				businessMarkups.add(businessMarkup);
+			}else{
+				return null;
 			}
 		}
-		
-		@Override
-		public void deleteBusinessMarkup(BusinessMarkup markup) {
-			// TODO Auto-generated method stub
-			if (markup != null) {
-				Map<String, Object> deleteMarkupParamObj = new HashMap<String, Object>(5);
-				deleteMarkupParamObj.put("customerId", markup.getCustomerId());
-				deleteMarkupParamObj.put("serviceId", markup.getServiceId());
-				deleteMarkupParamObj.put("fromCountryCode", markup.getFromCountryCode());
-				deleteMarkupParamObj.put("toCountryCode", markup.getToCountryCode());
-				deleteMarkupParamObj.put("businessId", markup.getBusinessId());
-				deleteMarkupParamObj.put("businessToId", markup.getBusinessToId());
-				getSqlMapClientTemplate().delete("deleteBusinessMarkup", deleteMarkupParamObj);
-			    	}
+		return businessMarkups;
+	}
+
+	@Override
+	public List<BusinessMarkup> deleteBusinessMarkup(BusinessMarkup markup) {
+		List<BusinessMarkup> businessMarkups=new ArrayList<BusinessMarkup>();
+		if (markup != null) {
+			Map<String, Object> deleteMarkupParamObj = new HashMap<String, Object>(5);
+			deleteMarkupParamObj.put("id", markup.getId());
+			int i=getSqlMapClientTemplate().delete("deleteBusinessMarkup", deleteMarkupParamObj);
+			if(i>0){
+				businessMarkups=(List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getAllBusinessMarkups", markup);
+			}else{
+				return null;
 			}
-	
-		@Override
-		public void updateBusinessMarkup(BusinessMarkup markup) {
-			if (markup != null) {
-			      Map<String, Object> updateMarkupParamObj = new HashMap<String, Object>(10);
-			      updateMarkupParamObj.put("customerId", markup.getCustomerId());
-			      updateMarkupParamObj.put("serviceId", markup.getServiceId());
-			      updateMarkupParamObj.put("fromCountryCode", markup.getFromCountryCode());
-			      updateMarkupParamObj.put("toCountryCode", markup.getToCountryCode());
-			      updateMarkupParamObj.put("businessId", markup.getBusinessId());
-			      updateMarkupParamObj.put("businessToId", markup.getBusinessToId());
-			      updateMarkupParamObj.put("muPercent", markup.getMarkupPercentage());
-			      updateMarkupParamObj.put("muFlat", markup.getMarkupFlat());
-			      updateMarkupParamObj.put("disabled", markup.getDisabled());
-			      updateMarkupParamObj.put("fromCost", markup.getFromCost());
-			      updateMarkupParamObj.put("toCost", markup.getToCost());
-			      updateMarkupParamObj.put("toVariable", markup.getVariable());
-			      try{
-			      getSqlMapClientTemplate().insert("updateBusinessMarkup", updateMarkupParamObj);
-			    }catch(Exception e){
-			    	e.printStackTrace();
-			    	}
-			    }
 		}
+		return businessMarkups;
+	}
+
+	@Override
+	public List<BusinessMarkup> updateBusinessMarkup(BusinessMarkup markup) {
+		List<BusinessMarkup> businessMarkups=new ArrayList<BusinessMarkup>();
+		if(markup != null) {
+			Map<String, Object> updateMarkupParamObj = new HashMap<String, Object>(10);
+			updateMarkupParamObj.put("id", markup.getId());
+			updateMarkupParamObj.put("muPercent", markup.getMarkupPercentage());
+		    updateMarkupParamObj.put("muFlat", markup.getMarkupFlat());
+		    updateMarkupParamObj.put("disabled", markup.getDisabled());
+		    updateMarkupParamObj.put("fromCost", markup.getFromRange());
+		    updateMarkupParamObj.put("toCost", markup.getToRange());
+		    updateMarkupParamObj.put("toVariable", markup.getVariable());
+			int i=getSqlMapClientTemplate().update("updateBusinessMarkup", updateMarkupParamObj);
+			if(i>0){
+				businessMarkups.add(markup);
+			}else{
+				return null;
+			}
+		}
+		return businessMarkups;
+	}
+
+	@Override
+	public BusinessMarkup getAdditionalInfoForBusinessMarkup(BusinessMarkup businessMarkup2) {
+		return (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getAdditionalInfoForBusinessMarkup", businessMarkup2);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<BusinessMarkup> getBusinessMarkups(BusinessMarkup businessMarkup) {
+		return (List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getBusinessMarkups", businessMarkup);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<BusinessMarkup> getAllBusinessMarkups(BusinessMarkup businessMarkup) {
+		return (List<BusinessMarkup>)getSqlMapClientTemplate().queryForList("getAllBusinessMarkups", businessMarkup);
+	}
+
+	@Override
+	public BusinessMarkup getUniqueCustomBusinessMarkup(BusinessMarkup businessMarkup) {
+		businessMarkup = (BusinessMarkup)getSqlMapClientTemplate().queryForObject("getUniqueCustomBusinessMarkup", businessMarkup);
+		return businessMarkup;
+	}
 }

@@ -403,34 +403,36 @@ public class EstimatingServiceClient {
 					}
 					rate.setServiceName(shiplinxService.getName());
 							              boolean HWFlag = false;
-					                      boolean breakFlag = false;
+							              double HWCharge = 0.0;
+							              double HWCost = 0.0;
+							              double HWTariff = 0.0;
+							              Charge c = new Charge();
+							              
 					                      List<Package> packagesList = order.getPackages();
 					                      for(int pack = 0; pack < packagesList.size(); pack++)
 					                      {
 					                          if(packagesList.get(pack).getWeight().longValue() > 69){
-					                              Charge c = new Charge();
 					                              for(Charge charge : rate.getCharges()){                              
 					                                  if(charge.getChargeCode().equals("RESI")){
+					                                	  HWCharge = HWCharge + PUROLATOR_ADDTIONALHANDLING_CHARGE;
+					                                	  HWCost = HWCost + PUROLATOR_ADDTIONALHANDLING_CHARGE;
+					                                	  HWTariff = HWTariff + PUROLATOR_ADDTIONALHANDLING_CHARGE;
 					                                      c.setName("Heavy Weight Charge");
 					                                      c.setChargeCode(CHARGE_CODE_FOR_HEAVY_WEIGHT);
-					                                      c.setCharge(PUROLATOR_ADDTIONALHANDLING_CHARGE);
-					                                      c.setCost(PUROLATOR_ADDTIONALHANDLING_CHARGE);
-					                                      c.setTariffRate(PUROLATOR_ADDTIONALHANDLING_CHARGE);
+					                                      c.setCharge(HWCharge);
+					                                      c.setCost(HWCost);
+					                                      c.setTariffRate(HWTariff);
 					                                      c.setCurrency("CAD");
 					                                      HWFlag = true;
-					                                      break;
-					                                  }
-					                              }
-					
-					                              if(HWFlag)
-					                              {
-					                                  rate.getCharges().add(c);
-					                                  breakFlag = true;
-					                              }
-					                          }
-					                          if(breakFlag)
-					                              break;
-					                      }
+													}
+												}
+											}
+										}
+  					                      
+  					                          if(HWFlag)
+  				                              {
+  				                                  rate.getCharges().add(c);
+  				                              }
 					ratingList.add(rate);
 
 				}

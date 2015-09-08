@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
+
 import com.meritconinc.mmr.utilities.security.FilesUtil;
 import com.meritconinc.shiplinx.model.EdiItem;
 
@@ -90,6 +91,7 @@ import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.CustomerDAO;
 import com.meritconinc.shiplinx.dao.InvoiceDAO;
 import com.meritconinc.shiplinx.dao.ShippingDAO;
+import com.meritconinc.shiplinx.dao.impl.BusinessDAOImpl;
 import com.meritconinc.shiplinx.model.Address;
 import com.meritconinc.shiplinx.model.BatchShipmentInfo;
 import com.meritconinc.shiplinx.model.Billduty;
@@ -147,8 +149,10 @@ import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 import java.io.SequenceInputStream;
 import java.util.Vector;
+
 import com.lowagie.text.DocumentException;
 import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+
 import java.io.SequenceInputStream;
 
 
@@ -3445,7 +3449,22 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			//get the rating/surcharges/charges for selected index from the list
 			Rating r = shippingOrder.getRateList().get(Integer.parseInt(rateIndex));
 			
-			
+			if(r.isBusinessMarkup() && r.getBMBusinessId()>0){
+				shippingOrder.setCustomBM(r.isBusinessMarkup());
+				shippingOrder.setBusinessFromId(r.getBMBusinessId());
+				BusinessDAO businessDAO = (BusinessDAOImpl) MmrBeanLocator.getInstance().findBean("businessDAO");
+				Business business2 = businessDAO.getBusiessById(shippingOrder.getBusiness().getId());
+				Long customerId =customerService.getCustomerIdByName(business2.getName(),r.getBMBusinessId());
+				if(customerId==null){
+					business2=businessDAO.getSuperParentBusiness(shippingOrder.getBusiness().getId());
+					customerId =customerService.getCustomerIdByName(business2.getName(),r.getBMBusinessId());
+				}
+				if(customerId!=null){
+					shippingOrder.setBMCustomerId(customerId);
+				}
+				shippingOrder.setBMValue(r.getBMValue());
+				shippingOrder.setBMType(r.getBMType());
+			}
 			//Charge shippingCharge = r.getCharge();
 			/*if(shippingOrder.getFromAddress().getCountryCode().equals("US")&&(shippingOrder.getToAddress().getCountryCode().equals("US"))){
 				r.setCurrency("USD");
@@ -3721,16 +3740,33 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		if(carrierServiceManager.getErrorMessages().size() == 0)
 			addActionMessage(getText("shippingOrder.save.successfully"));
 		// In order to create duplicate shipment for the business other than IC & customBM is true
-				if(shippingOrder.isCustomBM()){
-				ShippingOrder dupOrder=new ShippingOrder();
-				dupOrder=shippingService.getShippingOrder(shippingOrder.getId());
-				dupOrder.setBusinessId(shippingOrder.getBusinessFromId());
-				dupOrder.setCustomerId(shippingOrder.getBMCustomerId());
-				try {
-					int i=shippingService.saveDuplicateOrder(dupOrder,shippingOrder);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					if(shippingOrder.isCustomBM()){
+						ShippingOrder dupOrder=new ShippingOrder();
+						dupOrder=shippingService.getShippingOrder(shippingOrder.getId());
+						dupOrder.setBusinessId(shippingOrder.getBusinessFromId());
+						dupOrder.setCustomerId(shippingOrder.getBMCustomerId());
+						dupOrder.setMasterTrackingNum(shippingOrder.getId().toString());
+						dupOrder.setTrackingURL(null);
+						dupOrder.setMarkType(shippingOrder.getBMType());
+						Double d = new Double(shippingOrder.getBMValue());
+						dupOrder.setMarkPercent(d.intValue());
+						try {
+							log.debug(">> shipping order has been created successfully");
+							log.debug(">> The created order_id is :"+shippingOrder.getId());
+							log.debug(">> This order belong to business : "+shippingOrder.getBusinessId());
+							log.debug(">> This order belong to customer : "+shippingOrder.getCustomerId());
+							log.debug(">> This order contains business level markup");
+							log.debug(">> duplication process of this new order started");
+							int i=shippingService.saveDuplicateOrder(dupOrder,shippingOrder);
+							log.debug(">> duplication process of this new order ended");
+							log.debug(">> The duplicated order_id is : "+(shippingOrder.getId()+ShiplinxConstants.ORDER_INC));
+							log.debug(">> This order belong to business :"+shippingOrder.getBusinessFromId());
+							log.debug(">> This order belong to customer : "+shippingOrder.getBMCustomerId());
+							log.debug(">> duplicate shipping order has been created successfully");
+						} catch (Exception e) {
+							log.debug("duplicate shipping order creation failed unexectedly");
+							e.printStackTrace();
+						}
 				}
 		return viewShipment();
 	}
@@ -4072,17 +4108,17 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	public String getShippingLabel(){
 		
-	/*if(!pdfSize) {
+		if(!pdfSize) {
 			pdfSize = true;
 			startTime = new Date();
-		}*/
+		}
 		//shippingOrder = (ShippingOrder)getSession().get("shippingOrder");
 		log.debug("----getShippingLabel-----");
 		String id = request.getParameter("id");
 		String carrierId = request.getParameter("carrierId");
-		/*long cId = 0;
+		long cId = 0;
 		if(carrierId != null && !carrierId.equals(""))
-			cId = Long.parseLong(carrierId);*/
+			cId = Long.parseLong(carrierId);
 		ShippingOrder shippingOrder = null;
 		User user1 = UserUtil.getMmrUser();
 		try{
@@ -4125,7 +4161,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			response.setHeader("Pragma", "public"); 
 			response.setContentLength(baos.size());
 			ByteArrayInputStream bis=new ByteArrayInputStream(baos.toByteArray());
-			/*if(cId == 20 && user1.getPreferredLabelSize().equals("8 x 11")) {
+			if(cId == 20 && user1.getPreferredLabelSize().equals("8 x 11")) {
 				log.info("label size : "+bis.read());
 				Date currTime = new Date();
 				long diff = currTime.getTime() - startTime.getTime();
@@ -4138,10 +4174,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				getSession().put("checklabel", "fail");
 			} else if(bis.read() > 0){
 				log.info("label available");
-				inputStream = bis;
+				OutputStream out = response.getOutputStream();
+				out.write(baos.toByteArray(), 0, baos.size()); 
+				if (out != null) {
+				out.close();
+				}
 				getSession().put("checklabel", "true");
 			}
-			} else*/
+			} else
 			inputStream = bis;
 			
 		} catch (Exception e) {			
@@ -4152,7 +4192,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		
 	}
 	
-	/*public String checkLabel() {
+	public String checkLabel() {
 		Object checklabel = getSession().get("checklabel");
 		User user1 = UserUtil.getMmrUser();
 		if (user1.getPreferredLabelSize().equals("8 x 11")) {
@@ -4170,7 +4210,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			setResult(new StringBufferInputStream("true"));
 		}
 		return SUCCESS;
-	}*/
+	}
 
 	public void setServletResponse(HttpServletResponse response) {
 		this.response = response;
@@ -5034,7 +5074,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    	
 		}
 		if(this.getShipments()!=null){
+			        if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
+			        		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
 					this.setShipments(filterShipments(this.getShipments()));
+			        }
 					}
 		return SUCCESS;
 	}

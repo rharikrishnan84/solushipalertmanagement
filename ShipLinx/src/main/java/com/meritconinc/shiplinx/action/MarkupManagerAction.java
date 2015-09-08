@@ -239,7 +239,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
         customerId);
     Service s = new Service();
     s.setId(-1L);
-    s.setName("");
+    s.setName("ANY");
     s.setCarrierId(carrierCode);
     sList.add(0, s);
     getSession().put("SERVICES", sList);
@@ -442,7 +442,7 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  	  }
     Service s = new Service();
     s.setId(-1L);
-    s.setName("");
+    s.setName("ANY");
     s.setCarrierId(carrierCode);
     sList.add(0, s);
     getSession().put("SERVICES", sList);
@@ -1201,353 +1201,406 @@ private static final Logger log = LogManager.getLogger(MarkupManagerAction.class
 	  	  
 	  	  
 	  	//code for Business Markup starts here 
-	  		  public BusinessMarkup getBusinessMarkup() {
-	  				return (BusinessMarkup) getSession().get("businessMarkup");
-	  			}
-	  	
-	  			@SuppressWarnings("unchecked")
-	  			public void setBusinessMarkup(BusinessMarkup markup) {
-	  				getSession().put("businessMarkup", markup);
-	  			}
-	  		@SuppressWarnings("unchecked")
-	  		public String businessMarkup() {
-	  			User user = UserUtil.getMmrUser();
-	  			BusinessMarkup businessMarkup=(BusinessMarkup) getSession().get("businessMarkup");
-	  			request.getSession().removeAttribute("businessMarkup");
-	  			businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
-	  			List<Business> businesses=businessDAO.getAllBusiness();
-	  			/*HashSet<Business> toBusList = new HashSet<Business>();
-	  			toBusList.addAll(businesses);*/
-	  			getSession().put("BUSINESS", businesses);
-	  			countries = MessageUtil.getCountriesList();
-	  			getSession().put("COUNTRIES", countries);
-	  			if(request.getParameter("call")==null && !("search").equalsIgnoreCase(request.getParameter("call"))){
-	  			List<Customer> customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
-	  			getSession().put("CUSTOMERS", customers);
-	  			}
-	  			/*List<String> toProvince =new ArrayList<String>();
-	  			toProvince.add("ON");
-	  			toProvince.add("NW");
-	  			List<String> fromProvince =new ArrayList<String>();
-	  			fromProvince.add("ON");
-	  			fromProvince.add("NW");
-	  		    getSession().put("TO_PROVINCE",toProvince);
-	  			getSession().put("FROM_PROVINCE",fromProvince);*/
-	  			if(request.getParameter("call")!=null && request.getParameter("call").equalsIgnoreCase("search")){
-	  				setBusinessMarkup(businessMarkup);
-	  				if(businessMarkup.getFromCountryCode().equalsIgnoreCase("ANY"))
-	  					businessMarkup.setFromCountryCode(null);
-	  				if(businessMarkup.getToCountryCode().equalsIgnoreCase("ANY"))
-	  					businessMarkup.setToCountryCode(null);
-	  				}
-	  			else {
-	  				businessMarkup=new BusinessMarkup();
-	  				businessMarkup.setBusinessId(user.getBusinessId());
-	  			}
-	  			List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
-	  			if (this.markupManagerService != null) {
-	  				businessMarkupList = this.markupManagerService
-	  						.getBusinessMarkupListForCustomer(businessMarkup);
-	  			}
-	  				if (businessMarkupList != null && businessMarkupList.size()>0)
-	  					getSession().put("MARKUPLIST", businessMarkupList);
-	  				else
-	  					getSession().put("MARKUPLIST", businessMarkupList);
-	  			return SUCCESS;
-	  		}
-	  		
-	  		  public String listCarriers() throws Exception {
-	  			    String strReturn = null;
-	  			    try {
-	  			      String CustomerId = request.getParameter("value");
-	  			      User user = UserUtil.getMmrUser();
-	  			      if (CustomerId != null && !CustomerId.isEmpty()) {
-	  			        if (user != null && user.getUserRole().equalsIgnoreCase("BusAdmin")) {
-	  			          carriers =getCarriers();
-	  			          getSession().put("CARRIERS", carriers);
-	  			        }
-	  			      }
-	  			    } catch (Exception e) {
-	  			      e.printStackTrace();
-	  			      addActionError(getText("content.error.unexpected"));
-	  			    }
-	  			    if (request.getParameter("pickup") != null)
-	  			      strReturn = "success2";
-	  			    else
-	  			      strReturn = "success";
-	  			    return strReturn;
-	  			  }
-	  		  
-	  		public String listCustomers() throws Exception {
-	  			String strReturn = null;
-	  			try {
-	  				String businessId = request.getParameter("value");
-	  				List<Customer> customers=new ArrayList<Customer>();
-	  				customers=customerService.getAllCustomerForBusiness(Long.parseLong(businessId));
-	  				getSession().put("CUSTOMERS", customers);
-	  			} catch (Exception e) {
-	  				e.printStackTrace();
-	  				addActionError(getText("content.error.unexpected"));
-	  			}
-	  			if (request.getParameter("pickup") != null)
-	  				strReturn = "success2";
-	  			else if(request.getParameter("method") != null)
-	  				strReturn = "success1";
-	  			else
-	  				strReturn = "success";
-	  			return strReturn;
-	  		}
-	  	
-	  	/*	public String listProvinces() throws Exception {
-	  			String callFor = request.getParameter("for");
-	  			String countryCode = request.getParameter("value");
-	  			List<String> province =new ArrayList<String>();
-	  			province.add("ON");
-	  			province.add("NW");
-	  			if(callFor!=null && ("toCountry").equals(callFor))
-	  				getSession().put("TO_PROVINCE", province);
-	  			else
-	  			getSession().put("FROM_PROVINCE", province);
-	  			return SUCCESS;
-	  		}
-	  	*/
-	  		public String addBusinessMarkup() throws Exception {
-	  			try {
-	  				User user = UserUtil.getMmrUser();
-	  				BusinessMarkup markup = this.getBusinessMarkup();
-	  				markup.setBusinessId(user.getBusinessId());
-	  				if(markup.getMarkupPercentage()==null){
-	  					markup.setMarkupPercentage(0);
-	  				}
-	  				if(markup.getMarkupFlat()==null){
-	  					markup.setMarkupFlat(0.0);
-	  				}
-	  				if(markup.getType()==null){
-	  					markup.setType(1);
-	  				}
-	  				if(markup.getFromCost()==null){
-	  					markup.setFromCost(0.0);
-	  				}
-	  				if(markup.getToCost()==null){
-	  					markup.setToCost(0.0);
-	  				}
-	  				if(markup.getCustomerId()<0){
-	  					markup.setCustomerId(0L);
-	  				}
-	  				if(markup.getBusinessToId()<0){
-	  					addActionError("Please select business for which you are applying markup");
-	  					return INPUT;
-	  				}
-	  				if(markup.getCarrierId()<0){
-	  					addActionError("Please select carrier and its service");
-	  					return INPUT;
-	  				}
-	  				if(markup.getMarkupPercentage()==0 && markup.getMarkupFlat()==0){
-	  					addActionError("Please give value > 0 for flat or markuppercentage");
-	  					return INPUT;
-	  				}
-	  				
-	  				if (markup != null && this.markupManagerService != null
-	  						&& markup.getFromCountryCode() != null
-	  						&& (!markup.getFromCountryCode().isEmpty())
-	  						&& markup.getToCountryCode() != null
-	  						&& (!markup.getToCountryCode().isEmpty())
-	  						&& markup.getServiceId() != null
-	  						&& (!markup.getServiceId().equals(-1L))) {
-	  	
-	  					/*if (!validateWeightParameters(markup)) {
-	  						addActionError(getText("error.markup.invalid.weight"));
-	  						return INPUT;
-	  					}*/
-	  					BusinessMarkup m = this.markupManagerService.addBusinessMarkup(markup);
-	  					if (m != null) {
-	  						// this.getMarkupList().add(0, m);
-	  						throw new MarkupAlreadyExistsException(
-	  								"Markup already exists - " + m.toString());
-	  					}
-	  					List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
-	  					if (this.markupManagerService != null) {
-	  						businessMarkupList = this.markupManagerService
-	  								.getBusinessMarkupListForCustomer(markup);
-	  					}
-	  						if (businessMarkupList != null && businessMarkupList.size()>0)
-	  							getSession().put("MARKUPLIST", businessMarkupList);
-	  						else
-	  							getSession().put("MARKUPLIST", businessMarkupList);
-	  				}
-	  			} catch (MarkupAlreadyExistsException ue) {
-	  				addActionError(getText("error.markup.exists") + " - "
-	  						+ ue.getMessage());
-	  				return INPUT;
-	  			} catch (Exception e) {
-	  				e.printStackTrace();
-	  				addActionError(getText("content.error.unexpected"));
-	  				return INPUT;
-	  			}
-	  			addActionMessage("successfull inserted");
-	  			return SUCCESS;
-	  		}
-	  	
-	  		public String deleteBusinessMarkup() throws Exception {
-	  			try {
-	  				loadBusinessMarkupLists();
-	  				String serString = request.getParameter("serviceId");
-	  				Long serviceId = 0L;
-	  				if (serString != null)
-	  					serviceId = Long.parseLong(serString);
-	  				String busString1 = request.getParameter("businessId");
-	  				Long busId = 0L;
-	  				if (busString1 != null)
-	  					busId=Long.parseLong(busString1);
-	  				String busString2 = request.getParameter("businessToId");
-	  				Long busToId = 0L;
-	  				if (busString2 != null)
-	  					busToId=Long.parseLong(busString2);
-	  				BusinessMarkup markup = this.getBusinessMarkup();
-	  				if (markup.getFromCountryCode() == null
-	  						|| markup.getFromCountryCode().length() == 0)
-	  					markup.setFromCountryCode("ANY");
-	  				if (markup.getToCountryCode() == null
-	  						|| markup.getToCountryCode().length() == 0)
-	  					markup.setToCountryCode("ANY");
-	  				if (markup.getFromCountryProvince() == null
-	  						|| markup.getFromCountryProvince().length() == 0)
-	  					markup.setFromCountryProvince("ANY");
-	  				if (markup.getToCountryProvince() == null
-	  						|| markup.getToCountryProvince().length() == 0)
-	  					markup.setToCountryProvince("ANY");
-	  				if(markup.getCustomerId()<0)
-	  					markup.setCustomerId(0L);
-	  				if(markup.getBusinessId()!=null)
-	  					markup.setBusinessId(1L);
-	  				if(markup.getBusinessToId()!=null)
-	  					markup.setBusinessToId(0L);
-	  				String fromCountryCode = request.getParameter("fromCountryCode");
-	  				String toCountryCode = request.getParameter("toCountryCode");
-	  				markup = findBusinessMarkup(serviceId, fromCountryCode,
-	  						toCountryCode,busString1,busString2);
-	  				if (markup != null)
-	  					this.markupManagerService.deleteBusinessMarkup(markup);
-	  			} catch (Exception e) {
-	  				e.printStackTrace();
-	  				addActionError(getText("content.error.unexpected"));
-	  			}
-	  			return businessMarkup();
-	  		}
-	  		
-	  		private BusinessMarkup findBusinessMarkup(Long serviceId,
-	  				String fromCountryCode, String toCountryCode, String busString1,
-	  				String busString2) {
-	  			// TODO Auto-generated method stub
-	  			if (this.businessMarkupList != null) {
-	  				for (BusinessMarkup m : this.businessMarkupList) {
-	  					if (m.getServiceId().equals(serviceId)
-	  							&& m.getFromCountryCode().equals(fromCountryCode)
-	  							&& m.getToCountryCode().equals(toCountryCode)) {
-	  						if (m.getBusinessId()==Long.parseLong(busString1) && m.getBusinessToId()==Long.parseLong(busString2)) {
-	  							return m;
-	  						}
-	  					}
-	  				}
-	  			}
-	  			return null;
-	  		}
-	  	
-	  		 private void loadBusinessMarkupLists() {
-	  			    if (this.businessMarkupList == null)
-	  			      this.businessMarkupList = (List<BusinessMarkup>) getSession().get("MARKUPLIST");
-	  			  }
-	  		 public String saveBusinessMarkupList() throws Exception {
-	  		  		try {
-	  		  		Boolean eshipCarrierUpdated=false;
-	  		  			shippingService = (ShippingService) MmrBeanLocator.getInstance()
-	  		  					.findBean("shippingService");
-	  		  			loadBusinessMarkupLists();
-	  		  			User user = UserUtil.getMmrUser();
-	  		  			String carrierId = request.getParameter("carrierId");
-	  		  		if (carrierId != null) {
-	  		  				if (carrierId.equalsIgnoreCase("6")) {
-	  		  				EshipplusCarrierFilter eshipplusCarrierFilter = new EshipplusCarrierFilter();
-	  		  					String carrierName = request.getParameter("carrierName");
-	  		  					carrierName=carrierName.replace('~', '&');
-	  		  					String carrierInactive = request.getParameter("carrierInactive");
-	  		  					String eshipCarLt[] = carrierName.split(",");
-	  		  					String eshipCarInAc[] = carrierInactive.split(",");
-	  		  				for (int i1 = 0; i1 < eshipCarLt.length; i1++) {
-	  		  						if(eshipCarInAc[i1] !=null && !eshipCarInAc[i1].equalsIgnoreCase("undefined")){
-	  		  							eshipplusCarrierFilter
-	  		  							.setCarrierDisabledFlag(convertStringToBoolean(eshipCarInAc[i1]));
-	  		  							eshipplusCarrierFilter
-	  		  						.setEshipCarrierName(eshipCarLt[i1]);
-	  		  							shippingService.updateEshipCarrierFilter(
-	  	  									eshipplusCarrierFilter, String.valueOf(this
-	  		  											.getMarkup().getCustomerId()));
-	  		  						eshipCarrierUpdated=true;
-	  		  						}
-	  		  
-	  		  					}
-	  		  				}
-	  		  		}
-	  		  			if(eshipCarrierUpdated!=null && eshipCarrierUpdated){
-	  		  				addActionMessage("Carrier Updated Successfully");
-	  		  			}
-	  		  			String selectedItem = request.getParameter("selectedItem");
-	  		  			String percentage = request.getParameter("percentage");
-	  		  		String flat = request.getParameter("flat");
-	  		  			String disabledFlag = request.getParameter("disabledFlag");
-	  		  			String variable = request.getParameter("variable");
-	  		  			String item[] = selectedItem.split(",");
-	  		  			String mPs[] = percentage.split(",");
-	  		  			String mFs[] = flat.split(",");
-	  		  			String mDs[] = disabledFlag.split(",");
-	  		  			String mVs[] = variable.split(",");
-	  		  			// if (this.getMarkupList().size() != item.length)
-	  		  			for (int i1 = 0; i1 < item.length; i1++) {
-	  		  				if (!item[i1].equalsIgnoreCase("")) {
-	  		  					// for (int i = 0; i < this.getMarkupList().size(); i++) {
-	  		  					BusinessMarkup m = this.businessMarkupList.get(Integer.parseInt(item[i1]));					int p = Integer.parseInt(mPs[i1]);
-	  		  					double f = Double.parseDouble(mFs[i1]);
-	  		  				boolean d = convertStringToBoolean(mDs[i1]);
-	  		  					int v = Integer.parseInt(mVs[i1]);
-	  		  					if (isBusinessMarkupDirty(m, p, f, d, v)) {
-	  		  						m.setMarkupPercentage(p);
-	  		  					m.setMarkupFlat(f);
-	  		  						m.setDisabledFlag(d);
-	  		  						m.setVariable(v);
-	  		  						// If user is in Customer Markup and modified default
-	  		  					// markup
-	  		  						// it should be added as a new record customer specific
-	  		  						// markup
-	  		  						if (m.getCustomerId().longValue() == 0
-	  		  							&& getMarkup().getCustomerId().longValue() != 0) {
-	  		  							m.setCustomerId(getMarkup().getCustomerId());
-	  		  							this.markupManagerService.addBusinessMarkup(m);
-	  		  							addActionMessage("Added Successfully");
-	  		  						} else {
-	  		  						this.markupManagerService.updateBusinessMarkup(m);
-	  		  							addActionMessage("Updated Successfully");
-	  		  						}
-	  		  				}
-	  		  				}
-	  		  			}
-	  		  			eshipCarrierList = shippingService
-	  		  					.getEshipPlusCarrierByCustomerId(this
-	  		  							.getMarkup().getCustomerId());
-	  		  			session.put("eshipCustomerCarrier", eshipCarrierList);
-	  		  			this.setEshipCarrierList(eshipCarrierList);
-	  		  		} catch (Exception e) {
-	  		  			e.printStackTrace();
-	  		  		addActionError(getText("content.error.unexpected"));
-	  		  			return INPUT;
-	  		  		}
-	  		  		return SUCCESS;
-	  		  	}
-	  		 private boolean isBusinessMarkupDirty(BusinessMarkup m, int p, double f, boolean d, int v) {
-	  			 if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
-	  					 || m.getDisabledFlag() != d || m.getVariable() != v){
-	  				 return true;
-	  			 }
-	  			 return false;
-	  		 }
-	  	 
-}
+		  	
+		  	public BusinessMarkup getBusinessMarkup() {
+		  		return (BusinessMarkup) getSession().get("businessMarkup");
+		  	}
+		  	
+		  	@SuppressWarnings("unchecked")
+		  	public void setBusinessMarkup(BusinessMarkup markup) {
+		  		getSession().put("businessMarkup", markup);
+		  	}
+		  	
+			/**
+			 * This method is for getting all the business mark-up records from collection
+			 * @return
+			 */
+			@SuppressWarnings("unchecked")
+			public String getAllBusinessMarkups() {
+				BusinessMarkup businessMarkup=(BusinessMarkup) getSession().get("businessMarkup");
+				request.getSession().removeAttribute("businessMarkup");
+				businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+				List<Business> fromBusinesses=businessDAO.getAllBusiness();
+				List<Business> toBusinesses=businessDAO.getAllBusiness();
+				getSession().put("TO_BUSINESS", toBusinesses);
+				getSession().put("BUSINESS", fromBusinesses);
+				countries = MessageUtil.getCountriesList();
+				getSession().put("COUNTRIES", countries);
+				if(request.getParameter("call")==null && !("search").equalsIgnoreCase(request.getParameter("call"))){
+					List<Customer> customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+					if(customers!=null){
+						getSession().put("CUSTOMERS", customers);
+					}else{
+						getSession().put("CUSTOMERS", new ArrayList<Customer>());
+					}
+				}
+				getSession().put("CARRIERS",new ArrayList<Carrier>());
+				getSession().put("SERVICES", new ArrayList<Service>());
+				carriers=this.markupManagerService.getListCarriers("0","0");
+				if(carriers!=null){
+					getSession().put("CARRIERS",carriers);
+					services=this.markupManagerService.getListCarrierServices(0,0);
+					if(services!=null){
+						getSession().put("SERVICES", services);
+					}
+				}
+				List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+				businessMarkupList = this.markupManagerService.getAllBusinessMarkups(businessMarkup);
+				getSession().put("MARKUPLIST", businessMarkupList);
+				return SUCCESS;
+			}
+			
+			/**
+			 * This method is for getting business mark-up records for selected values from collection
+			 * @return
+			 */
+			@SuppressWarnings("unchecked")
+			public String getBusinessMarkups() {
+				BusinessMarkup businessMarkup=(BusinessMarkup) getSession().get("businessMarkup");
+				businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+				List<Business> fromBusinesses=businessDAO.getAllBusiness();
+				List<Business> toBusinesses=businessDAO.getAllBusiness();
+				getSession().put("TO_BUSINESS", toBusinesses);
+				getSession().put("BUSINESS", fromBusinesses);
+				countries = MessageUtil.getCountriesList();
+				getSession().put("COUNTRIES", countries);
+				if(request.getParameter("call")==null && !("search").equalsIgnoreCase(request.getParameter("call"))){
+					List<Customer> customers =(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
+					getSession().put("CUSTOMERS", customers);
+				}
+				List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+				businessMarkupList = this.markupManagerService.getBusinessMarkups(businessMarkup);
+				getSession().put("MARKUPLIST", businessMarkupList);
+				if(businessMarkupList!=null && businessMarkupList.size()==0){
+					addActionMessage("No records found");
+				}
+				return SUCCESS;
+			}
+					  	
+			/**
+			 * This method is for inserting business mark-up record into collection
+			 * @return
+			 * @throws Exception
+			 */
+			@SuppressWarnings("unchecked")
+			public String addBusinessMarkup() throws Exception {
+				try {
+					BusinessMarkup businessMarkup = this.getBusinessMarkup();
+					boolean flag=validateObject(businessMarkup);
+					if(!flag){
+						return INPUT;
+					}
+					List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+					businessMarkupList = this.markupManagerService.addBusinessMarkup(businessMarkup);
+					if(businessMarkupList!=null && businessMarkupList.size()>0){
+						addActionMessage("Business markup inserted successfully");
+						getSession().put("MARKUPLIST", businessMarkupList);
+					}else{
+						addActionError("Business markup already exist.");
+						getSession().put("MARKUPLIST", new ArrayList<BusinessMarkup>());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+					return INPUT;
+				}
+				return SUCCESS;
+			}
+			
+			/**
+			 * This method is for validating the business mark-up object for insert
+			 * condition 1:If from business selected and to business not selected then other fields should be ANY 
+			 * condition 2:If carrier selected the service should be selected as well
+			 * @param businessMarkup
+			 * @return
+			 */
+			private boolean validateObject(BusinessMarkup businessMarkup) {
+				int i=0;
+				List<BusinessMarkup> businessMarkups=this.markupManagerService.getAllBusinessMarkups(new BusinessMarkup());
+				if(businessMarkup.getBusinessId()!=null && businessMarkup.getBusinessId()>0){
+					if(businessMarkup.getBusinessToId()!=null && businessMarkup.getBusinessToId()>0){
+						for(BusinessMarkup businessMarkup2:businessMarkups){
+							if(!businessMarkup2.getBusinessId().equals(businessMarkup.getBusinessId())){
+								if(businessMarkup2.getBusinessToId().equals(businessMarkup.getBusinessToId())){
+									addActionError("Already "+businessMarkup2.getFromBusiness()+" applied Markup for "+businessMarkup2.getToBusiness());
+									return false;
+								}
+							}
+						}
+						if(businessMarkup.getCarrierId()>0){
+							if(businessMarkup.getServiceId()==0){
+								addActionError("Please select service to proceed");
+								i++;
+							}
+						}
+						if(businessMarkup.getMarkupFlat()==null && businessMarkup.getMarkupPercentage()==null){
+							addActionError("Please insert markup percentage or flat to proceed");
+							i++;
+						}
+					}else{
+						for(BusinessMarkup businessMarkup2:businessMarkups){
+							if(businessMarkup2.getBusinessToId()==0){
+								addActionError("Already "+businessMarkup2.getFromBusiness()+" applied Markup for all business");
+								return false;
+							}
+						}
+						if(businessMarkup.getCarrierId()>0){
+							addActionError("Please select carrier as ANY to proceed");
+							i++;
+						}
+						if(businessMarkup.getServiceId()>0){
+							addActionError("Please select service as ANY to proceed");
+							i++;
+						}
+						if(businessMarkup.getCustomerId()>0){
+							addActionError("Please select customer as ANY to proceed");
+							i++;
+						}
+						if(!businessMarkup.getFromCountryCode().equals("ANY")){
+							addActionError("Please select from country as ANY to proceed");
+							i++;
+						}
+						if(!businessMarkup.getToCountryCode().equals("ANY")){
+							addActionError("Please select To country as ANY to proceed");
+							i++;
+						}
+					}
+				}else{
+					addActionError("Please select From-business to proceed");
+					i++;
+				}
+				if(i>0){
+					return false;
+				}else{
+					return true;
+				}
+			}
+
+			/**
+			 * This method is for deleting business mark-up record from collection
+			 * @return
+			 * @throws Exception
+			 */
+			@SuppressWarnings("unchecked")
+			public String deleteBusinessMarkup() throws Exception {
+				try {
+					loadBusinessMarkupLists();
+					getSession().remove("MARKUPLIST");
+					BusinessMarkup businessMarkup = this.getBusinessMarkup();
+					String id = request.getParameter("id");
+					if (id != null){
+						businessMarkup.setId(id);
+					}
+					List<BusinessMarkup> businessMarkupList =new ArrayList<BusinessMarkup>();
+					businessMarkupList=this.markupManagerService.deleteBusinessMarkup(businessMarkup);
+					if(businessMarkupList!=null && businessMarkupList.size()>0){
+						addActionMessage("Business markup deleted successfully.");
+						getSession().put("MARKUPLIST", businessMarkupList);
+					}else if(businessMarkupList!=null && businessMarkupList.size()==0){
+						addActionMessage("No business markup record found.");
+						getSession().put("MARKUPLIST", businessMarkupList);
+					}else{
+						addActionError("Error occurred while deleting business markup.");
+						getSession().put("MARKUPLIST", new ArrayList<BusinessMarkup>());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+				}
+				return SUCCESS;
+			}
+					  
+			/**
+			 * This method is for loading to business drop-down with business which
+			 * contains from business id as parent business and
+			 * other root business with no parent business mapping
+			 * @return
+			 * @throws Exception
+			 */
+			@SuppressWarnings("unchecked")
+			public String listToBusiness() throws Exception {
+				try {
+					businessDAO = (BusinessDAO) MmrBeanLocator.getInstance().findBean("businessDAO");
+					long businessId = (request.getParameter("value")!=null?Long.parseLong(request.getParameter("value")):0l);
+					List<Business> toBusinesses=new ArrayList<Business>();
+					toBusinesses =businessDAO.getBusinessForSelectedBusiness(businessId);
+					if(toBusinesses!=null && toBusinesses.size()>0){
+						
+					/*List<BusinessMarkup> businessMarkups=this.markupManagerService.getAllBusinessMarkups(new BusinessMarkup());
+						List<Business> temp=new ArrayList<Business>();
+						 for(Business business:toBusinesses){
+							int i=0;
+							for(BusinessMarkup businessMarkup:businessMarkups){
+								if(business.getId()==businessMarkup.getBusinessToId()){
+									i++;
+								}
+								if(businessMarkup.getBusinessToId()==0){
+									i++;
+								}
+							}
+							if(i!=2){
+								temp.add(business);
+							}
+						}
+						for(Business business:toBusinesses){
+							for(BusinessMarkup businessMarkup:businessMarkups){
+								if(business.getId()==businessMarkup.getBusinessToId() && businessId==businessMarkup.getBusinessId())
+								temp.add(business);
+							}
+						}
+						toBusinesses=temp;*/
+					}
+					getSession().put("TO_BUSINESS", toBusinesses);
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+				}
+				return SUCCESS;
+			}
+			
+			/**
+			 * This method is used to list the business mark-up record from business mark-up screen	
+			 */
+			@SuppressWarnings("unchecked")
+			private void loadBusinessMarkupLists() {
+				if (this.businessMarkupList == null)
+					this.businessMarkupList = (List<BusinessMarkup>) getSession().get("MARKUPLIST");
+			}
+			
+			/**
+			 * This method is for updating the business mark-up record in collection
+			 * This function needs the id of the record to update
+			 * @return
+			 * @throws Exception
+			 */
+			public String saveBusinessMarkupList() throws Exception {
+				try {
+					shippingService = (ShippingService) MmrBeanLocator.getInstance()
+							.findBean("shippingService");
+					loadBusinessMarkupLists();
+					String selectedItem = request.getParameter("selectedItem");
+					String percentage = request.getParameter("percentage");
+					String flat = request.getParameter("flat");
+					String disabledFlag = request.getParameter("disabledFlag");
+					String variable = request.getParameter("variable");
+					String item[] = selectedItem.split(",");
+					String mPs[] = percentage.split(",");
+					String mFs[] = flat.split(",");
+					String mDs[] = disabledFlag.split(",");
+					String mVs[] = variable.split(",");
+					for (int i1 = 0; i1 < item.length; i1++) {
+						if (!item[i1].equalsIgnoreCase("")) {
+							BusinessMarkup m = this.businessMarkupList.get(Integer.parseInt(item[i1]));					int p = Integer.parseInt(mPs[i1]);
+							double f = Double.parseDouble(mFs[i1]);
+							boolean d = convertStringToBoolean(mDs[i1]);
+							int v = Integer.parseInt(mVs[i1]);
+							if (isBusinessMarkupDirty(m, p, f, d, v)) {
+								m.setMarkupPercentage(p);
+								m.setMarkupFlat(f);
+								m.setDisabledFlag(d);
+								m.setVariable(v);
+								if (m.getCustomerId().longValue() == 0
+										&& getMarkup().getCustomerId().longValue() != 0) {
+									m.setCustomerId(getMarkup().getCustomerId());
+									this.markupManagerService.addBusinessMarkup(m);
+									addActionMessage("Added Successfully");
+								} else {
+									this.markupManagerService.updateBusinessMarkup(m);
+									addActionMessage("Updated Successfully");
+								}
+							}
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+					return INPUT;
+				}
+				return SUCCESS;
+			}
+			
+			/**
+			 * This method is used to check whether we changed the content of business mark-up record 
+			 * in business mark-up screen
+			 * @param m business mark-up
+			 * @param p mark-up percentage
+			 * @param f mark-up flat
+			 * @param d disable mark-up
+			 * @param v mark-up variable
+			 * @return
+			 */
+			private boolean isBusinessMarkupDirty(BusinessMarkup m, int p, double f, boolean d, int v) {
+				if (m.getMarkupPercentage().intValue() != p || m.getMarkupFlat().doubleValue() != f
+						|| m.getDisabledFlag() != d || m.getVariable() != v){
+					return true;
+				}
+				return false;
+			}
+			
+			/**
+			 * This method is for listing the customer for the selected To_Business for which 
+			 * we are applying this business mark-up
+			 * @return
+			 * @throws Exception
+			 */
+			@SuppressWarnings("unchecked")
+			public String listCustomers() throws Exception {
+				String strReturn = null;
+				try {
+					String businessId = request.getParameter("value");
+					List<Customer> customers=new ArrayList<Customer>();
+					customers=customerService.getAllCustomerForBusiness(Long.parseLong(businessId));
+					getSession().put("CUSTOMERS", customers);
+					getSession().remove("CARRIERS");
+					List<Carrier> carrierList=new ArrayList<Carrier>();
+					carrierList =this.markupManagerService.getListCarriers("0",businessId);
+					if(carrierList!=null){
+						carriers=carrierList;
+					}
+					getSession().put("CARRIERS",carriers);
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+				}
+				if (request.getParameter("pickup") != null)
+					strReturn = "success2";
+				else if(request.getParameter("method") != null)
+					strReturn = "success1";
+				else
+					strReturn = "success";
+				return strReturn;
+			}
+			
+			/**
+			  * This method is for getting list of carriers from collection
+			  * @return
+			  * @throws Exception
+			  */
+			@SuppressWarnings("unchecked")
+			public String listCarriers() throws Exception {
+				String strReturn = null;
+				try {
+					String customerId = request.getParameter("customerId");
+					String businessId = request.getParameter("businessToId");
+					if(customerId!=null && businessId !=null){
+						if(customerId.equals("-1")){
+							customerId="0";
+						}
+						carriers =this.markupManagerService.getListCarriers("0",businessId);	
+					}else{
+						carriers = getCarriers();
+					}
+					getSession().put("CARRIERS", carriers);
+				} catch (Exception e) {
+					e.printStackTrace();
+					addActionError(getText("content.error.unexpected"));
+				}
+				if (request.getParameter("pickup") != null)
+					strReturn = "success2";
+				else
+					strReturn = "success";
+				return strReturn;
+			}
+		  
+	}
+

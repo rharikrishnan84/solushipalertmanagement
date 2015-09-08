@@ -269,6 +269,8 @@ public class ShippingOrder implements Serializable {
   private boolean customBM = false;
   private long businessFromId;
   private long BMCustomerId;
+  private double BMValue;
+  private int BMType;
   /*For custom business markup-end*/
   
   
@@ -2336,6 +2338,22 @@ public void setCustomerIds(List<Long> customerIds) {
 	public void setOrderIds(List<Long> orderIds) {
 		this.orderIds = orderIds;
 	}
+		public double getBMValue() {
+		return BMValue;
+	}
+
+	public void setBMValue(double bMValue) {
+		BMValue = bMValue;
+	}
+
+		public int getBMType() {
+		return BMType;
+	}
+
+	public void setBMType(int bMType) {
+		BMType = bMType;
+	}
+
 		// Sorting orders in order list based on order id or date	
 		public static Comparator<ShippingOrder> OrderByOrderIdAsc = new Comparator<ShippingOrder>() {
 	

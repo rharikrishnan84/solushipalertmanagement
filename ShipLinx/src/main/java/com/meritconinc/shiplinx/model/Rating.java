@@ -106,6 +106,54 @@ public class Rating implements Serializable {
   	private String chargeCurrencyCode;
   	private String costCurrencyCode;
   	
+  	/*For custom business markup-start*/
+  	private boolean businessMarkup;
+  	private double BMValue;
+  	private int BMType;
+  	private long BMBusinessId;
+	private long BMCustomerId;
+  	/*For custom business markup-start*/ 
+  	
+	public boolean isBusinessMarkup() {
+		return businessMarkup;
+	}
+
+	public void setBusinessMarkup(boolean businessMarkup) {
+		this.businessMarkup = businessMarkup;
+	}
+
+	public double getBMValue() {
+		return BMValue;
+	}
+
+	public void setBMValue(double bMValue) {
+		BMValue = bMValue;
+	}
+
+	public int getBMType() {
+		return BMType;
+	}
+
+	public void setBMType(int bMType) {
+		BMType = bMType;
+	}
+
+	public long getBMBusinessId() {
+		return BMBusinessId;
+	}
+
+	public void setBMBusinessId(long bMBusinessId) {
+		BMBusinessId = bMBusinessId;
+	}
+
+	public long getBMCustomerId() {
+		return BMCustomerId;
+	}
+
+	public void setBMCustomerId(long bMCustomerId) {
+		BMCustomerId = bMCustomerId;
+	}
+	
   	public long getServiceCharge() {
   		return serviceCharge;
   	}

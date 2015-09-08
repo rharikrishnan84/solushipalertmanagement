@@ -97,60 +97,23 @@ public class Business {
 	
 	private boolean copyMarkup;
 	
-	/* For custom business markup start*/
-		private int customMarkup;
-		 private String cancelPurolatorFreightEmail;
-		 	 public String getCancelPurolatorFreightEmail() {
-		 	 return cancelPurolatorFreightEmail;
-		 	 }
-		 	 public void setCancelPurolatorFreightEmail(String cancelPurolatorFreightEmail) {
-		 	 this.cancelPurolatorFreightEmail = cancelPurolatorFreightEmail;
-		 	 }
-		public int getCustomMarkup() {
-			return customMarkup;
-		}
-
-		public void setCustomMarkup(int customMarkup) {
-			this.customMarkup = customMarkup;
-		}
-
-		public int getMarkupType() {
-			return markupType;
-		}
-
-		public void setMarkupType(int markupType) {
-			this.markupType = markupType;
-		}
-
-		public long getParentMarkupBusinessId() {
-			return parentMarkupBusinessId;
-		}
-
-		public void setParentMarkupBusinessId(long parentMarkupBusinessId) {
-			this.parentMarkupBusinessId = parentMarkupBusinessId;
-		}
-
-		public Long getParentCustomerId() {
-			return parentCustomerId;
-		}
-
-		public void setParentCustomerId(Long parentCustomerId) {
-			this.parentCustomerId = parentCustomerId;
-		}
-
-		private int markupType;	
-		private long parentMarkupBusinessId;
-		private Long parentCustomerId;
-	/* For custom business markup end*/
+	private String cancelPurolatorFreightEmail;
 	
-		public CSSVO getCssVO() {
-			return cssVO;
-		}
+	public String getCancelPurolatorFreightEmail() {
+		return cancelPurolatorFreightEmail;
+	}
 	
-		public void setCssVO(CSSVO cssVO) {
-			this.cssVO = cssVO;
-		}
+	public void setCancelPurolatorFreightEmail(String cancelPurolatorFreightEmail) {
+		this.cancelPurolatorFreightEmail = cancelPurolatorFreightEmail;
+	}
 	
+	public CSSVO getCssVO() {
+		return cssVO;
+	}
+	
+	public void setCssVO(CSSVO cssVO) {
+		this.cssVO = cssVO;
+	}
 	
 	public String getLtlEmail() {
 		return ltlEmail;

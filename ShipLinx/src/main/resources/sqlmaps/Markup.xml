@@ -179,6 +179,7 @@
 	
 	<!--Business Markup starts here -->
 	<resultMap id="BusinessMarkup" class="com.meritconinc.shiplinx.model.BusinessMarkup">
+		<result property="id" column="bm_id"/>
 		<result property="customerId" column="customer_id"/>
 		<!-- <result property="carrierId" column="carrier_id"/> -->
 		<result property="serviceId" column="service_id"/>
@@ -193,11 +194,39 @@
 		<result property="markupFlat" column="flat_mu"/>
 		<result property="disabled" column="disabled"/>
 		<result property="type" column="type"/>
-		<result property="fromCost" column="from_weight"/>
-		<result property="toCost" column="to_weight"/>
+		<result property="fromRange" column="from_weight"/>
+		<result property="toRange" column="to_weight"/>
 		<result property="carrierName" column="carrier_name"/>
+		<result property="variable" column="variable"/>
 	</resultMap>
+	
+	<resultMap id="BusinessToBusinessMarkup" class="com.meritconinc.shiplinx.model.BusinessMarkup">
+		<result property="id" column="bm_id"/>
+		<result property="businessId" column="business_id"/>
+		<result property="businessToId" column="business_id_to"/>
+		<result property="customerId" column="customer_id"/>
+		<result property="serviceId" column="service_id"/>
+		<result property="fromCountryCode" column="from_country"/>
+		<result property="toCountryCode" column="to_country"/>
+		<result property="markupPercentage" column="mu_perc"/>
+		<result property="markupFlat" column="flat_mu"/>
+		<result property="disabled" column="disabled"/>
+		<result property="type" column="type"/>
+		<result property="fromRange" column="from_weight"/>
+		<result property="toRange" column="to_weight"/>
+		<result property="variable" column="variable"/>
+	</resultMap>
+	
+	<resultMap id="AdditionalInfoForBusinessMarkup" class="com.meritconinc.shiplinx.model.BusinessMarkup">
+		<result property="customerBusName" column="customerBusName"/>
+		<result property="fromBusiness" column="fromBusiness"/>
+		<result property="toBusiness" column="toBusiness"/>
+		<result property="serviceName" column="serviceName"/>
+		<result property="carrierName" column="carrierName"/>
+	</resultMap>
+	
 	<!--Business Markup ends here --> 
+	
 	<select id="getMarkupListForCustomer" resultMap="MarkupResult">
 		select  m.customer_id, c.carrier_id, m.service_id, s.name, c.name, m.business_id, m.from_country, m.to_country, 
 				m.mu_perc, m.flat_mu, disabled, type, from_weight, to_weight, s.service_type, m.variable
@@ -674,13 +703,14 @@
  	<select id="isMarkupDisabled" resultClass="int">
        select count(*) from customer_markup where business_id=#businessId# and disabled=0
    </select>
+ 
  	<!-- Business markup starts here-->
  	<select id="getuniqueBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
 	resultMap="BusinessMarkup">
-	select m.customer_id, c.carrier_id, m.service_id, s.name as
+	select m.bm_id,m.customer_id, c.carrier_id, m.service_id, s.name as
 	service_name, c.name as carrier_name, m.business_id,m.business_id_to, m.from_country,
 	m.to_country, m.mu_perc, m.disabled, m.type, from_weight, to_weight,
-	s.service_type,m.flat_mu
+	s.service_type,m.flat_mu,m.variable
 	from business_markup m, service s , carrier c
 	<dynamic prepend="where">
 		m.service_id=s.service_id and s.carrier_id=c.carrier_id and disabled=#disabled#
@@ -695,9 +725,7 @@
 		</isGreaterThan>
 	</isNotNull>
 	<isNotNull property="customerId">
-		<isGreaterThan property="customerId" compareValue="0">
-		and (m.customer_id=#customerId# or m.customer_id=0)
-		</isGreaterThan>
+		and (m.customer_id=#customerId#)
 	</isNotNull>
 	<isNotNull property="serviceId">
 		<isGreaterThan property="serviceId" compareValue="0">
@@ -729,27 +757,27 @@
 	<isNotNull property="type">
 		and m.type=#type#
 	</isNotNull> -->
-<!-- 	<isNotNull property="fromCost">
-		<isGreaterThan property="fromCost" compareValue="0">
-				 <![CDATA[and m.from_weight<=#fromCost#]]>
+<!-- 	<isNotNull property="fromRange">
+		<isGreaterThan property="fromRange" compareValue="0">
+				 <![CDATA[and m.from_weight<=#fromRange#]]>
 		</isGreaterThan>
 	</isNotNull>
-	<isNotNull property="toCost">
-		<isLessThan property="toCost" compareValue="0">
-				 <![CDATA[and m.to_weight>=#toCost#]]>
+	<isNotNull property="toRange">
+		<isLessThan property="toRange" compareValue="0">
+				 <![CDATA[and m.to_weight>=#toRange#]]>
 		</isLessThan>
 	</isNotNull>  -->
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc  limit 1                               
 		</dynamic>
  	</select>
  	
- 	<select id="getAllBusinessMarkupsForCustomer" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
+ 	<select id="getBusinessServiceMarkups" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
 	resultMap="BusinessMarkup">
-	select m.customer_id, c.carrier_id, m.service_id, s.name as
+	select m.bm_id,m.customer_id, c.carrier_id, m.service_id, s.name as
 	service_name, c.name as carrier_name, m.business_id,m.business_id_to, m.from_country,
 	m.to_country, m.mu_perc, disabled, type, from_weight, to_weight,
-	s.service_type,m.flat_mu
-	from business_markup m, service s , carrier c
+	s.service_type,m.flat_mu,m.variable
+	from business_markup m, service s , carrier c 
 	<dynamic prepend="where">
 		m.service_id=s.service_id and s.carrier_id=c.carrier_id 
 	<isNotNull property="businessId">
@@ -795,36 +823,220 @@
 	<isNotNull property="type">
 		and m.type=#type#
 	</isNotNull> -->
-	<isNotNull property="fromCost">
-		<isGreaterThan property="fromCost" compareValue="0">
-				 <![CDATA[and m.from_weight<=#fromCost#]]>
+	<isNotNull property="fromRange">
+		<isGreaterThan property="fromRange" compareValue="0">
+				 <![CDATA[and m.from_weight<=#fromRange#]]>
 		</isGreaterThan>
 	</isNotNull>
-	<isNotNull property="toCost">
-		<isLessThan property="toCost" compareValue="0">
-				 <![CDATA[and m.to_weight>=#toCost#]]>
+	<isNotNull property="toRange">
+		<isLessThan property="toRange" compareValue="0">
+				 <![CDATA[and m.to_weight>=#toRange#]]>
 		</isLessThan>
 	</isNotNull> 
 		order by c.carrier_id asc, m.from_country desc, m.to_country desc,m.from_weight desc, m.to_weight desc, m.customer_id desc                                 
 		</dynamic>
  	</select>
  	
+ 	<select id="getuniqueBusinessToBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
+	resultMap="BusinessToBusinessMarkup">
+	select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+	flat_mu,from_country,to_country,variable
+	from business_markup  
+	<dynamic prepend="where">
+	service_id=0 and disabled=0
+	<isNotNull property="businessId">
+		<isGreaterThan property="businessId" compareValue="0">
+		and business_id = #businessId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="businessToId">
+		<isGreaterThan property="businessToId" compareValue="0">
+		and business_id_to = #businessToId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="fromCountryCode">
+		and (from_country=#fromCountryCode# or from_country='ANY')
+	</isNotNull>
+	<isNotNull property="toCountryCode">
+		and (to_country=#toCountryCode# or to_country='ANY')
+	</isNotNull>
+	<isNotNull property="customerId">
+		and customer_id=#customerId# 
+	</isNotNull>
+		</dynamic>
+		order by from_country desc,to_country desc limit 1 
+ 	</select>
+ 	
+ 	<select id="getBusinessToBusinessMarkups" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
+	resultMap="BusinessToBusinessMarkup">
+	select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+	flat_mu,from_country,to_country,variable
+	from business_markup  
+	<dynamic prepend="where">
+	service_id=0
+	<isNotNull property="businessId">
+		<isGreaterThan property="businessId" compareValue="0">
+		and business_id = #businessId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="businessToId">
+		<isGreaterThan property="businessToId" compareValue="0">
+		and business_id_to = #businessToId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="fromCountryCode">
+		and from_country=#fromCountryCode#
+	</isNotNull>
+	<isNotNull property="toCountryCode">
+		and to_country=#toCountryCode# 
+	</isNotNull>
+	<isNotNull property="customerId">
+		and customer_id=#customerId# 
+	</isNotNull>
+		</dynamic>
+ 	</select>
+ 	
  	<insert id="addBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup">
-		insert into business_markup (customer_id, service_id, business_id, business_id_to,from_country, to_country, mu_perc, type, from_weight, to_weight ,flat_mu) 
-			values (#customerId#, #serviceId#, #businessId#, #businessToId#,#fromCountryCode# ,#toCountryCode#, #markupPercentage#, #type#, #fromCost#, #toCost#, #markupFlat# )
+		insert into business_markup (customer_id, service_id, business_id, business_id_to,from_country, to_country, mu_perc, type, from_weight, to_weight ,flat_mu,variable) 
+			values (#customerId#, #serviceId#, #businessId#, #businessToId#,#fromCountryCode# ,#toCountryCode#, #markupPercentage#, #type#, #fromRange#, #toRange#, #markupFlat# ,#variable#)
 	</insert>
-	
-	<delete id="deleteBusinessMarkup">
-		delete from business_markup where customer_id =
-		#customerId# and service_id = #serviceId# and
-		from_country=#fromCountryCode# and to_country=#toCountryCode# and
-		business_id=#businessId# and business_id_to=#businessToId# 
-	</delete>
 	
 	<update id="updateBusinessMarkup">
 		update business_markup set mu_perc=#muPercent#, flat_mu=#muFlat#, disabled=#disabled#, variable=#toVariable# 
-				where 	customer_id=#customerId# and business_id=#businessId# and business_id_to=#businessToId# and service_id=#serviceId# and 
-						from_country=#fromCountryCode# and to_country=#toCountryCode# and from_weight=#fromCost# and to_weight=#toCost#
+				where bm_id=#id#
 	</update>	
+	
+	<select id="getBusinessForId" parameterClass="long" resultClass="java.lang.String">
+  		select name from business where business_id =#value#
+	</select>
+	
+	<select id="getAllBusinessMarkups" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup" resultMap="BusinessToBusinessMarkup">
+		select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+		flat_mu,from_country,to_country,variable
+		from business_markup  
+ 	</select>
+ 	
+ 	<select id="getBusinessMarkups" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"	resultMap="BusinessToBusinessMarkup">
+		select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+		flat_mu,from_country,to_country,variable
+		from business_markup  
+		<dynamic prepend="where">
+		bm_id>0
+		<isNotNull property="serviceId">
+				and service_id=#serviceId#
+		</isNotNull>
+		<isNotNull property="businessId">
+			<isGreaterThan property="businessId" compareValue="0">
+				and business_id = #businessId#
+			</isGreaterThan>
+		</isNotNull>
+		<isNotNull property="businessToId">
+			<isGreaterThan property="businessToId" compareValue="0">
+				and business_id_to = #businessToId#
+			</isGreaterThan>
+		</isNotNull>
+		<isNotNull property="fromCountryCode">
+			and from_country=#fromCountryCode#
+		</isNotNull>
+		<isNotNull property="toCountryCode">
+			and to_country=#toCountryCode# 
+		</isNotNull>
+		<isNotNull property="customerId">
+			and customer_id=#customerId# 
+		</isNotNull>
+		</dynamic>
+ 	</select>
+ 	
+ 	<delete id="deleteBusinessMarkup">
+		delete from business_markup where bm_id = #id# 
+	</delete>
+	
+ 	<select id="getAdditionalInfoForBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup" resultMap="AdditionalInfoForBusinessMarkup">
+		select s.name as serviceName, c.name as carrierName,b1.name as fromBusiness,b2.name as toBusiness,cu.name as customerBusName from service s,carrier c,business b1,business b2,customer cu
+	<dynamic prepend="where">
+		s.carrier_id=c.carrier_id 
+	<isNotNull property="serviceId">
+		<isGreaterThan property="serviceId" compareValue="0">
+			and s.service_id=#serviceId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull  property="carrierId">
+		<isGreaterThan property="carrierId" compareValue="0">
+			and c.carrier_id=#carrierId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="businessId">
+		<isGreaterThan property="businessId" compareValue="0">
+			and b1.business_id = #businessId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="businessToId">
+		<isGreaterThan property="businessToId" compareValue="0">
+			and b2.business_id = #businessToId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="customerId">
+		<isGreaterThan property="customerId" compareValue="0">
+		and cu.customer_id=#customerId#
+		</isGreaterThan>
+	</isNotNull>
+		</dynamic>
+		limit 1
+ 	</select>
+ 	
+ 	<select id="getBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"	resultMap="BusinessToBusinessMarkup">
+		select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+		flat_mu,from_country,to_country,variable
+		from business_markup  
+		<dynamic prepend="where">
+		bm_id>0
+		<isNotNull property="serviceId">
+				and service_id=#serviceId#
+		</isNotNull>
+		<isNotNull property="businessId">
+			<isGreaterThan property="businessId" compareValue="0">
+				and business_id = #businessId#
+			</isGreaterThan>
+		</isNotNull>
+		<isNotNull property="businessToId">
+			and business_id_to = #businessToId#
+		</isNotNull>
+		<isNotNull property="fromCountryCode">
+			and from_country=#fromCountryCode#
+		</isNotNull>
+		<isNotNull property="toCountryCode">
+			and to_country=#toCountryCode# 
+		</isNotNull>
+		<isNotNull property="customerId">
+			and customer_id=#customerId# 
+		</isNotNull>
+		</dynamic>
+ 	</select>
+ 	
+ 	<select id="getUniqueCustomBusinessMarkup" parameterClass="com.meritconinc.shiplinx.model.BusinessMarkup"
+	resultMap="BusinessToBusinessMarkup">
+	select bm_id,business_id,business_id_to, mu_perc, disabled, type, from_weight, to_weight,service_id,customer_id,
+	flat_mu,from_country,to_country,variable
+	from business_markup  
+	<dynamic prepend="where">
+	service_id=0 and disabled=0 and business_id_to=0
+	<isNotNull property="businessId">
+		<isGreaterThan property="businessId" compareValue="0">
+		and business_id = #businessId#
+		</isGreaterThan>
+	</isNotNull>
+	<isNotNull property="fromCountryCode">
+		and (from_country=#fromCountryCode# or from_country='ANY')
+	</isNotNull>
+	<isNotNull property="toCountryCode">
+		and (to_country=#toCountryCode# or to_country='ANY')
+	</isNotNull>
+	<isNotNull property="customerId">
+		and customer_id=#customerId# 
+	</isNotNull>
+		</dynamic>
+		order by from_country desc,to_country desc limit 1 
+ 	</select>
+ 	
 	<!-- Business markup ends here-->
 </sqlMap>

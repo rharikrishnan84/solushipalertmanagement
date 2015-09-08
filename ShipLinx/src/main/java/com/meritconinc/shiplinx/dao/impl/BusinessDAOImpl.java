@@ -357,4 +357,12 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 						getSqlMapClientTemplate().update("setCopyMarkupFlag",
 								businessId);
 					}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Business> getBusinessForSelectedBusiness(long businessId) {
+		Map<String, Object> paramObj = new HashMap<String, Object>();
+		paramObj.put("businessId", businessId);
+		List<Business> businesses =  (List<Business>)getSqlMapClientTemplate().queryForList("getBusinessForSelectedBusiness",businessId);
+		return businesses;
+	}
 }

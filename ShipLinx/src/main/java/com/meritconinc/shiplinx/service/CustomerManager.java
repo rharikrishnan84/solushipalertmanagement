@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.shiplinx.model.Billduty;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CreditCard;
 import com.meritconinc.shiplinx.model.CreditUsageReport;
 import com.meritconinc.shiplinx.model.Customer;
@@ -58,4 +59,6 @@ public interface CustomerManager{
 						public List<Customer> getCustomersBySalesUser(String username);
 	public List<Customer> getAllCustomerForBusiness(
 			long parseLong);
+	public void createCustomerForParentBusiness(BusinessMarkup businessMarkup);
+	public Long getCustomerIdByName(String name, Long businessId);
 }

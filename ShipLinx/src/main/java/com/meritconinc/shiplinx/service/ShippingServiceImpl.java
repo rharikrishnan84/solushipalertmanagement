@@ -2494,7 +2494,7 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 			int i=this.shippingDAO.saveDuplicateOrder(dupOrder);
 			if(i==1){
 				for(Charge charge:order.getCharges()){
-					charge.setOrderId(charge.getOrderId()+1);
+					charge.setOrderId(charge.getOrderId()+ShiplinxConstants.ORDER_INC);
 					if(charge.getCostWithNoBM()!=null)
 						charge.setCost(charge.getCostWithNoBM());
 					if(charge.getChargeWithBM()!=null)

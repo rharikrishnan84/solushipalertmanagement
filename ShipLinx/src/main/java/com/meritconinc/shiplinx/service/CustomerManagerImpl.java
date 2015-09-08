@@ -28,6 +28,7 @@ import com.meritconinc.shiplinx.dao.ShippingDAO;
 import com.meritconinc.shiplinx.exception.ShiplinxException;
 import com.meritconinc.shiplinx.model.Billduty;
 import com.meritconinc.shiplinx.model.Business;
+import com.meritconinc.shiplinx.model.BusinessMarkup;
 import com.meritconinc.shiplinx.model.CCTransaction;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CreditCard;
@@ -1046,5 +1047,123 @@ public class CustomerManagerImpl implements CustomerManager {
 	@Override
 	public List<Customer> getAllCustomerForBusiness(long businessId) {
 		return customerDAO.getAllCustomerForBusiness(businessId);
+	}
+	
+	/**
+	 * This method is for creating a customer in from-business by using to-business details
+	 * @param businessMarkup
+	 * @param businessMarkups
+	 */
+	@Override
+	public void createCustomerForParentBusiness(BusinessMarkup businessMarkup) {
+		if(businessMarkup!=null && businessMarkup.getBusinessId()>0 && businessMarkup.getBusinessToId()>0){
+			Business business2 = businessDAO.getBusiessById(businessMarkup.getBusinessToId());
+			log.debug("Business ID :"+business2.getId());
+			log.debug("Business NAME :"+business2.getName());
+			log.debug("Business PB-ID :"+businessMarkup.getBusinessId());
+			business2.setId(businessMarkup.getBusinessId());
+			createCustomerInBusiness(business2);
+		}else if(businessMarkup!=null && businessMarkup.getBusinessId()>0 && businessMarkup.getBusinessToId()==0){
+			List<Business> toBusinesses=new ArrayList<Business>();
+			toBusinesses =businessDAO.getBusinessForSelectedBusiness(businessMarkup.getBusinessId());
+			if(toBusinesses!=null && toBusinesses.size()>0){
+				List<BusinessMarkup> businessMarkups=this.markupManagerService.getAllBusinessMarkups(new BusinessMarkup());
+				List<Business> temp=new ArrayList<Business>();
+				for(Business business:toBusinesses){
+					int i=0;
+					for(BusinessMarkup businessMarkup2:businessMarkups){
+						if(business.getId()==businessMarkup2.getBusinessToId()){
+							i++;
+						}
+						if(businessMarkup2.getBusinessToId()==0){
+							i++;
+						}
+					}
+					if(i!=2){
+						temp.add(business);
+					}
+				}
+				toBusinesses=temp;
+			}
+			for(Business business:toBusinesses){
+				Business business2 = businessDAO.getBusiessById(business.getId());
+				log.debug("Business ID :"+business2.getId());
+				log.debug("Business NAME :"+business2.getName());
+				log.debug("Business PB-ID :"+businessMarkup.getBusinessId());
+				business2.setId(businessMarkup.getBusinessId());
+				createCustomerInBusiness(business2);
+			}
+		}
+	}
+	
+	/**
+	 * This method is for creating a customer in business 
+	 * @param business2
+	 */
+	private void createCustomerInBusiness(Business business2) {
+		log.debug("==================================");
+		log.debug("Customer creation function started");
+		Customer businessCustomer=checkCustomerExistance(business2.getName(),business2.getId());
+		if(businessCustomer==null){
+		Customer customer=new Customer();
+		/*customer.setName(business2.getName().concat(String.valueOf(business.getParentMarkupBusinessId())));*/
+		customer.setName(business2.getName());
+		customer.setUsername(customer.getName().concat(String.valueOf(business2.getId())));
+		customer.setActive(true);
+		customer.setApcontactName(business2.getContactPath());
+		customer.setBusinessId(business2.getId());
+		customer.setInvoicingEmail(business2.getFinanceEmail());
+		customer.setAddress(business2.getAddress());
+		customer.setAccountNumber("12345678");
+		customer.setPayableDays(30);
+		try{
+			Long id = addressDAO.add(customer.getAddress());
+			customer.setAddressId(id);
+			add(customer, null);
+			log.debug("Customer created in parent business ID "+business2.getId());
+			long customerId =customerDAO.getCustomerIdByName(customer.getName(),customer.getBusinessId());
+			log.debug("Customer ID :"+customerId);
+			log.debug("Customer NAME :"+customer.getName());
+		}catch (Exception e){
+			log.debug("Customer is not created in parent business ID "+business2.getId());
+			e.printStackTrace();
+		}
+		log.debug("Customer creation function ended");
+		log.debug("==================================");
+		}else{
+			log.debug("No need for customer creation.Customer already exists");
+			log.debug("Customer exist in parent business ID "+businessCustomer.getBusinessId());
+			log.debug("Customer ID :"+businessCustomer.getId());
+			log.debug("Customer NAME :"+businessCustomer.getName());
+			log.debug("Customer creation function ended");
+			log.debug("==================================");
+		}
+	}
+
+	/**
+	 * This method is for checking a customer in from-business by using to-business name and from-business id
+	 * @param customerName
+	 * @param customerBusinessId
+	 */
+	private Customer checkCustomerExistance(String customerName, Long customerBusinessId) {
+		Customer customer=new Customer();
+		try {
+			Long customerId =customerDAO.getCustomerIdByName(customerName,customerBusinessId);
+			if(customerId!=null){
+				customer=getCustomerInfoByCustomerId(customerId);
+				return customer;
+			}else{
+				return null;
+			}
+		} catch (Exception e) {
+			log.error("Error occured while fetching customer details");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Long getCustomerIdByName(String name, Long businessId) {
+		return customerDAO.getCustomerIdByName(name, businessId);
 	}
 }

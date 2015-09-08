@@ -258,7 +258,7 @@ box-shadow: 1px 4px 3px rgba(50, 50, 50, 0.64);
 										<div class="fields">
 											<label><mmr:message messageId="label.markup.service"/></label>
 											<div class="controls" id="stateid"><span>:</span>
-												<s:select  listKey="id" listValue="name"
+												<s:select  listKey="id" listValue="name" headerValue=""
 												name="shippingOrder.serviceId" list="#session.SERVICES" 
 												headerKey="-1" id="secondBox" theme="simple"/>		
 											</div>

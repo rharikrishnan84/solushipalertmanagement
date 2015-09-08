@@ -12,6 +12,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.CustomerCarrier;
 import com.meritconinc.shiplinx.model.Service;
+import com.soluship.businessfilter.util.BusinessFilterUtil;
 
 /**
  * 
@@ -323,5 +324,26 @@ public class CarrierServiceDAOImpl extends SqlMapClientDaoSupport implements Car
     		e.printStackTrace();
     	}
     	return carriersList;
-    } 
+    }
+
+	@Override
+	public List<Carrier> getListCarriers(String customerId, String businessId) {
+		 Map<String, Object> paramObj = new HashMap<String, Object>(1);
+		 List<Long> businessIds=BusinessFilterUtil.getBusIdParentId(Long.parseLong(businessId));
+		 paramObj.put("businessIds", businessIds);
+		 paramObj.put("customerId", customerId);
+		 List<Carrier> Carriers = (List<Carrier>) getSqlMapClientTemplate().queryForList(
+				 "getListCarriers", paramObj);
+		return Carriers;
+	}
+
+	@Override
+	public List<Service> getListCarrierServices(long carrierId, long customerId) {
+		 Map<String, Object> paramObj = new HashMap<String, Object>(1);
+		 paramObj.put("carrierId", carrierId);
+		 paramObj.put("customerId", customerId);
+		 List<Service> service = (List<Service>) getSqlMapClientTemplate().queryForList(
+				 "getListCarrierServices", paramObj);
+		return service;
+	} 
 }

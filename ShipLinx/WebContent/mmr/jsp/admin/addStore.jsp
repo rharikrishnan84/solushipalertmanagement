@@ -489,7 +489,7 @@ window.onload = function() {
 									</label>
 									<div class="controls">
 										<span>:</span>
-											<s:textfield  id="maxPackWeihgt" key="ecommerceStore.maxPackWeight" name="ecommerceStore.maxPackWeight" value="%{ecommerceStore.maxPackWeight}" readonly="true"/>
+											<s:textfield  id="maxPackWeihgt" key="ecommerceStore.maxPackWeight" name="ecommerceStore.maxPackWeight" value="%{ecommerceStore.maxPackWeight}"  />
 									</div>
 								</div>
 								</s:else>

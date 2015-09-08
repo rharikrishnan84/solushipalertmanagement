@@ -67,5 +67,9 @@ public interface CarrierServiceDAO {
   public List<Service> getServicesByIds(List<Long> serviceIds);
       
   public List<Carrier> getCarrierByIds(List<Long> carrierIds);
+  
+  public List<Carrier> getListCarriers(String customerId, String businessId);
+  
+  public List<Service> getListCarrierServices(long carrierId, long customerId);
 
 }

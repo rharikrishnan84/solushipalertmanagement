@@ -1267,12 +1267,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       // check if template is set in business, then only send mail if it
       // is set.
       if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){
-    	      	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
+    	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
     		      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
     		      	  }else if(UserUtil.getMmrUser()!=null){
     		      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
     		      	  }
-
     	        }else{
       Business business = businessService.getBusinessById(order.getBusinessId());
       if (!StringUtil.isEmpty(business.getShipOrderNotificationBody())) {
@@ -1601,7 +1600,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	    	int shippingCopies=0;
     	    	boolean flag2=false;
       ArrayList<String> srcList = new ArrayList<String>();
-
+      User user1 = UserUtil.getMmrUser();
       for (int i = 0; i < lstOrders.size(); i++) {
 
         if (lstOrders.get(i).length() > 0) {
@@ -1672,7 +1671,19 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    			  String fileName=file.getName();
           		    			  String[] splitFileName=fileName.split("_");
           		    			  if(id==Long.parseLong(splitFileName[1]) && splitFileName[0].equals("ICBOL")){
-          		    				/*  if(file.length() > 0) {*/
+          		    				if(shippingOrder.getCarrierId() == 20 
+          		    						&& user1.getPreferredLabelSize().equals("8 x 11")) {
+										if(file.length() > 0) {
+											flag = true;
+											shippingCopies = scopies;
+											for (int s = 0; s < scopies; s++) {
+												srcList.add(file.toString());
+												fLabelPDF = new File(file.toString());
+												shippingLabel = true;
+											}
+										} else 
+											file.delete();
+									} else {
           		    				  flag=true;
           		    				  shippingCopies=scopies;
           		    				  for (int s = 0; s < scopies; s++){
@@ -1680,9 +1691,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    					fLabelPDF = new File(file.toString());
           		    					shippingLabel=true;
           		    				  }
-          		    			  /*} else {
-            		    				file.delete();
-          		    			  } */
+          		    			  } 
           		    			  }
           		    		  }
           		    	  }
@@ -1700,10 +1709,13 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           	                // customerCarrierList){
           	                CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());
           	                carrierService.generateShippingLabel(labelBOS, Long.valueOf(lstOrders.get(i)), customerCarrier);
-          	                File checkFile = new File(fLabelPDF.getAbsolutePath());
-          	              /*patch 260*/
-          	               /* if (checkFile.length() <= 0)
-          	                	checkFile.delete();*/
+          	                
+          	              /*condition to check is it purolator and it's label size is 8x11*/	
+          	              if(shippingOrder.getCarrierId() == 20 && user1.getPreferredLabelSize().equals("8 x 11")) {
+          	              File checkFile = new File(fLabelPDF.getAbsolutePath());
+          	              if(checkFile.length() <= 0)
+          	              checkFile.delete();
+          	              }
           	              shippingCopies=scopies;
           	                for (int s = 0; s < scopies; s++) // generate Shipping Label
                           // for the no of copies
@@ -1801,7 +1813,6 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    	          		              			    	  if(fList!=null){
           		    	          		              			    	 if( UserUtil.getMmrUser()!=null)
           		    	          		              			    		BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
-          		    	          		              			    	        		    	User user1 = UserUtil.getMmrUser();
           		    	          		              			    		  for(File file:fList){
           		    	          		              			    			  String fileName=file.getName();
           		    	          		              			    			  String[] splitFileName=fileName.split("_");
@@ -1824,7 +1835,6 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           		    	          		              		      }if(flag2==false){
           		    	          		              		    if(UserUtil.getMmrUser()!=null)
           		    	          		              		    	BusinessFilterUtil.reloadUser( UserUtil.getMmrUser().getUsername());
-          		    	          		              		    	User user1 = UserUtil.getMmrUser();
           		    	          		              		        if(user1!=null && user1.isSummaryLabel() && !shippingOrder.getCarrierName().equalsIgnoreCase(ShiplinxConstants.CARRIER_GENERIC_STRING)){
           		    	          		              		    		  if (getSummaryLabel(shippingOrder,summaryPDF,outputStream,user1)) {
           		    	          		             		    			  srcList.add(summaryPDF);
@@ -5148,106 +5158,185 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 		return true;
 		
 	}
-	/* For custom business markup - start*/
-	private void businessMarkupForRates(List<Rating> ratingList, ShippingOrder order) {
-			//Check for the availability of business_custom_markup for this business
-			int cutomMarkup=0;
-			double tempCost=0.0;
-			//Check business level,If it's not root level then find root business
-			if(order.getBusiness().getParentBusinessId()!=0){
-				Business bus=businessDAO.getSuperParentBusiness(order.getBusiness().getId());
-				if(bus!=null && bus.getParentBusinessId()==0){
-					cutomMarkup=bus.getCustomMarkup();
-				}
-				//Check the type of custom_markup
-				ratingList=applycustomBusinessMarkup(ratingList,order,cutomMarkup,bus.getMarkupType());
-				if(!order.isCustomBM()){
-					BusinessMarkup businessMarkup=new BusinessMarkup();
-					businessMarkup.setBusinessId(1L);
-					businessMarkup.setBusinessToId(order.getBusinessId());
-					businessMarkup.setFromCountryCode(order.getFromAddress().getCountryCode());
-					businessMarkup.setToCountryCode(order.getToAddress().getCountryCode());
-					ratingList=applyBusinessMarkup(ratingList,order,businessMarkup);
-					}
-					}
-				else{
-					if(order.getBusiness().getCustomMarkup()>0)
-						cutomMarkup=order.getBusiness().getCustomMarkup();
-					//Check the type of custom_markup
-					ratingList=applycustomBusinessMarkup(ratingList,order,cutomMarkup,order.getBusiness().getMarkupType());
-					if(!order.isCustomBM()){
-							BusinessMarkup businessMarkup=new BusinessMarkup();
-							businessMarkup.setBusinessId(1L);
-							businessMarkup.setBusinessToId(order.getBusinessId());
-							businessMarkup.setFromCountryCode(order.getFromAddress().getCountryCode());
-							businessMarkup.setToCountryCode(order.getToAddress().getCountryCode());
-							ratingList=applyBusinessMarkup(ratingList,order,businessMarkup);
-					}
-					}
-			}	
-		
 	
-		private List<Rating> applycustomBusinessMarkup(List<Rating> ratingList,ShippingOrder order, int cutomMarkup, int markType) {
-			if(cutomMarkup!=0){
-			for(Rating rate:ratingList){
-				log.debug("CARRIER ID : "+rate.getCarrierId()+" CARRIER NAME : "+rate.getCarrierName()+" SERVICE :"+rate.getServiceId());
+	/* For business markup - start*/
+	 
+	/**
+	  * This method will call the business mark-up applying methods.
+	  * Condition 1: If the current business is not the root business 
+	  * then execute if block
+	  *   inside if block-take the root business of current business for mark-up apply
+	  * else execute else block
+	  *   inside else block-use current business for mark-up apply
+	  * Condition 2: order of mark-up apply is Service level,Business level and custom(business to any) level
+	  * Condition 3: Once one level of mark-up applied in rates then next mark-up level should omitted 
+	  * @param ratingList
+	  * @param order
+	  */
+	private void businessMarkupForRates(List<Rating> ratingList, ShippingOrder order) {
+		//Check for the availability of business_custom_markup for this business
+		int cutomMarkup=0;
+		double tempCost=0.0;
+		//Check business level,If it's not root level then find root business
+		if(order.getBusiness().getParentBusinessId()!=0){
+			Business bus=businessDAO.getSuperParentBusiness(order.getBusiness().getId());
+			BusinessMarkup businessMarkup=new BusinessMarkup();
+			businessMarkup.setBusinessId(0l);
+			businessMarkup.setBusinessToId(bus.getId());
+			businessMarkup.setFromCountryCode(order.getFromAddress().getCountryCode());
+			businessMarkup.setToCountryCode(order.getToAddress().getCountryCode());
+			//service business markup code starts here
+			ratingList=applyServiceBusinessMarkup(ratingList,order,businessMarkup);
+			//service business markup code ends here
+			
+			//Business to business markup code starts here
+			ratingList=applyBusinessToBusinessMarkup(ratingList,order,businessMarkup);
+			//Business to business markup code ends here
+			
+			//custom business markup code starts here
+			ratingList=applycustomBusinessMarkup(ratingList,order,businessMarkup);
+			//custom business markup code ends here
+		}else{
+			BusinessMarkup businessMarkup=new BusinessMarkup();
+			businessMarkup.setBusinessId(0l);
+			businessMarkup.setBusinessToId(order.getBusinessId());
+			businessMarkup.setFromCountryCode(order.getFromAddress().getCountryCode());
+			businessMarkup.setToCountryCode(order.getToAddress().getCountryCode());
+			//service business markup code starts here
+			ratingList=applyServiceBusinessMarkup(ratingList,order,businessMarkup);
+			//service business markup code ends here
+			
+			//Business to business markup code starts here
+			ratingList=applyBusinessToBusinessMarkup(ratingList,order,businessMarkup);
+			//Business to business markup code ends here
+			
+			//custom business markup code starts here
+			ratingList=applycustomBusinessMarkup(ratingList,order,businessMarkup);
+			//custom business markup code ends here
+		}
+	}	
+		
+	 /**
+	  * This method is used to get business mark-up for specific business,customer and service
+	  * @param ratingList
+	  * @param order
+	  * @param businessMarkup
+	  * @return
+	  */
+	private List<Rating> applyServiceBusinessMarkup(List<Rating> ratingList,
+			ShippingOrder order, BusinessMarkup businessMarkup) {
+		int i=0;
+		log.debug("<===Service-Business Markup===>");
+		for(Rating rate:ratingList){
+			log.debug("CARRIER ID : "+rate.getCarrierId()+" CARRIER NAME : "+rate.getCarrierName()+" SERVICE :"+rate.getServiceId());			businessMarkup.setServiceId((String.valueOf(rate.getServiceId())!=null)?rate.getServiceId():0L);
+			businessMarkup.setDisabled(0);
+			businessMarkup.setCustomerId(order.getCustomerId());
+			BusinessMarkup businessMarkup2=markupManagerService.getuniqueBusinessMarkup(businessMarkup);
+			if(businessMarkup2!=null){
+				businessMarkup=businessMarkup2;
+			}else{
+				businessMarkup.setCustomerId(0l);
+				businessMarkup2=markupManagerService.getuniqueBusinessMarkup(businessMarkup);
+				if(businessMarkup2!=null)
+					businessMarkup=businessMarkup2;
+				else
+					continue;
+			}
+			if(businessMarkup!=null && !businessMarkup.isDisabledFlag()){
+				int markType=businessMarkup.getType();
+				double markPerc=businessMarkup.getMarkupPercentage();
+				double markFlat=(businessMarkup.getMarkupFlat()!=null)?businessMarkup.getMarkupFlat():0;
+				double amount,flatAmount;
 				for(Charge charge:rate.getCharges()){
-					CarrierChargeCode chargeGroupCode;
-					boolean chargeCode=false;
-					if((ShiplinxConstants.CARRIER_UPS==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_DHL==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId())){ 
-					chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
-	                          rate.getCarrierId(), null,charge.getChargeCode());
-					if(chargeGroupCode!=null && (chargeGroupCode.getGroupId()==1 || chargeGroupCode.getGroupId()==3)){
-						chargeCode=true;
-					}
+					boolean addMarkup=checkCostAndWeightLimit(businessMarkup,charge,order);
+					if(addMarkup){
+						CarrierChargeCode chargeGroupCode;
+						boolean chargeCode=false;
+						boolean type=false;
+						if((ShiplinxConstants.CARRIER_UPS==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_DHL==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId())){ 
+						chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+		                          rate.getCarrierId(), null,charge.getChargeCode());
+						if(ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId() && chargeGroupCode==null){
+							chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+			                          rate.getCarrierId(),charge.getChargeCode(),null);
+						}
+						if(chargeGroupCode!=null && (chargeGroupCode.getGroupId()==1 || chargeGroupCode.getGroupId()==3)){
+							chargeCode=true;
+						}
 					}
 					if((charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE) 
-							|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_CHARGE))
-							|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_SURCHARGE)
-							|| chargeCode==true){  
-					charge.setCostWithNoBM(charge.getCost());
-					double amount;
-					if (markType == 0) {
-					double f = (FormattingUtil.subtract(charge.getCost().floatValue(),
-							charge.getStaticAmount())).doubleValue() * cutomMarkup / 100;
-			        amount = (FormattingUtil.add(charge.getCost().doubleValue(), f)).doubleValue();
-					charge.setCost(amount);
-					charge.setChargeWithBM(amount);
-					order.setBusinessFromId(order.getBusiness().getParentMarkupBusinessId());
-					order.setBMCustomerId(order.getBusiness().getParentCustomerId());
-					order.setCustomBM(true);
-					log.debug("CARRIER COST : "+charge.getCostWithNoBM()+" + ("+cutomMarkup+"%) ==>"+charge.getCost());
-					}else{
-						amount=charge.getCost()+cutomMarkup;
+								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_CHARGE))
+								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_SURCHARGE) || chargeCode==true){
+						charge.setCostWithNoBM(charge.getCost());
+						if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
+							double f = ((FormattingUtil.subtract(charge.getCost().doubleValue(),
+									charge.getStaticAmount())).doubleValue())
+									* markPerc / 100;
+							amount = (FormattingUtil.subtract(charge.getCost().doubleValue(), f))
+									.doubleValue();
+						} else { 
+							double f = (FormattingUtil.subtract(charge.getCost().floatValue(),
+									charge.getStaticAmount())).doubleValue()
+									* markPerc / 100;
+							amount = (FormattingUtil.add(charge.getCost().doubleValue(), f)).doubleValue();
+						}
+						if(markFlat>0){
+							flatAmount=charge.getCostWithNoBM()+markFlat;
+							if(amount<=flatAmount)
+								amount=flatAmount;
+							type=true;
+						}
 						charge.setCost(amount);
 						charge.setChargeWithBM(amount);
-						order.setBusinessFromId(order.getBusiness().getParentMarkupBusinessId());
-						order.setBMCustomerId(order.getBusiness().getParentCustomerId());
-						order.setCustomBM(true);
-						log.debug("CARRIER COST : "+charge.getCostWithNoBM()+" + ("+cutomMarkup+"$) ==>"+charge.getCost());
-	
-					}
+						rate.setBMBusinessId(businessMarkup.getBusinessId());
+						rate.setBusinessMarkup(true);
+						if(!type){
+							rate.setBMValue(markPerc);
+							if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
+								rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_2);
+							}else{
+								rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_1);
+							}
+							log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markPerc+"%) ==>"+charge.getCost());
+						}else{
+							rate.setBMValue(markFlat);
+							rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_0);
+							log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markFlat+"$) ==>"+charge.getCost());
+						}
 					}
 					}
 				}
-			return ratingList;
+			}
 		}
-			return ratingList;
-		}
+		return ratingList;
+	}
 		
-		private List<Rating> applyBusinessMarkup(List<Rating> ratingList,
-				ShippingOrder order, BusinessMarkup businessMarkup) {
-			int i=0;
-			for(Rating rate:ratingList){
-				log.debug("CARRIER ID : "+rate.getCarrierId()+" CARRIER NAME : "+rate.getCarrierName()+" SERVICE :"+rate.getServiceId());			businessMarkup.setServiceId((String.valueOf(rate.getServiceId())!=null)?rate.getServiceId():0L);
-				businessMarkup.setDisabled(0);
+	/**
+	  * This method is used to get business mark-up for specific business 
+	  * @param ratingList
+	  * @param order
+	  * @param businessMarkup
+	  * @return
+	  */
+	private List<Rating> applyBusinessToBusinessMarkup(List<Rating> ratingList,
+			ShippingOrder order, BusinessMarkup businessMarkup) {
+		int i=0;
+		log.debug("<===Business-Business Markup===>");
+		for(Rating rate:ratingList){
+			log.debug("CARRIER ID : "+rate.getCarrierId()+" CARRIER NAME : "+rate.getCarrierName()+" SERVICE :"+rate.getServiceId());			businessMarkup.setServiceId((String.valueOf(rate.getServiceId())!=null)?rate.getServiceId():0L);
+			if(!rate.isBusinessMarkup()){
 				businessMarkup.setCustomerId(order.getCustomerId());
-				BusinessMarkup businessMarkup2=markupManagerService.getuniqueBusinessMarkup(businessMarkup);
-				if(businessMarkup2!=null){
-					businessMarkup=businessMarkup2;
-				}
-				else{
-					continue;
+				businessMarkup.setServiceId(0l);
+				BusinessMarkup businessMarkup1 = markupManagerService.getuniqueBusinessToBusinessMarkup(businessMarkup);
+				if(businessMarkup1!=null){
+					businessMarkup=businessMarkup1;
+				}else{
+					businessMarkup.setCustomerId(0l);
+					businessMarkup1=markupManagerService.getuniqueBusinessToBusinessMarkup(businessMarkup);
+					if(businessMarkup1!=null)
+						businessMarkup=businessMarkup1;
+					else
+						continue;
 				}
 				if(businessMarkup!=null && !businessMarkup.isDisabledFlag()){
 				int markType=businessMarkup.getType();
@@ -5255,26 +5344,31 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 				double markFlat=(businessMarkup.getMarkupFlat()!=null)?businessMarkup.getMarkupFlat():0;
 				double amount,flatAmount;
 				for(Charge charge:rate.getCharges()){
-					if((businessMarkup.getFromCost()<=charge.getCost() && businessMarkup.getToCost()>=charge.getCost()) || (businessMarkup.getFromCost()==0 && businessMarkup.getToCost()==0)){
+					boolean addMarkup=checkCostAndWeightLimit(businessMarkup,charge,order);
+					if(addMarkup){
 						CarrierChargeCode chargeGroupCode;
 						boolean chargeCode=false;
 						boolean type=false;
 						if((ShiplinxConstants.CARRIER_UPS==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_DHL==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId())){ 
-						chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+							chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
 		                          rate.getCarrierId(), null,charge.getChargeCode());
-						if(chargeGroupCode!=null && (chargeGroupCode.getGroupId()==1 || chargeGroupCode.getGroupId()==3)){
+							if(ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId() && chargeGroupCode==null){
+								chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+			                          rate.getCarrierId(),charge.getChargeCode(),null);
+							}
+							if(chargeGroupCode!=null && (chargeGroupCode.getGroupId()==1 || chargeGroupCode.getGroupId()==3)){
 							chargeCode=true;
-						}
+							}
 						}
 						if((charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE) 
 								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_CHARGE))
 								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_SURCHARGE) || chargeCode==true){
 							charge.setCostWithNoBM(charge.getCost());
 							if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
-								double f = ((FormattingUtil.subtract(charge.getTariffRate().doubleValue(),
+								double f = ((FormattingUtil.subtract(charge.getCost().doubleValue(),
 										charge.getStaticAmount())).doubleValue())
 										* markPerc / 100;
-								amount = (FormattingUtil.subtract(charge.getTariffRate().doubleValue(), f))
+								amount = (FormattingUtil.subtract(charge.getCost().doubleValue(), f))
 										.doubleValue();
 							} else { 
 								double f = (FormattingUtil.subtract(charge.getCost().floatValue(),
@@ -5287,22 +5381,155 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 								if(amount<=flatAmount)
 									amount=flatAmount;
 									type=true;
-								}
+							}
 							charge.setCost(amount);
 							charge.setChargeWithBM(amount);
-							order.setBusinessFromId(businessMarkup.getBusinessId());
-							order.setBMCustomerId(order.getBusiness().getParentCustomerId());
-							order.setCustomBM(true);
-							if(!type)
-								log.debug("CARRIER COST : "+charge.getCostWithNoBM()+" + ("+markPerc+"%) ==>"+charge.getCost());
-							else
-							log.debug("CARRIER COST : "+charge.getCostWithNoBM()+" + ("+markFlat+"$) ==>"+charge.getCost());
+							rate.setBMBusinessId(businessMarkup.getBusinessId());
+							rate.setBusinessMarkup(true);
+							if(!type){
+								rate.setBMValue(markPerc);
+								if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
+									rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_2);
+								}else{
+										rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_1);
+								}
+								log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markPerc+"%) ==>"+charge.getCost());
+							}else{
+								rate.setBMValue(markFlat);
+								rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_0);
+								log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markFlat+"$) ==>"+charge.getCost());
+							}
 						}
 					}
-					}
+				}
 				}
 			}
-			return ratingList;
 		}
-		/* For custom business markup - end*/
+		return ratingList;
+	}
+
+	 /**
+	  * This method is used to get business mark-up which applied for all business by one business
+	  * @param ratingList
+	  * @param order
+	  * @param businessMarkup
+	  * @return
+	  */
+	private List<Rating> applycustomBusinessMarkup(List<Rating> ratingList,ShippingOrder order, BusinessMarkup businessMarkup) {
+		int i=0;
+		log.debug("<===Custom-Business Markup===>");
+		for(Rating rate:ratingList){
+			log.debug("CARRIER ID : "+rate.getCarrierId()+" CARRIER NAME : "+rate.getCarrierName()+" SERVICE :"+rate.getServiceId());			businessMarkup.setServiceId((String.valueOf(rate.getServiceId())!=null)?rate.getServiceId():0L);
+			if(!rate.isBusinessMarkup()){
+				businessMarkup.setCustomerId(order.getCustomerId());
+				businessMarkup.setServiceId(0l);
+				BusinessMarkup businessMarkup1 = markupManagerService.getUniqueCustomBusinessMarkup(businessMarkup);
+				if(businessMarkup1!=null){
+					businessMarkup=businessMarkup1;
+				}else{
+					businessMarkup.setCustomerId(0l);
+					businessMarkup1=markupManagerService.getUniqueCustomBusinessMarkup(businessMarkup);
+					if(businessMarkup1!=null)
+						businessMarkup=businessMarkup1;
+					else
+						continue;
+				}
+				if(businessMarkup!=null && !businessMarkup.isDisabledFlag()){
+				int markType=businessMarkup.getType();
+				double markPerc=businessMarkup.getMarkupPercentage();
+				double markFlat=(businessMarkup.getMarkupFlat()!=null)?businessMarkup.getMarkupFlat():0;
+				double amount,flatAmount;
+				for(Charge charge:rate.getCharges()){
+					boolean addMarkup=checkCostAndWeightLimit(businessMarkup,charge,order);
+					if(addMarkup){
+						CarrierChargeCode chargeGroupCode;
+						boolean chargeCode=false;
+						boolean type=false;
+						if((ShiplinxConstants.CARRIER_UPS==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_DHL==rate.getCarrierId()) || (ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId())){ 
+							chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+		                          rate.getCarrierId(), null,charge.getChargeCode());
+							if(ShiplinxConstants.CARRIER_FEDEX==rate.getCarrierId() && chargeGroupCode==null){
+								chargeGroupCode = this.shippingService.getChargeByCarrierAndCodes(
+			                          rate.getCarrierId(),charge.getChargeCode(),null);
+							}
+							if(chargeGroupCode!=null && (chargeGroupCode.getGroupId()==1 || chargeGroupCode.getGroupId()==3)){
+							chargeCode=true;
+							}
+						}
+						if((charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FREIGHT_CHARGE) 
+								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_CHARGE))
+								|| charge.getChargeCode().equalsIgnoreCase(ShiplinxConstants.GROUP_FUEL_SURCHARGE) || chargeCode==true){
+							charge.setCostWithNoBM(charge.getCost());
+							if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
+								double f = ((FormattingUtil.subtract(charge.getCost().doubleValue(),
+										charge.getStaticAmount())).doubleValue())
+										* markPerc / 100;
+								amount = (FormattingUtil.subtract(charge.getCost().doubleValue(), f))
+										.doubleValue();
+							} else { 
+								double f = (FormattingUtil.subtract(charge.getCost().floatValue(),
+										charge.getStaticAmount())).doubleValue()
+										* markPerc / 100;
+								amount = (FormattingUtil.add(charge.getCost().doubleValue(), f)).doubleValue();
+							}
+							if(markFlat>0){
+								flatAmount=charge.getCostWithNoBM()+markFlat;
+								if(amount<=flatAmount)
+									amount=flatAmount;
+									type=true;
+							}
+							charge.setCost(amount);
+							charge.setChargeWithBM(amount);
+							rate.setBMBusinessId(businessMarkup.getBusinessId());
+							rate.setBusinessMarkup(true);
+							if(!type){
+								rate.setBMValue(markPerc);
+								if (markType == ShiplinxConstants.TYPE_MARKDOWN) {
+									rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_2);
+								}else{
+										rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_1);
+								}
+								log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markPerc+"%) ==>"+charge.getCost());
+							}else{
+								rate.setBMValue(markFlat);
+								rate.setBMType(ShiplinxConstants.BUSINESS_MARKUP_TYPE_0);
+								log.debug("Carrier cost : "+charge.getCostWithNoBM()+" + ("+markFlat+"$) ==>"+charge.getCost());
+							}
+						}
+					}
+				}
+				}
+			}
+		}
+		return ratingList;
+	}
+		
+	/**
+	  * This method is for checking that whether cost/weight limit is satisfied or not for business mark-up apply 
+	  * @param businessMarkup
+	  * @param charge
+	  * @param order
+	  * @return
+	  */
+	private boolean checkCostAndWeightLimit(BusinessMarkup businessMarkup,Charge charge, ShippingOrder order) {
+		double totalWeight = 0;
+		if(businessMarkup.getVariable()==1){
+			if((businessMarkup.getFromRange()<=charge.getCost() && businessMarkup.getToRange()>=charge.getCost()) || (businessMarkup.getFromRange()==0 && businessMarkup.getToRange()==0)){
+				return true;
+			}else {
+				return false;
+			}
+		}else {
+			for(Package p:order.getPackages()){
+				totalWeight=totalWeight+p.getWeight().doubleValue();
+			}	
+			if((businessMarkup.getFromRange()<=totalWeight && businessMarkup.getToRange()>=totalWeight) || (businessMarkup.getFromRange()==0 && businessMarkup.getToRange()==0)){
+				return true;
+			}else {
+				return false;
+			}
+		}
+	}
+
+/* For business markup - end*/
 }

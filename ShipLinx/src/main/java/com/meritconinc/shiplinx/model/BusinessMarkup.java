@@ -4,14 +4,39 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import java.util.List;
 
 public class BusinessMarkup {
+	private String id;
 	private Long customerId;
 	private Long carrierId;
 	private Long serviceId;
 	private String serviceName;
+	private String fromBusiness;
+	private String toBusiness;
 	private Long businessId;
 	private Long businessToId;
 	private String fromCountryCode;
 	private String toCountryCode;
+	private String fromCountryProvince;
+	private String toCountryProvince;
+	private Integer markupPercentage;
+	private Double markupFlat;
+	private String customerBusName;
+	private String fromCountryName;
+	private String toCountryName;
+	private Integer disabled;
+	private Integer type;
+	private Double fromRange;
+	private Double toRange;
+	private String carrierName;
+	private Long sourceCustomerId;
+	// private String typeText;
+	private int serviceType;
+	private List<Long> customerIds;
+	private List<Long> businessIds;
+
+	private List<String> fromCountries;
+	private List<String> toCountries;
+	private int variable;
+
 	public String getFromCountryProvince() {
 		return fromCountryProvince;
 	}
@@ -27,44 +52,6 @@ public class BusinessMarkup {
 	public void setToCountryProvince(String toCountryProvince) {
 		this.toCountryProvince = toCountryProvince;
 	}
-
-	public Double getFromCost() {
-		return fromCost;
-	}
-
-	public void setFromCost(Double fromCost) {
-		this.fromCost = fromCost;
-	}
-
-	public Double getToCost() {
-		return toCost;
-	}
-
-	public void setToCost(Double toCost) {
-		this.toCost = toCost;
-	}
-
-	private String fromCountryProvince;
-	private String toCountryProvince;
-	private Integer markupPercentage;
-	private Double markupFlat;
-	private String customerBusName;
-	private String fromCountryName;
-	private String toCountryName;
-	private Integer disabled;
-	private Integer type;
-	private Double fromCost;
-	private Double toCost;
-	private String carrierName;
-	private Long sourceCustomerId;
-	// private String typeText;
-	private int serviceType;
-	private List<Long> customerIds;
-	private List<Long> businessIds;
-
-	private List<String> fromCountries;
-	private List<String> toCountries;
-	private int variable;
 
 	public Long getCustomerId() {
 		return customerId;
@@ -251,8 +238,8 @@ public class BusinessMarkup {
 		sb.append(getKeyValue("ServiceID", getServiceId()));
 		sb.append(getKeyValue("From Country", getFromCountryCode()));
 		sb.append(getKeyValue("To Country", getToCountryCode()));
-		sb.append(getKeyValue("From Cost", getFromCost()));
-		sb.append(getKeyValue("To Cost", getToCost()));
+		sb.append(getKeyValue("From Cost", getFromRange()));
+		sb.append(getKeyValue("To Cost", getToRange()));
 		return sb.toString();
 	}
 
@@ -307,5 +294,45 @@ public class BusinessMarkup {
 
 	public void setBusinessToId(Long businessToId) {
 		this.businessToId = businessToId;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getFromBusiness() {
+		return fromBusiness;
+	}
+
+	public void setFromBusiness(String fromBusiness) {
+		this.fromBusiness = fromBusiness;
+	}
+
+	public String getToBusiness() {
+		return toBusiness;
+	}
+
+	public void setToBusiness(String toBusiness) {
+		this.toBusiness = toBusiness;
+	}
+
+	public Double getFromRange() {
+		return fromRange;
+	}
+
+	public void setFromRange(Double fromRange) {
+		this.fromRange = fromRange;
+	}
+
+	public Double getToRange() {
+		return toRange;
+	}
+
+	public void setToRange(Double toRange) {
+		this.toRange = toRange;
 	}
 }

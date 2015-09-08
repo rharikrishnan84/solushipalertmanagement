@@ -1376,18 +1376,33 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								</s:if>
 								
 										<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
+										<div class="fields">
 						<s:if test="%{selectedOrder.markType == 1}">
-							<div class="fields"><mmr:message messageId="label.viewship.markup"/> </div>
+							<%-- <div class="fields"><mmr:message messageId="label.viewship.markup"/> </div> --%>
+							<mmr:message messageId="label.viewship.markup"/>
 						</s:if>
-						<s:if test="%{selectedOrder.markType == 2}">
-							<div class="fields"><mmr:message messageId="label.viewship.markdown"/> </div>
+						<%-- <s:if test="%{selectedOrder.markType == 2}">
+							<div class="fields"><mmr:message messageId="label.viewship.markdown"/> </div> --%>
+							<s:elseif test="%{selectedOrder.markType == 2}">
+							<mmr:message messageId="label.viewship.markdown"/>
+						</s:elseif>
+					<s:elseif test="%{selectedOrder.markType == 0}">
+							<mmr:message messageId="label.viewship.flatMarkup"/>
+						</s:elseif>
+						<div style="float: right; margin-right: 46.5%;">
+						<s:if test="%{selectedOrder.markType == 0}"><span>:</span>
+							<s:property	value="%{selectedOrder.markPercent}" />&nbsp;$
 						</s:if>
 						
-						<div class="fields"><s:property
+						<%-- <div class="fields"><s:property
 							value="%{selectedOrder.markPercent}" /> %</div>
-						<div width="1%">&nbsp;</div>		
+						<div width="1%">&nbsp;</div> --%>		
 						
-									
+									<s:else><span>:</span>
+						<s:property	value="%{selectedOrder.markPercent}"/>&nbsp;%
+						</s:else>
+						</div>
+						</div>
 					</s:if>
 							</div>
 							<%-- <div class="fields">
