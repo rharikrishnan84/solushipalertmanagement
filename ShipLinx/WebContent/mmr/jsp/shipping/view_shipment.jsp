@@ -257,6 +257,8 @@ var product_id=0;
 	    	var ccopies = document.getElementById("customsinv_copies").value;
 	    	else // for domestic shipments
 	    	var ccopies = 0;
+			var statusid= document.getElementById("statusID").value;
+						if(statusid!=80){
 			var url="getShippingLabel.action?slcopies="+slcopies+"&cicopies="+ccopies+"&arrayOrders="+arrOrders; //+"&carrierId="+carrierId20;
 	    	//alert(url);
 	    	
@@ -289,6 +291,11 @@ var product_id=0;
 	    		}
 	    	} else */ 
 	    		window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
+						}
+									else{
+										alert("This shipment does not have carrier and service  so unable to print label");
+									}
+
  		}
 
 		/* function spinBall() {
@@ -935,6 +942,7 @@ function deletecharge(action){
 	action="update.charge.shipment.action" name="viewform">
 	<s:hidden name="cid" value="%{selectedOrder.customer.id}"/>
 	<s:hidden name="ordCurrency" id="ordCurrency" value="%{selectedOrder.currency}" />
+	<s:hidden namr="statusID" id="statusID" value="%{selectedOrder.statusId}"/>
 	<s:token/>
 					<div class="content">
 					<div class="content_body" >	
@@ -2148,7 +2156,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</tr>
 							</table>
 							</div>
-							<div style="width:958px;height:auto;float:left;overflow-x:scroll;">
+							<div style="width:958px;height:auto;float:left;overflow-x:scroll;margin-bottom:10px;">
                            <table width="958px" cellpadding="2" cellspacing="0" style="font-size:12px;">
                            <s:if test="%{selectedOrder.actualCharges.size()>0 && status != 30 && (#session.ROLE.contains('busadmin')||  #session.ROLE.contains('sysadmin'))||selectedOrder.actualCharges.size()>0 && status != 30 && #session.ROLE.contains('solutions_manager')}">
 							<tr>							
@@ -2264,7 +2272,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 								</tr>
 						</s:if>
 					</table></div>
-						<div id="payment_rqd_end">&nbsp;</div>
+						<!-- <div id="payment_rqd_end">&nbsp;</div> -->
 			
 			<!-- Start: Payment Info Module -->
 			<s:if test="%{selectedOrder.ccTransactions.size > 0}"> <!--  Condition to display the Payment Info Panel, Shows if there are CCtransactions, else doesnt show. -->
@@ -2333,6 +2341,8 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							
 						</div>
 						</div>
+						<div class="content">
+				<div class="content_body" >	
 						<div class="content_table" id="box2" > 
 							<div class="content_header">
 								<div class="cont_hdr_title"><mmr:message messageId="label.heading.package"/> :</div>
@@ -2401,18 +2411,28 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 							</div>
 						</div>
 						</div>
+						</div></div>
+						<div class="content">
+				<div class="content_body" >	
 						<div class="content_table" id="box3" > 
 						<jsp:include page="add_info_shipping.jsp"/>
 						</div>
+						</div>
+						</div>
+						
 <%-- </div>
 					</div>
 </s:form>					
 					</div> --%>
 					</s:form>	
 	<s:form  method="post" enctype="multipart/form-data" id="uploadForm">
+	<div class="content" style="margin-bottom:10px;">
+			<div class="content_body" >	
 		<div class="content_table" id="box4" > 
 		<input type="hidden" value="<s:property value="%{selectedOrder.id}" />" name="viewShipmentId">
 						<jsp:include page="doc_shipment.jsp"/>
+						</div>
+						</div>
 						</div>
 </s:form>	
 				</div>

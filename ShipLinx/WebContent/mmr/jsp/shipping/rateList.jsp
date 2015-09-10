@@ -1202,7 +1202,21 @@ function submitShipment(){
 																	 <s:property value="%{markupTypeText}" />  : <s:property
 																value="%{markupPercentage}" />%	
 															</s:else>		
- 
+ <s:if test="%{#session.ADMIN_ROLE.contains('sysadmin')}">
+  <s:if test="%{businessMarkup == true}">
+   <br/>Applied BM :
+   <s:if test="%{BMType == 0}">
+    <mmr:message messageId="add.label.flat" /> :  <s:label name="curr" value="%{#session.LocalCurrencySymbol}"/>
+    <s:text name="format.customMoney" ><s:param name="value" value="%{BMValue}" /></s:text>
+   </s:if>
+   <s:elseif test="%{BMType == 1}">
+    Mark-up :<s:property value="getText('{0,number,#,##0}',{BMValue})"/> %  
+   </s:elseif>
+   <s:elseif test="%{BMType == 2}">
+    Mark-down :<s:property value="getText('{0,number,#,##0}',{BMValue})"/> % 
+   </s:elseif>
+  </s:if>
+ </s:if>
 
 														<div class="closebtn"></div>
 													</div>

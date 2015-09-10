@@ -690,7 +690,7 @@
 												<s:checkbox name="shippingOrder.holdForPickupRequired" value="%{#session.shippingOrder.holdForPickupRequired}" />
 											</div>
 										</div>
-										<div class="fields">
+										<%-- <div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.satDelivery"/></label>
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.satDelivery"  value="shippingOrder.satDelivery"/>
@@ -701,7 +701,7 @@
 											<div class="controls"><span>:</span>
 												<s:checkbox name="shippingOrder.docsOnly"  value="shippingOrder.docsOnly"/>
 											</div>
-										</div>
+										</div> --%>
 										<div class="fields">
 											<label><mmr:message messageId="label.shippingOrder.tempControl"/></label>
 											<div class="controls"><span>:</span>

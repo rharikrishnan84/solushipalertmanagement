@@ -460,6 +460,13 @@ public class ShippingServiceImpl implements ShippingService {
         if(shippingCharge.getTariffInLocalCurrency()!=null && shippingCharge.getTariffInLocalCurrency()!=0){
         	shippingCharge.setTariffRate(shippingCharge.getTariffInLocalCurrency());
         }
+        
+        if(shippingCharge!=null){
+        				if(shippingCharge.getIsTax()||(shippingCharge.getChargeCode()!=null&&shippingCharge.getChargeCode().equalsIgnoreCase("TAX")))
+        				shippingCharge.setisCommissonable(false);
+        				else
+        					shippingCharge.setisCommissonable(true);
+        			}
         // Start Issue No:44
         /*
          * if(shippingCharge!=null && shippingCharge.getChargeCode()==null &&

@@ -94,6 +94,7 @@
 		var count =0;
 		var arrOrders = new Array();
 		var aa = getElementsByClassName(cname);
+		var statusid; 
 		for(var i=0; i < aa.length; i++)
 	    {
 	 		if(aa[i].checked == true)
@@ -102,6 +103,7 @@
 	 			var oid = document.getElementById(hidden_id).value; */
 	 			var oid=aa[i].value;
 	 			arrOrders[i] = oid;
+	 			statusid= document.getElementById("selectedShipments["+oid+"].statusId").value;
 	      		count ++;
 	      	}
 	    }
@@ -112,6 +114,7 @@
 	    else
 	    {
 			//Call the action for Printing Label for the selected Shipments.    
+			if(statusid!=80){
 	    	if(confirm("Would you like to print label for selected Shipments?"))
 	    	{
 	    		var slcopies = document.getElementById("label_copies").value;
@@ -119,6 +122,11 @@
 	    		var url="getShippingLabel.action?slcopies="+slcopies+"&cicopies="+ccopies+"&arrayOrders="+arrOrders;
 	    		window.open(url,'','width=760,height=540,left=100,top=100,scrollbars=1');
 		 	}
+			}
+				    	else
+				    		{
+				    		alert("This shipment does not have carrier and service  so unable to print label");
+				    		}
 	    }
 	}
 	

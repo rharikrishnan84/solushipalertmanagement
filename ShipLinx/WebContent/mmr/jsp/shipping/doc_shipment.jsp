@@ -17,10 +17,14 @@
 }
 	</style>
 </head>
-<body> 
+<!-- <body>  -->
+<body onload="hideCustomerRadio()"> 
 
 <SCRIPT language="JavaScript">
-
+function hideCustomerRadio()
+{
+	document.getElementById("customerRadioId").style.display="none";
+	}
  
  function uploadDoc()
  { 
@@ -178,8 +182,9 @@
 
 
 <s:form id="uploadDocForm">
-<div class="cont_data_body">
- <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
+<div class="cont_data_body" style="overflow:hidden; margin-bottom:10px;">
+ <%-- <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}"> --%>
+ <s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')||#session.ROLE.contains('customer_admin')}">
 	<div id="form-container">
 				<div class="content_header">
 					<s:if test="#session.edit == 'true'">
@@ -228,7 +233,7 @@
 											<s:textarea cols="50" rows="2" name="document.description" key="document.description" id="comment_area"></s:textarea> 
 										</div>
 									</div>
-									
+									<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 									<div class="fields_radio">
 										 
 										<div class="controls">
@@ -237,6 +242,17 @@
 											 <input type="hidden" id="hiddenVis" name="scope" > 
 										</div><br>
 									</div>
+									</s:if>
+									<s:elseif test="%{#session.ROLE.contains('customer_admin')}">
+									<div class="fields_radio" id="customerRadioId">
+										 
+									<div class="controls">
+											 
+											 <s:radio name="document.visibilty" list="#{'1':'Public'}" value="1"  id="visibility1" disabled="true"/>
+											 <input type="hidden" id="hiddenVis" name="scope" > 
+										</div><br>
+									</div>
+									</s:elseif>
 									<s:if test="#session.edit != 'true'">	
 				               	 <div class="fields_topdown">
 								

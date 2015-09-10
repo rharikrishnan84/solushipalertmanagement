@@ -521,6 +521,13 @@ public class EdiLoomisParser extends EdiParser {
 							}
 						}
 			charge.setType(ShiplinxConstants.CHARGE_TYPE_ACTUAL);
+			//SET COMMISSIONABLE
+						 if(charge!=null){
+								if(charge.getIsTax()||(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("TAX")))
+								charge.setisCommissonable(false);
+								else
+								charge.setisCommissonable(true);
+							}
 			return charge;
 		}
 		

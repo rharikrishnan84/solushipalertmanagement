@@ -4726,3 +4726,18 @@ INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `pr
 INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `prefix`) VALUES ('INVOICE_NUM', '600053', '9999999', '619887', '3', '');
 INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`) VALUES ('CONFIRMATION_NUM', '1001', '9999999', '1775', '3');
 .......................................End of Live server commit.......................................
+
+Customer Admin :
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1112');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1114');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1116');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1118');
+
+ INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1120');
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1122');
+

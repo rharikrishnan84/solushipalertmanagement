@@ -603,6 +603,14 @@ public class EdiPurolatorParser extends EdiParser {
 						}
 						}
 				//CODE FOR PUROLATOR WITH NO TAX SHOULD POPULATE MANUAL TAX EDNS HERE
+				
+				//SET COMMISSIONABLE
+								 if(charge!=null){
+									if(charge.getIsTax()||(charge.getChargeCode()!=null&&charge.getChargeCode().equalsIgnoreCase("TAX")))
+											charge.setisCommissonable(false);
+										else
+										charge.setisCommissonable(true);
+									}
 
 		return charge;
 	}

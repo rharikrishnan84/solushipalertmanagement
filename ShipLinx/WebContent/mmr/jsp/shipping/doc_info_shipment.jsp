@@ -142,6 +142,7 @@
 		<div id="srchusr_res"><span><mmr:message messageId="label.document"/> </span></div>
 		
 		<div class="form_buttons" style="float:right;">
+		<s:if test="%{#session.ROLE.contains('busadmin')||#session.ROLE.contains('solutions_manager') ||  #session.ROLE.contains('sysadmin')}">
 		<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -150,6 +151,7 @@
 		    <li><a href="#" onclick="markasprivate();"><mmr:message messageId="label.doc.mk.private"/></a></li>
 		      <li><a href="#" onclick="editDoc();"><mmr:message messageId="label.list.edit"/></a></li>
 			</ul>
+			</s:if>
 		</div>	
 	</div>
  
