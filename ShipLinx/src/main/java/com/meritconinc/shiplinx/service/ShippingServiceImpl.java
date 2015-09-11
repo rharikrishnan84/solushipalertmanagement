@@ -1294,8 +1294,11 @@ public class ShippingServiceImpl implements ShippingService {
         && so.getToAddress().isSendNotification() && so.getFromAddress().isSendNotification()) {
       toAddress = so.getFromAddress().getEmailAddress() + ";" + so.getToAddress().getEmailAddress();
       strAttention = "Customer";
-    }else if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
-    	    	toAddress = "customsdistribution@integratedcarriers.com";
+    /*}else if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+    	    	toAddress = "customsdistribution@integratedcarriers.com";*/
+    }else if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
+    	    	    	toAddress = "customsdistribution@integratedcarriers.com";
+    	    	         
     	    	strAttention = so.getFromAddress().getContactName();
     }
     if (toAddress == null || toAddress.length() == 0) {
@@ -1306,7 +1309,8 @@ public class ShippingServiceImpl implements ShippingService {
       // GROUP_EMAIL_ADDRESS_en_CA
 
     	String subject = null;
-    	        if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+    	        /*if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){*/
+    	if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
     	      	  subject = "New CHB Shipment";
     	        }else{
     	      	  subject = MessageUtil.getMessage("label.subject.shipment.notification");
@@ -1350,8 +1354,11 @@ public class ShippingServiceImpl implements ShippingService {
       body = new String(body.replaceAll("%TOTALPIECES", so.getQuantity() + " Pcs"));
       body = new String(body.replaceAll("%TOTALWEIGHT", so.getRateList().get(0).getBillWeight()
           + " " + so.getBilledWeightUOM()));
-      if (so.getTrackingURL() != null) {
-        body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
+     /* if (so.getTrackingURL() != null) {
+        body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));*/
+      if (so.getMasterTrackingNum() != null && so.getTrackingURL()!= null) {
+    	         // body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
+    	      	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
       } else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
       }
@@ -2252,7 +2259,8 @@ public class ShippingServiceImpl implements ShippingService {
         fromAddress = business.getAddress().getEmailAddress();
       }
      
-      if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+      /*if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){*/
+      if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
           List<String> bccAddress = new ArrayList<String>();
           bccAddress.add("customsdistribution@integratedcarriers.com");
     	  retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),

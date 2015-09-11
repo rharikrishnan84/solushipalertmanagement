@@ -1266,7 +1266,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       }
       // check if template is set in business, then only send mail if it
       // is set.
-      if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){
+      /*if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){*/
+      if(order.getCustomer().isChbCustomer() && !(order.getFromAddress().getCountryCode().equals(order.getToAddress().getCountryCode()))){
     	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
     		      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
     		      	  }else if(UserUtil.getMmrUser()!=null){
@@ -1313,9 +1314,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   private boolean sendOrderShippedEmailNotification(ShippingOrder so) {
     boolean retval = true;
     String toAddress = null;
-        if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+       /* if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
         	toAddress = "customsdistribution@integratedcarriers.com";
-        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()){
+        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()){*/
+    if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
+    	        	toAddress = "customsdistribution@integratedcarriers.com";
+    	        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
        		toAddress =  so.getToAddress().getEmailAddress();
         }
 
@@ -1390,11 +1394,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       body = new String(body.replaceAll("%TOTALPIECES", so.getQuantity() + " Pcs"));
       body = new String(body.replaceAll("%TOTALWEIGHT", so.getRateList().get(0).getBillWeight()
           + " " + so.getBilledWeightUOM()));
-      if (so.getTrackingURL() != null) {
+      /*if (so.getTrackingURL() != null) {
         body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
       } else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
-      }
+      }*/
+      
+      if (so.getMasterTrackingNum() != null && so.getTrackingURL()!= null) {
+    	            // body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
+    	         	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
+    	           } else {
+    	             body = new String(body.replaceAll("%TRACKINGURL", ""));
+    	          }
       List<String> bccAddresses = new ArrayList<String>();
       // bccAddresses.add(user.getBusiness().getAddress().getEmailAddress());
 
@@ -5424,12 +5435,12 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 				businessMarkup.setCustomerId(order.getCustomerId());
 				businessMarkup.setServiceId(0l);
 				BusinessMarkup businessMarkup1 = markupManagerService.getUniqueCustomBusinessMarkup(businessMarkup);
-				if(businessMarkup1!=null){
+				if(businessMarkup1!=null && businessMarkup.getBusinessToId()!=businessMarkup1.getBusinessId()){
 					businessMarkup=businessMarkup1;
 				}else{
 					businessMarkup.setCustomerId(0l);
 					businessMarkup1=markupManagerService.getUniqueCustomBusinessMarkup(businessMarkup);
-					if(businessMarkup1!=null)
+					if(businessMarkup1!=null && businessMarkup.getBusinessToId()!=businessMarkup1.getBusinessId())
 						businessMarkup=businessMarkup1;
 					else
 						continue;

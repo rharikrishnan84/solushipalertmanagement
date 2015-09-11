@@ -45,6 +45,7 @@
 		
 		<result property="maxPackWeight" column="max_pack_weight"/>
  		<result property="singlePack" column="single_pack_enable"/>
+ 		<result property="autoFullFill" column="auto_fullfill"/>
 		
 	</resultMap>
  
@@ -60,8 +61,8 @@
 	<!-- INSERT START -->
 
 	<insert id="addEcommerceStore" parameterClass="com.meritconinc.mmr.model.admin.EcommerceStore">
-	     INSERT INTO  ecommerce_store  ( `store_url`,`business_id`,`customer_id`,`scopes`,`access_key`,`rate_service_url`,`create_shipment_url`,`api_key`,`shared_scret`,`ecommerce_domain`,`chepest`,`fastest`,`both_service`,cancel_shipment_url,installation_url,active,package_map,created_by,single_pack_enable,max_pack_weight)
-	VALUES (#url#,#businessId#,#customerId#,#scopes#,#accessKey#,#rateServiceUrl#,#createShipmentUrl#,#apiKey#,#sharedSceret#,#ecommerceDomain#,#chepest#,#fastest#,#bothService#,#cancelShipmentUrl#,#installUrl#,#active#,#packageMap#,#createdBy#,#singlePack#,#maxPackWeight#)
+	       INSERT INTO  ecommerce_store  ( `store_url`,`business_id`,`customer_id`,`scopes`,`access_key`,`rate_service_url`,`create_shipment_url`,`api_key`,`shared_scret`,`ecommerce_domain`,`chepest`,`fastest`,`both_service`,cancel_shipment_url,installation_url,active,package_map,created_by,single_pack_enable,max_pack_weight,auto_fullfill)
+	VALUES (#url#,#businessId#,#customerId#,#scopes#,#accessKey#,#rateServiceUrl#,#createShipmentUrl#,#apiKey#,#sharedSceret#,#ecommerceDomain#,#chepest#,#fastest#,#bothService#,#cancelShipmentUrl#,#installUrl#,#active#,#packageMap#,#createdBy#,#singlePack#,#maxPackWeight#,#autoFullFill#)
 	<selectKey resultClass="long" type="post" keyProperty="ecommerceStoreId" >select LAST_INSERT_ID() as value
 	 		</selectKey>
 	</insert>
@@ -145,6 +146,9 @@
    <isNotNull property="packageMap">
 	 package_map=#packageMap#
 	 </isNotNull>
+	 <isNotNull property="autoFullFill" prepend=",">
+	 auto_fullfill=#autoFullFill#
+ 	 </isNotNull>
 	 </dynamic>
 	 WHERE `store_ecom_id` = #ecommerceStoreId#
 	</update>

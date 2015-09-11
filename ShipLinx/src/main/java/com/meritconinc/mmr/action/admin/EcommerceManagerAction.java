@@ -242,6 +242,11 @@ ServletRequestAware, ServletResponseAware {
 			 ecommerceStore.setPackageMap(false);
 		 } 
 		 
+		 
+		 if(store.isAutoFullFill()){
+			 			 ecommerceStore.setAutoFullFill(true);
+			 		 }
+		 
 		 if(store.isSinglePack()){
 			 			 ecommerceStore.setSinglePack(true);
 			 		 }

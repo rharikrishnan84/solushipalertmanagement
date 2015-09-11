@@ -1808,7 +1808,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
    // TODO Auto-generated method stub
    Map<String, Object> paramObj = new HashMap<String, Object>();
    paramObj.put("referenceNo1", referenceNo1);
-   paramObj.put("cancelled", cancelled);
+   //paramObj.put("cancelled", cancelled);
    ShippingOrder so=(ShippingOrder) getSqlMapClientTemplate().queryForObject("getShippingOrderByReferenceOne",paramObj);
    return so;
    }

@@ -1339,7 +1339,7 @@ public class GenericCarrierAPI implements CarrierService {
     
     //setting the carrier name of those from charges
     
-    if(order.getCharges().get(0).getCarrierName() != null && !order.getCharges().get(0).getCarrierName().isEmpty()){
+    if(order.getCharges()!=null&&!order.getCharges().isEmpty()&&order.getCharges().get(0).getCarrierName() != null && !order.getCharges().get(0).getCarrierName().isEmpty()){
     	    	order.setCarrierName(order.getCharges().get(0).getCarrierName());
     }
 

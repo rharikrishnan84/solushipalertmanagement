@@ -425,7 +425,7 @@ window.onload = function() {
 									<s:property value="markupLable"/>
 									</s:if> 
 									<s:else>
-									Flat Rate ($) 
+									<mmr:message messageId="lable.flat.rate"/>($) 
 									</s:else>
 									</label>
 									<div class="controls">
@@ -456,7 +456,7 @@ window.onload = function() {
 			<div class="content_table">
 					<div class="content_header">
 								<div class="cont_hdr_title">
-									Custom Shipping Setting:
+									<mmr:message messageId="lable.customer.shipp.setting"/>:
 								</div>
 						 </div>
 							<div class="cont_data_body">
@@ -465,17 +465,17 @@ window.onload = function() {
 				<div class="rows">
 								<div class="fields">
 									<label>
-									Simple Package System
+									<mmr:message messageId="lable.simple.pack.system"/>
 									</label>
 									<div class="controls">
 										<span>:</span>
 											<s:checkbox id="checkboxmax" name="ecommerceStore.singlePack"  value="%{ecommerceStore.singlePack}" onclick="toShoworHidemax(this.checked)"/>
 									</div>
 								</div> 
-								<s:if test="%{#session.ROLE.contains('sysadmin')}">
+								<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin') }">
 								<div class="fields" id="maxpack" style="display: none;">
 									<label>
-									Maximum Package Weight
+									<mmr:message messageId="lable.max.packweight"/>
 									</label>
 									<div class="controls" >
 										<span>:</span>
@@ -485,7 +485,7 @@ window.onload = function() {
 								</s:if><s:else>
 									<div class="fields" id="maxpack" style="display: none;">
 									<label>
-									Maximum Package Weight
+									<mmr:message messageId="lable.max.packweight"/>
 									</label>
 									<div class="controls">
 										<span>:</span>
@@ -509,13 +509,43 @@ window.onload = function() {
 <br>
 								  <div class="fields_radio" style="margin-left: 5px;">
 										 <label> <mmr:message messageId="menu.product.pack.map"/> </label>
-										 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										 											<span>:</span> 
 										  
 											<s:radio name="packageMapFlag" list="#{'1':'Enable','2':'Disable'}" value="%{packageMapFlag}"  id="visibility1"/>									
 											 <input type="hidden" id="hiddenVis" name="scope" > 
 										<br>
 									</div><br></div> 
+									
+								
+									
+									<s:if test="%{#session.ROLE.contains('customer_admin')}">
+									<div class="rows"   id="customer_af">
+									<div class="fields">
+									<label>
+									<mmr:message messageId="lable.auto.fullfill"/>
+									</label>
+									<div class="controls">
+										<span>:</span>
+											<s:checkbox  id="autofullfill" key="ecommerceStore.autoFullFill" name="ecommerceStore.autoFullFill" value="%{ecommerceStore.autoFullFill}"/>
+									</div>
+								</div>
+									</div>
+									</s:if><s:else>
+									
+										<div class="rows">
+									<div class="fields">
+									<label>
+									<mmr:message messageId="lable.auto.fullfill"/>
+									</label>
+									<div class="controls">
+										<span>:</span>
+											<s:checkbox  id="autofullfill" key="ecommerceStore.autoFullFill" name="ecommerceStore.autoFullFill" value="%{ecommerceStore.autoFullFill}"/>
+									</div>
+								</div>
+									</div>
+									</s:else>
+									
 				</div>
 					</div> 				
 					 

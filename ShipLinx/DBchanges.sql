@@ -4725,8 +4725,6 @@ INSERT INTO `role_action` (`role`, `action_id`) VALUES ('busadmin', '1124');
 INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `prefix`) VALUES ( 'ORDER_NUM', '500000', '9999999', '1033129', '3', '');
 INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`, `prefix`) VALUES ('INVOICE_NUM', '600053', '9999999', '619887', '3', '');
 INSERT INTO `pins` (`type`, `from_pin`, `to_pin`, `next_pin`, `business_id`) VALUES ('CONFIRMATION_NUM', '1001', '9999999', '1775', '3');
-.......................................End of Live server commit.......................................
-
 Customer Admin :
 
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1112');
@@ -4740,4 +4738,16 @@ INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1118'
  INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1120');
 
 INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1122');
+
+ALTER TABLE `ecommerce_store` 
+ADD COLUMN `auto_fullfill` BIT(1) NULL DEFAULT b'0' AFTER `single_pack_enable`;
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.auto.fullfill', 'Auto-Fullfill', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.max.packweight', 'Maximum Package Weight', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.simple.pack.system', 'Simple Package System', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.customer.shipp.setting', 'Custom Shipping Setting', 'en_CA', 1);
+
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.flat.rate', 'Flat Rate', 'en_CA', 1);
+.......................................End of Live server commit.......................................
+
 

@@ -69,9 +69,11 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.meritconinc.mmr.model.admin.EcommerceStore;
 import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.shiplinx.model.AddressCheckList;
 import com.meritconinc.mmr.constants.Constants;
+import com.meritconinc.mmr.dao.EcommerceDAO;
 import com.meritconinc.mmr.dao.MenusDAO;
 import com.meritconinc.mmr.dao.UserDAO;
 import com.meritconinc.mmr.exception.CardProcessingException;
@@ -152,6 +154,7 @@ import java.util.Vector;
 
 import com.lowagie.text.DocumentException;
 import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
+import com.meritconinc.shiplinx.api.controller.ShopifyController;
 
 import java.io.SequenceInputStream;
 
@@ -3609,7 +3612,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				if(shippingOrder.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_THIRD_PARTY) || shippingOrder.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_COLLECT))
 					shippingOrder.getCharges().removeAll(shippingOrder.getCharges());
 				carrierServiceManager.shipOrder(shippingOrder,  r);
-				if(shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()){
+				/*if(shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()){*/
+				if((shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()) && !(shippingOrder.getFromAddress().getCountryCode().equals(shippingOrder.getToAddress().getCountryCode()))){
 					
 					 /**
 					                    * Make sure Business is not null while calling from API
@@ -9272,6 +9276,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
      // ================== API PRINT LABEL===============//
  public String ecomPrintLabel() {
    String[] ids = request.getParameterValues("ids[]");
+   String shop=request.getParameter("shop");
+      EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator.getInstance()
+   			.findBean("eCommerceDAO");
+   	EcommerceStore store = eCommerceDAO.getEcomStorebyStoreUrl("https://"+shop);
+   	ShopifyController shopifyShop=new ShopifyController();
         if(ids==null){
          ids=new String[1];
          ids[0]=request.getParameter("id");
@@ -9285,6 +9294,21 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
    ShippingOrder so = shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(id),ShiplinxConstants.SHIPMENT_CANCELLED);
    if(so!=null && so.getStatusId()!=40){
      orderList.add(so.getId().toString());
+     
+// IF AUTO FILL IS NOT REQUIERED FULL FILL  BY CLICK ON PRINT LABEL FROM SHOPIFY
+     if(store!=null && !store.isAutoFullFill() && so.getReferenceOne()!=null && so.getReferenceTwo()==null){
+    	 String date = new SimpleDateFormat("MM-dd-yyyy HH-mm-ss").format(new Date());
+    	 String fulfilId = shopifyShop
+					.fulfilltheShopifyOrder(so, store);
+    	 if(fulfilId!=null){
+			so.setReferenceTwo(fulfilId);
+			so.setReferenceTwoName("SHOPIFY ORDER Fullfilled Mannually "+date);
+			shippingService.updateShippingOrder(so);
+    	 }
+			//shopifyShop.addLoggedEvent(so, shop, (long) ShiplinxConstants.STATUS_DISPATCHED, "Manual FullFill From store"+shop);
+     }
+    
+     
    }
     }
      ByteArrayOutputStream baos = new ByteArrayOutputStream();

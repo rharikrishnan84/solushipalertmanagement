@@ -196,16 +196,18 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 							String refno=order2.getReferenceOne();
 							order2=shippingDAO.getShippingOrderByReferenceOne(Long.parseLong(order2.getReferenceOne()),ShiplinxConstants.SHIPMENT_CANCELLED);
 							order2.setReferenceOne(refno);
-							String fulfilId = shopifyShop
-									.fulfilltheShopifyOrder(order2, store);
-							order2.setReferenceTwo(fulfilId);
-							order2.setReferenceTwoName("SHOPIFY ORDER FULFILMENT");
-							ShippingService shippingService = (ShippingService) MmrBeanLocator
-									.getInstance().findBean("shippingService");
-							shippingService.updateShippingOrder(order2);
-
-							addLoggedEvent(order2,shopifyOrder);
-
+							if(store.isAutoFullFill()){
+																String fulfilId = shopifyShop
+																		.fulfilltheShopifyOrder(order2, store);
+																order2.setReferenceTwo(fulfilId);
+																order2.setReferenceTwoName("SHOPIFY ORDER FULFILMENT");
+																ShippingService shippingService = (ShippingService) MmrBeanLocator
+																		.getInstance().findBean("shippingService");
+																shippingService.updateShippingOrder(order2);
+															}
+															String msg=ShiplinxConstants.SHIPMENT_CREATED+"From Ecommerce store "+" "+shopifyOrder.getStoreName();
+															shopifyShop.addLoggedEvent(order2,shopifyOrder.getStoreName(), (long) ShiplinxConstants.STATUS_READYTOPROCESS, msg);
+								 
 						}
 
 					}
@@ -215,29 +217,7 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 		return "success";
 	}
 
-   
-	private void addLoggedEvent(ShippingOrder order2, ShopifyShippingOrder shopifyOrder) {
-		// TODO Auto-generated method stub
-		 LoggedEventService loggedEventService=(LoggedEventService) MmrBeanLocator
-			.getInstance().findBean("loggedEventService");
-		 Date currentDate = new Date();
-		    String userName = order2.getCustomer().getName();
-		    SimpleDateFormat ft= new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
-		    String cd=ft.format(currentDate);
-		   	LoggedEvent loggedEvent = new LoggedEvent();
-			loggedEvent.setEntityId(Long.valueOf(order2.getId()));
-			loggedEvent.setEventDateTime(currentDate);
-			loggedEvent.setEntityType(Long.valueOf(80));		
-			loggedEvent.setEventUsername(userName); 
-			loggedEvent.setMessage(ShiplinxConstants.SHIPMENT_CREATED+" "+"on"+" "+cd+"using Ecommerce store "+" "+shopifyOrder.getStoreName());
-			loggedEvent.setPrivateMessage(false);
-			loggedEvent.setDeletedMessage(false);
-			loggedEvent.setSystemLog("The Order "+ Long.valueOf(order2.getId())+" has been Created");
-			loggedEventService.addLoggedEventInfo(loggedEvent);
-	}
-
-
-	private void saveOrderLog(Number id) throws InterruptedException {
+    	private void saveOrderLog(Number id) throws InterruptedException {
 		// TODO Auto-generated method stub
 		EcommerceLog log=new EcommerceLog();
 		log.setShopifyOrderId(Long.parseLong(id.toString()));

@@ -77,6 +77,10 @@
 			<result property="dutiableAmount" column="dutiable_value"/>
   			 <result property="signatureRequired" column="signature_required"/>
 			<result property="generatedBy" column="generated_by"/>
+			<result property="referenceOneName" column="reference1_name"/>
+			<result property="referenceOne" column="reference1"/>
+			<result property="referenceTwoName" column="reference2_name"/>
+			<result property="referenceTwo" column="reference2"/>
 	</resultMap>
 	<resultMap id="TrackSearchOrderResult" class="com.meritconinc.shiplinx.model.ShippingOrder">
 		<result property="id" column="order_id" />
@@ -2195,7 +2199,7 @@
    </select>
    
 <select id="getShippingOrderByReferenceOne" resultMap="ShippingOrderResult">
-     SELECT * FROM shipping_order where reference1=#referenceNo1# and status_id not like  #cancelled# limit 1
+     SELECT * FROM shipping_order where reference1=#referenceNo1#  limit 1
  </select>
    <!-- Track and search soluship side changes starts -->
  <select id="searchShipmentsForTrack" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder"	resultMap="TrackSearchOrderResult">

@@ -13,9 +13,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.json.JSONException;
@@ -47,6 +49,7 @@ import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.ProductManagerDAO;
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.LoggedEvent;
 import com.meritconinc.shiplinx.model.Package;
 import com.meritconinc.shiplinx.model.PackageType;
 import com.meritconinc.shiplinx.model.PackageTypes;
@@ -57,6 +60,7 @@ import com.meritconinc.shiplinx.model.Service;
 import com.meritconinc.shiplinx.model.ShippingOrder;
 import com.meritconinc.shiplinx.service.CarrierServiceManager;
 import com.meritconinc.shiplinx.service.CustomerManager;
+import com.meritconinc.shiplinx.service.LoggedEventService;
 import com.meritconinc.shiplinx.service.ProductManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
@@ -65,6 +69,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
 import com.google.gson.Gson;
 import com.meritconinc.shiplinx.model.Charge;
  
@@ -1447,6 +1452,8 @@ public class ShopifyController implements Runnable {
 	public String fulfilltheShopifyOrder(ShippingOrder order2,EcommerceStore ecommerceStore2) {
 		// TODO Auto-generated method stub
 
+		String output=null;
+		try {
 		String shopUrl=ecommerceStore2.getUrl();
 		if(!shopUrl.startsWith("https://")){
 			shopUrl="https://"+shopUrl;
@@ -1459,17 +1466,16 @@ public class ShopifyController implements Runnable {
  				    .header("Accept", "application/json")
      				.header("X-Shopify-Access-Token", ecommerceStore2.getAccessKey())
 				.post(ClientResponse.class, orderCreationJson);
-		String output = response.getEntity(String.class);
+		  output = response.getEntity(String.class);
 		System.out.println("Output from Server .... \n" + output);
-		
-		
-		try {
+		 
 			JSONObject js=new JSONObject(output);
 			JSONObject dd=js.getJSONObject("fulfillment");
 			Long idd=dd.getLong("id");
 			output=idd.toString();
-		} catch (org.json.JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			output=null;
 			e.printStackTrace();
 		}
 		return output;
@@ -1498,6 +1504,26 @@ public class ShopifyController implements Runnable {
 	}
 	
 
+	public void addLoggedEvent(ShippingOrder order2, String storeName,Long statusCode,String msg) {
+		// TODO Auto-generated method stub
+		 LoggedEventService loggedEventService=(LoggedEventService) MmrBeanLocator
+					.getInstance().findBean("loggedEventService");
+				 Date currentDate = new Date();
+				    String userName = order2.getCustomer().getName();
+				    SimpleDateFormat ft= new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
+				    String cd=ft.format(currentDate);
+				   	LoggedEvent loggedEvent = new LoggedEvent();
+					loggedEvent.setEntityId(Long.valueOf(order2.getId()));
+					loggedEvent.setEventDateTime(currentDate);
+					loggedEvent.setEntityType(statusCode);		
+					loggedEvent.setEventUsername(userName); 
+					loggedEvent.setMessage(msg);
+					loggedEvent.setPrivateMessage(false);
+					loggedEvent.setDeletedMessage(false);
+					loggedEvent.setSystemLog("");
+					loggedEventService.addLoggedEventInfo(loggedEvent);
+	}
+ 	
 
 }
 	

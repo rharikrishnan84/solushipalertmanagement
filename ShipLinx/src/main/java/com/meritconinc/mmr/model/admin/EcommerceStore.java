@@ -49,6 +49,7 @@ public class EcommerceStore {
 	 private String uninstallUrl;
 	 private Long webhookUnistallId;
 	 
+	 private boolean autoFullFill;
 	 
 
 	 //free shipping and markup
@@ -334,6 +335,12 @@ public class EcommerceStore {
 	}
 	public void setMaxPackWeight(Double maxPackWeight) {
 		this.maxPackWeight = maxPackWeight;
+	}
+	public boolean isAutoFullFill() {
+		return autoFullFill;
+	}
+	public void setAutoFullFill(boolean autoFullFill) {
+		this.autoFullFill = autoFullFill;
 	}
  
 
