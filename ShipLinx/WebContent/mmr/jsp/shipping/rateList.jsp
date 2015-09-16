@@ -86,7 +86,7 @@ function removeCustomAlert1(v) {
 /* .total_label{ position:relative;} */
 .total_label{ position:relative; width:105%;}
 .popup_text{display:none; position:absolute;  height:auto; padding:5px 10px 5px 5px  ; width:'auto'; left:-30px; color:#000;	 background-color:#fff; border:1px solid #999; z-index:1000;  }
-
+.dataTables_wrapper{overflow:hidden !important;}
 </style>
 <head>
 <sx:head />

@@ -1372,6 +1372,7 @@ public class GenericCarrierAPI implements CarrierService {
       order.setCarrierName(order.getCharges().get(0).getCarrierName());
       parameters.put("logo", logo);
       parameters.put("accountNum", order.getAccountNum());
+     // parameters.put("accountNum", order.getBillToAccountNum());
       parameters.put("BUSINESS", business);
       parameters.put("Order", order);
       parameters.put("logo", logo);

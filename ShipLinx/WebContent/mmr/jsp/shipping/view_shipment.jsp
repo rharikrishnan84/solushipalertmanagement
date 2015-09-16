@@ -87,6 +87,9 @@ var product_id=0;
 		  }
 		  function updateActualCharge() {
 			var contacts = document.viewform.commissionable;
+			var flag = true;
+					var userrole="<s:property value="session.ROLE" />";
+					var defaultcurrency="<s:property value="selectedOrder.customer.defaultCurrency" />";
 			var obj = document.getElementsByName("commissionableHid");
 			var ids = [];
 			for (var i = 0; i < contacts.length; i += 1){
@@ -110,6 +113,18 @@ var product_id=0;
 		     document.viewform.action = "update.actual.charge.shipment.action";
 		     document.viewform.submit();
 		    }else{
+		    	if(userrole === "[sysadmin]" || userrole === "[busadmin]"){
+		    				    		if(defaultcurrency != "" && defaultcurrency.length>0)   		{
+		    			    			if(!(defaultcurrency === rest)){
+		    				    				alert("This customer is only to be billed in \t"+defaultcurrency );
+		    				    				flag = false;
+		    				    				}else{
+		    			    					flag = true;
+		    				    				}
+		    				    			
+		    			    				}
+		    				    }
+		    				    	if(flag){
 		     var ALERT_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.accept'/>";
 		     var CANCEL_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.cancel'/>";
 		     d = document;
@@ -158,8 +173,12 @@ var product_id=0;
 		    }
 		   }
 		  } 
+		  }
 		  function updateQuotedCharge() {
 		   var rest = isCurrenciesDifferent("quotedchargecurrency");
+		   var flag = true;
+		     var userrole="<s:property value="session.ROLE" />";
+		     var defaultcurrency="<s:property value="selectedOrder.customer.defaultCurrency" />";
 		   if (typeof rest === 'boolean'){
 		    if (rest){
 		     document.viewform.action = "update.quoted.charge.shipment.action";
@@ -173,6 +192,17 @@ var product_id=0;
 		     document.viewform.action = "update.quoted.charge.shipment.action";
 		     document.viewform.submit();
 		    }else{
+		    	if(userrole === "[sysadmin]" || userrole === "[busadmin]"){
+		    				    		if(defaultcurrency != "" && defaultcurrency.length>0){
+		    				    			if(!(defaultcurrency === rest)){
+		    				    				alert("This customer is only to be billed in \t"+defaultcurrency );
+		    			    				flag = false;
+		    				    				}else{
+		    				    					flag = true;
+		    			    				}
+		    				    			}
+		    				             }
+		    				     if(flag){
 		     var ALERT_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.accept'/>";
 		     var CANCEL_BUTTON_TEXT = "<mmr:message messageId='shipment.alert.cancel'/>";
 		     d = document;
@@ -220,6 +250,7 @@ var product_id=0;
 		     }
 		    }
 		   }
+		  }
 		  }
 		function clearExceptionStatus() {
 			document.viewform.action = "clear.exception.status.action";

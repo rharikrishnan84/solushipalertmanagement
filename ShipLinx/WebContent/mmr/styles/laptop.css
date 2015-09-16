@@ -47,7 +47,8 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 .wrapper_navi ul li		{ display:inline; text-transform:uppercase; float:left;	}
 .wrapper_navi ul li a		{ text-decoration:none; text-transform:uppercase; color:#ffffff ; padding:11px 17px 11px 5px; font-weight:600; float:left;}
 .wrapper_navi ul li a:hover { color:#CCC;}
-.nextlevelmenu			{ height:26px; width:960px;background-color:#f7f7f7 ;   margin:0px 32px 5px 32px; float:left; border:1px solid #C4C2C2;}
+/* .nextlevelmenu			{ height:26px; width:960px;background-color:#f7f7f7 ;   margin:0px 32px 5px 32px; float:left; border:1px solid #C4C2C2;} */
+.nextlevelmenu   { height:26px; width:960px;background-color:#f7f7f7 ;   margin:0px 32px 5px; float:left; border:1px solid #fff;}
 .nextlevelmenu ul		{ list-style-type:none; background-color:#f7f7f7 ;  float:left;  width:958px; font-size:11px; margin:0px; padding:0px;}
 .nextlevelmenu ul li		{ display:inline; height:28px;}
 .nextlevelmenu ul li a		{ text-decoration:none; color:#555555 ; padding:6px 10px; float:left;}
@@ -55,8 +56,9 @@ input[type='text'],input[type='password']{ border:1px solid #c7c6c6; padding:0px
 
 /*   CONTENT   */
 .content				{ height:auto; width:100%;  float:left;  }
-.content_body			{ width:1024px; padding:0px 0px 0px 0px;overflow:auto;  margin:0px auto; height:auto; overflow:none; background-color:#E7E7E7; }
+.content_body   { width:1024px; padding:0px 0px 0px 0px;overflow:auto;  margin:0px auto; height:auto; overflow:none; background-color:#E7E7E7; }
 .content_body_index		{ width:1024px; padding:0px 0px 0px 0px;overflow:hidden;  margin:0px auto; height:auto; overflow:none; background-color:#E7E7E7; }
+/* .content_table			{ height:auto;  margin:0px auto; width:960px;  background-color:#e5e5e5;  } */
 .content_table			{ height:auto;  margin:0px auto; width:960px;  background-color:#e5e5e5;  }
 .content_header			{ height:25px; width:960px; float:left; background-color:#000; overflow:hidden; }
 .cont_hdr_title			{ height:15px; font-weight:bold; width:305px; float:left; background-color:#990000; color:#FFF; padding:6px 0px 5px 5px; font-size:12px;
@@ -235,12 +237,14 @@ height: auto;}
 
 
 /*    GRID  */
-#srchusr_results,#rate_results,#results,#srchinv_results,#srchaddrss_results{ background:url("../images/icbackground.png");
+/* #srchusr_results,#rate_results,#results,#srchinv_results,#srchaddrss_results{ background:url("../images/icbackground.png"); */
+#srchusr_results,#rate_results,#results,#srchinv_results,#srchaddrss_results{ background:url("../images/bg_logo_new.png") no-repeat 5px 0px;
 	border-top:1px solid #c4c2c2; border-left:1px solid #c4c2c2; border-right:1px solid #c4c2c2;
 }
 
 #srchusr_res span,#results span { width:auto; height:auto; float:left; color:#990000;font-size: 14px;font-weight: bold; padding:20px 0px 5px 60px;}
-#srchusr_results,#results,#srchinv_results,#srchaddrss_results { height:57px;}
+/* #srchusr_results,#results,#srchinv_results,#srchaddrss_results { height:57px;} */
+#srchusr_results,#results,#srchinv_results,#srchaddrss_results { height:56px;}
 
 	
 #srchusr_results .form_buttons,#results .form_buttons,#rate_res .form_buttons,#srchinv_results .form_buttons,#srchaddrss_results .form_buttons,#rate_results .form_buttons{ 
@@ -280,6 +284,7 @@ background-repeat: no-repeat;}
 
 .fieldsll{  width:340px; margin-left:5px; float:left; padding:3px 0px; height:25px; }
 .fieldsll label{ width:165px; float:left; padding-top:3px;}
+
 
 
 .fieldsll .controls				{ width:174px; float:left;}
@@ -932,4 +937,52 @@ code span {
 }
 .addCharge{
     background-color:#990000; color:#fff;font-weight:bold; font-size:12px; width:auto; text-align:center; text-decoration:none; padding:3px 10px; float:left;
+}
+
+#action_nav {
+ float:right;
+ margin-right:10px;
+ margin-top:15px;
+ font-size:13px;
+ text-transform:uppercase;
+ font-weight:bold; 
+ font-family:Arial, Helvetica, sans-serif;
+}
+
+.dropdown-toggle {
+  padding:7px;
+}
+a.dropdown-toggle {
+   background-color:#990000;
+  text-decoration:none;  
+  color:#FFF;
+}
+a:hover.dropdown-toggle {
+  text-decoration:none;
+}
+#action_nav ul.dropdown {
+   background-color: #000;
+    display: none;
+ list-style-type: none;
+    margin-top: 15px;
+    padding: 3px;
+    z-index: 1000;
+    position:absolute;
+}
+#action_nav ul.dropdown li {
+  background: #990000;
+    margin: 3px;
+    padding: 3px 30px 3px 5px;
+    text-align: left !important;
+    width: auto;
+}
+#action_nav ul.dropdown li a {
+    color:#FFF;
+ text-decoration:none;
+}
+
+#action_nav ul.dropdown li a:hover {
+ color:#FFF;
+ text-decoration:none;
+
 }

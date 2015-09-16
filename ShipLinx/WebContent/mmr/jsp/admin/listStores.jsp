@@ -20,6 +20,21 @@
 	<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
     <title><s:text name="customer.search.title"/></title> 
+     <script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script> 
 </head> 
 <body> 
 <SCRIPT language="JavaScript">
@@ -345,7 +360,7 @@
 <div class="content_table" style="background-color:#fff">
 	<div id="srchusr_results">	
 	<div id="srchusr_res"><span> <mmr:message messageId="label.list.EcommerceStores"/></span></div>
-		<div class="form_buttons" style="float:right;">
+		<%-- <div class="form_buttons" style="float:right;">
 			<a href="#" id="actiondown" >ACTION <span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" >ACTION <span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -355,7 +370,18 @@
 			</s:if>
 			<li><a href="#" onclick="editStore();"><mmr:message messageId="label.list.edit"/></a></li>
 			</ul>
-		</div>	
+		</div> --%>	
+		<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
+						<li><a href="#" onclick="addStore();"> <mmr:message messageId="label.add.ecom.store"/></a></li>
+						<li><a href="#" onclick="deleteStore();"><mmr:message messageId="label.list.delete"/></a></li>
+			</s:if>
+			<li><a href="#" onclick="editStore();"><mmr:message messageId="label.list.edit"/></a></li>
+		</ul>
+ 		</div>	
+		
 	</div>
        <div id="result_tbl">
        

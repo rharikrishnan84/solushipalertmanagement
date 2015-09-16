@@ -17,6 +17,21 @@
 	</style>
 <head>
 <sx:head />
+<script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 </head>
 	
 	<script type="text/javascript">
@@ -477,7 +492,7 @@
 	<div class="content_table" style="background-color:#fff;">
 		<div id="srchinv_results">
 				<div id="srchusr_res"><span><mmr:message messageId="label.customer.invoice.list"/></span></div>
-			<div class="form_buttons">
+			<%-- <div class="form_buttons">
 			<a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -488,7 +503,18 @@
 				<li><a href="javascript:delete1();"><mmr:message messageId="label.delete"/></a></li>
 				<li><a href="javascript:deletepdf();"><mmr:message messageId="label.delete.pdfFile"/></a></li>
 				</ul>
-			</div>
+			</div> --%>
+			<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<li><a href="javascript: submitform_email();"><mmr:message messageId="label.send.notification"/></a></li>
+				<li><a href="javascript:csv();"  ><mmr:message messageId="label.download.csv"/></a></li>
+				<li><a href="javascript:pdf2();"  ><mmr:message messageId="label.pdf"/></a></li>
+			<li><a href="javascript:editpayment();"><mmr:message messageId="label.list.edit"/></a></li>
+				<li><a href="javascript:delete1();"><mmr:message messageId="label.delete"/></a></li>
+				<li><a href="javascript:deletepdf();"><mmr:message messageId="label.delete.pdfFile"/></a></li>
+				</ul>
+ 			</div>
 		</div>
 		<div id="srchinv_result_tbl">
 			<table cellpadding="0" cellspacing="0"   border="0px" class="display" id="sample1" width="100%">

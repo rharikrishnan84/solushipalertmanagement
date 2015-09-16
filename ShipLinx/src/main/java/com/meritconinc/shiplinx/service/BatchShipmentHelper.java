@@ -99,6 +99,14 @@ public class BatchShipmentHelper {
 			String fileName = WebUtil.getProperty(Constants.SYSTEM_SCOPE, "BASE_PATH") + File.separator + "BatchUpload" + 
 					File.separator + ShiplinxConstants.IN_FOLDER + File.separator + batchInfo.getFileName();
 			
+			String dirName= WebUtil.getProperty(Constants.SYSTEM_SCOPE, "BASE_PATH") + File.separator + "BatchUpload" + 
+								File.separator + ShiplinxConstants.IN_FOLDER + File.separator;
+						
+						
+						 File dir = new File (dirName);
+						 if ( !dir.exists() )
+				           dir.mkdirs();
+			
 			File outFile = new File(fileName);
 			OutputStream bos = null;
 			int bytesRead = 0;
@@ -120,6 +128,14 @@ public class BatchShipmentHelper {
 			// Move file to the out folder
 			String outFileName = WebUtil.getProperty(Constants.SYSTEM_SCOPE, "BASE_PATH") + File.separator + "BatchUpload" + 
 				File.separator + ShiplinxConstants.OUT_FOLDER + File.separator + batchInfo.getFileName();
+			
+			String outDirName=WebUtil.getProperty(Constants.SYSTEM_SCOPE, "BASE_PATH") + File.separator + "BatchUpload" + 
+								File.separator + ShiplinxConstants.OUT_FOLDER + File.separator ;
+						
+						File outDir=new File(outDirName);
+						if(!outDir.exists())
+							outDir.mkdirs();
+			
 			moveFile(fileName, outFileName);
 			
 			return shipments;

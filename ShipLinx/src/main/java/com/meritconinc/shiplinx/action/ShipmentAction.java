@@ -4065,7 +4065,20 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			{
 				order.setCustomerId(0L);
 			}
-			
+			if(order!=null&&order.getReferenceValue()!=null&&!order.getReferenceValue().isEmpty())
+							{
+								String refCodeStr=order.getReferenceValue().trim();
+								
+							if(order.getReferenceValue().contains("_"))
+								{
+									
+									String afterrefCode=refCodeStr.substring(0,refCodeStr.length()-1);
+									order.setReferenceValue(afterrefCode);
+								}
+								else{
+								order.setReferenceValue(refCodeStr);
+								}
+							}
 			List<ShippingOrder> listSO = new ArrayList<ShippingOrder>();
 			listSO = shippingService.searchReferenceShipments(order);
 			
@@ -5078,10 +5091,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	    	
 		}
 		if(this.getShipments()!=null){
-			        if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
-			        		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
+			        /*if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
+			        		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){*/
+			if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
 					this.setShipments(filterShipments(this.getShipments()));
 			        }
+			if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
+							        	this.setShipments(filterShipments(this.getShipments()));
+							        }
 					}
 		return SUCCESS;
 	}

@@ -28,6 +28,21 @@
 	<head> 
 		<sx:head />
 	   <sj:head jqueryui="true" />
+	   <script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 	   </head>
 <style type="text/css">
 #customerautocomplete,#auto{ background-position: 285px 4px; background-size:8px 8px; }
@@ -253,7 +268,7 @@
 	<div class="form-container">		
 		<div id="srchusr_results">
 		<div id="srchusr_res"><span><mmr:message messageId="label.autolinked.shipments"/></span></div>
-		<div class="form_buttons">
+		<%-- <div class="form_buttons">
         <a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
 		<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 		
@@ -262,7 +277,15 @@
          <li><a href="javascript: acceptShipments1()"title="<mmr:message messageId="label.accept.customer"/>" ><mmr:message messageId="label.autolinked.accept"/></a></li>
           
 </ul>		  
-         </div>
+         </div> --%>
+         <div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<li><a href="javascript: reassignCustomer()" title="<mmr:message messageId="label.reassign.customer"/>" ><mmr:message messageId="label.autolinked.reassign"/></a> </li>
+         <li><a href="javascript: acceptShipments1()"title="<mmr:message messageId="label.accept.customer"/>" ><mmr:message messageId="label.autolinked.accept"/></a></li>
+          
+</ul>		  
+          </div>
 		</div>			
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%" >
     <thead>

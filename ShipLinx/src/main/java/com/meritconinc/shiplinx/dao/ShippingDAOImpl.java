@@ -1887,6 +1887,14 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
  		long startTime1 = System.currentTimeMillis();
  		 if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
  			 so.setBusinessIds(null);
+ 			 
+ 			long busId = BusinessFilterUtil.setBusinessIdbyUserLevel();
+ 			 			long userBusId = user.getBusinessId();
+ 			 			if(busId != userBusId){
+ 			 				so.setBusinessId(busId);
+ 						}else if(busId == userBusId){
+ 			 				so.setBusinessId(0);
+ 			 			}
  			 if(so.getId() != null){
  				 resultList = getSqlMapClientTemplate().queryForList("findShipmentsAdminById", so);
  				 count = (long) resultList.size();

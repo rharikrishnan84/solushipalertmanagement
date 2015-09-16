@@ -12,6 +12,23 @@
 <style>
 	#actionmenu li { width:100px !important;}
 </style>
+
+<script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
+
 <script type="text/javascript">
 	
 		$(document).ready(function() {
@@ -205,7 +222,7 @@
 	<div id="srchusr_res">
 	<span><mmr:message messageId="label.address"/></span>
 	</div>
-		<div class="form_buttons">
+		<%-- <div class="form_buttons">
 
             <a href="#" id="actiondown" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/> <span style="font-size:14px;">&#9650;</span></a>		
@@ -215,7 +232,17 @@
 			<li><a href="javascript:deleteAddress()"><mmr:message messageId="label.addresslist.delete"/></a></li>
 			</ul>
 		</div>	
-	</div>
+ --%>
+ <div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+	<ul class="dropdown" >	
+		<li><a href="new.address.action"><mmr:message messageId="label.search.addnew"/></a></li>
+			<li><a href="javascript:editAddress()"><mmr:message messageId="label.addresslist.edit"/></a></li>
+		<li><a href="javascript:deleteAddress()"><mmr:message messageId="label.addresslist.delete"/></a></li>
+			</ul>
+		</div>
+ 
+ 	</div>
 <div id="srchaddrss_result_tbl">
 	<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" >
 	<thead>

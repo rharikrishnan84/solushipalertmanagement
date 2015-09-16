@@ -2231,6 +2231,7 @@
 					and (o.reference_code=#referenceCode# or o.reference1=#referenceCode# or o.reference2=#referenceCode# or o.carrier_reference=#carrierReference#) 
 				</isNotEmpty>
 			</isNotNull>	
+			
 		<isNull property="statusId">
 			<isNotNull property="cancelledShipments">
 				<isEqual property="cancelledShipments" compareValue="N">
@@ -2249,6 +2250,9 @@
 				and o.customer_id IN <iterate   open="(" close=")" conjunction="," property="customerIds"> #customerIds[]# </iterate>
 				</isNotEmpty>
 		</isNotNull>
+		<isGreaterEqual property="businessId" compareValue="1">
+				and o.business_id=#businessId#
+			</isGreaterEqual>
 		<isNotNull property="businessIds">
 			<isNotEmpty property="businessIds">
 				and o.business_id IN
@@ -2319,6 +2323,9 @@
 			<isGreaterEqual property="billingStatus" compareValue="0">
 				and o.billing_status=#billingStatus#
 			</isGreaterEqual>	
+			<isGreaterEqual property="businessId" compareValue="1">
+				and o.business_id=#businessId#
+		</isGreaterEqual>
 			<isNotNull property = "businessIds">
 				<isNotEmpty property = "businessIds">
 				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>

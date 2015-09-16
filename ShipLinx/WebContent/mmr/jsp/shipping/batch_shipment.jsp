@@ -51,7 +51,8 @@
 		
 		{
 
-			var editUserId = document.getElementsByName("check_uncheck");
+			//var editUserId = document.getElementsByName("check_uncheck");
+			var editUserId= document.getElementsByClassName("check_uncheck_row");
 			var i1,txt1 = 0;
 			for (i1=0;i1<editUserId.length;i1++){
 				if (editUserId[i1].checked){
@@ -72,8 +73,10 @@
 					}
 				}
 				
-				document.searchform.action = "repeat.order.action?order_id="+txt;
-				document.searchform.submit();
+				/* document.searchform.action = "repeat.order.action?order_id="+txt;
+				document.searchform.submit(); */
+				document.uploadBatchForm.action = "repeat.order.action?order_id="+txt;
+				document.uploadBatchForm.submit();
 			
 			}
 			//alert(oid);

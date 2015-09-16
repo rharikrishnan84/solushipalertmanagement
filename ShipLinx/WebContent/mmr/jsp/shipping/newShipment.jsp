@@ -1031,7 +1031,8 @@ var count=parseInt(prevQuantity);
 	} 
 	</script> 
 	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
-  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> 
+	<div id="loaderImg" style="width:277px; height:201px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader3.gif');"> 
+  <!-- <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader2.gif');"> --> 
     </div>
 </div>
 <div id="messages">

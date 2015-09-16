@@ -116,6 +116,21 @@ function editCharge(){
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<sx:head/>
     <title><s:text name="customer.search.title"/></title> 
+    <script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 </head> 
 <body> 
 <script>
@@ -213,16 +228,24 @@ function editCharge(){
 <div class="content_table" style="background-color:#fff">
 <div class="form-container">
 <div id="tab"></div>
-	<div id="results">
+	<!-- <div id="results"> -->
+	<div id="srchusr_results">
 	<div id="srchusr_res"><span><mmr:message messageId="label.heading.accessorialcharge"/></span></div>
-		<div id="rslt_stmnt" class="form_buttons">
+		<%-- <div id="rslt_stmnt" class="form_buttons">
 		<a href="#" id="actiondown" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p> <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9660;</p></a>
 			<a href="#" id="actionup" ><p style="font-size:12px; float:left;width:auto; height:15px; padding:0px;"><mmr:message messageId="label.action"/></p>  <p style="font-size:12px; float:left; padding:0px; width:15px; height:15px;">&#9650;</p></a>
 			<ul id="actionmenu">
 			<li><a href="#" onclick="editCharge();" href="#" ><mmr:message messageId="label.list.edit"/></a></li>
 			<li><a href="#" onclick="deleteCharge()" href="#"><mmr:message messageId="label.list.delete"/></a></li>
 			</ul>			
-		</div>
+		</div> --%>
+		<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+	<li><a href="#" onclick="editCharge();" href="#" ><mmr:message messageId="label.list.edit"/></a></li>
+			<li><a href="#" onclick="deleteCharge()" href="#"><mmr:message messageId="label.list.delete"/></a></li>
+			</ul>			
+ 		</div>
 	</div>
 	
 <div id="result_tbl">

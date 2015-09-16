@@ -460,7 +460,8 @@ public class EShipPlusAPI implements CarrierService,Job{
 	      }
 	      
 	      parameters.put("accessorials", accessorials);
-	      parameters.put("totalWeight", so.getTotalWeight());
+	     // parameters.put("totalWeight", so.getTotalWeight());
+	      parameters.put("totalWeight", so.getTotalActualWeight());
 	      parameters.put("createdBy", user.getFirstName()+" "+user.getLastName());
 	      
 	      //variables

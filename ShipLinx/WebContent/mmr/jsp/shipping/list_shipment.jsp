@@ -18,6 +18,23 @@
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />	
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
 	
+	<script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
+	
+	
 	
 		
 	<script type="text/javascript"> 
@@ -301,7 +318,7 @@ function loadTrackingURL(url){
 	<div id="srchusr_res"><span><mmr:message messageId="label.track.header.listshipment"/></span></div>
 	<div id="rates_result_tbl" >
 		<div id="rate_results">
-			<div class="form_buttons">
+			<%-- <div class="form_buttons">
 			<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -311,8 +328,16 @@ function loadTrackingURL(url){
 				</ul>
 				
 			</div>
-			
-			
+			 --%>
+			<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<li><s:a href="Javascript: repeatOrder();"><mmr:message messageId="label.list.repeat"/></s:a></li>
+			<li><s:a href="javascript: editorder();"><mmr:message messageId="label.list.edit"/></s:a></li>
+				<li><a href="javascript: atleastOneShipmentChecked('check_uncheck_row');"><mmr:message messageId="label.print.label"/></a></li>
+				</ul>
+				
+ 			</div>
 			
 			<div id="srchshipmnt_result_tbl_print_label">
 			<s:if test="%{#request.current_page != null}">

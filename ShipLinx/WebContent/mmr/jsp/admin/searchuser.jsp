@@ -183,7 +183,21 @@
   $('#wrapper_new').css('min-height',wndo);
   });
 	</script>
+<script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
 
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 	</head> 
 <body>
 
@@ -199,7 +213,7 @@
 <s:form id="searchUserFormId" cssClass="form" >
 	<div id="srchusr_results">	
 		<div id="srchusr_res"><span><mmr:message messageId="label.heading.userlist"/></span></div>
-		<div class="form_buttons" style="float:right;">
+		<%-- <div class="form_buttons" style="float:right;">
 		<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -208,7 +222,16 @@
 			<li><a href="#" onclick="deleteSearchUser();"><mmr:message messageId="label.list.delete"/></a></li>
 			<li><a href="adduser.action"><mmr:message messageId="menu.admin.adduser"/></a></li>
 			</ul>
-		</div>	
+		</div>	 --%>
+		<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<li><a href="javascript: editSearchUser();" ><mmr:message messageId="label.list.edit"/></a></li>
+		<!--<s:submit value="DELETE" onclick="deleteSearchUser();" /> -->
+			<li><a href="#" onclick="deleteSearchUser();"><mmr:message messageId="label.list.delete"/></a></li>
+			<li><a href="adduser.action"><mmr:message messageId="menu.admin.adduser"/></a></li>
+			</ul>
+			</div>
 	</div>
 <div id="srchusr_result_tbl" >
 

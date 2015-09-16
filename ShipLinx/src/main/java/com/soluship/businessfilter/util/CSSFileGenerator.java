@@ -409,6 +409,37 @@ public class CSSFileGenerator {
 			 								 			 						css.getPropertyMap().put("background-color", cssVo.getMenuColor());
 			 								 			 					 					}
 			 								 			 			 			 }
+			 								 			 		// bala action drop down
+			 								 			 						if (css.getSelector() != null
+			 								 			 								&& css.getSelector().contains("a.dropdown-toggle")) {
+			 								 			 							if (css.getPropertyMap().get("background-color") != null
+			 								 			 									&& (css.getPropertyMap().get("background-color")
+			 								 			 										.equalsIgnoreCase("#990000"))) {
+			 								 			 								css.getPropertyMap().put("background-color",
+			 								 			 										cssVo.getMenuHoverColor());
+			 								 			 							}
+			 								 			 						}
+			 								 			 					
+			 								 			 				/*		if (css.getSelector() != null
+			 								 			 								&& css.getSelector().contains("#action_nav ul.dropdown")) {
+			 								 			 							if (css.getPropertyMap().get("background") != null
+			 								 			 									&& (css.getPropertyMap().get("background")
+			 								 			 											.equalsIgnoreCase("#990000 none repeat scroll00"))) {
+			 								 			 							css.getPropertyMap().put("background",
+			 								 			 										cssVo.getMenuColor());
+			 								 			 							}
+			 								 			 						}*/
+			 								 			 						
+			 								 			 						if (css.getSelector() != null
+			 								 			 								&& css.getSelector().contains("#action_nav ul.dropdown li")) {
+			 								 			 							if (css.getPropertyMap().get("background") != null
+			 								 			 									&& (css.getPropertyMap().get("background")
+			 								 			 											.equalsIgnoreCase("#990000"))) {
+			 								 			 							css.getPropertyMap().put("background",
+			 								 			 										cssVo.getMenuHoverColor());
+			 								 			 							}
+			 								 			 						}
+
 
 
 			 			 

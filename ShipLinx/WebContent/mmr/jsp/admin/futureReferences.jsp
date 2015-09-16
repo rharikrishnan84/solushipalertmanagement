@@ -66,7 +66,21 @@
 	
 	
 </style>
-	
+	<script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 	
 </head>
 <body>
@@ -179,7 +193,7 @@
 							<div id="srchusr_res">
 								<span><label>Future Reference List</label></span>
 							</div>
-							<div class="form_buttons" style="float: right;">
+							<%-- <div class="form_buttons" style="float: right;">
 								<a href="#" id="actiondown"><label><mmr:message
 											messageId="label.action" /></label> <span style="font-size: 14px;">&#9660;</span></a>
 								<a href="#" id="actionup"><label><mmr:message
@@ -193,7 +207,19 @@
 												
 								</ul>
 							</div>
-						</div>
+ --%>						
+ 
+ <div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<li><a href="javascript: deleteCustomer();"><mmr:message
+												messageId="label.add.delete" /></a></li>
+											<li><a href="javascript:viewCustomer();"/><mmr:message
+												messageId="label.add.view" /></a></li>
+												
+								</ul>
+ 							</div>
+ </div>
 
 						<div id="result_tbl">
 							 <table cellpadding="0" cellspacing="0" border="0px"

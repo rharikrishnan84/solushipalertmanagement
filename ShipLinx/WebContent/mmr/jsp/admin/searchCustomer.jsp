@@ -1,3 +1,4 @@
+
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="mmr" uri="/mmr-tags" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
@@ -20,6 +21,21 @@
 	<script src="http://datatables.net/release-datatables/media/js/jquery.js"></script>
 	<script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
     <title><s:text name="customer.search.title"/></title> 
+    <script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script>
 </head> 
 <body> 
 <SCRIPT language="JavaScript">
@@ -272,7 +288,7 @@
 <div class="content_table" style="background-color:#fff">
 	<div id="srchusr_results">	
 	<div id="srchusr_res"><span><label><mmr:message messageId="label.customer.list"/></label></span></div>
-		<div class="form_buttons" style="float:right;">
+		<%-- <div class="form_buttons" style="float:right;">
             <a href="#" id="actiondown" ><label><mmr:message messageId="label.action"/></label> <span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><label><mmr:message messageId="label.action"/></label> <span style="font-size:14px;">&#9650;</span></a>			
 			<ul id="actionmenu">
@@ -283,7 +299,19 @@
 			<li><a href="#" onclick="emailNotify();"><label><mmr:message messageId="label.list.emailcustomer"/></label></a></li>
 			<li><a href="#" onclick="salesUser();"><label><mmr:message messageId="label.list.salesuser"/></label></a></li>
 			</ul>
-		</div>	
+		</div>	 --%>
+		<div id="action_nav">
+<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+
+<ul class="dropdown">
+	<li><a href="javascript: markupCustomer();" ><label><mmr:message messageId="label.list.markup"/></label></a></li>
+	<li><a href="#" onclick="editCustomer();"><label><mmr:message messageId="label.list.edit"/></label></a></li>
+	<li><a href="#" onclick="userCustomer();"><label><mmr:message messageId="label.list.user"/></label></a></li>
+	<li><a href="#" onclick="carrier();"><label><mmr:message messageId="label.list.carriersetup"/></label></a></li>
+	<li><a href="#" onclick="emailNotify();"><label><mmr:message messageId="label.list.emailcustomer"/></label></a></li>
+	<li><a href="#" onclick="salesUser();"><label><mmr:message messageId="label.list.salesuser"/></label></a></li>
+</ul>
+</div>
 	</div>
        <div id="result_tbl">	  
 	  	<table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" style="float:left; width:100%; height:auto;">

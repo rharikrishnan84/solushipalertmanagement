@@ -3,7 +3,22 @@
 
 <html> 
 <head> 
-    <title><s:text name="markup.title"/></title> 
+    <title><s:text name="markup.title"/></title>
+    <script>
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+</script> 
 </head> 
 
 	<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/mmr/styles/demo_table.css" />
@@ -753,7 +768,7 @@ display:none;
 				<div id="srchusr_results">
 					<div id="srchusr_res"><span><mmr:message messageId="label.heading.businessmarkup"/></span></div>
 				<!--<img src="<s:url value="/mmr/images/panelResults_top.png" includeContext="true" />" style="margin-left: 52px;margin-top: 16px;width: 853px;position: relative;bottom: 30px;height:31px;" alt="logo"> 	-->
-					<div class="form_buttons">
+					<%-- <div class="form_buttons">
 					<a href="#" id="actiondown" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9660;</span></a>
 			<a href="#" id="actionup" ><mmr:message messageId="label.action"/><span style="font-size:14px;">&#9650;</span></a>
 			<ul id="actionmenu">
@@ -765,7 +780,19 @@ display:none;
 						<li><a href="#" onclick="uploadMarkup();"><mmr:message messageId="menu.upload"/></a></li>
 						 <li><a href="javascript: saveMarkupList()"><mmr:message messageId="label.propertylist.save"/></a></li>
 						 </ul>
-					</div>
+					</div> --%>
+					<div id="action_nav">
+		<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+		<ul class="dropdown" >
+		<!--<input type="button" value="EDIT" onclick="editMarkup();" />
+					<input type="button" value="DELETE" onclick="deleteMarkup();" />
+						<input type="button" value="UPLOAD" onclick="uploadMarkup();" />-->
+					<li><a href="#" onclick="editMarkup();"><mmr:message messageId="label.list.applyall"/></a></li>
+						<li><a href="#" onclick="deleteMarkup();"><mmr:message messageId="label.list.delete"/></a></li>
+						<li><a href="#" onclick="uploadMarkup();"><mmr:message messageId="menu.upload"/></a></li>
+						 <li><a href="javascript: saveMarkupList()"><mmr:message messageId="label.propertylist.save"/></a></li>
+						 </ul>
+ 					</div>
 				</div>
 				
 <%-- <s:if test="markup.carrierId==6 && #session.eshipCarrierFound.contains('true')">
