@@ -3613,6 +3613,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					shippingOrder.getCharges().removeAll(shippingOrder.getCharges());
 				carrierServiceManager.shipOrder(shippingOrder,  r);
 				/*if(shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()){*/
+				Integer mailcount=(Integer) ActionContext.getContext().getSession().get("MailCount");
+							               if(mailcount!=null && mailcount==0){
 				if((shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()) && !(shippingOrder.getFromAddress().getCountryCode().equals(shippingOrder.getToAddress().getCountryCode()))){
 					
 					 /**
@@ -3638,6 +3640,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 						ActionContext.getContext().getSession().put("actionError", MessageUtil.getMessage("shipment.notification.mail.failure"));
 						//addActionError(MessageUtil.getMessage("shipment.notification.mail.failure"));
 				}
+				}
+							               ActionContext.getContext().getSession().remove("MailCount");
 				addressService.setSendNotification(shippingOrder.getFromAddress().getAddressId());
 				addressService.setSendNotification(shippingOrder.getToAddress().getAddressId());
 			}

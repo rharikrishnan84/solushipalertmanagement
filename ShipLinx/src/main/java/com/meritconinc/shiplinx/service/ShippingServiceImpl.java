@@ -1104,6 +1104,7 @@ public class ShippingServiceImpl implements ShippingService {
       body = new String(body.replaceAll("%TOTALWEIGHT", so.getRateList().get(isel).getBillWeight()
           + " " + so.getRateList().get(isel).getBillWeightUOM()));
       BigDecimal totalCharge = new BigDecimal(so.getRateList().get(isel).getTotal());
+      body = new String(body.replaceAll("%CURRENCY",so.getRateList().get(isel).getCurrency()));
       body = new String(body.replaceAll("%TOTALCHARGES",
           "&#36;" + totalCharge.setScale(2, BigDecimal.ROUND_HALF_UP))); // &#36; is the
       // special
@@ -1282,6 +1283,7 @@ public class ShippingServiceImpl implements ShippingService {
     boolean retval = false;
     String toAddress = null;
     String strAttention = null;
+    int mailCount;
     if (so.getToAddress() != null && so.getToAddress().isSendNotification()
         && so.getFromAddress() != null && !so.getFromAddress().isSendNotification()) {
       toAddress = so.getToAddress().getEmailAddress();
@@ -1362,10 +1364,16 @@ public class ShippingServiceImpl implements ShippingService {
       } else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
       }
-
+      mailCount=0;
       retval = MailHelper.sendEmailNow2(business.getSmtpHost(), business.getSmtpUsername(),
           business.getSmtpPassword(), business.getName(), business.getSmtpPort(), business
               .getAddress().getEmailAddress(), toAddress, null, subject, body, null, true);
+      if(retval==true)
+    	      	       {
+    	      	      	         mailCount++;
+    	      	      	  ActionContext.getContext().getSession().put("MailCount",mailCount );
+    	      	      	  
+    	     	        }
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);
       retval = false;
@@ -2233,15 +2241,28 @@ public class ShippingServiceImpl implements ShippingService {
     	      	  body = new String(body.replaceAll("%TOTALWEIGHT", so.getQuotedWeight()
     	      	          + " " + so.getBilledWeightUOM()));
     	        }
-      if (so.getTrackingURL() != null) {
+     // if (so.getTrackingURL() != null) {
+      /*  if (so.getTrackingURL() != null) {
         body = new String(body.replaceAll("%TRACKINGURL", so.getTrackingURL()));
-      } else {
+     // } else {
+      * }*/ 
+      
+      if (so.getMasterTrackingNum() != null && so.getTrackingURL()!= null) {
+    	      	  	        
+    	      	  	      	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
+    	      	        }
+    	        else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
       }
       if(so.getTrackingURL()==null && so.getCarrierId().intValue()==ShiplinxConstants.CARRIER_PUROLATOR_FREIGHT){
-    	      	   if(so.getMasterTrackingNum()!=null){
+    	      	   /*if(so.getMasterTrackingNum()!=null){
     	      	  body = new String(body.replaceAll("%TRACKINGURL", so.getMasterTrackingNum()));
-    	      	   } else {
+    	      	   } else {*/
+    	  if (so.getMasterTrackingNum() != null && so.getTrackingURL()!= null) {
+    		      		  	        
+    		      		  	      	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
+    		      		         	   }
+    		     		      	  else {
     	      	   body = new String(body.replaceAll("%TRACKINGURL", ""));
     	      	   }
     	      	   }

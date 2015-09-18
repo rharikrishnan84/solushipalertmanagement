@@ -1369,10 +1369,19 @@ public class GenericCarrierAPI implements CarrierService {
           p.setType(packageType);
         }
       }
+      if(order.getCharges()!=null&&!order.getCharges().isEmpty())
       order.setCarrierName(order.getCharges().get(0).getCarrierName());
+      
+      String accNo=null;
+      if(!order.getBillToType().equalsIgnoreCase("Soluship Acct"))
+      accNo=order.getBillToType()+" -"+order.getBillToAccountNum();
+      else
+    	accNo=order.getAccountNum();
+      
       parameters.put("logo", logo);
-      parameters.put("accountNum", order.getAccountNum());
-     // parameters.put("accountNum", order.getBillToAccountNum());
+      //parameters.put("accountNum", order.getAccountNum());
+     
+      parameters.put("accountNum", accNo);
       parameters.put("BUSINESS", business);
       parameters.put("Order", order);
       parameters.put("logo", logo);

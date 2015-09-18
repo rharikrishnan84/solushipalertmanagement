@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import com.opensymphony.xwork2.ActionContext;
 
 import javax.mail.MessagingException;
 
@@ -1270,8 +1271,33 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       if(order.getCustomer().isChbCustomer() && !(order.getFromAddress().getCountryCode().equals(order.getToAddress().getCountryCode()))){
     	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
     		      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      	      	if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
+    		      	      	    		      	      	  		      	      	  { 
+    		      	      	   		      	      	    		      	      	boolean tadd=order.getToAddress().isSendNotification();
+    		      	      	    		      	      	    		      	      	boolean fadd=order.getFromAddress().isSendNotification();
+    		      	      	   		      	      	  		      	      		 order.getToAddress().setSendNotification(false);
+    		      	      	    		      	      	  		      	      		  order.getFromAddress().setSendNotification(false);
+    		      	      	   		      	      	  		      	      		shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      	      	    		      	      	  		      	      		if(tadd)
+    		      	      	    		      	      	  		      	      		 order.getToAddress().setSendNotification(true);
+    		      	      	   		      	      	  		      	      		 if(fadd)
+    		      	      	    		      	      	    		      	      		  order.getFromAddress().setSendNotification(true);
+    		      	      	    		      	      	  		      	      		
+    		      	      	    		      	      	  		      	      	  }
     		      	  }else if(UserUtil.getMmrUser()!=null){
     		      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    		      		if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
+    		      			    		      					      	      	  {
+    		      			    		      			    		      			boolean tadd=order.getToAddress().isSendNotification();
+    		      			    		      			    		      	      	boolean fadd=order.getFromAddress().isSendNotification();
+    		      			    		      			    		      			order.getToAddress().setSendNotification(false);
+    		      			   		      					      	      		  order.getFromAddress().setSendNotification(false);
+    		      			    		      					      	      		shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      			    		      					      	      	if(tadd)
+    		      			    		      			 		      	      		 order.getToAddress().setSendNotification(true);
+    		      			   		      			 		      	      		 if(fadd)
+    		      			    		      			   		      	      		  order.getFromAddress().setSendNotification(true);
+    		      			    		      					      	      	  }
     		      	  }
     	        }else{
       Business business = businessService.getBusinessById(order.getBusinessId());
@@ -1314,12 +1340,16 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   private boolean sendOrderShippedEmailNotification(ShippingOrder so) {
     boolean retval = true;
     String toAddress = null;
+    int mailCount;
        /* if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
         	toAddress = "customsdistribution@integratedcarriers.com";
         }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()){*/
     if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
-    	        	toAddress = "customsdistribution@integratedcarriers.com";
-    	        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
+    	        	//toAddress = "customsdistribution@integratedcarriers.com";
+    	        //}else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
+    	toAddress = "customsdistribution@integratedcarriers.com";
+    	    	        	
+    	    	        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() ){
        		toAddress =  so.getToAddress().getEmailAddress();
         }
 
@@ -1408,11 +1438,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	          }
       List<String> bccAddresses = new ArrayList<String>();
       // bccAddresses.add(user.getBusiness().getAddress().getEmailAddress());
+      mailCount=0;
 
       retval = MailHelper.sendEmailNow2(so.getBusiness().getSmtpHost(), so.getBusiness()
           .getSmtpUsername(), so.getBusiness().getSmtpPassword(), so.getBusiness().getName(), so
           .getBusiness().getSmtpPort(), so.getBusiness().getAddress().getEmailAddress(), toAddress,
           bccAddresses, subject, body, null, true);
+      if(retval==true)
+    	      	        {
+    	      	      	         mailCount++;
+    	      	      	  ActionContext.getContext().getSession().put("MailCount",mailCount );
+    	      	      	  
+    	     	        }
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);
       retval = false;
