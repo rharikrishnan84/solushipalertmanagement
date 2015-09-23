@@ -262,9 +262,10 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 	}
 
 	@Override
-	public void adduserBusiness(UserBusiness ub) {
+	public Long adduserBusiness(UserBusiness ub) {
 		// TODO Auto-generated method stub
-		getSqlMapClientTemplate().insert("adduserBusiness", ub);
+				Long id=(Long) getSqlMapClientTemplate().insert("adduserBusiness", ub);
+				 return id;
 	}
 
 	@Override
@@ -365,4 +366,10 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 		List<Business> businesses =  (List<Business>)getSqlMapClientTemplate().queryForList("getBusinessForSelectedBusiness",businessId);
 		return businesses;
 	}
+	
+	@Override
+			public void updateUserBusiness(UserBusiness ub1) {
+				// TODO Auto-generated method stub
+				getSqlMapClientTemplate().update("updateUserBusiness",ub1);
+			}
 }

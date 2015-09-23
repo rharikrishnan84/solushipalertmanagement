@@ -4748,6 +4748,59 @@ INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUE
 INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.customer.shipp.setting', 'Custom Shipping Setting', 'en_CA', 1);
 
 INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.flat.rate', 'Flat Rate', 'en_CA', 1);
+
+
+ALTER TABLE  `user_business` 
+ADD COLUMN `spd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `branch_id`,
+ADD COLUMN `ltl_enabled` BIT(1) NULL DEFAULT b'0' AFTER `spd_enabled`,
+ADD COLUMN `chb_enabled` BIT(1) NULL DEFAULT b'0' AFTER `ltl_enabled`,
+ADD COLUMN `fwd_enabled` BIT(1) NULL DEFAULT b'0' AFTER `chb_enabled`,
+ADD COLUMN `fpa_enabled` BIT(1) NULL DEFAULT b'0' AFTER `fwd_enabled`;
+
+
+
+ALTER TABLE  `business` 
+ADD COLUMN `invoice_level` VARCHAR(45) NULL AFTER `isCopy_markup`;
+
+
+ALTER TABLE  `business` 
+CHANGE COLUMN `invoice_level` `invoice_level` VARCHAR(45) NULL DEFAULT 'SYSTEM' ;
+
+
+update business set invoice_level='SYSTEM' where invoice_level is null;
+
+
+
+
+INSERT INTO  `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.business.invoiceLevel', 'Invoiceing Level', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('lable.email.type', 'Email Type', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.Root.business', 'Root Business', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.partner.business', 'Partner Business', 'en_CA', 1);
+
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.nation.business', 'Nation Business', 'en_CA', 1);
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('label.branch.business', 'Branch Business', 'en_CA', 1);
+
+
+#ui hot fix
+
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('message.footer.integratedcarriers', '2014 Integrated Carriers. All Rights Reserved', 'en_CA', 1);
+INSERT INTO `resourcebundle` (`msg_id`, `msg_content`, `locale`, `is_fmk`) VALUES ('message.footer.icu', 'Powered by ICU Leading the way. Designed by Integrated Carriers.', 'en_CA',1);
+
+
+#menu reorder
+
+UPDATE `menu` SET `display_order`='2' WHERE `id`='443';
+UPDATE `menu` SET `display_order`='3' WHERE `id`='420';
+UPDATE `menu` SET `display_order`='4' WHERE `id`='404';
+UPDATE `menu` SET `display_order`='5' WHERE `id`='412';
+UPDATE `menu` SET `display_order`='6' WHERE `id`='122';
+
+
+
 .......................................End of Live server commit.......................................
-
-

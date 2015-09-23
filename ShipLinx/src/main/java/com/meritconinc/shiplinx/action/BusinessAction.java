@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
@@ -112,6 +113,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	
 	private UserBusiness userBusiness;
 	private List<BusinessEmail> businessEmailList;
+	private InputStream inputStream;
 	
 	@Override
 	public void setServletRequest(HttpServletRequest request) {
@@ -141,12 +143,30 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	   }
 	   public String newUserBus(){
 	       long count=0;
+	       String username=request.getParameter("username1");
+	       	       	       String spd=request.getParameter("spd");
+	       	       	       String ltl=request.getParameter("ltl");
+	       	       	       String chb=request.getParameter("chb");
+	       	       	       String fwd=request.getParameter("fwd");
+	       	       	       String fpa=request.getParameter("fpa");
+	       	       	       String did=request.getParameter("deleteId");
+	       	       	       boolean deleteId=false;
+	       	       	       
+	       	       	       if(did!=null){
+	       	       	    	   deleteId=true;
+	       	       	       }
+	       	       	       
+	       	       	       boolean update=false;
+	       	       	      String objectId=request.getParameter("objectId"); 
+	       	       	      if(objectId!=null){
+	       	       	    	  update=true;
+	       	       	      }
 	       String rv=request.getParameter("root");
 	       String pv=request.getParameter("partner");
 	       String nv=request.getParameter("nation");
 	       String bv=request.getParameter("branch");
 	       userBusiness=new UserBusiness();
-	       Long rid,pid,nid,bid;
+	       Long rid=null,pid=null,nid = null,bid=null;
 	        BusinessFilter bf=new BusinessFilter();
 	        
 	        
@@ -198,15 +218,124 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 	       }
 	       
 	       
+	       if(spd!=null && spd.equals("true")){
+	    	   	    	   	    	  bf.setSpdEnabled(true);
+	    	   	    	   	       }
+	    	   	    	   	       if(ltl!=null && ltl.equals("true")){
+	    	   	    	   		    	  bf.setLtlEnabled(true);
+	    	   	    	   		    }
+	    	   	    	   	       if(chb!=null && chb.equals("true")){
+	    	   	    	   		    	  bf.setChbEnabled(true);
+	    	   	    	   		   }
+	    	   	    	   	       if(fwd!=null && fwd.equals("true")){
+	    	   	    	   		    	  bf.setFwdEnabled(true);
+	    	   	    	   		   }
+	    	   	    	   	       
+	    	   	    	   	       if(fpa!=null && fpa.equals("true")){
+	    	   	    	   		    	  bf.setFpaEnabled(true);
+	    	   	    	   		   }
+	    	   	    	   	       
+	    	   	    	   	       
+	    	   	    	   	      if(!bf.isSpdEnabled()
+	    	   	    	   	    		   && !bf.isChbEnabled()
+	    	   	    	   	    		   && !bf.isFwdEnabled()
+	    	   	    	   	    		   && !bf.isLtlEnabled()
+	    	   	    	   	    		   && !bf.isFpaEnabled()){
+	    	   	    	   	    	   bf.setAllEmailType(true);
+	    	   	    	   	       }
+	    	    	       
 	       
 	         count = (int)(Math.random()*9000)+1000;
 	        
 	       count++;
 	        
 	       bf.setId(count);
-	       userBusiness.getBusinessFilterList().add(bf);
+	       	       boolean edit1=false;
+	       	       	       String edit=(String) getSession().get("edit");
+	       	       	       if(!deleteId){
+	       	       	       if(!update){
+	       	       		      
+	       	       		      if(edit!=null && edit.equals("true")){
+	       	       		    	  edit1=true;
+	       	       		      }else{
+	       	       		    	   List<BusinessFilter> bfList=(List<BusinessFilter>) getSession().get("reduantBfID");
+	       	       		    	   if(bfList!=null && bfList.size()>0){
+	       	       		    		   for(BusinessFilter bf1:bfList){
+	       	       		    			   if(bf1.getParentBus()!=null 
+	       	       		    					   && bf1.getPartnerBus()!=null
+	       	       		    					   && bf1.getNationBus()!=null
+	       	       		    					   && bf1.getBranchBus()!=null
+	       	       		    					   && bf1.getParentBus().getId()==rid
+	       	       		    					   && bf1.getPartnerBus().getId()==pid
+	       	       		    					   && bf1.getNationBus().getId()==nid
+	       	       		    					   && bf1.getBranchBus().getId()==bid
+	       	       		    					   ){
+	       	       		    				   inputStream = new StringBufferInputStream("0");
+	       	       			    				 return "success1";
+	       	       		    			   }
+	       	       		    		   }
+	       	       		    	   }
+	       	       		    	   
+	       	       		    	   if(bfList==null){
+	       	       			    	   bfList=new ArrayList<BusinessFilter>();
+	       	       			    	   bfList.add(bf);
+	       	       			    	   getSession().put("reduantBfID", bfList);
+	       	       			       }
+	       	       		      }
+	       	       		      
+	       	       		      
+	       	       		   
+	       	       		       if(username!=null && nid!=null && rid!=null && pid!=null && bid!=null){
+	       	       	
+	       	       		    	   List<UserBusiness> userBusinessList=businessDAO.getUserBusinessListByUser(username);
+	       	       		    	   
+	       	       		    	   if(userBusinessList!=null && userBusinessList.size()>0){
+	       	       		    		   for(UserBusiness ub:userBusinessList){
+	       	       		    			 if(ub.getParentId().equals(rid)
+	       	       		    					 && ub.getNationId().equals(nid)
+	       	       		    					 && ub.getBranchId().equals(bid)
+	       	       	    					 && ub.getPartnerId().equals(pid)){  
+	       	       		    				 inputStream = new StringBufferInputStream("0");
+	       	       		    				 return "success1";
+	       	       		    			 }
+	       	       		    		   }
+	       	           	   }
+	       	       		    	   
+	       	       		    	   if(edit1){
+	       	       		    		   UserBusiness ub1=new UserBusiness();
+	              		    		   ub1.setUsername(username);
+	       	       		    		   ub1.setPartnerId(pid);
+	       	       		    		   ub1.setParentId(rid);
+	       	       		    		   ub1.setNationId(nid);
+	       	       		    		   ub1.setBranchId(bid);
+	       	       		    		   ub1.setBusinessFilter(bf);
+	       	       		    		  Long id= businessDAO.adduserBusiness(ub1);
+	       	       		    		  bf.setId(id);
+	       	       		    		  
+	       	       		    	   }
+	       	       		       }
+	       	       		       userBusiness.getBusinessFilterList().add(bf);
+	       	       	       }else{
+	       	       	    	  if(edit!=null){
+	       	       	    	   UserBusiness ub1=new UserBusiness();
+	       	           		   ub1.setUsername(username);
+	       	           		   ub1.setPartnerId(pid);
+	       	           		   ub1.setParentId(rid);
+	       	           		   ub1.setNationId(nid);
+	       	           		   ub1.setBranchId(bid);
+	       	           		   ub1.setBusinessFilter(bf);
+	       	           		   ub1.setUserBusId(Long.parseLong(objectId));
+	       	           		   businessDAO.updateUserBusiness(ub1);
+	       	           		   bf.setId(ub1.getUserBusId());
+	       	           		   inputStream = new StringBufferInputStream("updated");
+	       	       			   return "success1";
+	       	       	    	  }
+	       	       	       }
+	       	       	       }else{
+	       	       	    	   businessDAO.deleteUserBusiness(Long.parseLong(did));
+	       	       	       }
 	       return SUCCESS;
-	   }
+   }
 	   
 	public String newBusiness(){
 		try{
@@ -2598,6 +2727,14 @@ public List<BusinessEmail> getBusinessEmailList() {
 
 public void setBusinessEmailList(List<BusinessEmail> businessEmailList) {
 	this.businessEmailList = businessEmailList;
+}
+
+public InputStream getInputStream() {
+	return inputStream;
+}
+
+public void setInputStream(InputStream inputStream) {
+	this.inputStream = inputStream;
 }
     
 	

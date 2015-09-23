@@ -282,7 +282,7 @@ public class ShippingOrder implements Serializable {
   private long ordersCount;
   private int offsetRange;
   private List<Long> orderIds;
-
+  private List<Long> serviceIds;
 
   public int getSaveShipmet() {
 	return saveShipmet;
@@ -2352,6 +2352,14 @@ public void setCustomerIds(List<Long> customerIds) {
 
 	public void setBMType(int bMType) {
 		BMType = bMType;
+	}
+
+		public List<Long> getServiceIds() {
+		return serviceIds;
+	}
+
+	public void setServiceIds(List<Long> serviceIds) {
+		this.serviceIds = serviceIds;
 	}
 
 		// Sorting orders in order list based on order id or date	

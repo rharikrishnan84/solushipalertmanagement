@@ -75,15 +75,16 @@ public class GetRatesAPIController extends GenericRestServerResource implements
 
 		headers = (Form) getRequestAttributes().get("org.restlet.http.headers");
 
+		EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator
+								.getInstance().findBean("eCommerceDAO");
+						
+						String storename = headers.getValues("x-shopify-shop-domain");
+					EcommerceStore store = eCommerceDAO
+								.getEcomStorebyStoreUrl("https://" + storename);
+				 
 		if (ShopifyUtil.authedicateRequest(
-				headers.getValues("x-shopify-hmac-sha256"), entity)) {
-			EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator
-					.getInstance().findBean("eCommerceDAO");
-
-			String storename = headers.getValues("x-shopify-shop-domain");
-			EcommerceStore store = eCommerceDAO
-					.getEcomStorebyStoreUrl("https://" + storename);
-			log.debug("----geting THE RATES FOR SHOPIFY-----for store "+storename);
+				headers.getValues("x-shopify-hmac-sha256"), entity,store)) {
+			 			log.debug("----geting THE RATES FOR SHOPIFY-----for store "+storename);
 			JSONObject json = new JSONObject(entity);
 			ShopifyRateRequest shopifyRateRequest = new com.google.gson.Gson()
 					.fromJson(json.get("rate").toString(),

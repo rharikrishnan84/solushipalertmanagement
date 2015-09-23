@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+
 import com.opensymphony.xwork2.ActionContext;
 
 import javax.mail.MessagingException;
@@ -41,6 +42,7 @@ import com.meritconinc.mmr.model.admin.UserSearchCriteria;
 import com.meritconinc.shiplinx.model.CurrencySymbol;
 import com.meritconinc.shiplinx.model.Package;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import com.meritconinc.mmr.service.UserService;
 import com.meritconinc.mmr.utilities.MessageUtil;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.StringUtil;
@@ -1270,41 +1272,64 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       /*if(order.getCustomer().isChbCustomer() && order.getFromAddress().getCountryCode() != order.getToAddress().getCountryCode()){*/
       if(order.getCustomer().isChbCustomer() && !(order.getFromAddress().getCountryCode().equals(order.getToAddress().getCountryCode()))){
     	  if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
-    		      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
-    		      	      	if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
+    		      	      	 
+    		      	      //Mail to internal CHB
+    		      	     
+    		      	      	  if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
     		      	      	    		      	      	  		      	      	  { 
     		      	      	   		      	      	    		      	      	boolean tadd=order.getToAddress().isSendNotification();
     		      	      	    		      	      	    		      	      	boolean fadd=order.getFromAddress().isSendNotification();
     		      	      	   		      	      	  		      	      		 order.getToAddress().setSendNotification(false);
     		      	      	    		      	      	  		      	      		  order.getFromAddress().setSendNotification(false);
     		      	      	   		      	      	  		      	      		shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      	      	   		      	      	  		                                             int mailCount=2;
+    		      	      	   		      	      	  			      					      	      	 ActionContext.getContext().getSession().put("MailCount",mailCount );
+    		      	      	   		      	      	  	    		      	      	  		      	   
     		      	      	    		      	      	  		      	      		if(tadd)
     		      	      	    		      	      	  		      	      		 order.getToAddress().setSendNotification(true);
     		      	      	   		      	      	  		      	      		 if(fadd)
     		      	      	    		      	      	    		      	      		  order.getFromAddress().setSendNotification(true);
     		      	      	    		      	      	  		      	      		
     		      	      	    		      	      	  		      	      	  }
+    		      	      	 //Mail to Ship from or Ship To customer
+    		      	      	 shippingService.sendShipmentNotificationMail(order,order.getBusiness());
     		      	  }else if(UserUtil.getMmrUser()!=null){
-    		      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
-    		      		if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
+    		      		 
+    		      		//Mail to internal CHB
+    		      	   		      
+    		      		  if(order.getToAddress().isSendNotification()||order.getFromAddress().isSendNotification())
     		      			    		      					      	      	  {
     		      			    		      			    		      			boolean tadd=order.getToAddress().isSendNotification();
     		      			    		      			    		      	      	boolean fadd=order.getFromAddress().isSendNotification();
     		      			    		      			    		      			order.getToAddress().setSendNotification(false);
     		      			   		      					      	      		  order.getFromAddress().setSendNotification(false);
     		      			    		      					      	      		shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    		      			    		      					      	               int mailCount=2;
+    		      			    		      				    		      		 ActionContext.getContext().getSession().put("MailCount",mailCount );
     		      			    		      					      	      	if(tadd)
     		      			    		      			 		      	      		 order.getToAddress().setSendNotification(true);
     		      			   		      			 		      	      		 if(fadd)
     		      			    		      			   		      	      		  order.getFromAddress().setSendNotification(true);
     		      			    		      					      	      	  }
+    		      		//Mail to Ship from or Ship To customer 
+    		      		  		      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    		      		     		      	
     		      	  }
     	        }else{
+    	        	if(order.getCustomer().isChbCustomer() && (order.getFromAddress().getCountryCode().equals(order.getToAddress().getCountryCode()))){
+    	        		    	        	 if(UserUtil.getMmrUser()==null && order.getBusiness()!=null){
+    	        				      	      	  shippingService.sendShipmentNotificationMail(order,order.getBusiness());
+    	        				      	      	 }else if(UserUtil.getMmrUser()!=null){
+    	        				      		  shippingService.sendShipmentNotificationMail(order,UserUtil.getMmrUser().getBusiness());
+    	        				      	                }  
+    	        		    	         }else if(!(order.getCustomer().isChbCustomer())){
+    	        		       
       Business business = businessService.getBusinessById(order.getBusinessId());
       if (!StringUtil.isEmpty(business.getShipOrderNotificationBody())) {
-    	  //changed
-        sendOrderShippedEmailNotification(order);
-    	  
+    	      	
+    	                       sendOrderShippedEmailNotification(order);
+    	      	                      }
+	  
       }
     	        }
     } catch (ShiplinxException e) {
@@ -1340,7 +1365,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
   private boolean sendOrderShippedEmailNotification(ShippingOrder so) {
     boolean retval = true;
     String toAddress = null;
-    int mailCount;
+    int mailCount=0;
        /* if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
         	toAddress = "customsdistribution@integratedcarriers.com";
         }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()){*/
@@ -1348,11 +1373,25 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	        	//toAddress = "customsdistribution@integratedcarriers.com";
     	        //}else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
     	toAddress = "customsdistribution@integratedcarriers.com";
-    	    	        	
-    	    	        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification() ){
+    	mailCount=2;
+    	    	        }else if(so.getToAddress()!=null && so.getToAddress().isSendNotification()&& so.getFromAddress() != null && !so.getFromAddress().isSendNotification()  ){
        		toAddress =  so.getToAddress().getEmailAddress();
-        }
-
+        
+  } else if (so.getFromAddress() != null && so.getFromAddress().isSendNotification()
+		                  && so.getToAddress() != null && !so.getToAddress().isSendNotification()) {
+		              toAddress = so.getFromAddress().getEmailAddress();
+		            
+		            } else if (so.getToAddress() != null && so.getFromAddress() != null
+		                    && so.getToAddress().isSendNotification() && so.getFromAddress().isSendNotification()) {
+		                toAddress = so.getFromAddress().getEmailAddress() + ";" + so.getToAddress().getEmailAddress();
+		               
+		              /*}else if(so.getCustomer().isChbCustomer() && so.getFromAddress().getCountryCode() != so.getToAddress().getCountryCode()){
+		              	    	toAddress = "customsdistribution@integratedcarriers.com";*/
+		                
+		              }
+		  
+		     
+		      
     if (toAddress == null || toAddress.length() == 0) {
       log.error("User's email address is not set, cannot send an shipment notification!");
       return false;
@@ -1450,6 +1489,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	      	      	  ActionContext.getContext().getSession().put("MailCount",mailCount );
     	      	      	  
     	     	        }
+      else
+    	       {
+    	     	  mailCount=5;
+    	     	  ActionContext.getContext().getSession().put("MailCount",mailCount );
+    	       }
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);
       retval = false;
@@ -1649,6 +1693,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     	    	boolean flag2=false;
       ArrayList<String> srcList = new ArrayList<String>();
       User user1 = UserUtil.getMmrUser();
+      
+      UserService userService=(UserService)MmrBeanLocator.getInstance().findBean("userService");
+      UserSearchCriteria criteria=new UserSearchCriteria();
+           
       for (int i = 0; i < lstOrders.size(); i++) {
 
         if (lstOrders.get(i).length() > 0) {
@@ -1656,6 +1704,19 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           ShippingOrder shippingOrder = shippingService
               .getShippingOrder(new Long(lstOrders.get(i)));
 
+
+					if (user1 == null && shippingOrder!=null) {
+						criteria.setBusinessId(shippingOrder.getBusinessId());
+						criteria.setCustomerId(shippingOrder.getCustomerId());
+						List<User> users=userService.findUserByCustomer(criteria);
+						if(users!=null && users.size()>0){
+							user1=users.get(0);
+						}else{
+							user1=new User();
+						}
+					}
+
+          
           if (shippingOrder.isPaymentRequired()) { // do not return
             // label if
             // payment not

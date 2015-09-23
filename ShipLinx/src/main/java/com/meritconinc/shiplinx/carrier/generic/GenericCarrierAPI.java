@@ -471,7 +471,56 @@ public class GenericCarrierAPI implements CarrierService {
               	    }
                   }
                   if (sr == null) {
-                    Zone fromZones = getZone(service.getZoneStructureId(),
+                	  
+                	  String fromCity = "";
+                	                        String toCity ="";
+                	                        Long fromZoneStructureId=0l;
+                	                        Long toZoneStructureId=0l;
+                	                        String fromCountry = "";
+                	                                            String toCountry = "";
+                	                                            String fromProvince = "";
+                	                                            String toProvince = "";
+                	                                            fromProvince = shippingOrder.getFromAddress().getProvinceCode();
+                	                                            toProvince = shippingOrder.getToAddress().getProvinceCode();
+                	                        fromCity = shippingOrder.getFromAddress().getCity();
+                	                        toCity =  shippingOrder.getToAddress().getCity(); 
+                	                        fromZoneStructureId = service.getZoneStructureId(); 
+                	                        toZoneStructureId = service.getZoneStructureId();
+                	                        fromCountry = shippingOrder.getFromAddress().getCountryCode();
+                	                                            toCountry = shippingOrder.getToAddress().getCountryCode();
+                	                        List<Zone> overAllfromZones = new ArrayList<Zone>();
+                	                        List<Zone> overAlltoZones = new ArrayList<Zone>();
+                	                        /*overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId);
+                	                        overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId);*/
+                	                        overAllfromZones=this.markupDAO.getOverallZones(fromCity,fromZoneStructureId,fromCountry,fromProvince);
+                	                                            overAlltoZones=this.markupDAO.getOverallZones(toCity,toZoneStructureId,toCountry,toProvince);
+                	                        if (overAllfromZones != null && overAlltoZones != null && !overAllfromZones.isEmpty() && !overAlltoZones.isEmpty()) {
+                	                         for(Zone fromZoneVar : overAllfromZones){
+                	                          for(Zone toZoneVar : overAlltoZones ){
+                	                      skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
+                	                          shippingOrder.getBusinessId(), service.getId(), fromZoneVar.getZoneName(),
+                	                          toZoneVar.getZoneName());
+                	                      skidRateTobeSearched.setCustomerId(shippingOrder.getCustomerId());
+                	                      sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                	                      if(sr==null){
+                	                	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+                	                	    }
+                	                      if (sr == null) {
+                	                        skidRateTobeSearched.setCustomerId(0L);
+                	                        sr = this.markupDAO.getSkidRate(skidRateTobeSearched);
+                	                        if(sr==null){
+                	                  	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
+                	                  	    }
+                	                      }
+                	                      if (sr != null) {
+                	                          rate = ltlSkidRate(sr, s, shippingOrder);
+                	                          ratingList.add(rate);
+                	                        }
+                	                    }
+                	                         }
+                	                         
+                	                        }
+                    /*Zone fromZones = getZone(service.getZoneStructureId(),
                         shippingOrder.getFromAddress());
                     Zone toZones = getZone(service.getZoneStructureId(), shippingOrder.getToAddress());
                     skidRateTobeSearched = LtlSkidRate.getObject(shippingOrder.getCustomerId(),
@@ -488,7 +537,7 @@ public class GenericCarrierAPI implements CarrierService {
                       if(sr==null){
                 	  	  sr=  BusinessFilterUtil.getSkidRate(markupDAO,skidRateTobeSearched);
                 	    }
-                    }
+                    }*/
                   }
                  /* if(sr!=null && sr.size()>0){
                   	                	for(LtlSkidRate srr:sr){
@@ -589,7 +638,7 @@ public class GenericCarrierAPI implements CarrierService {
             }
             }
             if (ratingList != null && ratingList.size() > 0) {
-              Collections.sort(ratingList, Rating.PriceComparator);
+            	Collections.sort(ratingList, Rating.PriceComparatorForSkid);
               ratingList.get(0).setServiceId(s.getId());
              // ratingList.get(0).setCarrierId(s.getCarrierId());
               ratingList.get(0).setCarrierId(rate.getCarrierId());

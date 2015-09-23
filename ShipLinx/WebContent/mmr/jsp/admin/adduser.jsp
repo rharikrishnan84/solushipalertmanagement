@@ -5,10 +5,91 @@
 <html> 
 <head>
 <sx:head/>
-    <title><s:text name="user.form.title"/></title> 
+     <title><s:text name="user.form.title"/></title>
+    
+    <style>
+      
+      #popup {
+        width: 300px;
+        height: 200px;
+        position: absolute;
+        color: #000000;
+        background-color: #ffffff;
+        top: 50%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -150px;
+      }
+    </style>
 	</head> 
 
 <body> 
+
+ <div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
+ <div class="content_table"
+						style="margin-top:30%; height: 50px;color: #000000;  left: 150.9px; display: none;" id="emailType1">
+						<div class="content_header">
+
+							<div class="cont_hdr_title">EMAIL TYPE</div>
+							<input type="hidden" name="objectId" id="objectID">
+							<div class="form_buttons">
+									<a href="#" onClick="hideEmailType()">UPDATE</a>
+								</div>
+						</div>
+						<div class="cont_data_body">
+
+							<div class="rows">
+								<div class="fieldsl">
+									<label style="width: 200px !important;">SPD </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user2.spdEnabled" name="user2.spdEnabled"
+											id="userspdEnabled1" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">LTL </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user2.ltlEnabled" name="user2.ltlEnabled"
+											id="userltlEnabled1" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">CHB </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user2.chbEnabled" name="user2.chbEnabled"
+											id="userchbEnabled1" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">FWD </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user2.fwdEnabled" name="user2.fwdEnabled"
+											id="userfwdEnabled1" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">FPA </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user2.fpaEnabled" name="user2.fpaEnabled"
+											id="userfpaEnabled1" />
+									</div>
+								</div>
+
+							</div>
+
+						 	 
+
+						</div>
+
+					</div>
+					
+     </div>
+
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.autocomplete.js"></script>
 
@@ -312,7 +393,15 @@ function setPartnerBus(rootbusid){
 	
 		var nv=nation.options[nation.selectedIndex].value;
 		var bv=branch.options[branch.selectedIndex].value;
-		 
+		var username=document.getElementById("userName").value;
+				
+				
+				var spd= document.getElementById("userspdEnabled").checked;
+				var chb= document.getElementById("userchbEnabled").checked;
+				var ltl= document.getElementById("userltlEnabled").checked;
+				var fwd= document.getElementById("userfwdEnabled").checked;
+				var fpa= document.getElementById("userfpaEnabled").checked;
+		
 		 if(rv != "" && rv!= "-1"){
 			    
 				ajax_Carrier=ajaxFunction();
@@ -321,14 +410,26 @@ function setPartnerBus(rootbusid){
 			  		 if(ajax_Carrier.readyState==4)
 						{
 					 	   reponse=ajax_Carrier.responseText;
-					 	  $("#rowuser").append(reponse);
+					 	  if(reponse!="0"){
+					 		 					 		  $("#rowuser").append(reponse);
+					 		 					 		  
+					 		 					 		   document.getElementById("userspdEnabled").checked = false;
+					 		 					 		document.getElementById("userchbEnabled").checked = false;
+					 		 					 		document.getElementById("userltlEnabled").checked = false;
+					 		 					 		document.getElementById("userfwdEnabled").checked = false;
+					 		 					 		document.getElementById("userfpaEnabled").checked = false;  
+					 		 					 		  
+					 		 					 		  
+					 		 					 	   }else{
+					 		 					 		   alert("Already Added.")
+					 		 					 	   }
 					   	 
 					  	
 						}
 			  		 
 			  	 
 			 	 };
-			 	var url="new.userBus.action?root="+rv+"&partner="+pv+"&nation="+nv+"&branch="+bv;
+			 	var url="new.userBus.action?root="+rv+"&partner="+pv+"&nation="+nv+"&branch="+bv+"&username1="+username+"&spd="+spd+"&chb="+chb+"&ltl="+ltl+"&fwd="+fwd+"&fpa="+fpa;
 				ajax_Carrier.open("GET",url,true);
 				ajax_Carrier.send(this);
 							 
@@ -365,16 +466,266 @@ function setPartnerBus(rootbusid){
 			var rowid="ub"+txt;
 			var element = document.getElementById(rowid);
 			element.outerHTML = "";
+			
+			ajax_Carrier=ajaxFunction();
+						ajax_Carrier.onreadystatechange=function()
+					  	{    
+					  		 if(ajax_Carrier.readyState==4)
+								{
+							 	   reponse=ajax_Carrier.responseText;
+							 	    
+								}
+					 	 };
+					 	var url="new.userBus.action?deleteId="+txt;
+						ajax_Carrier.open("GET",url,true);
+					ajax_Carrier.send(this);
+						
 		
 	}
 	}
 	
 	
-function	resetfrpartner(){
-		reponse="<select id='pid'><option value=\"-1\">ANY</option></select>";
-	  	  chargeCodeElement = document.getElementById("partnerBus");
- 	  chargeCodeElement.innerHTML= reponse;
- 	  
+	function editEmailType(objId){
+				
+		  
+				document.getElementById("objectID").value=objId;
+			    pop("emailType1");
+			    document.getElementById("loader").style.display = 'block';
+		
+				var spd= document.getElementById("spdEnabled"+objId).value;
+				var chb= document.getElementById("chbEnabled"+objId).value;
+			    
+				var ltl= document.getElementById("ltlEnabled"+objId).value;
+				var fwd= document.getElementById("fwdEnabled"+objId).value;
+				var fpa= document.getElementById("fpaEnabled"+objId).value;
+				var alle= document.getElementById("allEmailType"+objId).value;
+		 
+				
+				if(spd=="true"){
+					document.getElementById("userspdEnabled1").checked=true;
+				}else{
+					document.getElementById("userspdEnabled1").checked=false;
+				}
+				  
+				if(chb=="true"){
+					document.getElementById("userchbEnabled1").checked = true;
+				}else{
+					document.getElementById("userchbEnabled1").checked = false;
+				}
+				
+				if(ltl=="true"){
+					document.getElementById("userltlEnabled1").checked = true;
+				}else{
+					document.getElementById("userltlEnabled1").checked = false;
+				}
+				if(fwd=="true"){
+					document.getElementById("userfwdEnabled1").checked = true;
+				}else{
+					document.getElementById("userfwdEnabled1").checked = false;
+				}
+				
+				if(fpa=="true"){
+		
+					document.getElementById("userfpaEnabled1").checked = true;
+				}else{
+					document.getElementById("userfpaEnabled1").checked = false;
+				}
+				
+				if(alle=="true"){
+					document.getElementById("userfpaEnabled1").checked = true;
+					document.getElementById("userfwdEnabled1").checked = true;
+					document.getElementById("userltlEnabled1").checked = true;
+					document.getElementById("userchbEnabled1").checked = true;
+					document.getElementById("userspdEnabled1").checked=true;
+					
+				}
+				
+		}
+		
+		
+			function hideEmailType(){
+				
+				  var objectId=document.getElementById("objectID").value;
+				  var username=document.getElementById("userName").value;
+				  
+			    document.getElementById("loader").style.display = 'none';
+			    document.getElementById("emailType1").style.display = 'none';
+			    
+				var spd= document.getElementById("userspdEnabled1").checked;
+				var chb= document.getElementById("userchbEnabled1").checked;
+				var ltl= document.getElementById("userltlEnabled1").checked;
+				var fwd= document.getElementById("userfwdEnabled1").checked;
+				var fpa= document.getElementById("userfpaEnabled1").checked;
+				
+				var rv=document.getElementById("bufpare"+objectId).value;
+				var pv=document.getElementById("bufpart"+objectId).value;
+				var nv=document.getElementById("bufnation"+objectId).value;
+				var bv=document.getElementById("bufbranch"+objectId).value;
+				
+				  document.getElementById("spdEnabled"+objectId).value=spd;
+				  document.getElementById("chbEnabled"+objectId).value=chb;
+				  document.getElementById("ltlEnabled"+objectId).value=ltl;
+				  document.getElementById("fwdEnabled"+objectId).value=fwd;
+				  document.getElementById("fpaEnabled"+objectId).value=fpa;
+				
+				   
+					  
+					  
+					  
+					  
+		
+						ajax_Carrier=ajaxFunction();
+						ajax_Carrier.onreadystatechange=function()
+					  	{    
+					  		 if(ajax_Carrier.readyState==4)
+								{
+							 	   reponse=ajax_Carrier.responseText;
+							 	    
+								}
+					 	 };
+					 	var url="new.userBus.action?root="+rv+"&partner="+pv+"&nation="+nv+"&branch="+bv+"&username1="+username+"&spd="+spd+"&chb="+chb+"&ltl="+ltl+"&fwd="+fwd+"&fpa="+fpa+"&objectId="+objectId;
+					  //alert(objectId);
+						ajax_Carrier.open("GET",url,true);
+						ajax_Carrier.send(this);
+						
+					  
+					  
+						 
+					  
+				  if( !document.getElementById("userspdEnabled1").checked
+						 &&  !document.getElementById("userchbEnabled1").checked 
+				         &&  !document.getElementById("userltlEnabled1").checked
+				         &&  !document.getElementById("userfwdEnabled1").checked
+				         &&  !document.getElementById("userfpaEnabled1").checked){
+					  
+					  
+					  document.getElementById("allEmailType"+objectId).value="true";
+					  document.getElementById("ahref"+objectId).innerHTML="ALL EMAIL TYPES.";
+					  
+					 }else if(
+							 document.getElementById("userspdEnabled1").checked
+							 &&  document.getElementById("userchbEnabled1").checked 
+					         &&  document.getElementById("userltlEnabled1").checked
+					         &&  document.getElementById("userfwdEnabled1").checked
+					         &&  document.getElementById("userfpaEnabled1").checked		 
+					 ){
+						  document.getElementById("allEmailType"+objectId).value="true";
+						  document.getElementById("ahref"+objectId).innerHTML="SPD, LTL, CHB, FWD, FPA ";
+				  }else{
+				  
+					  document.getElementById("allEmailType"+objectId).value="false";
+						var hef="";
+						if(document.getElementById("userspdEnabled1").checked){
+						  hef="SPD ,";
+						} 
+						if(document.getElementById("userchbEnabled1").checked){
+						hef+="CHB, "; 
+						} 
+						if(document.getElementById("userfwdEnabled1").checked){
+							hef+="FWD, "; 
+						} 
+						if(document.getElementById("userltlEnabled1").checked){
+							hef+="LTL , "; 
+						} 
+						if( document.getElementById("userfpaEnabled1").checked){
+							hef+="FPA, "; 
+						} 
+						document.getElementById("ahref"+objectId).innerHTML=hef;
+				  }
+					document.getElementById("userchbEnabled1").checked = false;
+					document.getElementById("userltlEnabled1").checked = false;
+					document.getElementById("userfwdEnabled1").checked = false;
+					document.getElementById("userfpaEnabled1").checked = false;
+					document.getElementById("userspdEnabled1").checked=false;
+					
+					
+					  
+					
+			}
+			
+		 
+			
+				 function pop(div) {
+			        document.getElementById(div).style.display = 'block';
+			      }
+			      function hide(div) {
+			        document.getElementById(div).style.display = 'none';
+			      }
+			      //To detect escape button
+			      document.onkeydown = function(evt) {
+			        evt = evt || window.event;
+			        if (evt.keyCode == 27) {
+			        	 document.getElementById("loader").style.display = 'none';
+			     	    document.getElementById("emailType1").style.display = 'none';
+			          
+			        }
+			      };
+			      
+			      
+			      function getStyle()
+					{
+						var bothColor;
+						<% String buttonColor=(String)request.getSession().getAttribute("buttonColor");
+						String barSecondColor=(String)request.getSession().getAttribute("barSecondColor");
+						
+						if(buttonColor==null)
+						{
+							buttonColor="#990000";
+						}
+					
+						if(barSecondColor==null)
+						{
+							barSecondColor="#000000";
+						}
+						
+						%>
+						
+						
+						bothColor=document.getElementById("buttonColor").value+","+document.getElementById("barSecondColor").value;
+						return bothColor;
+					}
+			      
+			      
+		$(document).ready(function(){
+		   
+			 var colorCode=getStyle();
+			 var colorCodeSplit=colorCode.split(",");
+			 var buttonColor=colorCodeSplit[0];
+			 var barSecondColor=colorCodeSplit[1];
+		$('.navi4 ul li:first-child').css('background-color',buttonColor);  
+		$('.navi4 ul li:first-child').css('display',"block");
+		$('#box2').css('display','none');
+									 
+		$('.navi4 ul li').click(function(){
+			
+			 
+			  $(this).css('background-color',buttonColor);
+			$(this).siblings().css('background-color',barSecondColor);  
+			/* 
+			  $(this).css('background-color','#990000');
+				$(this).siblings().css('background-color','#000000');   */
+			 
+			var indexval = $(this).index();
+			if(indexval == 0){
+				$('#box1').css('display','block');
+				$('#box2').css('display','none');
+			}
+			//alert(indexval);
+			if(indexval == 1){
+				$('#box2').css('display','block');
+				$('#box1').css('display','none');
+			}
+			 
+		});
+		 
+								
+		});
+			  
+	function	resetfrpartner(){
+	reponse="<select id='pid'><option value=\"-1\">ANY</option></select>";
+	 	  chargeCodeElement = document.getElementById("partnerBus");
+ 	 chargeCodeElement.innerHTML= reponse;
+ 	 
  	 reponse="<select id='cid'><option value=\"-1\">ANY</option></select>";
  	  chargeCodeElement = document.getElementById("nationBus");
 	  chargeCodeElement.innerHTML= reponse;
@@ -410,7 +761,7 @@ function	resetfrpartner(){
 	<jsp:include page="../common/action_messages.jsp"/>
 </div>	
 </div>
-<div class="content">
+<div class="content" style="margin-bottom:10px;">
 <div class="content_body">
 <s:form action="createUser" name="userform" style="margin-bottom	:0px">
 	<s:if test="#session.edit == 'true'">
@@ -420,6 +771,26 @@ function	resetfrpartner(){
     	<s:hidden name="method" value="add"/>
      </s:else>
     <s:hidden name="cid" value="%{user.customerId}" />
+    
+    <div class="content_table">
+    <s:if test="%{#session.ROLE.contains('sysadmin')}">
+    <div class="navi4">
+							<ul style="float:left; width:400px; border:0px;">
+					<li><mmr:message messageId="menu.admin.adduser"/></li>
+					<li><mmr:message messageId="label.user.business"/></li>
+
+				</ul>
+				<div class="form_buttons">
+				<a href="#" onclick="submitform()"><mmr:message messageId="label.btn.save"/></a> 
+				<a href="#" onclick="resetform()"><mmr:message messageId="label.btn.reset"/></a>
+				</div>
+						</div></s:if>
+    </div>
+    
+    <input type="hidden" id="buttonColor" value=<%= buttonColor %> />	
+	 <input type="hidden" id="barSecondColor" value=<%= barSecondColor %> />
+							
+<div id="box1">
 						<div class="content_table">
 							<div class="content_header">
 								<div class="cont_hdr_title">
@@ -434,9 +805,13 @@ function	resetfrpartner(){
 									<!--<s:submit onclick="submitform()" value="SAVE"/>
 									<s:submit onclick="resetform()" value="RESET"/>-->
 									
-									<a href="#" onclick="submitform()"><mmr:message messageId="label.btn.save"/></a> 
-									<a href="#" onclick="resetform()"><mmr:message messageId="label.btn.reset"/></a> 
-								</div>
+									<s:if test="%{#session.ROLE.contains('sysadmin')}">
+									 </s:if><s:else>
+									  <a href="#" onclick="submitform()"><mmr:message messageId="label.btn.save"/></a> 
+									<a href="#" onclick="resetform()"><mmr:message messageId="label.btn.reset"/></a>
+								</s:else> 
+									
+									</div>
 							</div>
 							<div class="cont_data_body">
 								<div class="rows">
@@ -677,59 +1052,25 @@ function	resetfrpartner(){
 							</div>
 						
 						</div>
-						
-						  <s:if test="%{#session.ROLE.contains('sysadmin') || #session.ROLE.contains('busadmin')}">
-						<div class="content_table">
-							<div class="content_header">
-							
-								<div class="cont_hdr_title">SELECT DIVISION</div>
-							</div>
-							<div class="cont_data_body">
-							
-								<div class="rows">
-									<div class="fieldsl">
-									<label style="width:200px !important;">SPD  </label>
-										<div class="controls"><span>:</span>
-										 <s:checkbox key="user.spdEnabled" name="user.spdEnabled" />
-									</div></div>
-									<div class="fieldsl">
-										<label style="width:200px !important;">LTL </label>
-										<div class="controls"><span>:</span>
-										 <s:checkbox key="user.ltlEnabled" name="user.ltlEnabled" />
-									</div>
-									</div>
-									<div class="fieldsl">
-										<label style="width:200px !important;">CHB </label>
-										<div class="controls"><span>:</span>
-										 <s:checkbox key="user.chbEnabled" name="user.chbEnabled" />
-									</div>
-									</div>
-									<div class="fieldsl">
-										<label style="width:200px !important;">FWD </label>
-										<div class="controls"><span>:</span>
-										 <s:checkbox key="user.fwdEnabled" name="user.fwdEnabled" />
-									</div>
-									</div>
-									<div class="fieldsl">
-										<label style="width:200px !important;">FPA </label>
-										<div class="controls"><span>:</span>
-										 <s:checkbox key="user.fpaEnabled" name="user.fpaEnabled" />
-									</div>
-									</div>
-									
-								</div>
-								
-							</div>
-						
 						</div>
-						</s:if>
 						
-						<s:if test="%{#session.ROLE.contains('sysadmin')}">
-					<div class="content_table">
+						 		</s:form>
+		
+		
+    
+     
+	</div>
+	
+	<s:if test="%{#session.ROLE.contains('sysadmin')}"> 
+						 <div class="content" >
+						 <div class="content_body">
+						<div id="box2">
+					<div class="content_table" >
+					
 						<div class="form-container" style="background-color: #FFF;" id="userbustable">
 							<div id="srchusr_results">
 								<div id="srchusr_res">
-									<span><mmr:message messageId="" />User Business</span>
+									<span><mmr:message messageId="" /><mmr:message messageId="label.user.business"/></span>
 								</div>
 
 								<div class="form_buttons">	<s:if test="#session.edit == 'true'">
@@ -751,6 +1092,7 @@ function	resetfrpartner(){
 											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.partner" /> <mmr:message messageId="label.business" /></th>
 											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.countrypartner" /> <mmr:message messageId="label.business" /></th>
 											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="menu.admin.branch" /> <mmr:message messageId="label.business" /></th>
+											<th style="text-align: left; padding-left: 10px;"><mmr:message messageId="lable.email.type"/></th>
 										</tr>
 									</thead>
 									
@@ -790,8 +1132,57 @@ function	resetfrpartner(){
 				</label>
 				<input type="hidden" value="<s:property value='%{branchBus.id}'/>" name="branchBusIds" id=""/>
 				</td>
+				
+				
+				<td class="tablerow3" align="center" style="width: 250px;">
+				<label>
 				 
-			</tr>
+				<a href="#" class="form_buttons" style="float: left;" id="ahref<s:property value="%{id}"/>"  onclick="editEmailType(<s:property value="%{id}"/>)">
+				
+				  <s:if test="%{allEmailType}">
+				SPD,LTL,CHB,FWD,FPA
+				</s:if>
+				<s:else>
+				 
+				<s:if test="%{spdEnabled}">
+					SPD,
+					
+				</s:if>
+				<s:if test="%{ltlEnabled}">
+				LTL,
+				
+				</s:if>
+				<s:if test="%{chbEnabled}">
+				CHB,
+				
+				</s:if>
+				<s:if test="%{fwdEnabled}">
+				FWD,
+				
+				</s:if>
+				<s:if test="%{fpaEnabled}">
+					FPA
+				</s:if>
+			 
+				</s:else>
+				
+				</a>
+				<input type="hidden" value="<s:property value='%{spdEnabled}'/>" name="spdEnabled" id="spdEnabled<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{fpaEnabled}'/>" name="fpaEnabled" id="fpaEnabled<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{fwdEnabled}'/>" name="fwdEnabled" id="fwdEnabled<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{chbEnabled}'/>" name="chbEnabled" id="chbEnabled<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{ltlEnabled}'/>" name="ltlEnabled" id="ltlEnabled<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{allEmailType}'/>" name="allEmailType" id="allEmailType<s:property value="%{id}"/>"/>
+				 
+				 <input type="hidden" value="<s:property value='%{parentBus.id}'/>" name="parentBusIds1" id="bufpare<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{branchBus.id}'/>" name="branchBusIds1" id="bufbranch<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{nationBus.id}'/>" name="nationBusIds1" id="bufnation<s:property value="%{id}"/>"/>
+				 <input type="hidden" value="<s:property value='%{partnerBus.id}'/>" name="partnerBusIds1" id="bufpart<s:property value="%{id}"/>"/>
+				 
+ 				</label>
+				</td>
+			 
+		</tr>
 			 
 		</s:iterator>
 	
@@ -812,12 +1203,12 @@ function	resetfrpartner(){
 							
 								<div class="rows">
 									<div class="fieldsl">
-									<label style="width:200px !important;">Root Business:  </label>
+									<label style="width:200px !important;"><mmr:message messageId="label.Root.business"/> </label>
 										<div class="controls"><span>:</span>
 										 <s:select id="rid" list="userBusiness.businessFilter.ParentBusList" listKey="id" listValue="name"  headerKey="-1" headerValue="ANY" onchange="setPartnerBus(this.value)"></s:select>
 									</div></div>
 									<div class="fieldsl">
-										<label style="width:200px !important;">Partner Business: </label>
+										<label style="width:200px !important;"><mmr:message messageId="label.partner.business"/> </label>
 										<div class="controls"><span>:</span>
 										<div id="partnerBus">
 										<s:select id="pid" list="userBusiness.businessFilter.partnerBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"></s:select>
@@ -825,7 +1216,7 @@ function	resetfrpartner(){
 									</div>
 									</div>
 									<div class="fieldsl">
-										<label style="width:200px !important;">Nation Business: </label>
+										<label style="width:200px !important;"><mmr:message messageId="label.nation.business"/></label>
 										<div class="controls"><span>:</span>
 										<div id="nationBus">
 										 <s:select id="cid" list="userBusiness.businessFilter.nationBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"></s:select>
@@ -833,7 +1224,7 @@ function	resetfrpartner(){
 									</div>
 									</div>
 							    	<div class="fieldsl">
-										<label style="width:200px !important;">Branch Business: </label>
+										<label style="width:200px !important;"><mmr:message messageId="label.branch.business"/> </label>
 										<div class="controls"><span>:</span>
 										<div id="branchBus">
 										 <s:select id="bid"list="userBusiness.businessFilter.branchBusList" listKey="id" listValue="name" headerKey="-1" headerValue="ANY"> </s:select>
@@ -844,21 +1235,70 @@ function	resetfrpartner(){
 									
 								</div>
 								
+						 
+
+							<div class="rows">
+								<div class="fieldsl">
+									<label style="width: 200px !important;">SPD </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user1.spdEnabled" name="user1.spdEnabled"
+											id="userspdEnabled" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">LTL </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user1.ltlEnabled" name="user1.ltlEnabled"
+											id="userltlEnabled" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">CHB </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user1.chbEnabled" name="user1.chbEnabled"
+											id="userchbEnabled" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">FWD </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user1.fwdEnabled" name="user1.fwdEnabled"
+											id="userfwdEnabled" />
+									</div>
+								</div>
+								<div class="fieldsl">
+									<label style="width: 200px !important;">FPA </label>
+									<div class="controls">
+										<span>:</span>
+										<s:checkbox key="user1.fpaEnabled" name="user1.fpaEnabled"
+											id="userfpaEnabled" />
+									</div>
+								</div>
+
 							</div>
+
+						 	 
+
+						 </div>
 						</div>
-						
+</div>
+					
+					</div>
 					</div>
 						</s:if>
-		</s:form> 
-	</div>
+		 
 </div>	
 <div class="content_body">
 		<div class="content_table" >
 		&nbsp;
 		</div>
 </div>
+</div>
 </body>
 </html>
     
     
- 

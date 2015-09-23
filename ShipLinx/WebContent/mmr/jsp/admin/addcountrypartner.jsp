@@ -274,6 +274,13 @@ window.onload = function() {
 										<label><mmr:message messageId="label.business.smtpPort"/> </label>
 										<div  class="controls"><span>:</span><s:textfield  key="business.smtpPort" name="business.smtpPort" /></div>
 									</div>
+									<div class="fields">
+										<label><mmr:message messageId="label.business.invoiceLevel"/></label>
+										<div  class="controls"><span>:</span>
+									<s:select  name="business.invoiceLevel" headerKey="SYSTEM" headerValue="SYSTEM"
+										list="#{ 'BUSINESS':'BUSINESS'}" value="business.invoiceLevel" required="true" cssClass="text_01" />
+								</div>
+									</div>
 				</div>	
 				</div>
 				</div>

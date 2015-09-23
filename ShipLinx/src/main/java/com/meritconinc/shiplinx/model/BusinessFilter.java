@@ -13,6 +13,14 @@ public class BusinessFilter {
 	private Business nationBus;
 	private Business branchBus;
 	private long id;
+	//division level filter
+		    private boolean spdEnabled;
+		    private boolean ltlEnabled;
+		    private boolean chbEnabled;
+		   private boolean fwdEnabled;
+		  private boolean fpaEnabled;
+			
+		  private boolean allEmailType;
 	public List<Business> getBranchBusList() {
 		return branchBusList;
 	}
@@ -66,6 +74,42 @@ public class BusinessFilter {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public boolean isSpdEnabled() {
+		return spdEnabled;
+	}
+	public void setSpdEnabled(boolean spdEnabled) {
+		this.spdEnabled = spdEnabled;
+	}
+	public boolean isLtlEnabled() {
+		return ltlEnabled;
+	}
+	public void setLtlEnabled(boolean ltlEnabled) {
+		this.ltlEnabled = ltlEnabled;
+	}
+	public boolean isChbEnabled() {
+		return chbEnabled;
+	}
+	public void setChbEnabled(boolean chbEnabled) {
+		this.chbEnabled = chbEnabled;
+	}
+	public boolean isFwdEnabled() {
+		return fwdEnabled;
+	}
+	public void setFwdEnabled(boolean fwdEnabled) {
+		this.fwdEnabled = fwdEnabled;
+	}
+	public boolean isFpaEnabled() {
+		return fpaEnabled;
+	}
+	public void setFpaEnabled(boolean fpaEnabled) {
+		this.fpaEnabled = fpaEnabled;
+	}
+	public boolean isAllEmailType() {
+		return allEmailType;
+	}
+	public void setAllEmailType(boolean allEmailType) {
+		this.allEmailType = allEmailType;
 	}
  
  

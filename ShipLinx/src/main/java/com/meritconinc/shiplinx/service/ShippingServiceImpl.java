@@ -1283,7 +1283,7 @@ public class ShippingServiceImpl implements ShippingService {
     boolean retval = false;
     String toAddress = null;
     String strAttention = null;
-    int mailCount;
+    int mailCount=0;
     if (so.getToAddress() != null && so.getToAddress().isSendNotification()
         && so.getFromAddress() != null && !so.getFromAddress().isSendNotification()) {
       toAddress = so.getToAddress().getEmailAddress();
@@ -1300,6 +1300,8 @@ public class ShippingServiceImpl implements ShippingService {
     	    	toAddress = "customsdistribution@integratedcarriers.com";*/
     }else if(so.getCustomer().isChbCustomer() && !(so.getFromAddress().getCountryCode().equals(so.getToAddress().getCountryCode()))){
     	    	    	toAddress = "customsdistribution@integratedcarriers.com";
+    	    	    	mailCount=2;
+    	    	    	  
     	    	         
     	    	strAttention = so.getFromAddress().getContactName();
     }
@@ -1374,6 +1376,12 @@ public class ShippingServiceImpl implements ShippingService {
     	      	      	  ActionContext.getContext().getSession().put("MailCount",mailCount );
     	      	      	  
     	     	        }
+      else
+    	        {
+    	      	  mailCount=5;
+    	      	  ActionContext.getContext().getSession().put("MailCount",mailCount );
+    	        }
+
     } catch (MessagingException e) {
       log.error("Error sending email - Messaging Exception: ", e);
       retval = false;

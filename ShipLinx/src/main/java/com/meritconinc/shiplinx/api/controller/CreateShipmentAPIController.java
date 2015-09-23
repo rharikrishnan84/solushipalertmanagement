@@ -83,7 +83,7 @@ public class CreateShipmentAPIController extends GenericRestServerResource {
 				&& com.meritconinc.shiplinx.api.Util.ShopifyUtil
 						.authedicateRequest(
 								headers.getValues("x-shopify-hmac-sha256"),
-								entity)) {
+								entity,store)) {
 
 			
 			CarrierServiceManager carrierServiceManager = (CarrierServiceManager) MmrBeanLocator

@@ -3614,6 +3614,14 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				carrierServiceManager.shipOrder(shippingOrder,  r);
 				/*if(shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()){*/
 				Integer mailcount=(Integer) ActionContext.getContext().getSession().get("MailCount");
+				if(mailcount!=null && mailcount==1)
+				{
+					addActionMessage(MessageUtil.getMessage("shipment.notification.mail.success"));
+				}
+					else if(mailcount!=null && mailcount==5)
+						ActionContext.getContext().getSession().put("actionError", MessageUtil.getMessage("shipment.notification.mail.failure"));
+			
+				
 							               if(mailcount!=null && mailcount==0){
 				if((shippingOrder.getToAddress().isSendNotification() || shippingOrder.getFromAddress().isSendNotification()) && !(shippingOrder.getFromAddress().getCountryCode().equals(shippingOrder.getToAddress().getCountryCode()))){
 					
@@ -4840,6 +4848,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 	public String listShipment(){
 		String manifestResult = "";
+		List<UserBusiness> ubs=null;
 		try {
 
 //			if (shipments != null)
@@ -4918,7 +4927,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 												}*/
 									   BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 
-									   List<UserBusiness> ubs=null;
+									    
 									   if(UserUtil.getMmrUser()!=null){
 									  ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
 									  }
@@ -4945,17 +4954,26 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 												
 												
 												
-																							  if(ubs!=null && ubs.size()>0){
-																									if(so.getBusinessIds()!=null && so.getBusinessIds().size()>0 && UserUtil.getMmrUser()!=null){
-																										
-																										so.getBusinessIds().addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
-																										List<Long> busIds=so.getBusinessIds();
-																										//so.getBusinessIds().clear();
-																										so.setBusinessIds(BusinessFilterUtil.getvalidatedBusIds(busIds));
-																									}else{
-																										so.setBusinessIds(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(),ubs));
-																									}
-																								}
+
+												
+
+				 if(ubs!=null && ubs.size()>0){
+					 				if(so.getBusinessIds()!=null && so.getBusinessIds().size()>0 && UserUtil.getMmrUser()!=null){
+					 						
+					 						so.getBusinessIds().addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
+					 						List<Long> busIds=so.getBusinessIds();
+					 						//so.getBusinessIds().clear();
+					 				so.setBusinessIds(BusinessFilterUtil.getvalidatedBusIds(busIds));
+					 			}else{
+					 				
+					 				so.setBusinessIds(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(),ubs));
+					 			}
+					 					so.setServiceIds(getServiceIdsForUserBusiness(ubs));
+					 			
+					 			so.setCustomerId(null);
+					 			so.setBusinessId(0);
+					 		}
+					 			
 																						
 												
 												
@@ -5098,22 +5116,87 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			        /*if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
 			        		&& !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){*/
 			if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
-					this.setShipments(filterShipments(this.getShipments()));
+				this.setShipments(filterShipments(this.getShipments(),ubs));
 			        }
 			if(UserUtil.getMmrUser() != null && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_BUSINESSADMIN)){
-							        	this.setShipments(filterShipments(this.getShipments()));
+				this.setShipments(filterShipments(this.getShipments(),ubs));
 							        }
 					}
 		return SUCCESS;
 	}
-	private List<ShippingOrder> filterShipments(List<ShippingOrder> shipments) {
+	
+	
+	private List<Long> getServiceIdsForUserBusiness(List<UserBusiness> ubs) {
+				// TODO Auto-generated method stub
+				List<Long> serviceIds = new ArrayList<Long>();
+		 			if (ubs != null && ubs.size() > 0) {
+						CarrierServiceDAO carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator
+								.getInstance().findBean("carrierServiceDAO");
+						List<Service> serviceList = carrierServiceDAO.getAllServices();
+						for (UserBusiness ub : ubs) {
+		
+								for (Service s : serviceList) {
+		
+									if (ub.isSpdEnabled()
+											&& s.getEmailType().equals(
+													ShiplinxConstants.SPS_EMAIL_TYPE)) {
+										serviceIds.add(s.getId());
+									}
+									if (ub.isChbEnabled()
+											&& s.getEmailType().equals(
+													ShiplinxConstants.CHB_EMAIL_TYPE)) {
+										serviceIds.add(s.getId());
+									}
+									if (ub.isFwdEnabled()
+											&& s.getEmailType().equals(
+													ShiplinxConstants.FWD_EMAIL_TYPE)) {
+										serviceIds.add(s.getId());
+									}
+									if (ub.isFpaEnabled()
+											&& s.getEmailType().equals(
+													ShiplinxConstants.FPA_EMAIL_TYPE)) {
+										serviceIds.add(s.getId());
+									}
+									if (ub.isLtlEnabled()
+											&& s.getEmailType().equals(
+													ShiplinxConstants.LTL_EMAIL_TYPE)) {
+										serviceIds.add(s.getId());
+									}
+		
+								}
+						}
+						return serviceIds;
+				}
+				return null;
+		
+			}
+	
+	private boolean checkUserBusinessEmailType(UserBusiness ub) {
+						// TODO Auto-generated method stub
+							
+							if(ub!=null){
+								int i=0;
+								if(ub.isSpdEnabled()
+										||ub.isFpaEnabled()
+										||ub.isFwdEnabled()
+										||ub.isLtlEnabled()
+										||ub.isSpdEnabled()
+										||ub.isChbEnabled()){
+									return true;
+								}
+								
+							}
+						
+						return false;
+					}
+	private List<ShippingOrder> filterShipments(List<ShippingOrder> shipments, List<UserBusiness> ubs) {
 						// TODO Auto-generated method stub
 						List<Customer> filCus=(List<Customer>) getSession().get(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID);
 					    BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
 						List<ShippingOrder> filteredShippments=new ArrayList<ShippingOrder>();
 						/*Iterator<ShippingOrder> ships=shipments.iterator();
 						Iterator<Customer> customers=filCus.iterator();*/
-						if(filCus!=null && filCus.size()>0 && shipments.size()>0 && shipments!=null){
+						if(filCus!=null && filCus.size()>0 && shipments.size()>0 && shipments!=null && ubs==null){
 						Long businessId=BusinessFilterUtil.setBusinessIdbyUserLevel(); 
 						 List<Long> businessIds=new ArrayList<Long>();
 						if(businessId>0){
@@ -5149,9 +5232,60 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 								    	}
 								    }
 							 }
-							 			
+						}else{
+							 						filteredShippments=shipments; 			
 						}
-						
+						List<ShippingOrder> orders=new ArrayList<ShippingOrder>();
+ 						
+												if(ubs!=null && ubs.size()>0
+														&& filteredShippments!=null
+														&& filteredShippments.size()>0){
+													CarrierServiceDAO carrierServiceDAO=(CarrierServiceDAO)MmrBeanLocator.getInstance().findBean("carrierServiceDAO");
+											 
+													for(UserBusiness ub:ubs){
+														
+														if(checkUserBusinessEmailType(ub)){
+															
+															for(ShippingOrder so:filteredShippments){
+																
+																if(so.getService()==null && so.getServiceId()!=null && carrierServiceDAO!=null){
+																	 so.setService(carrierServiceDAO.getService(so.getServiceId()));
+																}
+																
+																if(ub.isSpdEnabled() 
+																		&& so.getService()!=null 
+																		&& so.getService().getEmailType().equals(ShiplinxConstants.SPS_EMAIL_TYPE)){
+																	orders.add(so);
+																}
+																if(ub.isChbEnabled() 
+																		&& so.getService()!=null 
+																		&& so.getService().getEmailType().equals(ShiplinxConstants.CHB_EMAIL_TYPE)){
+																	orders.add(so);
+																}
+																if(ub.isFwdEnabled() 
+																		&& so.getService()!=null 
+																		&& so.getService().getEmailType().equals(ShiplinxConstants.FWD_EMAIL_TYPE)){
+																	orders.add(so);
+																}
+																if(ub.isFpaEnabled() 
+																		&& so.getService()!=null 
+																		&& so.getService().getEmailType().equals(ShiplinxConstants.FPA_EMAIL_TYPE)){
+																	orders.add(so);
+																}
+																if(ub.isLtlEnabled() 
+																		&& so.getService()!=null 
+																		&& so.getService().getEmailType().equals(ShiplinxConstants.LTL_EMAIL_TYPE)){
+																orders.add(so);
+																}
+																
+															}
+															
+															return orders;
+														}else{
+															return filteredShippments;
+														}
+													}
+												} 
 						return filteredShippments;
 					}
 				
@@ -6645,6 +6779,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					            	  		bol = true;
 					            	  	}
             	  								shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
+            	  								addActionMessage(getText("charges.save.successfully"));
 				            	  			              }else if(this.getSelectedOrder().getCharges().get(i).getEdiInvoiceNumber() == null && userEdiInvoiceNumber[count]!=null){
 				            	  			            	if(commissionable[count]!= null && !commissionable[count].isEmpty()){
 				            	  			            	  		bol = Boolean.parseBoolean(commissionable[count]);
@@ -6652,6 +6787,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 				            	  			            	  		bol = true;
 				            	  			            	  	}
 					            	  			            	  shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId(),bol);
+					            	  			            	addActionMessage(getText("charges.save.successfully"));
 				            	  			            	  //shippingDAO.updateEDI(userEdiInvoiceNumber[count],this.getSelectedOrder().getCharges().get(i).getId());
 				            	  			              }
 				            	  			              count++;

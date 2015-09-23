@@ -10,10 +10,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+
 import com.lowagie.text.pdf.PRAcroForm;
 import com.meritconinc.shiplinx.model.Document;
 import com.meritconinc.shiplinx.model.Customer;
@@ -602,32 +604,12 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
   public List<ShippingOrder> getUnbilledShipments(long businessId, long customerId, String branch) {
     // TODO Auto-generated method stub
     try {
-    	    	List<Long> businessIds=new ArrayList<Long>();
-    	    	    	if(businessId>0){
-    	    	              businessIds=BusinessFilterUtil.getBusIdParentId(businessId);
-    	    	    	}else if(businessId==0){
-    	    	    		 BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
-    	    		  		   List<Business>	allbusList=businessDAO.getHoleBusinessList();
-    	    	    	   List<Long> busids=new ArrayList<Long>();
-    	    					for(Business bs:allbusList){
-    	    						 busids.add(bs.getId());
-    	    					}
-    	    				businessIds=busids;
-    	    	    	}
-
-    	    	    	List<UserBusiness> ubs=null;
-    	    	    	    	    	    	if(UserUtil.getMmrUser()!=null){
-    	    	    		    	    	    	ubs=BusinessFilterUtil.getUserBusinessByUserName(UserUtil.getMmrUser().getUsername());
-    	    	    		    	    	    	
-    	    	    		    	    	    	if(businessIds!=null && businessIds.size()>0 && ubs!=null && ubs.size()>0){
-    	    	    		    	    	    		List<Long> userBusIds=new ArrayList<Long>();
-    	    	    		    	    	    		userBusIds.addAll(businessIds);
-    	    	    		    	    	    		businessIds.clear();
-    	    	    		    	    	    		userBusIds.addAll(BusinessFilterUtil.getUserBusinessIds(UserUtil.getMmrUser().getUsername(), ubs));
-    	    	    		    	    	    		businessIds.addAll(BusinessFilterUtil.getvalidatedBusIds(userBusIds));
-    	    	    		    	    	    		
-    	    	    		    	    	    	}
-    	    	    	    	    	    	}
+    	List<Long> businessIds=getBusinessIdByBusinessInvoiceLevel(businessId);
+    	    	    
+    	    				if(businessIds!=null && businessIds.size()==0){
+    	    					businessIds=null;
+    	    					return null;
+    	    				}
     	    	    	    	    	    	
     	    	    	
       Map<String, Object> paramObj = new HashMap<String, Object>();
@@ -643,6 +625,100 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
     return null;
   }
 
+  
+  private List<Long> getBusinessIdByBusinessInvoiceLevel(long businessId) {
+	  	  	// TODO Auto-generated method stub
+	  	  	  
+	  	  	  BusinessDAO businessDAO = (BusinessDAO) MmrBeanLocator
+	  	  				.getInstance().findBean("businessDAO");
+	  	  		List<Long> businessIds = new ArrayList<Long>();
+	  	  		if (BusinessFilterUtil.isSystemLevel() ) { //sysadmin at system level
+	  	  			List<Business> busList = businessDAO.getHoleBusinessList();
+	  	  			if (busList != null && busList.size() > 0) {
+	  	  				for (Business b : busList) {
+	  	  					if (b.getInvoiceLevel() != null
+	  	  							&& b.getInvoiceLevel().equals(
+	  	  									ShiplinxConstants.INVOICE_LEVEL_SYSTEM)) {
+	  	  						businessIds.add(b.getId());
+	  	  					}
+	  	  				}
+	    
+	  	  			} 
+	  	  		} else if(UserUtil.getMmrUser()!=null  //other than sysadmin
+	  	  				  && !UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
+	  	  				  && UserUtil.getMmrUser().getBusiness()!=null
+	  	  				  && UserUtil.getMmrUser().getBusiness().getInvoiceLevel()!=null
+	  	  				  && UserUtil.getMmrUser().getBusiness().getInvoiceLevel().equals(ShiplinxConstants.INVOICE_LEVEL_BUSINESS)
+	  	  				  ){
+	  	  			if (businessId > 0) {
+	  	  				businessIds = BusinessFilterUtil
+	  	  						.getBusIdParentId(businessId);
+	  	  				
+	  	  				
+	  	  			} else if (businessId == 0) {
+	  	  				List<Business> allbusList = businessDAO
+	  	  						.getHoleBusinessList();
+	  	  				List<Long> busids = new ArrayList<Long>();
+	  	  				for (Business bs : allbusList) {
+	  	  					busids.add(bs.getId());
+	  	  				}
+	  	  				businessIds = busids;
+	    			}
+	  	  
+	  	  			List<UserBusiness> ubs = null;
+	  	  			if (UserUtil.getMmrUser() != null) {
+	  	  				ubs = BusinessFilterUtil
+	  	  						.getUserBusinessByUserName(UserUtil
+	  	  							.getMmrUser().getUsername());
+	  	  
+	 	  			if (businessIds != null && businessIds.size() > 0
+	 	  						&& ubs != null && ubs.size() > 0) {
+	 	  					List<Long> userBusIds = new ArrayList<Long>();
+	  	  					userBusIds.addAll(businessIds);
+	    					businessIds.clear();
+	    					userBusIds.addAll(BusinessFilterUtil
+	  	  							.getUserBusinessIds(UserUtil.getMmrUser()
+	  	  									.getUsername(), ubs));
+	  	  					businessIds.addAll(BusinessFilterUtil
+	  	  							.getvalidatedBusIds(userBusIds));
+	  	  
+	  	  				}
+	  	  			}
+	  	  			
+	  	  			if(businessIds!=null && businessIds.size()>0){
+	  	  				Iterator ite=businessIds.iterator();
+	  	  				while(ite.hasNext()){
+	  	  					Long id=(Long) ite.next();
+	  	  					Business b=businessDAO.getBusiessById(id);
+	  	  					if(b!=null && b.getInvoiceLevel()!=null
+	  	  							&& b.getInvoiceLevel().equals(ShiplinxConstants.INVOICE_LEVEL_SYSTEM)){
+	  	  						ite.remove();
+	  	  					}
+	  	  				}
+	  	  			}
+	  	  			
+	  	  		}else if(!BusinessFilterUtil.isSystemLevel()){ //sysadmin to drill to other business;
+	  	  			Long busId=BusinessFilterUtil.setBusinessIdbyUserLevel();
+	  	  			businessIds=BusinessFilterUtil.getBusIdParentId(busId);
+	  	  			
+	    			if(businessIds!=null && businessIds.size()>0){
+	  	  				Iterator ite=businessIds.iterator();
+	  	  				while(ite.hasNext()){
+	  	  					Long id=(Long) ite.next();
+	  	  					Business b=businessDAO.getBusiessById(id);
+	  	  					if(b!=null && b.getInvoiceLevel()!=null
+	  	  							&& b.getInvoiceLevel().equals(ShiplinxConstants.INVOICE_LEVEL_SYSTEM)){
+	  	  						ite.remove();
+	  	  					}
+	  	  				}
+	  	  			}
+	  	  			
+	  	  		}
+	  	  		businessIds=BusinessFilterUtil.getvalidatedBusIds(businessIds);
+	  	  	return businessIds;
+	  	  }
+  
+  
   public List<ShippingOrder> getLiveUnpaidShipments(long customerId) {
     // TODO Auto-generated method stub
     try {
@@ -1904,7 +1980,7 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
  				 return resultList;
  			 }
  		 }else{
- 			 if(user.getCustomerId()>0){
+ 			 if(so.getCustomerId()!=null && user.getCustomerId()>0){
  			 so.setCustomerId(user.getCustomerId());
  			 }
  		 }

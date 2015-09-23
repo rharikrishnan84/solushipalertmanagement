@@ -593,8 +593,10 @@ function showBillingState() {
 	<div class="footer" id="wrapper_new1">
 		<div class="footer_body">
 			<div class="footer_inner">
-				<p>&copy;2014 Integrated Carriers. All Rights Reserved</p>
-				<p>Powered by ICU Leading the way. Designed by Integrated Carriers.</p>
+				<!-- <p>&copy;2014 Integrated Carriers. All Rights Reserved</p>
+				<p>Powered by ICU Leading the way. Designed by Integrated Carriers.</p> -->
+				<p>&copy;<mmr:message messageId="message.footer.integratedcarriers"/></p>
+			 <p><mmr:message messageId="message.footer.icu"/></p>   s
 			</div>
 		</div>
 	</div>

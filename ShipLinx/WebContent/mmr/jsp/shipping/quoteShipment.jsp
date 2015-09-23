@@ -483,14 +483,16 @@
 			
 		$('#img_get_rates_quote').click(function(){
 				$('#loader').css('display','block');
-				$('#loaderImg').css('background-image','url("../mmr/images/ajax-loader2.gif")');
+				/* $('#loaderImg').css('background-image','url("../mmr/images/ajax-loader2.gif")'); */
+				$('#loaderImg').css('background-image');
 				$('#loaderImg').css('display','block');
 				
 		});
 		});
 	</script> 
 	<div id="loader" style="height:100%; width:100%; position:fixed; display:none; background-color:rgba(0,0,0,0.6); z-index:1000;">
-  <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000;"> 
+  <!-- <div id="loaderImg" style="width:100px; height:100px; margin:200px auto; z-index:1000;"> --> 
+  <div id="loaderImg" style="width:277px; height:201px; margin:200px auto; z-index:1000; background-image:url('../mmr/images/ajax-loader3.gif');">
     </div>
 </div>
 <div id="messages">

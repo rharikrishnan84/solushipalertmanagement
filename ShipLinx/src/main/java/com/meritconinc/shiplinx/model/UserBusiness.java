@@ -11,6 +11,12 @@ public class UserBusiness {
 	private Long branchId;
 	private Long userBusId;
    private BusinessFilter businessFilter;
+   private boolean spdEnabled;
+   	    private boolean ltlEnabled;
+   	    private boolean chbEnabled;
+   	   private boolean fwdEnabled;
+   	  private boolean fpaEnabled; 
+     
    private List<BusinessFilter> businessFilterList=new ArrayList<BusinessFilter>();
 	private String username;
  
@@ -62,6 +68,36 @@ public class UserBusiness {
 	}
 	public void setUserBusId(Long userBusId) {
 		this.userBusId = userBusId;
+	}
+	public boolean isSpdEnabled() {
+		return spdEnabled;
+	}
+	public void setSpdEnabled(boolean spdEnabled) {
+		this.spdEnabled = spdEnabled;
+	}
+	public boolean isLtlEnabled() {
+		return ltlEnabled;
+	}
+	public void setLtlEnabled(boolean ltlEnabled) {
+		this.ltlEnabled = ltlEnabled;
+	}
+	public boolean isChbEnabled() {
+		return chbEnabled;
+	}
+	public void setChbEnabled(boolean chbEnabled) {
+		this.chbEnabled = chbEnabled;
+	}
+	public boolean isFwdEnabled() {
+		return fwdEnabled;
+	}
+	public void setFwdEnabled(boolean fwdEnabled) {
+		this.fwdEnabled = fwdEnabled;
+	}
+	public boolean isFpaEnabled() {
+		return fpaEnabled;
+	}
+	public void setFpaEnabled(boolean fpaEnabled) {
+		this.fpaEnabled = fpaEnabled;
 	}
 	 
 

@@ -728,6 +728,21 @@ public void setSlaveCarrierName(String slaveCarrierName) {
 	  
 	  	    }
 	  	  };
+	  	  
+public static Comparator PriceComparatorForSkid = new Comparator() {
+			  	   public int compare(Object arg0, Object arg1) {
+			  	      double cus1 = ((Rating) arg0).getCharges().get(0).getCost();
+			  	      double cus2 = ((Rating) arg1).getCharges().get(0).getCost();
+			  
+			  	      if (cus1 > cus2)
+			  	        return 1;
+			  	      else if (cus1 < cus2)
+			  	        return -1;
+			  	      else
+			  	        return 0;
+			  
+			  	    }
+			  	  };
 public String getAccountNum() {
 	return accountNum;
 }

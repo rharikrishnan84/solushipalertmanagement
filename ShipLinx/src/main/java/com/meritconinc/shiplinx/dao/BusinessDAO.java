@@ -40,7 +40,7 @@ public interface BusinessDAO{
 					
 					public List<UserBusiness> getUserBusinessListByUser(
 														String username);
-												public void adduserBusiness(UserBusiness ub);
+												public Long adduserBusiness(UserBusiness ub);
 												public void deleteUserBusiness(Long userBusId);
 												
 												
@@ -55,4 +55,5 @@ public interface BusinessDAO{
 										public void updateBusinessEmail(BusinessEmail be3);
 										public void setCopyMarkupFlag(long businessId);
 	public List<Business> getBusinessForSelectedBusiness(long businessId);
+	public void updateUserBusiness(UserBusiness ub1);
 }

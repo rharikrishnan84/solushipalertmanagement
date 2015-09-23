@@ -690,7 +690,7 @@ public String getSalesRep() {
 	  	  		List<ShippingOrder> filteredShippments=new ArrayList<ShippingOrder>();
 	  	  		/*Iterator<ShippingOrder> ships=shipments.iterator();
 	  	  		Iterator<Customer> customers=filCus.iterator();*/
-	  	  		if(filCus!=null && filCus.size()>0 && shipments.size()>0 && shipments!=null){
+	  	  		  	  	if(filCus!=null && filCus.size()>0 && shipments!=null && shipments.size()>0){
 	  	  			for(ShippingOrder so: shipments){
 	  	  				for(Customer c:filCus){
 	  	  					if(so.getCustomerId()!=null && c.getId()!=0){
@@ -1518,11 +1518,16 @@ public String getSalesRep() {
     }
 
 
-    
+    if (!StringUtil.isEmpty(commission.getFromDate_web())){
         commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
                 FormattingUtil.DATE_FORMAT_WEB));
-        commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
-                FormattingUtil.DATE_FORMAT_WEB));
+    }
+        /*commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+                FormattingUtil.DATE_FORMAT_WEB));*/
+    if (!StringUtil.isEmpty(commission.getToDate_web())){
+    	        commission.setToDate(FormattingUtil.getDateEndOfDay(commission.getToDate_web(),
+    	        		FormattingUtil.DATE_FORMAT_WEB_ENDOFDAY));
+    	   }
         String toCurrency = commission.getCurrency();
         commissions = invoiceManager.searchCommissions(commission);
         
@@ -2138,10 +2143,17 @@ String type=request.getParameter("type");
 			return SUCCESS;
 		}
 		Commission commission = this.getCommission();
+		
+		if (!StringUtil.isEmpty(commission.getFromDate_web())){
 				 commission.setFromDate(FormattingUtil.getDate(commission.getFromDate_web(),
 				            FormattingUtil.DATE_FORMAT_WEB));
-				    commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
-				            FormattingUtil.DATE_FORMAT_WEB));
+		}
+				   /* commission.setToDate(FormattingUtil.getDate(commission.getToDate_web(),
+				            FormattingUtil.DATE_FORMAT_WEB));*/
+		if (!StringUtil.isEmpty(commission.getToDate_web())){
+			        commission.setToDate(FormattingUtil.getDateEndOfDay(commission.getToDate_web(),
+			        		FormattingUtil.DATE_FORMAT_WEB_ENDOFDAY));
+			    }
 				    
 				    commissions = invoiceManager.searchCommissions(commission);
 		if("xml".equalsIgnoreCase(type)){

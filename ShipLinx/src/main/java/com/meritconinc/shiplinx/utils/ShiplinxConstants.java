@@ -571,4 +571,8 @@ public class ShiplinxConstants {
 	/* For business mark-up - end*/
 
 	public static final Long ORDER_INC = 1l;
+	public static final String INVOICE_LEVEL_SYSTEM = "SYSTEM";
+	public static final String INVOICE_LEVEL_BUSINESS = "BUSINESS";
+	public static final String FWD_EMAIL_TYPE = "FWD";
+	public static final String FPA_EMAIL_TYPE = "FPA";
 }

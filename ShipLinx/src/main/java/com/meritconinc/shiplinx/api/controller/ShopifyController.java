@@ -49,6 +49,7 @@ import com.meritconinc.shiplinx.dao.BusinessDAO;
 import com.meritconinc.shiplinx.dao.CarrierServiceDAO;
 import com.meritconinc.shiplinx.dao.ProductManagerDAO;
 import com.meritconinc.shiplinx.model.Address;
+import com.meritconinc.shiplinx.model.Carrier;
 import com.meritconinc.shiplinx.model.LoggedEvent;
 import com.meritconinc.shiplinx.model.Package;
 import com.meritconinc.shiplinx.model.PackageType;
@@ -1492,6 +1493,8 @@ public class ShopifyController implements Runnable {
 			js.accumulate("tracking_number", order2.getMasterTrackingNum());
 			js.accumulate("notify_customer", true);
 			js.accumulate("tracking_url", order2.getTrackingURL());
+			js.accumulate("tracking_company", getcarrierNameByorder(order2));
+
 			
 			
 		} catch (org.json.JSONException e) {
@@ -1503,6 +1506,44 @@ public class ShopifyController implements Runnable {
 		return ss;
 	}
 	
+	
+
+	private String getcarrierNameByorder(ShippingOrder order) {
+		// TODO Auto-generated method stub
+
+		Long carrierId=order.getCarrierId();
+		String carrier=order.getCarrierName();
+		
+		String carrierName="";
+		if(carrierId!=null){
+			if(carrierId==3){
+				carrierName="DHL";
+		}else if(carrierId==1){
+				carrierName="FedEx";
+			}else if(carrierId==2){
+				carrierName="UPS";
+			}else if(carrierId==20){
+				carrierName="Purolator";
+			}else if(carrier!=null){
+				return carrier;
+			}else{
+				CarrierServiceDAO carrierServiceDAO = (CarrierServiceDAO) MmrBeanLocator.getInstance()
+						.findBean("carrierServiceDAO");
+				if(carrierServiceDAO!=null){
+					Carrier c=carrierServiceDAO.getCarrierBycarrierId(carrierId);
+					if(c!=null){
+						return c.getName();
+					}
+				}else{
+					return order.getCarrierName();
+				}
+				
+			}
+			return carrierName;
+		}
+		return null;
+	}
+
 
 	public void addLoggedEvent(ShippingOrder order2, String storeName,Long statusCode,String msg) {
 		// TODO Auto-generated method stub

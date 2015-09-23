@@ -575,10 +575,24 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   	   String[] partnerIds=request.getParameterValues("partnerBusIds");
   	   String[] nationIds=request.getParameterValues("nationBusIds");
   	   String[] branchIds=request.getParameterValues("branchBusIds");
+  	   	 String[] spds = request.getParameterValues("spdEnabled");
+  	  			String[] ltls = request.getParameterValues("ltlEnabled");
+  	  			String[] fpas = request.getParameterValues("fpaEnabled");
+  	  			String[] fwds = request.getParameterValues("fwdEnabled");
+  	  			String[] chbs = request.getParameterValues("chbEnabled");
+
   	   List<Long> parentIdL=new ArrayList<Long>();
   	   List<Long> partnerIdL=new ArrayList<Long>();
   	   List<Long> nationIdL=new ArrayList<Long>();
   	   List<Long> branchIdL=new ArrayList<Long>();
+  	   
+  	 List<Boolean> spdB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> ltlB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> fpaB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> chbB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> fwdB=new ArrayList<Boolean>();
+  	   	
+  	   
   	   if(parentIds !=null){
   	   for(int i=0;i<parentIds.length;i++){
   		   
@@ -586,6 +600,12 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   		   partnerIdL.add(Long.parseLong(partnerIds[i]));
   		   nationIdL.add(Long.parseLong(nationIds[i]));
   		   branchIdL.add(Long.parseLong(branchIds[i]));
+  		   
+  		 spdB.add(Boolean.parseBoolean(spds[i]));
+  		  				   fpaB.add(Boolean.parseBoolean(fpas[i]));
+  		  				   chbB.add(Boolean.parseBoolean(chbs[i]));
+  		  				   fwdB.add(Boolean.parseBoolean(fwds[i]));
+  		  				   ltlB.add(Boolean.parseBoolean(ltls[i]));
   	   }
   	   }
   	   
@@ -602,6 +622,12 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   		  ub.setPartnerId(partnerIdL.get(i));
   		  ub.setNationId(nationIdL.get(i));
   		  ub.setBranchId(branchIdL.get(i));
+  		ub.setBusinessFilter(new BusinessFilter());
+  		  				  ub.getBusinessFilter().setSpdEnabled(spdB.get(i));
+  		  				  ub.getBusinessFilter().setLtlEnabled(ltlB.get(i));
+  		  				  ub.getBusinessFilter().setFpaEnabled(fpaB.get(i));
+  		  				  ub.getBusinessFilter().setFwdEnabled(fwdB.get(i));
+  		  				  ub.getBusinessFilter().setChbEnabled(chbB.get(i));
   		  updateduserBus.add(ub);
   	  }
   	   }
@@ -665,10 +691,26 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   	   String[] partnerIds=request.getParameterValues("partnerBusIds");
   	   String[] nationIds=request.getParameterValues("nationBusIds");
   	   String[] branchIds=request.getParameterValues("branchBusIds");
+  	   
+  	   
+  	 String[] spds = request.getParameterValues("spdEnabled");
+  	  			String[] ltls = request.getParameterValues("ltlEnabled");
+  	  			String[] fpas = request.getParameterValues("fpaEnabled");
+  	  			String[] fwds = request.getParameterValues("fwdEnabled");
+  	  			String[] chbs = request.getParameterValues("chbEnabled");
+  	  	
   	   List<Long> parentIdL=new ArrayList<Long>();
   	   List<Long> partnerIdL=new ArrayList<Long>();
   	   List<Long> nationIdL=new ArrayList<Long>();
   	   List<Long> branchIdL=new ArrayList<Long>();
+  	   
+  	   
+  	 List<Boolean> spdB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> ltlB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> fpaB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> chbB=new ArrayList<Boolean>();
+  	  	  	 List<Boolean> fwdB=new ArrayList<Boolean>();
+  	   
   	   if(parentIds!=null){
   	   for(int i=0;i<parentIds.length;i++){
   		   
@@ -676,6 +718,14 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   		   partnerIdL.add(Long.parseLong(partnerIds[i]));
   		   nationIdL.add(Long.parseLong(nationIds[i]));
   		   branchIdL.add(Long.parseLong(branchIds[i]));
+  		   
+  		   		 spdB.add(Boolean.parseBoolean(spds[i]));
+  		  				   fpaB.add(Boolean.parseBoolean(fpas[i]));
+  		  				   chbB.add(Boolean.parseBoolean(chbs[i]));
+  		  				   fwdB.add(Boolean.parseBoolean(fwds[i]));
+  		 				   ltlB.add(Boolean.parseBoolean(ltls[i]));
+
+  		   
   	   }
   	   }
   	   
@@ -689,6 +739,15 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
   		  ub.setPartnerId(partnerIdL.get(i));
   		  ub.setNationId(nationIdL.get(i));
   		  ub.setBranchId(branchIdL.get(i));
+  		  
+  		  		ub.setBusinessFilter(new BusinessFilter());
+  		  		  		  ub.getBusinessFilter().setSpdEnabled(spdB.get(i));
+  		  		  		  ub.getBusinessFilter().setLtlEnabled(ltlB.get(i));
+  		  		  		  ub.getBusinessFilter().setFpaEnabled(fpaB.get(i));
+  		  		  		  ub.getBusinessFilter().setFwdEnabled(fwdB.get(i));
+  		  		  		  ub.getBusinessFilter().setChbEnabled(chbB.get(i));
+
+  		  
   		  toaddubs.add(ub);
   	  }
   	  if(toaddubs!=null && toaddubs.size()>0){
@@ -837,6 +896,22 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
 				 }
 			 }
 			  bfList.add(ub.getBusinessFilter());
+			  
+			  			  			 ub.getBusinessFilter().setSpdEnabled(ub.isSpdEnabled());
+			  			  			 ub.getBusinessFilter().setChbEnabled(ub.isChbEnabled());
+			  			  			 ub.getBusinessFilter().setFwdEnabled(ub.isFwdEnabled());
+			  			  			 ub.getBusinessFilter().setLtlEnabled(ub.isLtlEnabled());
+			  		  			 ub.getBusinessFilter().setFpaEnabled(ub.isFpaEnabled());
+			  			  			 
+			  			  			 if(!ub.isSpdEnabled()
+			  			  		    		   && !ub.isChbEnabled()
+			  			  		    		   && !ub.isFwdEnabled()
+			  			  		    		   && !ub.isLtlEnabled()
+			  			  		    		   && !ub.isFpaEnabled()){
+			  			  				 ub.getBusinessFilter().setAllEmailType(true);
+			  			  				 
+			  			  		       }
+
 		  }
 		  
 		
@@ -874,6 +949,14 @@ public class UserListAction extends DataGridAction implements Preparable, Servle
     // setEdit("false");
     return SUCCESS;*/
 	// check if customer id is set, it means admin user is creating customer user
+
+	  Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+	  	  if(UserUtil.getMmrUser()!=null 
+	  			  && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)
+	  			  && businessId==null){
+	  		  addActionMessage("Please Select Any business to Add Customer");
+	  	    		return "fail";
+	  	  }
 	  	  	    long customerId = 0;
 	  	  	    if (getUser() != null)
 	  	  	      customerId = getUser().getCustomerId();

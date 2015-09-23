@@ -428,18 +428,21 @@ public class ShopifyUtil /*implements Runnable */ {
      * API AUTHENTICATION
      * @param shopifyHmac
      * @param data
+     * @param store 
      * @return
      * @throws InvalidKeyException
      * @throws IOException
      */
-	public static boolean authedicateRequest(String shopifyHmac, String data)
+	public static boolean authedicateRequest(String shopifyHmac, String data, EcommerceStore store)
 			throws InvalidKeyException, IOException {
 		// TODO Auto-generated method stub
 
-		String calucaltedHmac = CalculateHmac(data);
-		if (shopifyHmac != null && calucaltedHmac != null
-				&& shopifyHmac.equals(calucaltedHmac)) {
-			return true;
+		if(store!=null){
+						String calucaltedHmac = CalculateHmac(data,store.getSharedSceret());
+						if (shopifyHmac != null && calucaltedHmac != null
+								&& shopifyHmac.equals(calucaltedHmac)) {
+							return true;
+						}
 		}
  		return false;
 
@@ -452,11 +455,11 @@ public class ShopifyUtil /*implements Runnable */ {
     * @return
     * @throws IOException
     */
-	public static String CalculateHmac(String input) throws IOException {
+		public static String CalculateHmac(String input, String sharedscret) throws IOException {
 
 		String input1 = null;
 		try {
-			String secret = EcommerceAPIConstant.SHOPIFY_SHARED_SCRECT;
+			String secret = sharedscret;
  			Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
 			SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(),
 					"HmacSHA256");
@@ -594,14 +597,19 @@ public class ShopifyUtil /*implements Runnable */ {
 		  if(!shop.startsWith(("https://"))){
 			  shop="https://"+shop;
 		  }
+		  EcommerceDAO eCommerceDAO = (EcommerceDAO) MmrBeanLocator.getInstance()
+				  				  .findBean("eCommerceDAO");
+		 EcommerceStore st=eCommerceDAO.getEcomStorebyStoreUrl(shop);
+				  		  
+		  
  			String url =   shop + "/admin/oauth/access_token";
 			Client client = Client.create();
 			WebResource webResource = client.resource(url);
 
 			String input = "{\"client_id\":\""
-					+ EcommerceAPIConstant.SHOPIFY_API_KEY
+					+ st.getApiKey()
 					+ "\",\"client_secret\":\""
-					+ EcommerceAPIConstant.SHOPIFY_SHARED_SCRECT + "\",\"code\":\""
+					+ st.getSharedSceret() + "\",\"code\":\""
 					+ code + "\"}";
 
 			ClientResponse response = webResource

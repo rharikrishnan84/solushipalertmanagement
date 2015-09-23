@@ -239,8 +239,10 @@ function keyPressSubmit(myfield,e) {
 	<div class="footer">
 		<div class="footer_body">
 			<div class="footer_inner">
-				<p>&copy;2014 Integrated Carriers. All Rights Reserved</p>
-				<p>Powered by ICU Leading the way. Designed by Integrated Carriers.</p>
+				<!-- <p>&copy;2014 Integrated Carriers. All Rights Reserved</p>
+				<p>Powered by ICU Leading the way. Designed by Integrated Carriers.</p> -->
+				<p>&copy;<mmr:message messageId="message.footer.integratedcarriers"/></p>
+			 <p><mmr:message messageId="message.footer.icu"/></p>   
 			</div>
 		</div>
 	</div>

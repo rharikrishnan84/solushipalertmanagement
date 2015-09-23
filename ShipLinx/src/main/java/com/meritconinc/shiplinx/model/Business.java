@@ -21,7 +21,7 @@ public class Business {
 	private String subdomain;
 	private String logoutURL;
 	private String supportURL;
-	
+	private String invoiceLevel;
 	private Address address;
 	private Address usAddress;
 	private String headerKey;
@@ -520,6 +520,14 @@ public class Business {
 								public void setShippingDocPath(String shippingDocPath) {
 										this.shippingDocPath = shippingDocPath;
 									}
+
+								public String getInvoiceLevel() {
+									return invoiceLevel;
+								}
+
+								public void setInvoiceLevel(String invoiceLevel) {
+									this.invoiceLevel = invoiceLevel;
+								}
 						
 			
 }

@@ -2167,6 +2167,42 @@ public static List<File> getCSSFileList(File dir) {
 			}
 		return flagrate;
 	}
- 
-    
+	
+	
+	public static  boolean isSystemLevel(){
+						
+				 		  Long businessId=(Long) ActionContext.getContext().getSession().get(Constants.BUSINESS_ID_SESSION);
+						  if(businessId==null && UserUtil.getMmrUser()!=null
+								  && UserUtil.getMmrUser().getUserRole().equals(ShiplinxConstants.ROLE_SYSADMIN)){
+							  return true;
+						  }
+						return false;
+					}
+				    
+					
+					
+					 public static List<Long> getAllSuperBusinessIds(Long businessId){
+							BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+							Business bus=businessDAO.getBusiessById(businessId);
+							
+							List<Long> businessIds=new ArrayList<Long>();
+							businessIds.add(businessId);
+							if(bus!=null){
+								if(bus.isPartnerLevel()){
+									businessIds.add(bus.getParentBusinessId());
+								}else if(bus.isNationLevel()){
+		 			 				businessIds.add(bus.getPartnerId());
+									Business b1=businessDAO.getBusiessById(bus.getPartnerId());
+									businessIds.add(b1.getParentBusinessId());
+								}else if(bus.isBranchLevel()){
+									businessIds.add(bus.getPartnerId());
+									businessIds.add(bus.getCountryPartnerId());
+								Business b1=businessDAO.getBusiessById(bus.getPartnerId());
+									businessIds.add(b1.getParentBusinessId());
+								}
+							}
+							businessIds=getvalidatedBusIds(businessIds);
+							return businessIds;
+					}
+     
 }

@@ -78,7 +78,14 @@ var product_id=0;
 		     }else{
 		      return false;
 		     }
-		    }else{
+		     
+		    }else if (selobj.selectedIndex == 0){
+			      bcurncy = "";
+		     }
+		    else if(typeof selobj.selectedIndex === 'undefined'){
+		    	bcurncy=selobj.defaultValue;
+		    	}
+		    else{
 		    	bcurncy = "";
 		     //return false;
 		    }
@@ -1722,7 +1729,7 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 											</s:if>
 											<s:else>
 											<s:if test="%{selectedOrder.actualCharges.size ==0}">
-												<s:select value="%{statusText}"
+												<s:select value="%{statusText}" id="statusText"
 													cssClass="text_01_combo_big" cssStyle="width:140px;"
 														name="quotedChargeStatusText"
 															list="{'Pending Release','Ready to Invoice'}" theme="simple" />
@@ -2111,11 +2118,11 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
 												<td class="ordrdtl_title_val"><s:property value="cost" /></td>
 											<td class="ordrdtl_title_val">
                                                <s:if test="%{costcurrency==1}">
-                                               <s:hidden name="actualchargecurrency" value="CAD" />
+                                               <s:hidden name="actualcostcurrency" value="1" />
                                            CAD
                                            </s:if>
                                            <s:elseif test="%{costcurrency==2}">
-                                           <s:hidden name="actualchargecurrency" value="USD" />
+                                           <s:hidden name="actualcostcurrency" value="2" />
                                            
                                            USD
                                            </s:elseif>
@@ -2130,10 +2137,11 @@ key="selectedOrder.creditCard.billingAddress.contactName" name="selectedOrder.cr
                                            
                                            <td class="ordrdtl_title_val">
                                            <s:if test="%{chargecurrency==1}">
+                                           <s:hidden name="actualchargecurrency" value="CAD" />
                                            CAD
                                            </s:if>
                                            <s:elseif test="%{chargecurrency==2}">
-                                           
+                                           <s:hidden name="actualchargecurrency" value="USD" />
                                            USD
                                            </s:elseif>
                                            </td>

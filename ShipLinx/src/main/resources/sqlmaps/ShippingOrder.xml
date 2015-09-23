@@ -740,6 +740,7 @@
    <result property="costcurrency" column="cost_currency" />
             <result property="chargecurrency" column="charge_currency" />
              <result property="exchangerate" column="exchange_rate" />
+             <result property="isCommissonable" column="commissionable" />
    
    <result property="quoteChargeId" column ="quote_charge_id"/>
    </resultMap>
@@ -2260,6 +2261,15 @@
 					#businessIds[]# </iterate>
 			</isNotEmpty>
 		</isNotNull>
+		
+			<isNotNull property="serviceIds">
+			<isNotEmpty property="serviceIds">
+				and o.service_id IN
+				<iterate open="(" close=")" conjunction="," property="serviceIds">
+					#serviceIds[]# </iterate>
+			</isNotEmpty>
+		</isNotNull>
+		
 		<isNotNull property = "orderIds">
 				<isNotEmpty property = "orderIds">
 				and o.order_id IN <iterate   open="(" close=")" conjunction="," property="orderIds"> #orderIds[]# </iterate>
@@ -2330,6 +2340,14 @@
 				<isNotEmpty property = "businessIds">
 				and o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
 				</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull property="serviceIds">
+			<isNotEmpty property="serviceIds">
+				and o.service_id IN
+				<iterate open="(" close=")" conjunction="," property="serviceIds">
+					#serviceIds[]# </iterate>
+			</isNotEmpty>
 		</isNotNull>
 		<isNotNull property = "orderIds">
 				<isNotEmpty property = "orderIds">
