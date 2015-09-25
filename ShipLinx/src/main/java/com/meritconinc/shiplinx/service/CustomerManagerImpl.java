@@ -58,6 +58,7 @@ public class CustomerManagerImpl implements CustomerManager {
 	BusinessDAO businessDAO;
 	private InvoiceDAO invoiceDAO;
 	private ShippingDAO shippingDAO;
+	private ShippingService shippingService;
 	private CarrierServiceDAO carrierServiceDAO;
 	protected MarkupManager markupManagerService;
 	private PinBlockManager pinBlockManager;
@@ -494,6 +495,7 @@ public class CustomerManagerImpl implements CustomerManager {
 	}
 
 	public CreditUsageReport getCreditUsageReport(long customerId, long busId) {
+		long startTime = System.currentTimeMillis();
 
 		CreditUsageReport cur = new CreditUsageReport();
 		// first get all unpaid and partially paid invoices
@@ -509,6 +511,7 @@ public class CustomerManagerImpl implements CustomerManager {
 				Invoice.INVOICE_STATUS_PARTIAL_PAID });
 
 		List<Invoice> invoices = invoiceDAO.searchInvoices(invoice);
+		log.info("total invoice list: "+invoices.size());
 		cur.setUnpaidInvoices(invoices);
 		double total = 0.0;
 		if (invoices != null) {
@@ -517,9 +520,13 @@ public class CustomerManagerImpl implements CustomerManager {
 						.doubleValue()).doubleValue());
 		}
 		cur.setUnpaidInvoiceAmount(total);
-
-		List<ShippingOrder> orders = shippingDAO
+		long startTime1 = System.currentTimeMillis();
+		List<ShippingOrder> tempOrders = shippingDAO
 				.getLiveUnpaidShipments(customerId);
+		List<ShippingOrder> orders = shippingService.populateOrder(tempOrders); 
+		long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
+		log.info(" Total Elapsed Time for getLiveUnpaidShipments (seconds):" + elapsedTimeSec1);
+		log.info("getLiveUnpaidShipments : "+orders.size());
 		cur.setLiveUnpaidShipments(orders);
 		total = 0.0;
 		if (orders != null) {
@@ -528,7 +535,8 @@ public class CustomerManagerImpl implements CustomerManager {
 						.add(total, order.getTotalChargeQuoted()).doubleValue());
 		}
 		cur.setLiveUnpaidShipmentsAmount(total);
-
+		long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
+		log.info(" Total Elapsed Time for getCreditUsageReport (seconds):" + elapsedTimeSec);
 		return cur;
 	}
 
@@ -1165,5 +1173,13 @@ public class CustomerManagerImpl implements CustomerManager {
 	@Override
 	public Long getCustomerIdByName(String name, Long businessId) {
 		return customerDAO.getCustomerIdByName(name, businessId);
+	}
+
+	public ShippingService getShippingService() {
+		return shippingService;
+	}
+
+	public void setShippingService(ShippingService shippingService) {
+		this.shippingService = shippingService;
 	}
 }

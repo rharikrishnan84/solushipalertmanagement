@@ -265,4 +265,6 @@ public ChargeGroup getChargeDetailsByProvince(String province);
 	public void updateShipDocVisbibilty(String visibility, long documentId);
 	
 	public void updateShipDocument(com.meritconinc.shiplinx.model.Document document);
+	
+	public List<ShippingOrder> populateOrder(List<ShippingOrder> orders); 
 }

@@ -1006,6 +1006,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
   public CarrierService shipOrder(ShippingOrder order, Rating rate) throws Exception {
     log.debug("-------shipOrder----");
+    long startTime = System.currentTimeMillis();
     CarrierService cs = null;
     if (errorMessages != null) {
       errorMessages.clear();
@@ -1072,7 +1073,11 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 
     // check if customer has crossed credit limit, if credit limit is set to
     // 0 means no limit
+	long startTime1 = System.currentTimeMillis();
     int unpaidInvoiceCount = customerService.findUnpaidInvoiceDuration(order.getCustomer().getId(),order.getCustomer().getHoldTerms());
+    log.info("total unpaid invoice count "+unpaidInvoiceCount);
+    long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
+    log.info(" Total Elapsed Time for unpaidInvoiceCount (seconds):" + elapsedTimeSec1);
     if(order.getCustomer().getCreditLimit().doubleValue() > 0){
     	cur = this.customerService.getCreditUsageReport(order.getCustomerId(),
     			order.getCustomer().getBusinessId());
@@ -1359,6 +1364,8 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     if (order.getCarrierId() == ShiplinxConstants.CARRIER_GENERIC) {
       carrierService.shipOrder(order, rate, rate.getCustomerCarrier());
     }
+    long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
+    log.info(" Total Elapsed Time for ship order  (seconds):" + elapsedTimeSec);
     return cs;
   }
 

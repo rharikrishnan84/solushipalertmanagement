@@ -1106,7 +1106,7 @@
 				
 	</select>	
 	
-	<select id="searchLiveUnpaidShipments" resultMap="ShippingOrderResult">
+	<select id="searchLiveUnpaidShipments" resultMap="TrackSearchOrderResult">
 		select so.* from shipping_order so where (so.status_id != 40 AND so.status_id !=80) AND so.billing_status !=50  
 		<isGreaterThan prepend="and" property="customerId" compareValue="0">
 		 	so.customer_id = #customerId#
