@@ -1506,12 +1506,12 @@ public class ShippingServiceImpl implements ShippingService {
           && _batchInfo.getServiceId() != null) {
         this.shipments = _shipments;
         this.batchInfo = _batchInfo;
-        new Thread() {
-          public void run() {
+       /* new Thread() {
+          public void run() {*/
             beginProcessing(shipments, batchInfo);
-          }
+         /* }
         }.start();
-
+*/
         return shipments;
       }
     } catch (Exception e) {
@@ -1528,11 +1528,13 @@ public class ShippingServiceImpl implements ShippingService {
     // TODO Auto-generated method stub
     if (shipments != null && batchInfo != null) {
       for (ShippingOrder so : shipments) {
-        if (so != null
+        /*if (so != null
             && !StringUtil.isEmpty(so.getBatchId())
             && so.getStatusId() != null
             && (so.getStatusId().longValue() == ShiplinxConstants.STATUS_READYTOPROCESS || so
-                .getStatusId().longValue() == ShiplinxConstants.STATUS_EXCEPTION)) {
+                .getStatusId().longValue() == ShiplinxConstants.STATUS_EXCEPTION)) {*/
+    	  if (so != null && !StringUtil.isEmpty(so.getBatchId())) {
+
           so.setService(this.shippingDAO.getServiceById(batchInfo.getServiceId()));
           so.setServiceId(so.getService().getId());
           // process Shipment

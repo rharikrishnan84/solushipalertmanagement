@@ -388,4 +388,8 @@ public class AddressManagerImpl implements AddressManager,Runnable  {
 	public void updateCustomerId(Long customerId, Long addressId){
 		 addressDAO.updateCustomerIdInAddress(customerId, addressId);
 	}
+	public List<Address> getAddressByIds(List<Long> addressIds)
+		{
+			return addressDAO.getAddressByIds(addressIds);
+		}
 }

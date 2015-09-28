@@ -90,7 +90,8 @@
 											cssClass="text_02_tf" readonly="readonly"  onClick="selectDate('t_date_c','t_trigger_c');"/>
 										</div>
 									</div>
-									<s:if test="%{#session.ROLE.contains('busadmin')}">
+									<%-- <s:if test="%{#session.ROLE.contains('busadmin')}"> --%>
+									<s:if test="%{#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin')}">
 									<div class="fields_topdown">
 										<label><mmr:message messageId="label.customer.name"/></label>
 										<s:url id="customerList" action="listCustomers" />

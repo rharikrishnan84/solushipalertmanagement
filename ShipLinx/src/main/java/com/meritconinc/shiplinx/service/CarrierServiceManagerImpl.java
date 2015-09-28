@@ -216,7 +216,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
           }
         }
         shippingService.updateShippingOrder(order);
-        
+        if(order.getBillToType()!=null&&!order.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_THIRD_PARTY) && !order.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_COLLECT)){
         	if(order.getCustomer().getCreditLimit().doubleValue() > 0){
 	        	if(order.getCustomerId() != null && order.getCustomerId() > 0){
 	        		double avlCredit= customerService.getAvailableCredit(order.getCustomerId());
@@ -224,6 +224,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
 			        customerService.updateAvailableCredit(updatedCredit,order.getCustomerId());
 	        	}
         	}
+        }
         	        
       }
     } catch (Exception e) {
@@ -1074,6 +1075,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
     // check if customer has crossed credit limit, if credit limit is set to
     // 0 means no limit
 	long startTime1 = System.currentTimeMillis();
+	if(order.getBillToType()!=null&&!order.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_THIRD_PARTY) && !order.getBillToType().equalsIgnoreCase(ShiplinxConstants.BILL_TO_COLLECT)){
     int unpaidInvoiceCount = customerService.findUnpaidInvoiceDuration(order.getCustomer().getId(),order.getCustomer().getHoldTerms());
     log.info("total unpaid invoice count "+unpaidInvoiceCount);
     long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
@@ -1102,6 +1104,7 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
                     "shippingOrder.unpaid.invoice.error", MessageUtil.getLocale())));
                 throw new CreditOverrunException(cur);
         }
+	}
 
     Carrier carrier = this.carrierServiceDAO.getCarrier(rate.getCarrierId());
     CarrierService carrierService = getCarrierServiceBean(carrier.getImplementingClass());

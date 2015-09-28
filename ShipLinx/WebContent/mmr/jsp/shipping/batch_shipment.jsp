@@ -109,10 +109,13 @@
   $('#wrapper_new').css('min-height',wndo);
   });
 	</script>
-<div class="content">
-<div id="messages">
+	
+	<div id="messages">
 <jsp:include page="../common/action_messages.jsp"/>
 </div>
+	
+<div class="content">
+
  
 <s:form action="batch.shipment.upload.file" method="post" cssClass="form" enctype="multipart/form-data" name="uploadBatchForm">
 	<s:token/>
@@ -156,8 +159,11 @@
 								</div>
 							</div>
 						</div>
-</s:form>
-<div id="formResult">
- <jsp:include page="list_shipment.jsp"/>
+						<div id="formResult">
+ <jsp:include page="list_shipment_batch.jsp"/>
 </div>
+</s:form>
+<%-- <div id="formResult">
+ <jsp:include page="list_shipment.jsp"/>
+</div> --%>
 

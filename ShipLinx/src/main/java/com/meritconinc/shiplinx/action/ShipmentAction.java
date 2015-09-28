@@ -4970,7 +4970,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					 			}
 					 					so.setServiceIds(getServiceIdsForUserBusiness(ubs));
 					 			
-					 			so.setCustomerId(null);
+					 			//so.setCustomerId(null);
 					 			so.setBusinessId(0);
 					 		}
 					 			
@@ -7282,7 +7282,10 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	
 	public String batchShipment(){
 		try {
-//			getSession().remove("batchShipmentInfo");
+			getSession().remove("batchShipmentInfo");
+			
+			getSession().remove("CARRIERS");
+			getSession().remove("SERVICES");
 			
 			BatchShipmentInfo batchShipmentInfo = this.getBatchShipmentInfo();
 			if (batchShipmentInfo == null) {
@@ -7344,31 +7347,81 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return batchShipment();
 	}	
 	
-	public String createBatchShipments() throws Exception {
+	/*public String createBatchShipments() throws Exception {*/
+	public String processBatchShipments() throws Exception {
 		try {
 			if (select != null && select.size() > 0) {
 				List<ShippingOrder> saveShipments = new ArrayList<ShippingOrder>();
 				List<ShippingOrder> shipments = this.getShipments();
+				
+				/*BatchShipmentInfo batchShipmentInfo = this.getBatchShipmentInfo();
+								String s = this.request.getParameter("markup.serviceId");
+								if ( !StringUtil.isEmpty(s) )
+								batchShipmentInfo.setServiceId(Long.parseLong(s));
+								
+								if (batchShipmentInfo != null && batchShipmentInfo.getCarrierId() != null && batchShipmentInfo.getServiceId() != null &&
+										batchShipmentInfo.getCarrierId().longValue() > 0 && batchShipmentInfo.getServiceId().longValue() > 0){
+				*/
 				for ( int i = 0; i < select.size(); i++ ) {
 				    // If this checkbox was selected:
 				    if ( select.get(i) != null && select.get(i) ) {
 				    	ShippingOrder so = shipments.get(i);
+				    	/*so.setService(this.shippingService.getServiceById(batchShipmentInfo.getServiceId()));
+				    					    	so.setServiceId(so.getService().getId());
+				    					    	if(so.getService()!=null){
+				    					    	so.setCarrierName(so.getService().getCarrier().getName());
+				    					    	so.setMasterCarrierName(so.getService().getCarrier().getName());
+				    				    	so.getService().getMasterCarrier().setName(so.getService().getCarrier().getName());
+				    					    	}
+				    					    	so.setServiceName(so.getService().getName());*/
 				    	saveShipments.add(so);
 				    } 		
 				}	
+												/*else{
+													addActionError(getText("select.carrier.service.for.batch.shipment.processing"));
+												}*/	
 				if (saveShipments.size() > 0) {
+					int i,j;
 					shipments = this.shippingService.createBatchShipments(saveShipments);
-					if (shipments != null) {
+					//if (shipments != null) {
+					if(shipments!=null){
+												List<OrderStatus> ordStatus=this.shippingService.getShippingOrdersAllStatus();
+											for(i=0;i<shipments.size();i++){
+											List<Long>frAdd=new ArrayList<Long>();
+												frAdd.add(shipments.get(i).getShipFromId());
+												List<Long>toAdd=new ArrayList<Long>();
+											toAdd.add(shipments.get(i).getShipToId());
+												List<Address> frmAddress=this.addressService.getAddressByIds(frAdd);
+											List<Address> toAddress=this.addressService.getAddressByIds(toAdd);
+												
+												if(frmAddress!=null&&toAddress!=null){
+												shipments.get(i).setFromAddressLong(frmAddress.get(0).getAddressLong());
+												shipments.get(i).setToAddressLong(toAddress.get(0).getAddressLong());
+												}
+											
+											if(shipments.get(i).getStatusId()!=null){
+												for(j=0;j<ordStatus.size();j++){
+												if(shipments.get(i).getStatusId().longValue()==ordStatus.get(j).getId().longValue()){
+														shipments.get(i).setStatusName(ordStatus.get(j).getName());
+													shipments.get(i).setOrderStatus(ordStatus.get(j).getName());
+												}
+													
+												}
+											}
+										
+											}
+											}
+											if (shipments != null) {
 						getSession().remove("shipments");
 						this.setShipments(shipments);
 					} else {
-						addActionError(getText("select.valid.shipments.for.creation"));
+						addActionError(getText("select.valid.shipments.for.processing"));
 					}
 				} else {
-					addActionError(getText("select.valid.shipments.for.creation"));
+					addActionError(getText("select.valid.shipments.for.processing"));
 				}
 			} else {
-				addActionError(getText("select.valid.shipments.for.creation"));
+				addActionError(getText("select.valid.shipments.for.processing"));
 			}
 	    } catch (Exception e) {
 	    	e.printStackTrace();
@@ -7378,7 +7431,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		return batchShipment();
 	}	
 	
-	public String processBatchShipments() throws Exception {
+	/*public String processBatchShipments() throws Exception {*/
+	public String createBatchShipments () throws Exception {
 		try {
 			BatchShipmentInfo batchInfo = this.getBatchShipmentInfo();
 			String s = this.request.getParameter("markup.serviceId");
@@ -7393,23 +7447,66 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 					    // If this checkbox was selected:
 					    if ( select.get(i) != null && select.get(i) ) {
 					    	ShippingOrder so = shipments.get(i);
+					    	so.setService(this.shippingService.getServiceById(batchInfo.getServiceId()));
+					    						    	so.setServiceId(so.getService().getId());
+					    					    	if(so.getService()!=null){
+					    						    	so.setCarrierName(so.getService().getCarrier().getName());
+					    						    	so.setMasterCarrierName(so.getService().getCarrier().getName());
+					    					    	so.getService().getMasterCarrier().setName(so.getService().getCarrier().getName());
+					    						    	}
+					    						    	so.setServiceName(so.getService().getName());
 					    	processShipments.add(so);
 					    } 		
 					}			
 					if (processShipments.size() > 0) {
 						shipments = this.shippingService.processBatchShipments(processShipments, batchInfo);
 						if (shipments != null) {
-							addActionMessage(getText("shipment.processing.started.check.track.search"));
+							//addActionMessage(getText("shipment.processing.started.check.track.search"));
+							int i,j;
+														List<OrderStatus> ordStatus=this.shippingService.getShippingOrdersAllStatus();
+														for(i=0;i<shipments.size();i++){
+														List<Long>frAdd=new ArrayList<Long>();
+															frAdd.add(shipments.get(i).getShipFromId());
+															List<Long>toAdd=new ArrayList<Long>();
+															toAdd.add(shipments.get(i).getShipToId());
+															List<Address> frmAddress=this.addressService.getAddressByIds(frAdd);
+															List<Address> toAddress=this.addressService.getAddressByIds(toAdd);
+															
+														if(frmAddress!=null&&toAddress!=null){
+															shipments.get(i).setFromAddressLong(frmAddress.get(0).getAddressLong());
+															shipments.get(i).setToAddressLong(toAddress.get(0).getAddressLong());
+														}
+															
+														if(shipments.get(i).getStatusId()!=null){
+															for(j=0;j<ordStatus.size();j++){
+																if(shipments.get(i).getStatusId().longValue()==ordStatus.get(j).getId().longValue()){
+																shipments.get(i).setStatusName(ordStatus.get(j).getName());
+																shipments.get(i).setOrderStatus(ordStatus.get(j).getName());
+																}
+																
+															}
+														}
+														
+														ShippingOrder shipOrd=this.shippingService.getShippingOrder(shipments.get(i).getId());
+													shipments.get(i).setQuoteTotalCharge(shipOrd.getQuoteTotalCharge());
+														shipments.get(i).setQuoteTotalCost(shipOrd.getQuoteTotalCost());
+														
+														
+													}
+							
+														
+													getSession().remove("shipments");
 							this.setShipments(shipments);
+							addActionMessage(getText("shipment.created"));
 						}
 					} else {
-						addActionError(getText("no.valid.shipment.found.for.batch.shipment.processing"));
+						addActionError(getText("no.valid.shipment.found.for.batch.shipment.creation"));
 					}
 				} else {
-					addActionError(getText("select.valid.shipments.for.processing"));
+					addActionError(getText("select.valid.shipments.for.creation"));
 				}
 			} else {
-				addActionError(getText("select.carrier.service.for.batch.shipment.processing"));
+				addActionError(getText("select.carrier.service.for.batch.shipment.creation"));
 			}
 	    } catch (Exception e) {
 	    	e.printStackTrace();
