@@ -496,7 +496,7 @@ public class CustomerManagerImpl implements CustomerManager {
 
 	public CreditUsageReport getCreditUsageReport(long customerId, long busId) {
 		long startTime = System.currentTimeMillis();
-
+		List<ShippingOrder> orders = new ArrayList<ShippingOrder>() ;
 		CreditUsageReport cur = new CreditUsageReport();
 		// first get all unpaid and partially paid invoices
 		Invoice invoice = new Invoice();
@@ -515,18 +515,28 @@ public class CustomerManagerImpl implements CustomerManager {
 		cur.setUnpaidInvoices(invoices);
 		double total = 0.0;
 		if (invoices != null) {
-			for (Invoice i : invoices)
+			long startTime1 = System.currentTimeMillis();
+			for (Invoice i : invoices){
+				log.info("Invoice Id: "+i.getInvoiceId());
 				total = (FormattingUtil.add(total, i.getBalanceDue()
 						.doubleValue()).doubleValue());
+			}
+			long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
+			log.info(" Total Elapsed Time for add invoice total (seconds):" + elapsedTimeSec1);
 		}
 		cur.setUnpaidInvoiceAmount(total);
 		long startTime1 = System.currentTimeMillis();
+		log.info("Getting unpaid shipments for customer: "+customerId);
 		List<ShippingOrder> tempOrders = shippingDAO
 				.getLiveUnpaidShipments(customerId);
-		List<ShippingOrder> orders = shippingService.populateOrder(tempOrders); 
+		if(tempOrders.size() >0){
+		 orders = shippingService.populateOrder(tempOrders);
+		}else{
+		orders = null;	
+		}
 		long elapsedTimeSec1 = (System.currentTimeMillis() - startTime1) / 1000;
 		log.info(" Total Elapsed Time for getLiveUnpaidShipments (seconds):" + elapsedTimeSec1);
-		log.info("getLiveUnpaidShipments : "+orders.size());
+		
 		cur.setLiveUnpaidShipments(orders);
 		total = 0.0;
 		if (orders != null) {

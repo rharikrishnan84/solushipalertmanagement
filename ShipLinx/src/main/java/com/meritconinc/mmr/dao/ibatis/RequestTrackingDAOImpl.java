@@ -1,5 +1,6 @@
 package com.meritconinc.mmr.dao.ibatis;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
@@ -10,7 +11,7 @@ import com.meritconinc.mmr.dao.RequestTrackingDAO;
 import com.meritconinc.mmr.model.common.RequestDetailsVO;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 
-public class RequestTrackingDAOImpl extends SqlMapClientDaoSupport implements RequestTrackingDAO {
+public class RequestTrackingDAOImpl extends SqlMapClientDaoSupport implements RequestTrackingDAO,Serializable {
 
   private static final long serialVersionUID = 1L;
   private PropertyDAO propertyDAO;
