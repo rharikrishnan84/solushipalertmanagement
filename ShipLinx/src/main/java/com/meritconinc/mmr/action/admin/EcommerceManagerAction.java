@@ -6,7 +6,6 @@ package com.meritconinc.mmr.action.admin;
  *
  */
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -23,20 +22,15 @@ import org.apache.struts2.interceptor.ServletResponseAware;
 import com.meritconinc.mmr.action.BaseAction;
 import com.meritconinc.mmr.dao.EcommerceDAO;
 import com.meritconinc.mmr.dao.PropertyDAO;
-import com.meritconinc.mmr.model.admin.EcommerceConfig;
 import com.meritconinc.mmr.model.admin.EcommerceStore;
 import com.meritconinc.mmr.utilities.MmrBeanLocator;
 import com.meritconinc.mmr.utilities.security.UserUtil;
-import com.meritconinc.shiplinx.api.Constant.EcommerceAPIConstant;
 import com.meritconinc.shiplinx.api.Util.ShopifyUtil;
 import com.meritconinc.shiplinx.model.Customer;
-import com.meritconinc.shiplinx.model.Rating;
 import com.meritconinc.shiplinx.service.CustomerManager;
 import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
-import sun.org.mozilla.javascript.internal.EcmaError;
 
 
 public class EcommerceManagerAction extends BaseAction implements  
