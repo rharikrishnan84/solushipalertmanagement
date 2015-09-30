@@ -52,7 +52,7 @@ public class PurolatorFreightAPI implements CarrierService {
  public static final String LIVE_URL_RATE = "https://webservices.purolator.com/EWS/V1/Estimating/EstimatingService.asmx";
  public static final String TEST_URL_RATE = "https://devwebservices.purolator.com/EWS/V1/Estimating/EstimatingService.asmx";
  public static String URL_RATE = "";
- private Connection connection = null;
+ /*private Connection connection = null;
  private String hostName = "https://localhost:8443/ShipLinx";
  public PurolatorFreightAPI(){
 carrierServiceDAO = (CarrierServiceDAO)MmrBeanLocator.getInstance().findBean("carrierServiceDAO");
@@ -62,7 +62,7 @@ carrierServiceDAO = (CarrierServiceDAO)MmrBeanLocator.getInstance().findBean("ca
  } catch (Throwable ex) {
  log.debug(ex);
  }
- }
+ }*/
  public CarrierServiceDAO getCarrierServiceDAO() {
  return carrierServiceDAO;
  }
@@ -238,9 +238,23 @@ packageType = type.replaceAll("[^\\p{L}\\p{Nd}]", "");
  parameters.put("checked", ClassLoader.getSystemResourceAsStream(checked));
  parameters.put("orderId", orderId);
 
- JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource( getShippingDAO().getShippingOrder(orderId).getPackages());
- JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
- JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+ //JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource( getShippingDAO().getShippingOrder(orderId).getPackages());
+ //JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
+  //ShippingOrder order = shippingDAO.getShippingOrder(orderId);
+  //JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(order.getPackages());
+  carrierServiceDAO = (CarrierServiceDAO)MmrBeanLocator.getInstance().findBean("carrierServiceDAO");
+  DataSource ds = null;
+  Connection connection = null;
+  try{
+	  ds = ((CarrierServiceDAOImpl) (carrierServiceDAO)).getDataSource();
+	   connection = ds.getConnection();  
+  }catch(Exception e){
+	  e.printStackTrace();
+  }
+  if(connection!=null){
+  JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,connection);
+  JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+  }
  } catch (Exception e) {
  log.error("Could not generate label for order with id " + orderId , e);
  throw new ShiplinxException();

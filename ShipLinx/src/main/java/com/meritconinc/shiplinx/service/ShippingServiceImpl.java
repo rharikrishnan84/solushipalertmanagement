@@ -2257,9 +2257,26 @@ public class ShippingServiceImpl implements ShippingService {
      // } else {
       * }*/ 
       
+      if(so.getCarrier()==null&&so.getCarrierId()!=null){
+    	      	  if (this.carrierServiceManager == null) {
+    	               setCarrierServiceManager((CarrierServiceManager) MmrBeanLocator.getInstance().findBean(
+    	                    "carrierServiceManager"));
+    	              }
+    	      	  if(this.carrierServiceManager!=null){
+    	      	     Carrier carrierFor= this.carrierServiceManager.getCarrierBycarrierId(so.getCarrierId());
+    	      	     so.setCarrier(carrierFor);
+    	     	  }
+    	      	     }
+    	       if(so.getTrackingURL()==null&&so.getCarrier()!=null&&so.getCarrier().getTrackingURL()!=null)
+    	        {
+    	      	  so.setTrackingURL(so.getCarrier().getTrackingURL());
+    	       }
       if (so.getMasterTrackingNum() != null && so.getTrackingURL()!= null) {
+    	  String URL =so.getTrackingURL();
+    	  URL = URL.replace("*trackingnum", so.getMasterTrackingNum());
     	      	  	        
-    	      	  	      	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
+    	      	  	      	 // body = new String(body.replaceAll("%TRACKINGURL", "<a href="+so.getTrackingURL()+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
+    	  body = new String(body.replaceAll("%TRACKINGURL", "<a href="+URL+">"+so.getMasterTrackingNum()+"</a>"));//Change the tracking url to tracking number
     	      	        }
     	        else {
         body = new String(body.replaceAll("%TRACKINGURL", ""));
