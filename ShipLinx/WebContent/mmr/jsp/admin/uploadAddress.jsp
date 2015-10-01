@@ -30,6 +30,11 @@
 		}
 	}
 	
+	function downloadBook(){
+				document.uploadAddform.action= "downloadAddressBook.action";
+				document.uploadAddform.submit();
+			}
+	
 	function processLater() {
 		document.uploadEdiform.action = "uploadAndProcessLater.action";
 		document.uploadEdiform.submit();
@@ -57,7 +62,8 @@
 			<div class="content_header" id="addupld_panel">
 				<div class="cont_hdr_title" id="srch_crtra"><mmr:message messageId="menu.upload.addressbook"/></div>
 				<div class="form_buttons">
-					<s:a href="address_book_template.zip" cssStyle="text-decoration: none;"><mmr:message messageId="label.btn.download"/> </s:a>	
+					<%-- <s:a href="address_book_template.zip" cssStyle="text-decoration: none;"><mmr:message messageId="label.btn.download"/> </s:a> --%>	
+					<s:a href="#" id="upload_icon" onclick="downloadBook();"cssStyle="text-decoration: none;"><mmr:message messageId="label.btn.download"/> </s:a>
 					<a href="#" id="upload_icon"  border="0" onclick="processNow();"><mmr:message messageId="label.btn.upload"/> </a>		
 				</div>
 			</div>

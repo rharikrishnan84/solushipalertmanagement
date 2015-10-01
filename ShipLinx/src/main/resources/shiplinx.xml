@@ -711,6 +711,13 @@
         <action name="new.shipment" class="shipmentAction">
             <result type="tiles" name="success">new.shipment</result>
             <result type="tiles" name="success2">warehouse.order</result>
+            <!-- <result type="json" name="loadAddress">
+					<param name="excludeNullProperties">false</param>
+				<param name="root">true</param>
+				</result> -->
+			<result type="json"  name="loadAddress">
+       	 		<param name="root">customerSearchResults1</param>
+       	 		</result>
         </action>
          <action name="dimensionInformation" method="dimensionInformation" class="shipmentAction">
          	<interceptor-ref name="basicAjaxStack-mmr" />
@@ -2178,6 +2185,15 @@
         <action name="uploadaddressbook" method="upload" class="AddressbookAction">
             <result type="tiles" name="success">upload.address</result>
             <result type="tiles" name="input">upload.address</result>
+        </action>
+        
+        <action name="downloadAddressBook" method="download" class="AddressbookAction">
+            <result name="success" type="stream">
+		    	<param name="contentDisposition">attachment;filename=address_book_template.zip</param>
+		     	<param name="contentType">application/zip</param>
+		     	<param name="inputName">inputStream</param>
+		     	<param name="bufferSize">1024</param>
+		  	</result>
         </action>
        	
        	<action name="createAddress" method="save" class="AddressbookAction">

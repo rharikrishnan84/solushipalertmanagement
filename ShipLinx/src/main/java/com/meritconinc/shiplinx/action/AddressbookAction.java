@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -302,6 +303,18 @@ public class AddressbookAction extends BaseAction implements Preparable,ServletR
 			
 			return SUCCESS;
 	}
+	
+	public String download(){
+				try {
+					ServletContext context=ServletActionContext.getServletContext();
+					//inputStream = new FileInputStream(new File("/WebContent/address_book_template.zip"));
+					inputStream = context.getResourceAsStream("/address_book_template.zip");
+					
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		 		return SUCCESS;
+		 	}
 	
 	
 	public String uploadInit(){

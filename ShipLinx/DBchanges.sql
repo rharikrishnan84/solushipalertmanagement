@@ -4805,3 +4805,17 @@ UPDATE `menu` SET `display_order`='6' WHERE `id`='122';
 
 .......................................End of Live server commit.......................................
 
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('uploadaddressbook', '403', 1, 'Send Customer Notification Email', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1128');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1128');
+
+
+
+INSERT INTO `action` (`action`, `menu_id`, `highlight`, `description`, `reload_safe`) VALUES ('downloadAddressBook', '403', 1, 'Download Address Book', 1);
+
+
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('customer_admin', '1130');
+INSERT INTO `role_action` (`role`, `action_id`) VALUES ('sysadmin', '1130');

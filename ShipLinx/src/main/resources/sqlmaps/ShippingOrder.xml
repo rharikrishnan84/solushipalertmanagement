@@ -1852,6 +1852,9 @@
 				 o.business_id IN <iterate   open="(" close=")" conjunction="," property="businessIds"> #businessIds[]# </iterate>
 				</isNotEmpty>
 	</isNotNull> 
+	<isGreaterEqual property="businessId" compareValue="1">
+				and o.business_id=#businessId#
+	</isGreaterEqual>
 	</select>
 	<select id="findShipmentsAdminById1" parameterClass="com.meritconinc.shiplinx.model.ShippingOrder" fetchSize="500" resultMap="SearchOrderResult">
 	select * from shipping_order where order_id=#id# and

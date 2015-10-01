@@ -66,19 +66,67 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/autocomplete.js"></script>
 <script type="text/javascript">
 
-var customers = {
+/* var customers = {
 		<s:iterator value='#session.usersList'>
 		"<s:property escape='false' value='value' />": "<s:property escape='false' value='key' />",
       </s:iterator>
  };
 
 	delete customers["0"];
-	var customersArray = $.map(customers, function (value, key) { return { value: value, data: key }; });
+	var customersArray = $.map(customers, function (value, key) { return { value: value, data: key }; }); */
 
-	
+	var c;
+	   ajaxJson();
+	 
+		function ajaxJson(){
+			
+	  			/* ajax_Service=ajaxFunction();
+			ajax_Service.onreadystatechange=function(){
+		 		if(ajax_Service.readyState==4){
+		 			//alert(ajax_Service.readyState+"4");
+			 		reponse=ajax_Service.responseText;
+			 			//alert(reponse+" response");
+			 		//alert("res "+reponse);
+			 		var res = document.getElementById('ca1');
+			 		res.innerHTML = response;
+		 			}
+		 		}
+		 		url="new.shipment.action?loadajax=true";
+		 		ajax_Service.open("GET",url,true);
+			 	ajax_Service.send(this); */
+			 	var xmlhttp;
+			 	if (window.XMLHttpRequest)
+			 	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+			 	  xmlhttp=new XMLHttpRequest();
+			 	  }
+			 	else
+			 	  {// code for IE6, IE5
+			 	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			 	  }
+			 	xmlhttp.onreadystatechange=function()
+			 	  {
+		 	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			 	    {
+			 	var x=xmlhttp.responseText;
+			 	 
+			 	    //alert(xmlhttp.responseText);
+		 	  // alert(x);
+			 	  c=$.parseJSON(x);
+			 	   //c=x;
+			 	    }
+			 	  }
+			 	
+			 var url="new.shipment.action?loadajax=true";
+				
+		 	xmlhttp.open("GET",url,false);
+			 	xmlhttp.send();
+		}
+		//delete c["0"];
+		var customersArray1 = $.map(c, function (value, key) { return { value: value, data: key }; });
 	// Initialize autocomplete with local lookup:
       $('#customerautocompletes').newautocomplete({
-       lookup: customersArray,
+       /* lookup: customersArray, */
+       lookup: customersArray1,
        triggerSelectOnValidInput: false,
 		minChars: 0,
 		onSelect: function (suggestion) {

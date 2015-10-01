@@ -34,6 +34,12 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import com.meritconinc.mmr.utilities.security.FilesUtil;
 import com.meritconinc.shiplinx.model.EdiItem;
 
@@ -303,6 +309,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			}
 		
 	private Map<String, Long> customerSearchResults = new HashMap<String, Long>();
+	private Map<Long,String> customerSearchResults1 = new HashMap<Long,String>();
 	// City, Zipcode_Start List
 	private List<String> citySuggestList;
 	// Zipcode_Start, City List
@@ -500,6 +507,62 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		MenusDAO menusDAO = (MenusDAO) MmrBeanLocator.getInstance().findBean("menusDAO");
 		try{
 			log.debug("-----execute------");
+			
+			/*----------Address fetching for autocomplete----------*/
+						Long customerId = getLoginUser().getCustomerId();
+					String loadAddress=request.getParameter("loadajax");
+						if(loadAddress!=null){
+						if(customerId==0)
+						{
+							 ShippingOrder shippingOrder = getShippingOrder();
+							  customerId=shippingOrder.getWebCustomerId();
+							  
+							  if(customerId==null){
+							  			 customerId =UserUtil.getMmrUser().getCustomerId();
+								  		  }
+							  if(customerId==0){
+								  return SUCCESS;
+							  }
+						}
+						log.debug("-----customerId------"+customerId);
+						if(customerId!= null && customerId>0 ){
+						addressList = addressService.findAddressesByCustomer(Long.valueOf(customerId));
+						 if (addressList != null && addressList.size() > 0) {
+						            for(Address add: addressList){
+						            	if (add != null && add.getAddress1() != null
+						  						&& add.getAbbreviationName() != null) {
+					  				
+						            	String withoutQuotesCustomer = add.getAbbreviationName().replace("\"", "");
+						            	String address = add.getAddress1();
+						                customerSearchResults.put(withoutQuotesCustomer+",  "+address, add.getAddressId());
+						            	}
+						            }
+					            //Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+						            if(customerSearchResults != null && customerSearchResults.size()>0){
+						            for (Map.Entry<String,Long> entry :customerSearchResults.entrySet()) {
+						            	customerSearchResults1.put(entry.getValue(),entry.getKey());
+						               // System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+						            }
+						            }
+						 }
+						            //getSession().put("usersList", customerSearchResults);
+					/*
+							Gson gs=new Gson();
+							String json=gs.toJson(customerSearchResults);
+							JSONObject js=new JSONObject();
+							 Iterator it = customerSearchResults.entrySet().iterator();
+				            while (it.hasNext()) {
+					                Map.Entry pair = (Map.Entry)it.next();
+					                js.accumulate(String.valueOf(pair.getValue()),pair.getKey());
+					              //  System.out.println(pair.getKey() + " = " + pair.getValue());
+					                 
+					            }
+							response.setContentType("application/json");
+			  		        response.getWriter().print(js);*/
+							return "loadAddress";
+						}
+						}
+
 			getSession().remove("shippingOrder");
 			getSession().remove("PackageType");
 			String method=request.getParameter("method");
@@ -509,8 +572,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			String orderId=(String)getSession().get("EDIT_ORDER_ID");
 			
 			log.debug("-----orderId------"+orderId);			
-			Long customerId = getLoginUser().getCustomerId();
-			log.debug("-----customerId------"+customerId);
+			//Long customerId = getLoginUser().getCustomerId();
+			//log.debug("-----customerId------"+customerId);
 			customer = userService.getCustomerReference(customerId);
 			String fromCountry = "";
 			String toCountry = "";
@@ -719,13 +782,13 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 			
 			/*----------Address fetching for autocomplete----------*/
 			
-			addressList = addressService.findAddressesByCustomer(Long.valueOf(customerId));
+			/*addressList = addressService.findAddressesByCustomer(Long.valueOf(customerId));
 			            for(Address add: addressList){
 			            	String withoutQuotesCustomer = add.getAbbreviationName().replace("\"", "");
 			            	String address = add.getAddress1();
 			            				            	customerSearchResults.put(withoutQuotesCustomer+",  "+address, add.getAddressId());  
 			            }
-			            getSession().put("usersList", customerSearchResults);
+			            getSession().put("usersList", customerSearchResults);*/
 			
 			//this.populateUserList();
 			
@@ -1502,7 +1565,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 
 		    toProvinces = addressService.getProvinces(toCountry);
 		    fromProvinces = addressService.getProvinces(fromCountry);
-		    this.populateUserList();
+		   // this.populateUserList();
 		    getSession().put("Fromprovinces", fromProvinces);
 		    getSession().put("Toprovinces", toProvinces);
 		    getSession().put("ToCountry", toCountry);
@@ -9815,5 +9878,16 @@ public void setTrackCachedMap(Map<String, Integer> trackCachedMap) {
 					}
 					
 	// / ============== End =======================
+					
+					public Map<Long,String> getCustomerSearchResults1() {
+												return customerSearchResults1;
+										}
+						
+						
+											public void setCustomerSearchResults1(
+												Map<Long,String> customerSearchResults1) {
+												this.customerSearchResults1 = customerSearchResults1;
+											}
+						
 
 }
