@@ -17,4 +17,5 @@ public interface CreditCardTransactionDAO {
 	public Long addCreditCard(CreditCard creditCard);
 	public void updateCreditCard(CreditCard creditCard);
 	public void insertMerchantAccountByBusiness(long newBusinessId,long defaultBusinessId);
+	public List<CCTransaction> findCCTransactionByOrderIds(List<Long> orderIds);
 } 

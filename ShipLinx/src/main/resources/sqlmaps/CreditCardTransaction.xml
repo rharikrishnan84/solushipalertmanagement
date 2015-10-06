@@ -151,5 +151,18 @@
 							,test_property2,test_property3,test_property4,test_property5,active,currency from merchant_account where business_id=#defaultBusinessId#)
 	
 	</insert>
+	<select id="findCCTransactionByOrderIds" resultMap="creditCardTransactionMap">
+		select * from cctransaction
+			<dynamic prepend="where">
+		<isNotNull property="orderIds">
+				<isNotEmpty property="orderIds">
+					entity_id IN
+				<iterate open="(" close=")" conjunction="," property="orderIds">
+						#orderIds[]# </iterate>
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		 and entity_type=10
+	</select>
 </sqlMap>
 

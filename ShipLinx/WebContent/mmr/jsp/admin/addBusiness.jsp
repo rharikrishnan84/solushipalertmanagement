@@ -732,7 +732,12 @@ window.onload = function() {
 										list="#{ 'BUSINESS':'BUSINESS'}" value="business.invoiceLevel" required="true" cssClass="text_01" />
 								</div>
 									</div>
-									
+									<div class="fields">
+										<label>Payment Type Level</label>
+									<div  class="controls"><span>:</span>
+									<s:checkbox key="business.defaultPaymentTypeLevel" name="business.defaultPaymentTypeLevel" cssClass="text_02" />
+								</div>
+									</div> 
 								</div>
 								<!-- <div class="rows" >
 									<p id="rules" style="color: #000066; font-size: 12px; font-weight: bold;"></p>
@@ -1310,6 +1315,116 @@ window.onload = function() {
 							document.getElementById("emailCont").style.display = "block";
 							var i=0;
 							</script>
+							</s:if>
+				
+					</div>
+					
+					<div class="content_table">
+	 
+					<div >
+							<div class="content_header">
+								<div class="cont_hdr_title">Business Contacts</div></div>
+								</div>
+						
+					 
+						 <div class="cont_data_body">
+						
+								<div class="rows">
+								 
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.businesssAbbrivation"/> </label>
+										<div class="controls"><span>:</span>
+										 
+									<s:textfield  name="business.businessContact.businesssAbbrivation" key="business.businessContact.businesssAbbrivation"/>
+										 
+									</div>
+								</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.quickStartUrl"/> </label>
+										<div class="controls"><span>:</span>
+								 
+										<s:textfield  name="business.businessContact.quickStartUrl" key="business.businessContact.quickStartUrl"/>
+										 
+								</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.adminEmail"/> </label>
+										<div class="controls"><span>:</span>
+										 
+										<s:textfield  name="business.businessContact.adminEmail" key="business.businessContact.adminEmail"/>
+										 
+								</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.arContact"/> </label>
+										<div class="controls"><span>:</span>
+										 
+										<s:textarea cssStyle="width: 150px; height: 20px;"   name="business.businessContact.arContact" key="business.businessContact.arContact"/>
+										 
+									</div>
+									</div>
+								<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.arEmail"/> </label>
+										<div class="controls"><span>:</span>
+										 
+										<s:textfield  name="business.businessContact.arEmail" key="business.businessContact.arEmail"/>
+										 
+									</div>
+									</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.arPhone"/> </label>
+										<div class="controls"><span>:</span>
+										 
+									<s:textfield  name="business.businessContact.arPhone" key="business.businessContact.arPhone"/>
+										 
+									</div>
+								</div>
+									<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.ltlContact"/> </label>
+										<div class="controls"><span>:</span>
+									 
+										<s:textarea cssStyle="width: 150px; height: 20px;"  name="business.businessContact.ltlContact" key="business.businessContact.ltlContact"/>
+										 
+									</div>
+								 
+									</div>
+										<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.ltlEmail"/> </label>
+									<div class="controls"><span>:</span>
+										 
+										<s:textfield  name="business.businessContact.ltlEmail" key="business.businessContact.ltlEmail"/>
+										 
+									</div>
+								</div>
+										<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.ltlPhone"/> </label>
+										<div class="controls"><span>:</span>
+										 
+										<s:textfield  name="business.businessContact.ltlPhone" key="business.businessContact.ltlPhone"/>
+										 
+									</div>
+								</div>
+										<div class="fieldsl">
+										<label style="width:200px !important;"><mmr:message messageId="label.buisness.contact.businessContactUrl"/> </label>
+										<div class="controls"><span>:</span>
+										 
+									<s:textfield  name="business.businessContact.businessContactUrl" key="business.businessContact.businessContactUrl"/>
+										 
+									</div>
+									</div>
+								
+								 
+						</div>
+						</div>
+						
+						</div>
+						
+							<s:if test="#session.editBusiness == 'true'">
+						<script type="text/javascript">
+						 
+							document.getElementById("emailCont").style.display = "block";
+							var i=0;
+						</script>
 							</s:if>
 				
 					</div>

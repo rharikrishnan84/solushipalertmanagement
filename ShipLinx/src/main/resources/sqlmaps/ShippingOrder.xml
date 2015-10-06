@@ -427,6 +427,12 @@
 		
 	</resultMap>
 	
+	<resultMap id="chargesResultMap1" class="com.meritconinc.shiplinx.model.Charge">
+			<result property="orderId" column="order_id"/>
+			<result property="invoiceId" column="invoice_id"/>	
+            <result property="cancelledInvoice" column="cancelled_invoice"/>
+	</resultMap>
+	
 	<resultMap id="getChargesResult" class="com.meritconinc.shiplinx.model.Charge">
      <result property="chargeId" column="charge_id"/>
       <result property="orderId" column="order_id"/>
@@ -741,7 +747,7 @@
             <result property="chargecurrency" column="charge_currency" />
              <result property="exchangerate" column="exchange_rate" />
              <result property="isCommissonable" column="commissionable" />
-   
+   <result property="status" column="status" />
    <result property="quoteChargeId" column ="quote_charge_id"/>
    </resultMap>
 	
@@ -1092,7 +1098,8 @@
 		select distinct s.* from shipping_order s left join invoice_charges i on (s.order_id=i.order_id) where i.invoice_id=#value#
 	</select>
 	
-	<select id="searchOrderByTrackingNumber" resultMap="SearchOrderResult">
+	<!-- <select id="searchOrderByTrackingNumber" resultMap="SearchOrderResult"> -->
+	<select id="searchOrderByTrackingNumber" resultMap="TrackSearchOrderResult">
 		select distinct o.*  from shipping_order o 
 				left join package p on (o.order_id=p.order_id)
 		where o.carrier_id=#carrierId# and (o.master_tracking_num=#masterTrackingNum# or p.tracking_number=#masterTrackingNum#);
@@ -2451,7 +2458,48 @@
 	<select id="getPackagesIdListByOrderId" resultClass="long">
 select package_id from package where order_id=#orderID# 
  </select>
+	<select id="getInvoiceStatusByOrderId" resultMap="chargesResultMap1">
+		select i.invoice_id, i.cancelled_invoice,i.order_id from invoice_charges i 
+				<dynamic prepend="where">
+		<isNotNull property="orderId">
+				<isNotEmpty property="orderId">
+					i.order_id = #orderId# 
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		limit 1
+</select>
 	
+	<select id="getInvoiceNumById"  resultClass="java.lang.String">
+	select i.invoice_num from invoice i 
+				<dynamic prepend="where">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+					i.invoice_id = #id# 
+			</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		limit 1
+	</select>
+	
+	<select id="searchShippingOrderByTrackingNumber" resultMap="TrackSearchOrderResult">
+		select distinct o.*  from shipping_order o where o.carrier_id=#carrierId# and o.master_tracking_num=#trackingNumber#;
+	</select>	
+
+	<select id="getOrderIdByPackageTrackingNumber" resultClass="java.lang.Long">
+	select distinct p.order_id  from package p where p.tracking_number=#trackingNumber#;
+	</select>	
+
+	<select id="getShippingOrdersList" resultMap="TrackSearchOrderResult">
+	select distinct o.*  from shipping_order o where o.carrier_id=#carrierId#
+			<isNotNull property="orderIds">
+				<isNotEmpty property="orderIds">
+				and o.order_id IN
+				<iterate open="(" close=")" conjunction="," property="orderIds">
+					#orderIds[]# </iterate>
+				</isNotEmpty>
+			</isNotNull>
+	</select>	
 	
 </sqlMap>
 

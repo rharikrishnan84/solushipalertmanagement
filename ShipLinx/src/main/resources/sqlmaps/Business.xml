@@ -117,14 +117,28 @@
 	    <result property="businessId" column="business_id"/>
 </resultMap>	
 	
+	<resultMap  class="com.meritconinc.shiplinx.model.BusinessContact" id="businessContactMap">
+	<result property="businessContactId" column="business_contact_id"/>
+	<result property="businessId" column="business_id" />
+	<result property="businesssAbbrivation" column="business_abbreviation" />
+	<result property="quickStartUrl" column="quick_start_url"/>
+	<result property="adminEmail" column="admin_email"/>
+	<result property="arContact" column="ar_ctc"/>
+	<result property="arEmail" column="ar_email" />
+	<result property="arPhone" column="ar_phone" />
+	<result property="ltlContact" column="ltl_ctc" />
+<result property="ltlPhone" column="ltl_phone" />
+	<result property="ltlEmail" column="ltl_email"/>
+	<result property="businessContactUrl" column="business_contact_url"  />
+</resultMap>
 	
 	<select id="isBusinessRegistered" resultClass="int">
 			select count(1) as count from business where name = #name#
 	</select>
 	
 	<insert id="addBusiness" parameterClass="com.meritconinc.shiplinx.model.Business">
-	   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port,contact_path,feedback_path,invoice_level) 
-		values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#, #contactPath#, #feedbackPath#,#invoiceLevel#)
+	   insert into business(name,short_code,logo_file_name, logohires_file_name, address_id, active, date_created,  default_net_terms, default_credit_limit, report_path, report_pathinvoice,header_key,US_address_id,system_name,logo_url,subdomain,logout_url,support_url,terms_url,smtp_host,smtp_username,smtp_password,smtp_port,contact_path,feedback_path,invoice_level,default_payment_type_level) 
+		values (#name#,#shortCode#,#logoFileName#,#logoHiResFileName#,#addressId#,#active#,#dateCreated#,#defaultNetTerms#,#defaultCreditLimit#,#reportPath#,#reportPathInvoice#,#headerKey#,#usAddressId#, #systemName#, #logoURL#, #subdomain#, #logoutURL#,#supportURL#,#termsURL#, #smtpHost#,#smtpUsername#, #smtpPassword#, #smtpPort#, #contactPath#, #feedbackPath#,#invoiceLevel#,#defaultPaymentTypeLevel#)
 	<selectKey resultClass="long" type="post" keyProperty="id" >select LAST_INSERT_ID() as value
 	 		</selectKey>			
 	</insert>
@@ -176,7 +190,8 @@
 		header_key = #headerKey#,
 		US_address_id = #usAddressId#,
 		invoice_level=#invoiceLevel#,
-		active = #active#
+		active = #active#,
+		default_payment_type_level=#defaultPaymentTypeLevel#
 		<dynamic>
 		<isNotNull prepend=","  property="contactPath">
 	    contact_path=#contactPath#
@@ -362,4 +377,31 @@ from pins where business_id=#oldBusinessId#
     <select id="getBusinessForSelectedBusiness" resultMap="BusinessResult">
 		select * from business where isPartner=false and isNation=false and isBranch=false and parent_business_id=0 and business_id!=#businessId#
 	</select>
+	
+	<select id="getBusinessContactBybusiness" resultMap="businessContactMap">
+	select * from business_contact where business_id=#businessId#
+</select>
+
+<insert id="addBusinessContact">
+        INSERT INTO `business_contact` (`business_abbreviation`,`quick_start_url`,`admin_email`, `ar_ctc`,`ar_phone`,`ar_email`,`ltl_ctc`,`ltl_phone`,`ltl_email`,`business_contact_url`,business_id)
+	VALUES (#businesssAbbrivation#,#quickStartUrl#,#adminEmail#,#arContact#,#arPhone#,#arEmail#,#ltlContact#,#ltlPhone#,#ltlEmail#,#businessContactUrl#,#businessId#)
+    </insert>
+    
+   <update id="updateBusinessContact" parameterClass="com.meritconinc.shiplinx.model.BusinessContact">
+        
+        UPDATE  `business_contact` 	SET
+	`business_abbreviation` = #businesssAbbrivation#,
+		`quick_start_url` =#quickStartUrl#,
+		`admin_email` = #adminEmail#,
+		`ar_ctc` = #arContact#,
+	`ar_phone` =#arPhone#,
+		`ar_email` =#arEmail#,
+		`ltl_ctc` = #ltlContact#,
+		`ltl_phone` =#ltlPhone#,
+		`ltl_email` =#ltlEmail#,
+	`business_contact_url` =#businessContactUrl#
+		WHERE `business_id` = #businessId#;
+        
+    </update>
+
 </sqlMap>

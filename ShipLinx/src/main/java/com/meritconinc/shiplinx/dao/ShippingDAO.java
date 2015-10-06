@@ -300,4 +300,13 @@ public interface ShippingDAO {
 	
 		public void updateShipDocument(Document document);
 		public void deletePackageById(long packageId);
+		public Charge getInvoiceStatusByOrderId(long orderId);
+				
+				public String getInvoiceNumbyId(long invoiceId);
+				
+				public List<ShippingOrder> searchShippingOrderByTrackingNumber(Long carrierId, String trackingNumber);
+				
+				public List<Long> getOrderIdByPackageTrackingNumber(String trackingNumber);
+				
+				public List<ShippingOrder> getShippingOrdersList(Long carrierId, List<Long> orderIds);
 }

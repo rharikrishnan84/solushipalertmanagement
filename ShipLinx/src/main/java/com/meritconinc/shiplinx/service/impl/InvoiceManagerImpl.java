@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.meritconinc.shiplinx.model.BusinessContact;
+
 import javax.mail.MessagingException;
 
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -949,79 +951,67 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
   }*/
   
   public Invoice getInvoiceById(long invoiceId) {
-	  	    Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
-	  
-	  	    // Not all charges of a shipment will necessarily belong to a given
-	  	    // invoice. The charges of a shipment may be spread across several
-	  	    // invoices.
-	      // Here we are attaching the charges to the shipments based on a
-	  	    // specific invoice.
-	  	    for (ShippingOrder order : invoice.getOrders()) {
-	       /* order.setChargesForInvoice(shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
-	  	          invoice.getInvoiceId()));
-	  	          
-	  	          
-	  	    }*/
-	  	    	 List<Charge> chargesNonTax = new ArrayList<Charge>();
-	  		        List<Charge> chargesTax = new ArrayList<Charge>();
-	  		        List<Charge> chargesOrderedTemp = new ArrayList<Charge>();
-	      	
-	     	List<Charge> charges = shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
-	  	    			      	          invoice.getInvoiceId());
-	  				int lastCharge = 0;
+	  Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
+	  	
+	  // Not all charges of a shipment will necessarily belong to a given
+	  // invoice. The charges of a shipment may be spread across several
+	  // invoices.
+	  // Here we are attaching the charges to the shipments based on a
+	  // specific invoice.
+	  for (ShippingOrder order : invoice.getOrders()) {
+		  List<Charge> chargesOrderedTemp = new ArrayList<Charge>();
+		  
+		  List<Charge> charges = shippingDAO.getShippingOrderChargesByInvoice(order.getId(),
+	  	    			      	         invoice.getInvoiceId());
+	  	 
+	  	/* Below code is for pdf tax grouping.Its hard coded check logic so we replaced it with 
+	  	 *  dynamic check by method "getChargesForPDF".
+	  	 * 			int lastCharge = 0;
 	  				boolean isFoudTax=false;
 	  				if (charges != null && charges.size() > 0) {
 	          for(int index=0; index < charges.size(); index++) {
-	  				    	if (charges.get(index).getName().contains("HST")
+	        		  if (charges.get(index).getName().contains("HST")
 	  								|| charges.get(index).getName().contains("GST")
 	  								|| charges.get(index).getName().contains("QST")
 	  								|| charges.get(index).getName().contains("GOV")
 	  								|| (charges.get(index).getName().contains("Duty")
 	  										&& charges.get(index).getName().equalsIgnoreCase("Duty"))) {
-	  			    		
-	  					    	 if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
-	  					    		 chargesNonTax.add(charges.get(index)); 
-	  				    	 }
-	  					    	 else
-	  					    	 {
-	  					    		 chargesTax.add(charges.get(index));
-	  					    	 }
-	  				    	}
-	  				    	
-	  				    	else{
-	  				    		chargesNonTax.add(charges.get(index));
-	  				    	}
-	  				        }
-	  				        chargesOrderedTemp.addAll(chargesNonTax);
-	  				        chargesOrderedTemp.addAll(chargesTax);
-	  				        double charge=0.0;
-	  					
-	  					for (int index = 0; index < chargesOrderedTemp.size(); index++) {
-	  						if (chargesOrderedTemp.get(index).getName().contains("HST")
-	  								|| chargesOrderedTemp.get(index).getName().contains("GST")
-	  								|| chargesOrderedTemp.get(index).getName().contains("QST")
-	  								|| chargesOrderedTemp.get(index).getName().contains("GOV")
-	  								|| (chargesOrderedTemp.get(index).getName().contains("Duty")
-	  									&& chargesOrderedTemp.get(index).getName().equalsIgnoreCase("Duty"))) {
-	  						
-	  							//if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
-	  							if (chargesOrderedTemp.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){	
-	  								chargesOrderedTemp.get(index).setShowSubTotal("false1");
-	  								lastCharge = index;
-	  							}
+	        			  if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	        				  chargesNonTax.add(charges.get(index)); 
+	        			  }else{
+	        				  chargesTax.add(charges.get(index));
+	  					  }
+	        			}else{
+	        				  chargesNonTax.add(charges.get(index));
+	  				    }
+	          }
+	          chargesOrderedTemp.addAll(chargesNonTax);
+	          chargesOrderedTemp.addAll(chargesTax);
+	          double charge=0.0;
+	          for (int index = 0; index < chargesOrderedTemp.size(); index++) {
+	        		  if (chargesOrderedTemp.get(index).getName().contains("HST")
+	        				  || chargesOrderedTemp.get(index).getName().contains("GST")
+	        				  || chargesOrderedTemp.get(index).getName().contains("QST")
+	        				  || chargesOrderedTemp.get(index).getName().contains("GOV")
+	        				  || (chargesOrderedTemp.get(index).getName().contains("Duty")
+	        						  && chargesOrderedTemp.get(index).getName().equalsIgnoreCase("Duty"))) {
 	  							
-	  							else{
-	  							chargesOrderedTemp.get(index).setShowSubTotal("true");
-	  							charge = charge+chargesOrderedTemp.get(index).getCharge();
-	  							chargesOrderedTemp.get(index).setTotalTax(charge);
-	  							isFoudTax=true;
-	  							}
-	  							
-	  						} else {
-	  							chargesOrderedTemp.get(index).setShowSubTotal("false1");
-	  							lastCharge = index;
+	        			  //if (charges.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){
+	        			  if (chargesOrderedTemp.get(index).getName().equalsIgnoreCase("GST ON IMPORT")){	
+	        				  chargesOrderedTemp.get(index).setShowSubTotal("false1");
+	        				  lastCharge = index;
+	        			  }	else{
+	        				  chargesOrderedTemp.get(index).setShowSubTotal("true");
+	        				  charge = charge+chargesOrderedTemp.get(index).getCharge();
+	        				  chargesOrderedTemp.get(index).setTotalTax(charge);
+	        				  isFoudTax=true;
 	  						}
-	  					}
+	  							
+	  				 } else {
+	  					 chargesOrderedTemp.get(index).setShowSubTotal("false1");
+	  					 lastCharge = index;
+	  				 }
+	          }
 	  				}
 	   
 	  				if (lastCharge + 1 < chargesOrderedTemp.size()) {
@@ -1038,11 +1028,106 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	  					else {
 	  						chargesOrderedTemp.get(lastCharge).setShowSubTotal("false");
 	  					}
-	  				}
-	  				order.setChargesForInvoice(chargesOrderedTemp);
-	  			}
-	  	    return invoice;
-	  	  }
+	  				}*/
+		  chargesOrderedTemp=getChargesForPDF(charges);
+		  order.setChargesForInvoice(chargesOrderedTemp);
+	  }
+	  return invoice;
+  }
+
+  /**
+   * @author sundar
+   * On previous fix taxes are checked by hard coded values,so 
+   * here we replaced that with dynamic charge type check by checking charge_group 
+   * column value "isTax".
+   * if isTax=false then it is non-tax
+   * else if isTax=true then it is tax. 
+   * @param charges
+   * @return charges
+   */
+  private List<Charge> getChargesForPDF(List<Charge> charges) {
+	  List<Charge> chargesNonTax = new ArrayList<Charge>();
+	  List<Charge> chargesTax = new ArrayList<Charge>();
+	  List<Charge> chargesOrderedTemp = new ArrayList<Charge>();
+	  int lastCharge = 0;
+	  boolean isFoudTax=false;
+	  if (charges != null && charges.size() > 0) {
+		  for(int index=0; index < charges.size(); index++) {
+			  Charge charge = charges.get(index);
+			  Long carrier_id=charge.getCarrierId();
+			  if(charge!=null){
+				  ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge.getChargeGroupId());
+				  int chargeGroupId= 0;
+				  if(chargeGroup!=null){
+					  chargeGroupId = (int)chargeGroup.getGroupId();
+				  }
+				  CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(charge.getCarrierId(),
+						  charge.getChargeCode(), charge.getChargeCodeLevel2(), chargeGroupId);
+				  if(carrier_id==ShiplinxConstants.CARRIER_ESHIPPLUS && ccc==null) {
+					  ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id, null, charge.getChargeCodeLevel2(), chargeGroupId);
+				  }
+				  if (ccc != null && ccc.isTax()) {
+    	    		chargesTax.add(charges.get(index));
+				  }else{
+					  chargesNonTax.add(charges.get(index));
+				  }
+			  }
+		  }
+		  log.debug("-----------------------------");
+		  log.debug("NON TAX CHARGES");
+		  for(Charge cNT:chargesNonTax){
+			log.debug(">> "+cNT.getName());  
+		  }
+		  log.debug("-----------------------------");
+		  log.debug("TAX CHARGES");
+		  for(Charge cT:chargesTax){
+			  log.debug(">> "+cT.getName()); 
+		  }
+		  log.debug("-----------------------------");
+		  chargesOrderedTemp.addAll(chargesNonTax);
+		  chargesOrderedTemp.addAll(chargesTax);
+		  double charge=0.0;
+		  for (int index = 0; index < chargesOrderedTemp.size(); index++) {
+			  Charge charge2 = charges.get(index);
+			  Long carrier_id=charge2.getCarrierId();
+			  if(charge2!=null){
+				  ChargeGroup chargeGroup=shippingDAO.getChargeGroup(charge2.getChargeGroupId());
+				  int chargeGroupId= 0;
+				  if(chargeGroup!=null){
+					  chargeGroupId = (int)chargeGroup.getGroupId();
+				  }
+				  CarrierChargeCode ccc = shippingDAO.getChargeByCarrierAndCodesGroup(charge2.getCarrierId(),
+						  charge2.getChargeCode(), charge2.getChargeCodeLevel2(), chargeGroupId);
+				  if(carrier_id==ShiplinxConstants.CARRIER_ESHIPPLUS && ccc==null) {
+					  ccc = shippingDAO.getChargeByCarrierAndCodesGroup(carrier_id, null, charge2.getChargeCodeLevel2(), chargeGroupId);
+				  }
+				  if (ccc != null && ccc.isTax()) {
+					  chargesOrderedTemp.get(index).setShowSubTotal("true");
+					  charge = charge+chargesOrderedTemp.get(index).getCharge();
+					  chargesOrderedTemp.get(index).setTotalTax(charge);
+					  isFoudTax=true;
+				  }else{
+					  chargesOrderedTemp.get(index).setShowSubTotal("false1");
+					  lastCharge = index;
+				  }
+			  }
+		  }
+	 }
+	 if (lastCharge + 1 < chargesOrderedTemp.size()) {
+		 chargesOrderedTemp.get(lastCharge + 1).setShowSubTotal("false");
+	 } else {
+		 if (2 == chargesOrderedTemp.size()) {
+			 chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+		 } else if (1 == chargesOrderedTemp.size()) {
+			 chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+		 } else if(!isFoudTax){
+			 chargesOrderedTemp.get(lastCharge).setShowSubTotal("false1");
+		 } else {
+			 chargesOrderedTemp.get(lastCharge).setShowSubTotal("false");
+		 }
+	 }
+	 return chargesOrderedTemp;
+  }
 
   public List<ShippingOrder> getShippingOrders(long invoiceId) {
     return null;
@@ -1956,7 +2041,24 @@ else if(service.getEmailType().equalsIgnoreCase(ShiplinxConstants.CHB_EMAIL_TYPE
 	                + user.getBusiness().getName());
 	            return false;
 	          }
-
+	          BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+	          			  Business b=businessDAO.getBusiessById(user.getBusinessId());
+	          			  BusinessContact bc=businessDAO.getbusinessContactByBusiness(user.getBusinessId());
+	          			     
+	                    
+	          	          body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+	          	          body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+	                    body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+	          	          body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+	          	          body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+	          	          body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+	          	          body = new String(body.replaceAll("%LTLEMAIL", bc.getLtlEmail()));
+	          	          body = new String(body.replaceAll("%LTLPHONE", bc.getLtlPhone()));
+	        		  //    body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+	        			  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));  
+	          	          body = new String(body.replaceAll("%ARPHONE", bc.getArPhone()));
+	          	          body = new String(body.replaceAll("%AREMAIL", bc.getArEmail()));
+	                    body = new String(body.replaceAll("%ARCONTACT", bc.getArContact()));
 	          body = new String(body.replaceAll("%BUSINESSNAME", user.getBusiness().getName()));
 	          body = new String(body.replaceAll("%CONTACT", user.getBusiness().getAddress()
 	              .getContactName()));

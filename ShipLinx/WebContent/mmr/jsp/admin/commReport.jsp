@@ -30,6 +30,24 @@
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/mmr/scripts/jquery.dataTables.js"></script>
 
+<script>
+
+$(function() {
+$('.dropdown-toggle').click(function(){
+  $(this).next('.dropdown').toggle();
+});
+
+$(document).click(function(e) {
+  var target = e.target;
+  if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown-toggle')) {
+    $('.dropdown').hide();
+  }
+});
+
+});
+
+</script>
+
 <script type="text/javascript">
 	
 		$(document).ready(function() {
@@ -292,9 +310,19 @@
 	<div class="content_table" style="background-color:#fff;">
 	<div id="srchusr_res"><span><mmr:message messageId="label.commission.commissionreport" /> </span></div>
 		<div id="srchinv_results">	
-			<div class="form_buttons">
+			<%-- <div class="form_buttons">
 				<a href="javascript:pdf()"><mmr:message messageId="label.commission.pdf" /> </a>
-			</div>
+			</div> --%>
+			<div id="action_nav">
+					<a class="dropdown-toggle" href="#"><label><mmr:message messageId="label.action"/></label><span style="font-size:14px; padding-left:5px;">&#9660;</span></a>
+				<ul class="dropdown">
+					
+						<li><a href="javascript:pdf()"><label><mmr:message messageId="label.commission.pdf"/></label></a></li>
+	           <li><a href="comm.download.action?type=csv" ><label><mmr:message messageId="label.list.csv"/></label></a></li>
+			<li><a href="comm.download.action?type=xl" ><label><mmr:message messageId="label.list.xl"/></label></a></li>
+			<li><a href="comm.download.action?type=xml" ><label><mmr:message messageId="label.list.xml"/></label></a></li>
+						 </ul>
+						 </div>
 		</div>
 	<div id="srchinv_result_tbl" >
 <table cellpadding="0" cellspacing="0"  border="0px" class="display" id="sample1" width="100%">
@@ -415,10 +443,10 @@
 </div>
 <div class="exportlinks"> 
 <span style="color:maroon;"><mmr:message messageId="label.commission.not include Taxes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-	<mmr:message messageId="label.bottom.exportto"/> : &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<%-- <mmr:message messageId="label.bottom.exportto"/> : &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="comm.download.action?type=csv" class="arrowPackage"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  <a href="comm.download.action?type=xl" class="arrowPackage"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
- <a href="comm.download.action?type=xml" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
+ <a href="comm.download.action?type=xml" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a> --%>
 </div>
 <div id="srchinv_res_tbl_end_commission"></div>
 </div>

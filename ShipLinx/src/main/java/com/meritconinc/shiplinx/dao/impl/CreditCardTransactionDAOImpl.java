@@ -3,6 +3,8 @@ package com.meritconinc.shiplinx.dao.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import com.meritconinc.shiplinx.model.Package;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -79,6 +81,16 @@ public class CreditCardTransactionDAOImpl extends SqlMapClientDaoSupport impleme
 			      }
 				
 			}
+	
+	@Override
+		public List<CCTransaction> findCCTransactionByOrderIds(List<Long> orderIds) {
+			 List<CCTransaction> listCCTransaction = new ArrayList<CCTransaction>();
+				Map<String, Object> paramObj = new HashMap<String, Object>(1);
+			 	paramObj.put("orderIds", orderIds);
+			 	listCCTransaction = (List<CCTransaction>)getSqlMapClientTemplate().queryForList("findCCTransactionByOrderIds",paramObj);
+			return listCCTransaction;
+		}
+
 		
 
 }

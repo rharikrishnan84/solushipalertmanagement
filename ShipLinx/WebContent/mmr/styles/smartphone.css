@@ -45,12 +45,12 @@ background-size: cover;
 .wrapper_navi ul li a		{ text-decoration:none; color:#c1c1c1; padding:6px; float:left;}
 .wrapper_navi ul li a:hover { color:#FFF;}
 .nextlevelmenu			{ height:auto; width:94%; background-color:#FFF; margin:0px 10px 5px 10px; float:left;}
-.nextlevelmenu ul		{ list-style-type:none; font-size:10px; margin:0px; padding:0px;}
+.nextlevelmenu ul		{ list-style-type:none; font-size:10px; margin:0px; padding:0px;width: 305px;}
 .nextlevelmenu ul li		{ display:inline;}
 .nextlevelmenu ul li a		{ text-decoration:none; color:#000; padding:5px 10px; float:left;}
 
 
-.content				{ height:auto; width:100%; min-height:420px; float:left; background-color:#F5F5F5;}
+.content				{ height:auto; width:100%; float:left; background-color:#F5F5F5;}
 .content_body			{ height:auto; width:90%; margin:0px auto; }
 .content_table			{ height:auto; width:100%; float:left;}
 

@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.meritconinc.shiplinx.dao.CreditCardTransactionDAO;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,8 +24,8 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import com.meritconinc.shiplinx.model.Document;
 
+import com.meritconinc.shiplinx.model.Document;
 import com.meritconinc.mmr.model.security.User;
 import com.meritconinc.mmr.utilities.Common;
 import com.meritconinc.mmr.utilities.MessageUtil;
@@ -77,7 +79,9 @@ import com.meritconinc.shiplinx.model.AccessorialServices;
 import com.meritconinc.shiplinx.model.AddressCheckList;
 import com.meritconinc.shiplinx.model.EshipplusCarrierFilter;
 import com.meritconinc.shiplinx.model.EshipplusPackage;
-
+import com.meritconinc.shiplinx.model.Document;
+import com.meritconinc.shiplinx.dao.BusinessDAO;
+import com.meritconinc.shiplinx.model.BusinessContact;
 public class ShippingServiceImpl implements ShippingService {
 
   private static final Logger log = LogManager.getLogger(ShippingServiceImpl.class);
@@ -510,19 +514,79 @@ public class ShippingServiceImpl implements ShippingService {
   public List<ShippingOrder> getOrdersByTrackingNumber(Long carrierId, String trackingNumber) {
 
     // if tracking number is null or length is 0, then return null
-    if (trackingNumber == null || trackingNumber.length() == 0)
+   /* if (trackingNumber == null || trackingNumber.length() == 0)
       return null;
 
     return getShippingDAO().getOrdersByTrackingNumber(carrierId, trackingNumber);
-  }
+  }*/
+	  List<ShippingOrder> shippingOrders = new ArrayList<ShippingOrder>();
+	  		// if tracking number is null or length is 0, then return null
+	  		if (trackingNumber == null || trackingNumber.length() == 0) {
+	  			return null;
+	  	}
+	  		shippingOrders = getShippingDAO().searchShippingOrderByTrackingNumber(
+	  				carrierId, trackingNumber);
+	  		if (shippingOrders == null) {
+	  			List<Long> orderIds = getShippingDAO()
+	  				.getOrderIdByPackageTrackingNumber(trackingNumber);
+	  			if (orderIds != null) {
+	  				if (orderIds.size() > 0) {
+	  					shippingOrders = getShippingDAO().getShippingOrdersList(
+	  							carrierId, orderIds);
+	  					if (shippingOrders.size() > 0) {
+	  					shippingOrders = populateOrder(shippingOrders);
+	  						return shippingOrders;
+	  					}
+	  				}
+	  			}
+	  	} else {
+	  			if (shippingOrders.size() > 0) {
+	  				shippingOrders = populateOrder(shippingOrders);
+	  				return shippingOrders;
+	  			}
+	  		}
+	  		return shippingOrders;
+	  		// return getShippingDAO().getOrdersByTrackingNumber(carrierId,
+	  		// trackingNumber);
+	  	}
+
 
   public List<ShippingOrder> getOrdersByMasterTrackingNumber(Long carrierId, String trackingNumber) {
 
     // if tracking number is null or length is 0, then return null
-    if (trackingNumber == null || trackingNumber.length() == 0)
+    /*if (trackingNumber == null || trackingNumber.length() == 0)
       return null;
 
-    return getShippingDAO().getOrdersByMasterTrackingNumber(carrierId, trackingNumber);
+    return getShippingDAO().getOrdersByMasterTrackingNumber(carrierId, trackingNumber);*/
+	  List<ShippingOrder> shippingOrders = new ArrayList<ShippingOrder>();
+	  		// if tracking number is null or length is 0, then return null
+	  		if (trackingNumber == null || trackingNumber.length() == 0) {
+	  			return null;
+	  		}
+	  	shippingOrders = getShippingDAO().searchShippingOrderByTrackingNumber(
+	  				carrierId, trackingNumber);
+	  		if (shippingOrders == null) {
+	  			List<Long> orderIds = getShippingDAO()
+	  				.getOrderIdByPackageTrackingNumber(trackingNumber);
+	  			if (orderIds != null) {
+	  				if (orderIds.size() > 0) {
+	  					shippingOrders = getShippingDAO().getShippingOrdersList(
+	  							carrierId, orderIds);
+	  					if (shippingOrders.size() > 0) {
+	  						shippingOrders = populateOrder(shippingOrders);
+	  						return shippingOrders;
+	  					}
+	  				}
+	  			}
+	  		} else {
+	  			if (shippingOrders.size() > 0) {
+	  				shippingOrders = populateOrder(shippingOrders);
+	  				return shippingOrders;
+	  			}
+	  		}
+	  		return shippingOrders;
+	  		// return getShippingDAO().getOrdersByTrackingNumber(carrierId,
+	  		// trackingNumber);
   }
 
   public List<String> getTodaysOrderResult(long customerId) {
@@ -1076,7 +1140,9 @@ public class ShippingServiceImpl implements ShippingService {
          */
             String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_SHIP_RATE);
             
-      
+            BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+            		     Business b=businessDAO.getBusiessById(customer.getBusinessId());
+            		     BusinessContact bc=businessDAO.getbusinessContactByBusiness(customer.getBusinessId());
             if (body == null || body.length() == 0) {
           	    body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);
             }
@@ -1086,7 +1152,16 @@ public class ShippingServiceImpl implements ShippingService {
             + user.getBusiness().getName());
         return false;
       }
-
+      body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+            body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+            body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+            body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+           body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+            body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+            body = new String(body.replaceAll("%LTLEMAIL", bc.getLtlEmail()));
+           body = new String(body.replaceAll("%LTLPHONE", bc.getLtlPhone()));
+		      //body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+		      body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
       body = new String(body.replaceAll("%BUSINESSNAME", user.getBusiness().getName()));
       body = new String(body.replaceAll("%SFROMZIP", so.getFromAddress().getPostalCode()));
       body = new String(body.replaceAll("%SFROMPROVINCE", so.getFromAddress().getProvinceCode()));
@@ -1103,7 +1178,20 @@ public class ShippingServiceImpl implements ShippingService {
           + " day(s)"));
       body = new String(body.replaceAll("%TOTALWEIGHT", so.getRateList().get(isel).getBillWeight()
           + " " + so.getRateList().get(isel).getBillWeightUOM()));
-      BigDecimal totalCharge = new BigDecimal(so.getRateList().get(isel).getTotal());
+      /*BigDecimal totalCharge = new BigDecimal(so.getRateList().get(isel).getTotal());*/
+      boolean total = false;
+            BigDecimal totalCharge;
+            for (int k = 0; k < so.getRateList().get(isel).getCharges().size(); k++) {
+                if(so.getRateList().get(isel).getCharges().get(k).getExchangerate() != null){
+              	  total = true;
+              	  break;
+                }
+              }
+            if(total){
+          	 totalCharge = new BigDecimal(so.getRateList().get(isel).getTotalChargeLocalCurrency());
+             }else{
+           	  totalCharge = new BigDecimal(so.getRateList().get(isel).getTotal());
+             }
       body = new String(body.replaceAll("%CURRENCY",so.getRateList().get(isel).getCurrency()));
       body = new String(body.replaceAll("%TOTALCHARGES",
           "&#36;" + totalCharge.setScale(2, BigDecimal.ROUND_HALF_UP))); // &#36; is the
@@ -1988,6 +2076,11 @@ public class ShippingServiceImpl implements ShippingService {
       String subject = MessageUtil.getMessage("message.send.rates.notification.subject", locale);
       subject = new String(subject.replaceAll("%CUSTOMERNAME", customer.getName()));
 
+      
+      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+      	     Business b=businessDAO.getBusiessById(customer.getBusinessId());
+           BusinessContact bc=businessDAO.getbusinessContactByBusiness(customer.getBusinessId());
+      
       /*String body = MessageUtil.getMessage(user.getBusiness().getRatesNotificationBody(), locale);*/
       String body=BusinessFilterUtil.getEmailBody(so.getBusinessId(), ShiplinxConstants.MSGID_EMAIL_SHIP_RATE);
       
@@ -2000,7 +2093,17 @@ public class ShippingServiceImpl implements ShippingService {
             + user.getBusiness().getName());
         return false;
       }
-
+      
+      body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+            body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+            body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+            body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+            body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+            body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+            body = new String(body.replaceAll("%LTLEMAIL", bc.getLtlEmail()));
+           body = new String(body.replaceAll("%LTLPHONE", bc.getLtlPhone()));
+           //body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+			  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
       body = new String(body.replaceAll("%BUSINESSNAME", user.getBusiness().getName()));
       body = new String(body.replaceAll("%SFROMZIP", so.getFromAddress().getPostalCode()));
       body = new String(body.replaceAll("%SFROMPROVINCE", so.getFromAddress().getProvinceCode()));
@@ -2207,6 +2310,10 @@ public class ShippingServiceImpl implements ShippingService {
       // GROUP_EMAIL_ADDRESS_en_CA
 
       String subject = MessageUtil.getMessage("label.subject.cancel.shipment.notification");
+      
+      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+         Business b=businessDAO.getBusiessById(so.getBusinessId());
+        BusinessContact bc=businessDAO.getbusinessContactByBusiness(so.getBusinessId());
 
       /*String body = MessageUtil.getMessage("mail.cancel.shipment.notification.body");
 */
@@ -2224,6 +2331,12 @@ public class ShippingServiceImpl implements ShippingService {
               "%ShipDate",
               FormattingUtil.getFormattedDate(so.getScheduledShipDate(),
                   FormattingUtil.DATE_FORMAT_WEB) + ""));
+      body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+            body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+            body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+         body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+	    //  body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+		  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
       body = new String(body.replaceAll("%SFROMCOMPANY", so.getFromAddress().getAbbreviationName()));
       body = new String(body.replaceAll("%SFROMADDRESS1", so.getFromAddress().getAddress1()));
       body = new String(body.replaceAll("%SFROMADDRESS2%", so.getFromAddress().getAddress2()));
@@ -2571,11 +2684,13 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 	
 		public List<ShippingOrder> populateOrder(List<ShippingOrder> orders) {
 		long startTime = System.currentTimeMillis();
+		//log.debug("start time :" +startTime);
 		List<Long> addressIds = new ArrayList<Long>();
 		List<Long> serviceIds = new ArrayList<Long>();
 		List<Long> customerIds = new ArrayList<Long>();
 		List<Long> carrierIds = new ArrayList<Long>();
 		List<Long> orderIds = new ArrayList<Long>();
+		boolean isTrackAndsearch = orders.get(0).isTrackAndSearch();
 		List<ShippingOrder> orderList = new ArrayList<ShippingOrder>();
 		for (ShippingOrder order : orders) {
 			addressIds.add(order.getShipFromId());
@@ -2597,6 +2712,7 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 		List<CustomsInvoice> customsInvoicesList = shippingDAO.getCustomsInvoiceByOrderIds(orderIds); 
 		List<Charge> charges = shippingDAO.getChargesByOrderIds(orderIds);
 		List<Package> packages = shippingDAO.getPackagesByOrderIds(orderIds);
+		List<CCTransaction> ccList =creditCardService.findCCTransactionByOrderIds(orderIds);
 		long statusId = 0;
 		long serviceId = 0;
 		long carrierId = 0;
@@ -2662,12 +2778,38 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 				}
 			}
 			for (Package package1 : packages) {
-				if (order.getId() == package1.getOrderId()) {
+				if (order.getId().longValue() == package1.getOrderId().longValue()) {
 					order.getPackages().add(package1);
 				}
 			}
 			for (Charge charge : charges) {
-				if (order.getId() == charge.getOrderId()) {
+				if (order.getId().floatValue() == charge.getOrderId()) {
+					if(!isTrackAndsearch){
+					Charge tempCharge = shippingDAO
+							.getInvoiceStatusByOrderId(charge.getOrderId());
+					String invoiceNum = null;
+					if (tempCharge != null) {
+						if (tempCharge.getInvoiceId() != null) {
+							charge.setInvoiceId(tempCharge.getInvoiceId());
+							invoiceNum = shippingDAO
+									.getInvoiceNumbyId(tempCharge
+											.getInvoiceId());
+						} else {
+							charge.setInvoiceId(null);
+						}
+						if (invoiceNum != null) {
+							charge.setInvoiceNum(invoiceNum);
+						} else {
+							charge.setInvoiceNum(null);
+						}
+						if (tempCharge.getCancelledInvoice() != null) {
+							charge.setCancelledInvoice(tempCharge
+									.getCancelledInvoice());
+						} else {
+							charge.setCancelledInvoice(null);
+						}
+					}
+					}
 					order.getCharges().add(charge);
 				}
 			}
@@ -2675,12 +2817,20 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 				if (order.getId() == invoice.getOrderId()) {
 					order.setCustomsInvoice(invoice);
 				}
+							}
+							if(ccList.size()>0){
+								for(CCTransaction ccTransaction:ccList){
+									if(order.getId()== ccTransaction.getEntityId()){
+										order.getCcTransactions().add(ccTransaction);
+									}
+
+				}
 			}
 			orderList.add(order);
 		}
 
 		long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
-		log.info(" Total Elapsed Time for Setting Object (seconds):"+elapsedTimeSec);
+     log.info(" Total Elapsed Time for Setting Object (seconds):"+elapsedTimeSec);
 
 		return orderList;
 	}
@@ -2688,7 +2838,8 @@ public void insertFuturePackages(FutureReferencePackages futureRefPack) {
 	@Override
 	public List<ShippingOrder> getShipmentsForTrack(ShippingOrder so) {
 		List<ShippingOrder> temList = this.shippingDAO.getShipmentsForTrack(so);
-			if(temList.size() >0 ){
+			if(temList != null && temList.size() >0 ){
+			temList.get(0).setTrackAndSearch(true);	
 			return populateOrder(temList);
 			}
 			return temList;

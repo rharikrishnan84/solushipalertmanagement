@@ -1961,7 +1961,8 @@ public class ShippingDAOImpl extends SqlMapClientDaoSupport implements ShippingD
  			 		//so.setCustomerId
 
  		long startTime1 = System.currentTimeMillis();
- 		 if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
+ 		 /*if (role.equalsIgnoreCase(ShiplinxConstants.ROLE_BUSINESSADMIN) || role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {*/
+ 		if (role.equalsIgnoreCase(Constants.SYS_ADMIN_ROLE_CODE)) {
  			 so.setBusinessIds(null);
  			 
  			long busId = BusinessFilterUtil.setBusinessIdbyUserLevel();
@@ -2184,6 +2185,97 @@ public List<CustomsInvoice> getCustomsInvoiceByOrderIds(List<Long> orderIds) {
 											    }
 											
 										}
+										@Override
+											public Charge getInvoiceStatusByOrderId(long orderId) {
+												try {
+													Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												paramObj.put("orderId", orderId);
+													Charge charge = (Charge) getSqlMapClientTemplate().queryForObject(
+															"getInvoiceStatusByOrderId", paramObj);
+													if (charge != null) {
+														return charge;
+												}
+												} catch (Exception e) {
+													e.printStackTrace();
+													logger.error(e);
+												}
+												return null;
+											}
+										 
+											@Override
+											public String getInvoiceNumbyId(long invoiceId) {
+												try {
+													Map<String, Object> paramObj = new HashMap<String, Object>(1);
+													paramObj.put("id", invoiceId);
+													String invoiceNum = (String) getSqlMapClientTemplate()
+															.queryForObject("getInvoiceNumById", paramObj);
+													if (invoiceNum != null) {
+														return invoiceNum;
+													}
+												} catch (Exception e) {
+													e.printStackTrace();
+												logger.error(e);
+												}
+												return null;
+											}
+										
+											@Override
+											public List<ShippingOrder> searchShippingOrderByTrackingNumber(
+													Long carrierId, String trackingNumber) {
+												try {
+													Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												paramObj.put("carrierId", carrierId);
+													paramObj.put("trackingNumber", trackingNumber);
+													List<ShippingOrder> shippingOrders = getSqlMapClientTemplate()
+															.queryForList("searchShippingOrderByTrackingNumber",
+																	paramObj);
+													if (shippingOrders.size() > 0) {
+														return shippingOrders;
+													}
+												} catch (Exception e) {
+													e.printStackTrace();
+													logger.error(e);
+												}
+											return null;
+											}
+										
+											@Override
+											public List<Long> getOrderIdByPackageTrackingNumber(String trackingNumber) {
+												try {
+													Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												paramObj.put("trackingNumber", trackingNumber);
+										
+													List<Long> orderIds = getSqlMapClientTemplate().queryForList(
+															"getOrderIdByPackageTrackingNumber", paramObj);
+													if (orderIds.size() > 0) {
+														return orderIds;
+													}
+											} catch (Exception e) {
+													e.printStackTrace();
+													logger.error(e);
+												}
+											return null;
+											}
+										
+											@Override
+											public List<ShippingOrder> getShippingOrdersList(Long carrierId,
+													List<Long> orderIds) {
+												try {
+													Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												paramObj.put("carrierId", carrierId);
+													paramObj.put("orderIds", orderIds);
+													List<ShippingOrder> shippingOrders = getSqlMapClientTemplate()
+															.queryForList("getShippingOrdersList", paramObj);
+													if (shippingOrders.size() > 0) {
+														return shippingOrders;
+													}
+												} catch (Exception e) {
+													e.printStackTrace();
+													logger.error(e);
+												}
+												return null;
+											}
+
 
 
 	

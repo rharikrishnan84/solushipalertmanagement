@@ -12,6 +12,7 @@ import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.List;
+import com.meritconinc.shiplinx.model.BusinessContact;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,6 +49,7 @@ import com.meritconinc.shiplinx.utils.ShiplinxConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
 import com.soluship.businessfilter.util.BusinessFilterUtil;
+import com.meritconinc.mmr.interceptor.MmrInterceptor;
 
 import it.businesslogic.ireport.undo.ITransformation;
 
@@ -373,6 +375,7 @@ public class BusinessAction extends BaseAction implements Preparable,ServletRequ
 				business.getCssVO().setEmailForgotpwd(MessageUtil.getMessage(ShiplinxConstants.MSGID_EMAIL_FORGOT_PWD));
 				business.getCssVO().setBusinessEmailList(businessDAO.getBusinessEmails(businessId));
 				getSession().put("businessEmailList",new ArrayList<BusinessEmail>());
+				business.setDefaultPaymentTypeLevel(true);
 				getSession().put("localeList", MessageUtil.getLocales());
 			 
 			
@@ -555,9 +558,11 @@ private List<BusinessEmail> removeListWithBusEmailId(
 			}else if((getSession().get("updateBus"))!=null && ((String)getSession().get("updateBus")).equals("success")){
 				addActionMessage(getText("business.updated.successfully"));
 			}
+			updateOrAddBusinessContact();
 			getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getSysadminLevelCustomers());
 			businessList = businessDAO.getAllBusiness();
 			getSession().remove("editBusiness");
+			
 		}catch(Exception e){
 			log.error("Error in listing the business :" + e.getMessage());
 		}
@@ -626,6 +631,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						menuItemDAO.deleteBusinessMenuById(paramBusinessId, String.valueOf(itemVO.getId()));
 					}
 				}
+				updateOrAddBusinessContact();
 				getSession().put(ShiplinxConstants.SESSION_BUSINESSFILTER_CUSTOMERID,BusinessFilterUtil.getSysadminLevelCustomers());
 				businessList = businessDAO.getAllBusiness();
 				getSession().remove("editBusiness");
@@ -737,6 +743,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    BusinessFilterUtil bfu1=new BusinessFilterUtil(busids, this.select);
 							Thread t1=new Thread(bfu1);
 							t1.start();
+							addBusinessContacts(busids,business.getBusinessContact());
 							
 							
 						}
@@ -783,7 +790,38 @@ private List<BusinessEmail> removeListWithBusEmailId(
 		}
 		
 	}
-	
+	private void updateOrAddBusinessContact() {
+				// TODO Auto-generated method stub
+				
+				if(business!=null){
+				BusinessContact bc=businessDAO.getbusinessContactByBusiness(business.getId());
+					if(bc==null){
+						business.getBusinessContact().setBusinessId(business.getId());
+						businessDAO.addBusinessContact(business.getBusinessContact());
+				}else{
+						business.getBusinessContact().setBusinessId(business.getId());
+						businessDAO.updateBusinessContact(business.getBusinessContact());
+						
+					}
+					
+				}
+			
+			}
+		
+			private void addBusinessContacts(List<Long> busids,
+					BusinessContact businessContact) {
+				// TODO Auto-generated method stub
+				
+			if(busids!=null && busids.size()>0){
+					for(Long businessId:busids){
+						businessContact.setBusinessId(businessId);
+						businessDAO.addBusinessContact(businessContact);
+					}
+				}
+				
+				
+			}
+
 	
 	/**
 	  * vivek help menu changes for new business
@@ -1793,6 +1831,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						 // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus, business);
 						    long partnerBusinessId=businessDAO.addParterLevelBusienss(business);
+						    business.getBusinessContact().setBusinessId(partnerBusinessId);
+						    businessDAO.addBusinessContact(business.getBusinessContact());
 						    String cssText=getCssTextForBusiness(business.getCssVO());
 						     addCSS(cssText, partnerBusinessId);
 						     BusinessFilterUtil.loadDefaultProperty(partnerBusinessId);
@@ -1842,6 +1882,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				business.setDefaultNetTerms(15);
 				updateCSS();
 				businessDAO.updateBusiness(business);
+				updateOrAddBusinessContact();
 				//inserting the business menu
 				List<MenuItemVO> menuItems = menuItemDAO.getMenuByBusiness(paramBusinessId);
 				String[] uiMenuSelected = business.getMenuIds();
@@ -1877,7 +1918,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				Business b=businessDAO.getBusiessById(businessId);
 				getSession().remove("editBusiness");
 				
-				
+				updateOrAddBusinessContact();
 				addActionMessage(getText("business.update.success"));
 				return SUCCESS;
 			}catch(Exception e){
@@ -1936,6 +1977,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						    // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus2, business);
 						    long countryBusinessId=businessDAO.addCountryLevelBusienss(business);
+						    business.getBusinessContact().setBusinessId(countryBusinessId);
+						     businessDAO.addBusinessContact(business.getBusinessContact());
 						    BusinessFilterUtil.loadDefaultProperty(countryBusinessId);
 						   /* if(countryBusinessId>0){
 //						    	loadDefaultPropertyForBusiness(countryBusinessId);
@@ -2062,6 +2105,8 @@ private List<BusinessEmail> removeListWithBusEmailId(
 						 // method to add default fields of business
 						    						    business = addDefaultBusiness(parentbus2, business);
 						    long BranchBusId=businessDAO.addBranchLevelBusiness(business);
+						    business.getBusinessContact().setBusinessId(BranchBusId);
+						     businessDAO.addBusinessContact(business.getBusinessContact());
 						    BusinessFilterUtil.loadDefaultProperty(BranchBusId);
 						    /*if(BranchBusId>0){
 						    	List<Long> busids=new ArrayList<Long>();
@@ -2148,7 +2193,7 @@ private List<BusinessEmail> removeListWithBusEmailId(
 				businessList=businessDAO.getBranchBuisness(partnerId, countryParterId);
 				getSession().remove("editBusiness");
 				
-				
+				updateOrAddBusinessContact();
 				addActionMessage(getText("business.update.success"));
 				return SUCCESS;
 			}catch(Exception e){

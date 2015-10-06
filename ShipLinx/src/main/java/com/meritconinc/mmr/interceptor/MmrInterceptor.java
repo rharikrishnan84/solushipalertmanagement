@@ -160,6 +160,11 @@ public class MmrInterceptor extends MmrBaseInterceptor {
 				  } 
 				  
 				   Business business=businessDAO.getBusiessById(businessId);
+				   if(business!=null &&
+						   						   business.getCssVO()!=null && 
+						   						   business.getCssVO().getBarFirstColor()!=null){
+						   					   ActionContext.getContext().getSession().put("hRefColor",business.getCssVO().getBarFirstColor());
+						   				   }
 				   if(business!=null && business.isNationLevel()){
 					   business=businessDAO.getBusiessById(business.getParentBusinessId());
 					   

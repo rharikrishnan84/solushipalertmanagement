@@ -128,6 +128,7 @@ public abstract class EdiParser {
 			AddressDAO addressDAO, MarkupManager markupManagerService,
 			UPSCanadaTariffDAO upsCanadaTariffDAO, 
 			LoggedEventService loggedService) throws Exception {
+		long startTime = System.currentTimeMillis();
 		EdiParser parser = null;
 		if (edi != null) {
 			if (edi.getCarrierId().intValue() == ShiplinxConstants.CARRIER_UPS || edi.getCarrierId().intValue() == ShiplinxConstants.CARRIER_UPS_USA) {
@@ -149,6 +150,8 @@ public abstract class EdiParser {
 			if (parser != null) {
 				List<String> parsedFiles = parser.parse();
 				if (parsedFiles != null) {
+					long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
+					log.info(" Total Elapsed Time for execute the EDI process (seconds):" + elapsedTimeSec);
 					log.debug(parsedFiles);
 				}
 			}
@@ -158,6 +161,7 @@ public abstract class EdiParser {
 	protected List<String> processEdiFiles() {
 		// TODO Auto-generated method stub
 		try {
+			long startTime = System.currentTimeMillis();
 			String inFolder = ediInfo.getEdiFolder() + File.separator + ShiplinxConstants.IN_FOLDER;
 			ArrayList<File> filesToBeParsed = getFiles(inFolder);
 			if (filesToBeParsed != null && filesToBeParsed.size() > 0) {
@@ -225,6 +229,8 @@ public abstract class EdiParser {
 						}						
 					}
 				}
+				long elapsedTimeSec = (System.currentTimeMillis() - startTime) / 1000;
+				log.info(" Total Elapsed Time for processEdiFiles process (seconds):" + elapsedTimeSec);
 				return fileList;
 			}
 		} catch (Exception e) {
@@ -495,14 +501,36 @@ public abstract class EdiParser {
 		// ediShipment.getMasterTrackingNum());
 		// }
 
-		List<ShippingOrder> dbShipments = this.shippingService
+		//List<ShippingOrder> dbShipments = this.shippingService
+		List<ShippingOrder> dbShipments = new ArrayList<ShippingOrder>();
+		List<ShippingOrder> tempDbShipments= this.shippingService
 				.getOrdersByTrackingNumber(ediShipment.getCarrierId(),
 						ediShipment.getMasterTrackingNum());
+		
+		if(tempDbShipments != null){
+					if(tempDbShipments.size() >0){
+				dbShipments = shippingService.populateOrder(tempDbShipments);
+					}else if(tempDbShipments.size() ==0){
+						dbShipments = null;
+				}
+					}else{
+						dbShipments = null;
+				}
 		if (dbShipments == null || dbShipments.size() == 0) {
 			// Try to find shipments using package tracking number
 			for(Package pkg: ediShipment.getPackages()){			
-				dbShipments = this.shippingService.getOrdersByTrackingNumber(
+				//dbShipments = this.shippingService.getOrdersByTrackingNumber(
+				tempDbShipments = this.shippingService.getOrdersByTrackingNumber(
 					ediShipment.getCarrierId(), pkg.getTrackingNumber());
+				if(tempDbShipments != null){
+									if(tempDbShipments.size() >0){
+										dbShipments = shippingService.populateOrder(tempDbShipments);
+										}else if(tempDbShipments.size() ==0){
+											dbShipments = null;
+										}
+								}else{
+										dbShipments = null;
+									}
 				if(dbShipments!=null && dbShipments.size()>0) //found
 					break;
 			}
@@ -516,8 +544,15 @@ public abstract class EdiParser {
 	}
 	
 	protected ShippingOrder findShipmentByMasterTrackingNumber(Long carrierId, String trackingNumber) {
-		List<ShippingOrder> dbShipments = this.shippingService
+		//List<ShippingOrder> dbShipments = this.shippingService
+		List<ShippingOrder> dbShipments = new ArrayList<ShippingOrder>();
+		List<ShippingOrder> tempDbShipments = this.shippingService
 				.getOrdersByMasterTrackingNumber(carrierId, trackingNumber);
+		if(tempDbShipments.size() >0){
+						dbShipments = shippingService.populateOrder(tempDbShipments);
+						}else if(tempDbShipments.size() ==0){
+							dbShipments = null;
+						}
 		if (dbShipments != null && dbShipments.size() > 0) {
 			return dbShipments.get(0);
 		}

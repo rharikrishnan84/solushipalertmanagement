@@ -335,6 +335,16 @@ function loadTrackingURL(url){
 		<li><s:a href="Javascript: repeatOrder();"><mmr:message messageId="label.list.repeat"/></s:a></li>
 			<li><s:a href="javascript: editorder();"><mmr:message messageId="label.list.edit"/></s:a></li>
 				<li><a href="javascript: atleastOneShipmentChecked('check_uncheck_row');"><mmr:message messageId="label.print.label"/></a></li>
+				<li><s:a href="javascript: download_files('csv');"><mmr:message messageId="label.list.csv"/></s:a></li>
+				<li><s:a href="javascript: download_files('xl');"><mmr:message messageId="label.list.xl"/></s:a></li>
+				<li><s:a href="javascript: download_files('xml');"><mmr:message messageId="label.list.xml"/></s:a></li>
+					<s:if test="%{#request.shippingOrder.carrierId == 80}">
+					<li><s:a href="javascript:midlandEOD();"><mmr:message messageId="label.list.midland.eod"/></s:a></li>
+			</s:if>
+				<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
+				<li><s:a href="javascript:manifestEOD();"><mmr:message messageId="label.list.manifest.eod"/></s:a></li>
+				
+				</s:if>
 				</ul>
 				
  			</div>
@@ -539,7 +549,7 @@ function loadTrackingURL(url){
 </table>	
 
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
-	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<%-- <mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href=" javascript: download_files('csv');" class="arrowPackage"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
  	<a href="javascript: download_files('xl');" class="arrowPackage"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
  	<a href="javascript: download_files('xml');" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
@@ -548,7 +558,7 @@ function loadTrackingURL(url){
  	</s:if>
  	<s:if test="%{#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('busadmin') ||  #session.ROLE.contains('sysadmin'))||#request.shippingOrder.carrierId != 80 && #request.shippingOrder.carrierId!=null && !(#session.ROLE.contains('solutions_manager'))}" >
  	&nbsp;<a href="javascript:manifestEOD();" class="arrowPackage"><span class="exportpdf">&nbsp;&nbsp;&nbsp;&nbsp; EOD </span>&nbsp;&nbsp;|</a>
- 	</s:if>
+ 	</s:if> --%>
 </div>
 
 </div>

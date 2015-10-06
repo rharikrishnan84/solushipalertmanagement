@@ -869,9 +869,10 @@ public String execute() throws Exception {
     boolean error = false;
     try {
     	
-    	boolean reference=Boolean.parseBoolean(request.getParameter("showref"));
+    	//boolean reference=Boolean.parseBoolean(request.getParameter("showref"));
 
       Customer customer = getCustomer();
+      boolean reference=customer.isReference();
       //customer.setReference(reference);
       // Address ad = getAddress();
       // customer.getAddress().setProvinceCode(ad.getProvinceCode());

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import com.meritconinc.shiplinx.model.BusinessContact;
 
 import com.opensymphony.xwork2.ActionContext;
 
@@ -873,6 +874,18 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
         log.error("Cannot find template to send pickup notification");
         return false;
       }
+      
+      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+            Business b=businessDAO.getBusiessById(pickup.getBusinessId());
+           BusinessContact bc=businessDAO.getbusinessContactByBusiness(pickup.getBusinessId());
+            
+            
+           body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+            body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+            body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+            body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+		    //  body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+			  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
       body = new String(body.replaceAll("%CONF", pickup.getConfirmationNum()));
       body = new String(body.replaceAll("%ATTENTION", pickup.getAddress().getContactName()));
       body = new String(body.replaceAll("%ShipDate",
@@ -1411,6 +1424,10 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       // String locale = user.getLocale();
 
       String subject = MessageUtil.getMessage(so.getBusiness().getShipOrderNotificationSubject());
+      
+      BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+      Business b=businessDAO.getBusiessById(so.getBusinessId());
+      BusinessContact bc=businessDAO.getbusinessContactByBusiness(so.getBusinessId());
       subject = new String(subject.replaceAll("%COMPANYNAME", so.getFromAddress()
           .getAbbreviationName()));
 
@@ -1448,6 +1465,15 @@ public List<Rating> toRatingList = new ArrayList<Rating>();
       body = new String(body.replaceAll("%TRACKINGURL", "\"" + so.getTrackingURL() + "\""));
       body = new String(body.replaceAll("%BUSINESSLOGO", "\"" + so.getBusiness().getLogoURL()
           + "\""));*/
+      
+      body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+            body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+            body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+           body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+            body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+         body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+	      //body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+		  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
       body = new String(body.replaceAll("%ATTENTION", "Customer"));
       body = new String(
           body.replaceAll(

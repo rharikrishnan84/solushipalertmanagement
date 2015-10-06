@@ -7,6 +7,7 @@ import com.meritconinc.shiplinx.model.Business;
 import com.meritconinc.shiplinx.model.UserBusiness;
 import com.meritconinc.shiplinx.model.BusinessEmail;
 import com.meritconinc.shiplinx.model.CSSVO;
+import com.meritconinc.shiplinx.model.BusinessContact;
 public interface BusinessDAO{
 	
 	public boolean isBusinessRegistered(String username);
@@ -56,4 +57,7 @@ public interface BusinessDAO{
 										public void setCopyMarkupFlag(long businessId);
 	public List<Business> getBusinessForSelectedBusiness(long businessId);
 	public void updateUserBusiness(UserBusiness ub1);
+	public void addBusinessContact(BusinessContact businessContact);
+	public BusinessContact getbusinessContactByBusiness(long id);
+	public void updateBusinessContact(BusinessContact businessContact);
 }

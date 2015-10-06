@@ -22,4 +22,5 @@ public interface CreditCardTransactionManager {
 	 
 	public boolean addCreditCard(CreditCard cc, Customer customer);
 	public boolean updateCreditCard(CreditCard cc, Customer customer);	
+	public List<CCTransaction> findCCTransactionByOrderIds(List<Long> orderIds);
 }

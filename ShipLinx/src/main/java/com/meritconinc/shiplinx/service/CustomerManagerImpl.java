@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import com.meritconinc.shiplinx.model.BusinessContact;
 
 import com.meritconinc.mmr.constants.Constants;
 import com.meritconinc.mmr.dao.UserDAO;
@@ -136,9 +137,18 @@ public class CustomerManagerImpl implements CustomerManager {
 				// card was authorized
 				customer.setPaymentType(ShiplinxConstants.PAYMENT_TYPE_CREDIT_CARD);
 
-				if (customer.getPaymentTypeLevel() == 0)
+				/*if (customer.getPaymentTypeLevel() == 0)
 					customer.setPaymentTypeLevel(business
-							.getDefaultPaymentTypeLevel());
+							.getDefaultPaymentTypeLevel());*/
+				if (customer.getPaymentTypeLevel() == 0){
+										if(business!=null&&business.isDefaultPaymentTypeLevel()){
+									customer.setPaymentTypeLevel(1);
+										}
+										else{
+											customer.setPaymentTypeLevel(0);
+										
+										}
+									}
 			}
 
 			if (customer.getAddress() != null) {
@@ -598,8 +608,14 @@ public class CustomerManagerImpl implements CustomerManager {
 			String locale = user.getLocale();
 			String subject = MessageUtil.getMessage(user.getBusiness()
 					.getCustomerNotificationSubject());
-			subject = new String(subject.replaceAll("%BUSINESSNAME", user
-					.getBusiness().getName()));
+			//subject = new String(subject.replaceAll("%BUSINESSNAME", user
+			//		.getBusiness().getName()));
+			
+			BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+					     Business b=businessDAO.getBusiessById(customer.getBusinessId());
+				     BusinessContact bc=businessDAO.getbusinessContactByBusiness(customer.getBusinessId());
+					     
+						subject = new String(subject.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
 
 		/*	String body = MessageUtil.getMessage(user.getBusiness()
 					.getCustomerNotificationBody(), locale);*/
@@ -614,6 +630,16 @@ public class CustomerManagerImpl implements CustomerManager {
 				return false;
 			}
 
+			
+			 body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+			 		      body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+			 		      body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+			 		      body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+			 		      body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+			 	      body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+				     // body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+					  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
+  			 
 			body = new String(body.replaceAll("%USERNAME",
 					firstUserFound.getUsername()));
 			body = new String(body.replaceAll("%PASSWORD",
@@ -680,6 +706,25 @@ public class CustomerManagerImpl implements CustomerManager {
             log.debug(customer.getName());
             log.debug(customer.getAccountNumber());
             log.debug(customer.getId());
+            
+            BusinessDAO businessDAO=(BusinessDAO)MmrBeanLocator.getInstance().findBean("businessDAO");
+		     Business b=businessDAO.getBusiessById(customer.getBusinessId());
+		     BusinessContact bc=businessDAO.getbusinessContactByBusiness(customer.getBusinessId());
+	    
+		     
+
+		      body = new String(body.replaceAll("%BUSINESSCOLOR", b.getCssVO().getBarFirstColor()));
+		      body = new String(body.replaceAll("%BUSINESSABBRIVATION", bc.getBusinesssAbbrivation()));
+	      body = new String(body.replaceAll("%BUSINESSLOGOUTURL", b.getLogoutURL()));
+		      body = new String(body.replaceAll("%BUSINESSNAME", b.getName()));
+		     
+		      body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
+		      
+		     // body = new String(body.replaceAll("%YEAR",  BusinessFilterUtil.getYear()));
+			  body = new String (body.replaceAll("%FOOTER", b.getCssVO().getFooter1()));
+		     // body = new String(body.replaceAll("%BUSINESSQUICKSTARTURL", bc.getQuickStartUrl()));
+	   //   body = new String(body.replaceAll("%BUSINESSADMINEMAIL", bc.getAdminEmail()));
+            
 			body = new String(body.replaceAll("%CUSTOMERNAME",
 					customer.getName()));
 			body = new String(body.replaceAll("%ACCOUNT",

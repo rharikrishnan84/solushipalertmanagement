@@ -10,7 +10,9 @@ package com.soluship.businessfilter.util;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -2204,5 +2206,12 @@ public static List<File> getCSSFileList(File dir) {
 							businessIds=getvalidatedBusIds(businessIds);
 							return businessIds;
 					}
-     
+					 
+     public static String getYear(){
+    	 Date date=new Date(); // your date
+    	    Calendar cal = Calendar.getInstance();
+    	    cal.setTime(date);
+    	    int year = cal.get(Calendar.YEAR);
+    	    return String.valueOf(year);
+     }
 }

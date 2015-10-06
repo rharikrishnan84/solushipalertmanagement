@@ -310,6 +310,9 @@ $(document).click(function(e) {
 	<li><a href="#" onclick="carrier();"><label><mmr:message messageId="label.list.carriersetup"/></label></a></li>
 	<li><a href="#" onclick="emailNotify();"><label><mmr:message messageId="label.list.emailcustomer"/></label></a></li>
 	<li><a href="#" onclick="salesUser();"><label><mmr:message messageId="label.list.salesuser"/></label></a></li>
+	<li><a href="customer.download.action?type=csv" ><label><mmr:message messageId="label.list.csv"/></label></a></li>
+	<li><a href="customer.download.action?type=xl" ><label><mmr:message messageId="label.list.xl"/></label></a></li>
+	<li><a href="customer.download.action?type=xml" ><label><mmr:message messageId="label.list.xml"/></label></a></li>
 </ul>
 </div>
 	</div>
@@ -351,10 +354,10 @@ $(document).click(function(e) {
 </tbody>
 </table>
 <div class="exportlinks" style="float:left; width:100%; height:30px;font-size:12px; text-align:right;"> 
-	<mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<%-- <mmr:message messageId="label.bottom.exportto"/>: &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrowPackage">|</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="customer.download.action?type=csv" class="arrowPackage"><span class="exportcsv">&nbsp;&nbsp;&nbsp;&nbsp; CSV </span>&nbsp;&nbsp;|</a>&nbsp;
 <a href="customer.download.action?type=xl" class="arrowPackage"><span class="exportexcel">&nbsp;&nbsp;&nbsp;&nbsp; Excel </span>&nbsp;&nbsp; |</a>&nbsp;
- <a href="customer.download.action?type=xml" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a>
+ <a href="customer.download.action?type=xml" class="arrowPackage"><span class="exportxml">&nbsp;&nbsp;&nbsp;&nbsp; XML </span>&nbsp;&nbsp;|</a> --%>
 </div>
 
 <div id="res_tbl_end"></div>

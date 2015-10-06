@@ -283,7 +283,7 @@ public class ShippingOrder implements Serializable {
   private int offsetRange;
   private List<Long> orderIds;
   private List<Long> serviceIds;
-
+  private boolean isTrackAndSearch = false;
   public int getSaveShipmet() {
 	return saveShipmet;
 }
@@ -2360,6 +2360,14 @@ public void setCustomerIds(List<Long> customerIds) {
 
 	public void setServiceIds(List<Long> serviceIds) {
 		this.serviceIds = serviceIds;
+	}
+
+		public boolean isTrackAndSearch() {
+		return isTrackAndSearch;
+	}
+
+	public void setTrackAndSearch(boolean isTrackAndSearch) {
+		this.isTrackAndSearch = isTrackAndSearch;
 	}
 
 		// Sorting orders in order list based on order id or date	

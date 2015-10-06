@@ -508,6 +508,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		try{
 			log.debug("-----execute------");
 			
+			String createpickup=request.getParameter("type"); 
+			
 			/*----------Address fetching for autocomplete----------*/
 						Long customerId = getLoginUser().getCustomerId();
 					String loadAddress=request.getParameter("loadajax");
@@ -521,7 +523,11 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 							  			 customerId =UserUtil.getMmrUser().getCustomerId();
 								  		  }
 							  if(customerId==0){
+								  if(createpickup!=null){
+											            	 return "pickupLoadAddress";
+												             }else{
 								  return SUCCESS;
+												             }
 							  }
 						}
 						log.debug("-----customerId------"+customerId);
@@ -1446,6 +1452,7 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	 public String setCustomer() throws Exception {
 
 		    String customerId = request.getParameter("customerId");
+		    String createpickup=request.getParameter("type"); 
 		    ShippingOrder shippingOrder = getShippingOrder();
 		    shippingOrder.setWebCustomerId(Long.valueOf(customerId));
 		    // setting customer
@@ -1453,6 +1460,12 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 		        .valueOf(customerId)));
 		    // shippingOrder.setCustomer(this.customerService.getCustomerInfoByCustomerId(shippingOrder.getCustomerId()));
 
+		    
+		    if(createpickup!=null)
+		    	             {
+		    	            	 return "pickupLoadAddress";
+		    	             }
+		    
 		    List<Province> toProvinces;
 		    List<Province> fromProvinces;
 		    Address addressbookFrom;
@@ -5545,7 +5558,8 @@ public class ShipmentAction extends BaseAction implements ServletRequestAware, S
 	        pickup.setPickupDate_web(FormattingUtil.getFormattedDate(calendar.getTime(),
 	            FormattingUtil.DATE_FORMAT_WEB));
 	      }
-	      this.populateUserList();
+	      this.populateCustomersList();
+	      //this.populateUserList();
 	    } catch (Exception e) {
 	      // TODO Auto-generated catch block
 	      e.printStackTrace();

@@ -30,6 +30,8 @@ public class Business {
 	private String smtpUsername;
 	private String smtpPassword;
 	private int smtpPort;
+	
+	private BusinessContact businessContact;
 
 	private String termsURL;
 	private String timeZone;
@@ -59,7 +61,9 @@ public class Business {
 	
 	private long businessCarrierId;
 	
-	private int defaultPaymentTypeLevel;
+	//private int defaultPaymentTypeLevel;
+	
+	private boolean defaultPaymentTypeLevel;
 	
 	//Credit Card Information storage
 	private boolean storeCC;
@@ -363,12 +367,22 @@ public class Business {
 		this.addCustomerNotificationSubject = addCustomerNotificationSubject;
 	}
 	
-	public int getDefaultPaymentTypeLevel() {
+	/*public int getDefaultPaymentTypeLevel() {
 		return defaultPaymentTypeLevel;
 	}
 	public void setDefaultPaymentTypeLevel(int defaultPaymentTypeLevel) {
 		this.defaultPaymentTypeLevel = defaultPaymentTypeLevel;
-	}
+	}*/
+	
+	
+	public boolean isDefaultPaymentTypeLevel() {
+											return defaultPaymentTypeLevel;
+										}
+		
+										public void setDefaultPaymentTypeLevel(
+											boolean defaultPaymentTypeLevel) {
+											this.defaultPaymentTypeLevel = defaultPaymentTypeLevel;
+										}
 	public boolean isStoreCC() {
 		return storeCC;
 	}
@@ -528,6 +542,14 @@ public class Business {
 								public void setInvoiceLevel(String invoiceLevel) {
 									this.invoiceLevel = invoiceLevel;
 								}
+								public BusinessContact getBusinessContact() {
+																		return businessContact;
+																	}
+									
+																	public void setBusinessContact(
+																			BusinessContact businessContact) {
+																		this.businessContact = businessContact;
+																	}
 						
 			
 }

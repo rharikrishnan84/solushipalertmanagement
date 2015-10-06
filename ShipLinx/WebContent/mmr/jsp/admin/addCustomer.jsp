@@ -10,7 +10,12 @@
 <body onload="doOnLoad()"> 
 
 <script>
-	
+<%
+String hRefColor=(String)session.getAttribute("hRefColor");
+if(hRefColor==null){
+	hRefColor="#900";
+}
+%>
 	$(window).load(function() {
 	
   var wndo = $(window).height();
@@ -105,22 +110,25 @@ window.onload = doOnload;
 	function submitform()
 	{
 		//local boolean check if everything is ok, then submit the form
-		var check = true;
+		/* var check = true; */
+		var check = "true";
 		var isShowRef = false;
 				var salesCheck = '<s:property value="%{role}"/>';
 				if(salesCheck != "sales")
-			     isShowRef=document.getElementById("showref").checked;
+			     /* isShowRef=document.getElementById("showref").checked; */
 		if(CCSectionActive) //if the credit card section is active or the user has selected to enter or update the credit card info, then check.
 		{
 			if(document.getElementById("ccid").value == '')
 			{
 				alert("Please enter the credit card Number");
-				check = false;
+				/* check = false; */
+				check = "false";
 			}
 			else if(document.getElementById("cvdcid").value == '')
 			{
 				alert("Please enter the CVD Code");
-				check = false;
+				/* check = false; */
+				check = "false";
 			}
 		}
 		if(document.customerform.method.value=='edit')
@@ -131,8 +139,10 @@ window.onload = doOnload;
 		{
 			document.customerform.action = "createCustomer.action?showref="+isShowRef;
 		}
-		if(check)//if everything is fine, then submit the form.
+		/* if(check)//if everything is fine, then submit the form. */
+		if(check==="true"){//if everything is fine, then submit the form.
 		document.customerform.submit();
+		}
 	}
 	
 	function submitcarrier()
@@ -522,12 +532,14 @@ window.onload = doOnload;
 									<div class="rows">
 									<s:if test="%{#session.ActiveCC==null}">
 										<div class="fields">
-											<s:a href="#" onclick="showCC('block');"><mmr:message messageId="add.payment.information"/></s:a>
+											<%-- <s:a href="#" onclick="showCC('block');"><mmr:message messageId="add.payment.information"/></s:a> --%>
+											<a href="#" onclick="showCC('block');" style="color:<%=hRefColor%>!important;"><mmr:message messageId="add.payment.information"/></a>
 										</div>	
 									</s:if>	
 									<s:else>
 									<div class="fields">
-									<s:a href="#" onclick="showCC('block');"><mmr:message messageId="update.payment.information"/></s:a>
+									<%-- <s:a href="#" onclick="showCC('block');"><mmr:message messageId="update.payment.information"/></s:a> --%>
+							<a href="#" onclick="showCC('block');" style="color:<%=hRefColor%>;"><mmr:message messageId="update.payment.information"/></a>
 									</div>	
 									</s:else>
 									<div class="fields">
@@ -560,8 +572,8 @@ window.onload = doOnload;
 								
 								
 								
-							<div class="content_body">
-							<div class="content_table">	
+							<!-- <div class="content_body">
+							<div class="content_table"> -->	
 								
 								<div id="payment_info_pnl">
 								
@@ -570,7 +582,7 @@ window.onload = doOnload;
 									<div class="cont_hdrtitle_w"><mmr:message messageId="label.enter.credit.card.details"/></div>
 									<div class="form_buttons">
 										
-										<s:submit onclick="submitform();" value="SAVE" />	
+										<%-- <s:submit onclick="submitform();" value="SAVE" /> --%>	
 										<s:submit onclick="resetform1();" value="CANCEL" />										
 									</div>
 								</div>
@@ -605,12 +617,12 @@ window.onload = doOnload;
 											list="#{'01':'Jan', '02':'Feb', '03':'Mar', '04':'Apr', '05':'May', '06':'Jun', '07':'Jul', '08':'Aug', '09':'Sep', '10':'Oct', '11':'Nov', '12':'Dec'}"
 											key="customer.newCreditCard.ccExpiryMonth"
 											name="customer.newCreditCard.ccExpiryMonth"
-											  cssStyle="width: 68px; "/>
+											  cssStyle="width: 68px !important; "/>
 											<s:select
 											list="#{'2012':'2012', '2013':'2013', '2014':'2014', '2015':'2015', '2016':'2016', '2017':'2017', '2018':'2018', '2019':'2019', '2020':'2020'}"
 											key="customer.newCreditCard.ccExpiryYear"
 											name="customer.newCreditCard.ccExpiryYear"
-											  cssStyle="width: 68px;  margin-right:2px;"/>
+											  cssStyle="width: 68px !important;  margin-right:2px;"/>
 											</div>
 										</div>
 									
@@ -658,8 +670,8 @@ window.onload = doOnload;
 								</div>
 								
 								</div>
-							</div>
-						</div>							
+							<!-- </div>
+						</div>	 -->						
 								
 								
 								

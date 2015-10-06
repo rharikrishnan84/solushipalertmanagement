@@ -20,6 +20,7 @@ import java.util.Date;
 import com.meritconinc.shiplinx.utils.FormattingUtil;
 import com.meritconinc.shiplinx.model.BusinessEmail;
 import com.meritconinc.shiplinx.model.CSSVO;
+import com.meritconinc.shiplinx.model.BusinessContact;
 
 public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessDAO{
 	private static final Logger log = LogManager.getLogger(BusinessDAOImpl.class);
@@ -51,6 +52,15 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 								b.setCssVO(css);
 							}
 					}
+						Map<String, Object> paramObj = new HashMap<String, Object>(1);
+												paramObj.put("businessId", businessId);
+												BusinessContact bc=(BusinessContact) getSqlMapClientTemplate().queryForObject("getBusinessContactBybusiness",paramObj);
+										
+												if(b!=null){
+													b.setBusinessContact(bc);
+												}
+
+						
 						return b;	
 	}
 
@@ -372,4 +382,28 @@ public class BusinessDAOImpl extends SqlMapClientDaoSupport implements BusinessD
 				// TODO Auto-generated method stub
 				getSqlMapClientTemplate().update("updateUserBusiness",ub1);
 			}
+	@Override
+		public void addBusinessContact(BusinessContact businessContact) {
+			// TODO Auto-generated method stub
+			getSqlMapClientTemplate().insert("addBusinessContact",businessContact);
+			
+	}
+	
+	
+		@Override
+		public BusinessContact getbusinessContactByBusiness(long id) {
+			// TODO Auto-generated method stub
+		Map<String, Object> paramObj = new HashMap<String, Object>(1);
+			paramObj.put("businessId", id);
+			BusinessContact bc=(BusinessContact) getSqlMapClientTemplate().queryForObject("getBusinessContactBybusiness",paramObj);
+			return bc;
+		}
+		
+		@Override
+		public void updateBusinessContact(BusinessContact businessContact) {
+		// TODO Auto-generated method stub
+			
+		  getSqlMapClientTemplate().update("updateBusinessContact",businessContact);
+			
+		}
 }

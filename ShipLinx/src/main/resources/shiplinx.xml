@@ -711,13 +711,11 @@
         <action name="new.shipment" class="shipmentAction">
             <result type="tiles" name="success">new.shipment</result>
             <result type="tiles" name="success2">warehouse.order</result>
-            <!-- <result type="json" name="loadAddress">
-					<param name="excludeNullProperties">false</param>
-				<param name="root">true</param>
-				</result> -->
+            
 			<result type="json"  name="loadAddress">
        	 		<param name="root">customerSearchResults1</param>
        	 		</result>
+       	 		<result type="tiles" name="pickupLoadAddress">createpickup</result>
         </action>
          <action name="dimensionInformation" method="dimensionInformation" class="shipmentAction">
          	<interceptor-ref name="basicAjaxStack-mmr" />
@@ -923,6 +921,7 @@
         </action>              
         <action name="shipment.setcustomer" method="setCustomer" class="shipmentAction">
             <result type="tiles" name="success">new.shipment</result>
+            <result type="tiles" name="pickupLoadAddress">createpickup</result>
         </action> 
         
        <action name="shipment.searchfrom" method="searchfrom" class="shipmentAction">

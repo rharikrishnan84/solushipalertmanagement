@@ -434,5 +434,11 @@ public class CreditCardTransactionManagerImpl implements CreditCardTransactionMa
 		updateTransaction(t);	
 		return true;
 	}
+	@Override
+		public List<CCTransaction> findCCTransactionByOrderIds(List<Long> orderIds) {
+			// TODO Auto-generated method stub
+			return this.ccTransactionDAO.findCCTransactionByOrderIds(orderIds);
+		}
+
 	
 }
